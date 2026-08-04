@@ -1,0 +1,21 @@
+[package]
+name = "dhamma-echo"
+version = "0.1.0"
+description = "A quiet desktop library for Dhamma talks"
+authors = ["Aung Myo Kyaw"]
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+
+[lib]
+name = "dhamma_echo_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+rusqlite = { version = "0.40.1", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+tauri = { version = "2.11.5", features = [] }
+thiserror = "2.0"
