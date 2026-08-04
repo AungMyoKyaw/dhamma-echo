@@ -1,245 +1,129 @@
 # Dhamma Echo Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** This plan was executed inline with the Superpowers executing-plans and test-driven-development workflows. Checkboxes record the implemented state; blocked native commands are documented in the verification report.
 
-**Goal:** Build a lightweight, cross-platform Dhamma audio library and player from the supplied read-only SQLite database.
+**Goal:** Build a lightweight Tauri 2 desktop audio player that safely queries the supplied Dhamma SQLite catalogue and provides local playback/library features.
 
-**Architecture:** Tauri 2 hosts a framework-free TypeScript frontend. Rust owns a read-only `rusqlite` connection and exposes only narrow typed catalogue commands. Browser audio APIs handle streaming and playback, while validated local storage holds favorites, history, queue, settings, and resume positions.
+**Architecture:** A framework-free TypeScript webview uses a deterministic store, escaped string renderer, HTML audio adapter, and validated local persistence. Six narrow Tauri commands call a read-only `rusqlite` repository; no generic SQL, shell, filesystem, or arbitrary network command crosses the trust boundary.
 
-**Tech Stack:** Tauri 2, Rust 2024 edition, `rusqlite`, TypeScript, browser DOM APIs, Tailwind CSS v4, Node test runner, Prettier, Tauri 2, GitHub Actions.
+**Tech stack:** Tauri 2, Rust 2024, rusqlite, strict TypeScript, Tailwind CSS v4, Node test runner, GitHub Actions.
 
-## Global Constraints
+## Global constraints
 
-- Application name is `Dhamma Echo` and bundle identifier is `com.aungmyokyaw.dhammaecho`.
-- Tailwind CSS v4 must use `@tailwindcss/vite` and CSS-first theme tokens.
-- The supplied `dhamma.db` remains unchanged and is opened read-only.
-- Only audio records are exposed in version 1.
-- Remote media is restricted to `https://dhammadownload.com`; legacy HTTP tracks are blocked with an explanation.
-- No shell, unrestricted filesystem, SQL mutation, analytics, accounts, downloads, video, or ebook features.
-- Project-owned executable frontend code must reach 100% statements, branches, functions, and lines.
-- Formatting, linting, type checking, tests, Rust checks, build, docs, CI/CD, and Git bundle validation are mandatory.
-- The application must remain dependency-light and avoid a third-party state-management library.
+- Keep the supplied SQLite catalogue immutable.
+- Permit media playback only from HTTPS `dhammadownload.com` URLs.
+- Keep runtime frontend dependencies at zero.
+- Use Tailwind CSS v4 CSS-first tokens.
+- Enforce strict TypeScript and zero-warning ESLint.
+- Require 100% line, branch, and function coverage for core TypeScript modules.
+- Document native verification blockers instead of fabricating results.
+- License code/assets under MIT without relicensing supplied data or remote media.
 
 ---
 
-## Planned file structure
-
-```text
-dhamma-echo/
-├── .github/workflows/{ci.yml,release.yml}
-├── docs/architecture/{context.md,modules.md,data-flow.md,release.md}
-├── e2e/app.spec.ts
-├── public/{logo.svg,empty-library.svg}
-├── src/
-│   ├── api/{catalogue.ts,catalogue.test.ts}
-│   ├── app/{App.tsx,App.test.tsx,routes.ts}
-│   ├── catalogue/{types.ts,search-state.ts,search-state.test.ts,ExploreView.tsx,TeachersView.tsx,TeacherDetailView.tsx}
-│   ├── home/HomeView.tsx
-│   ├── library/{storage.ts,storage.test.ts,LibraryView.tsx}
-│   ├── player/{player-reducer.ts,player-reducer.test.ts,PlayerProvider.tsx,PlayerBar.tsx,QueuePanel.tsx,media.ts,media.test.ts}
-│   ├── settings/{settings.ts,settings.test.ts,SettingsView.tsx}
-│   ├── ui/{Icon.tsx,EmptyState.tsx,ErrorState.tsx,LoadingState.tsx,Shell.tsx}
-│   ├── test/{setup.ts,fixtures.ts}
-│   ├── index.css
-│   └── main.tsx
-├── src-tauri/
-│   ├── capabilities/default.json
-│   ├── icons/*
-│   ├── resources/dhamma.db
-│   ├── src/{commands.rs,db.rs,error.rs,models.rs,normalize.rs,lib.rs,main.rs}
-│   ├── tests/database.rs
-│   ├── Cargo.toml
-│   └── tauri.conf.json
-├── package.json
-├── vite.config.ts
-├── vitest.config.ts
-├── eslint.config.js
-├── tsconfig*.json
-└── README.md
-```
-
-### Task 1: Scaffold and deterministic toolchain
+### Task 1: Inspect source data and lock product scope
 
 **Files:**
-- Create: `package.json`, `package-lock.json`, `vite.config.ts`, `vitest.config.ts`, `eslint.config.js`, `.prettierrc.json`, `.prettierignore`, `.editorconfig`, `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json`, `index.html`, `src/main.tsx`, `src/index.css`
-- Create: `src-tauri/Cargo.toml`, `src-tauri/build.rs`, `src-tauri/tauri.conf.json`, `src-tauri/capabilities/default.json`, `src-tauri/src/main.rs`, `src-tauri/src/lib.rs`
-- Copy: `/mnt/data/dhamma.db` to `src-tauri/resources/dhamma.db`
+- Create: `docs/superpowers/specs/2026-08-04-dhamma-echo-design.md`
+- Create: `docs/ralph-loop.md`
 
-**Interfaces:**
-- Produces npm scripts: `dev`, `tauri`, `format`, `format:check`, `lint`, `typecheck`, `test`, `test:coverage`, `build`, `verify`.
-- Produces Rust crate `dhamma_echo_lib` callable by the Tauri binary.
+**Produces:** Verified schema/counts, security constraints, app name, design tokens, acceptance gates, and loop exit conditions.
 
-- [ ] Install exact current compatible frontend dependencies and commit the lockfile.
-- [ ] Configure Vite with TypeScript and Tailwind CSS v4 through the official CLI.
-- [ ] Configure Tailwind tokens in `src/index.css` with `@import "tailwindcss"` and `@custom-variant dark`.
-- [ ] Configure ESLint flat config with TypeScript, React hooks, accessibility, import hygiene, and zero-warning enforcement.
-- [ ] Configure the Node test runner with built-in V8 coverage thresholds of 100% for lines, branches, and functions, plus a machine-readable summary generated by the verification script.
-- [ ] Configure Tauri bundle resources, strict CSP, and only core main-window capability.
-- [ ] Copy the database and verify its SHA-256 before and after copy.
-- [ ] Run `npm run format:check`, `npm run lint`, `npm run typecheck`, and `cargo check --manifest-path src-tauri/Cargo.toml`.
-- [ ] Commit as `chore: scaffold Dhamma Echo`.
+- [x] Inspect every SQLite table and count media by type, language, format, and URL scheme.
+- [x] Record missing duration and size metadata and design duration discovery at playback time.
+- [x] Select the name **Dhamma Echo** and tagline **A quiet desktop library for Dhamma talks.**
+- [x] Define version-one scope and explicit exclusions.
+- [x] Define project-specific Ralph Loop validation commands and risks.
+- [x] Commit the design and plan before implementation.
 
-### Task 2: Rust database model and normalization
+### Task 2: Build the test harness and pure application core
 
 **Files:**
-- Create: `src-tauri/src/models.rs`, `src-tauri/src/error.rs`, `src-tauri/src/normalize.rs`, `src-tauri/src/db.rs`
-- Test: inline Rust tests and `src-tauri/tests/database.rs`
+- Create: `src/types.ts`, `src/utils.ts`, `src/persistence.ts`, `src/store.ts`, `src/api.ts`, `src/player.ts`, `src/app.ts`, `src/mock-data.ts`
+- Create: `tests/*.test.mjs`, `tests/test-data.mjs`
+- Create: `scripts/test.mjs`
 
 **Interfaces:**
-- Produces `Database::open_read_only(path: &Path) -> Result<Database, AppError>`.
-- Produces models `CatalogueSummary`, `TeacherSummary`, `TeacherDetail`, `AudioTrack`, `AudioSearchRequest`, `AudioSearchPage`.
-- Produces `normalize_text(value: &str) -> String`.
+- Produces: `CatalogueApi`, `DhammaApp`, `AudioEngine`, deterministic reducer actions, validated storage functions, and secure URL utilities.
 
-- [ ] Write failing tests for whitespace normalization, read-only mode, invalid paths, summary counts, teacher search, audio filters, stable pagination, and rejected page sizes.
-- [ ] Implement `AppError` with stable codes: `database_open`, `database_query`, `invalid_input`, `not_found`.
-- [ ] Implement `normalize_text` by collapsing Unicode whitespace and trimming the result.
-- [ ] Open SQLite using `SQLITE_OPEN_READ_ONLY | SQLITE_OPEN_URI | SQLITE_OPEN_NO_MUTEX`, enable query-only mode, and set a short busy timeout.
-- [ ] Implement parameterized queries with `limit` clamped to `1..=100` and `offset` clamped to non-negative values.
-- [ ] Return only `https://` playback eligibility; preserve original URL and mark insecure records as unavailable.
-- [ ] Run `cargo fmt`, `cargo clippy --all-targets --all-features -- -D warnings`, and `cargo test --all-features`.
-- [ ] Commit as `feat: add read-only catalogue repository`.
+- [x] Write failing behavior tests before each core module.
+- [x] Verify each test fails for the intended missing behavior.
+- [x] Implement the minimum production code to pass.
+- [x] Add corruption, error, boundary, queue, playback, filter, and unsafe URL paths.
+- [x] Enforce 100% line, branch, and function thresholds on core compiled modules.
+- [x] Save a machine-readable coverage summary.
 
-### Task 3: Tauri commands and capability boundary
+### Task 3: Build the accessible Tailwind interface
 
 **Files:**
-- Create: `src-tauri/src/commands.rs`
-- Modify: `src-tauri/src/lib.rs`, `src-tauri/tauri.conf.json`, `src-tauri/capabilities/default.json`
+- Create: `src/view.ts`, `src/main.ts`, `src/index.css`, `index.html`
+- Create: `public/logo.svg`, `public/empty-library.svg`
+- Create: `scripts/build.mjs`, `scripts/dev-server.mjs`, `scripts/smoke.mjs`
 
 **Interfaces:**
-- Produces commands `get_catalogue_summary`, `list_featured_teachers`, `search_teachers`, `get_teacher`, `search_audio`, `get_audio_track`.
-- Commands return `Result<T, CommandError>` where `CommandError` serializes `{ code, message }`.
+- Consumes: `DhammaApp`, state types, API client, and mock invoke adapter.
+- Produces: Home, Explore, Teachers, Library, Settings, queue, and persistent player UI.
 
-- [ ] Write failing unit tests for command input validation and error mapping.
-- [ ] Resolve `resources/dhamma.db` during Tauri setup and register `State<Database>`.
-- [ ] Register only the six catalogue commands in `generate_handler!`.
-- [ ] Ensure no shell, filesystem, SQL plugin, opener, or arbitrary HTTP permission is enabled.
-- [ ] Run Rust formatting, clippy, tests, and `cargo check`.
-- [ ] Commit as `feat: expose narrow catalogue commands`.
+- [x] Write renderer tests for every route and loading/empty/error/player state.
+- [x] Escape all catalogue-controlled text.
+- [x] Add semantic controls, keyboard shortcuts, visible focus, and reduced-motion rules.
+- [x] Integrate Tailwind CSS v4 CSS-first design tokens and light/dark/system themes.
+- [x] Add browser mock mode and a dependency-free development server.
+- [x] Build production assets and validate required files with a smoke script.
+- [x] Produce and inspect a static Chromium screenshot.
 
-### Task 4: Typed frontend API and core pure state
+### Task 4: Implement the read-only Tauri database boundary
 
 **Files:**
-- Create: `src/catalogue/types.ts`, `src/api/catalogue.ts`, `src/api/catalogue.test.ts`, `src/catalogue/search-state.ts`, `src/catalogue/search-state.test.ts`
-- Create: `src/test/setup.ts`, `src/test/fixtures.ts`
+- Create: `src-tauri/Cargo.toml`, `src-tauri/build.rs`, `src-tauri/src/*.rs`
+- Create: `src-tauri/tauri.conf.json`, `src-tauri/capabilities/default.json`
+- Copy: `src-tauri/resources/dhamma.db`
 
 **Interfaces:**
-- Produces typed API methods mirroring the six Tauri commands.
-- Produces `createInitialSearchState`, `searchReducer`, and `toSearchRequest`.
+- Produces commands: `get_catalogue_summary`, `list_featured_teachers`, `search_teachers`, `get_teacher`, `search_audio`, `get_audio_track`.
 
-- [ ] Write failing tests for command names, request serialization, error normalization, filter reset, pagination reset after query/filter changes, and request generation.
-- [ ] Implement a single `invokeCatalogue<T>` wrapper that converts unknown Tauri errors into `CatalogueError`.
-- [ ] Implement immutable search state transitions with exhaustive action checking.
-- [ ] Run targeted tests, then frontend format/lint/type/coverage.
-- [ ] Commit as `feat: add typed catalogue client and search state`.
+- [x] Open SQLite with read-only flags, query-only pragma, and bounded busy timeout.
+- [x] Validate identifiers, page limits, formats, languages, and teacher filters.
+- [x] Use parameterized values for all user-supplied query data.
+- [x] Normalize scraped whitespace and classify only allowlisted HTTPS URLs as playable.
+- [x] Add in-memory SQLite integration tests and stable command errors.
+- [x] Restrict the main webview to Tauri core IPC and a strict CSP.
+- [ ] Compile, format, clippy-check, and run Rust tests locally; blocked because this sandbox has no Rust toolchain and cannot reach crates.io.
 
-### Task 5: Validated persistence and player reducer
+### Task 5: Add original platform assets and packaging configuration
 
 **Files:**
-- Create: `src/library/storage.ts`, `src/library/storage.test.ts`, `src/settings/settings.ts`, `src/settings/settings.test.ts`, `src/player/player-reducer.ts`, `src/player/player-reducer.test.ts`, `src/player/media.ts`, `src/player/media.test.ts`
+- Create: `src-tauri/icons/*`
+- Modify: `src-tauri/tauri.conf.json`
 
-**Interfaces:**
-- Produces `loadLibraryState`, `saveLibraryState`, `loadSettings`, `saveSettings`.
-- Produces `playerReducer`, `initialPlayerState`, `PlayerAction`, `isPlayableUrl`, `formatTime`, `clampVolume`.
+- [x] Create an original saffron/leaf identity consistent with the design specification.
+- [x] Generate PNG, ICO, and ICNS platform variants.
+- [x] Reference every packaged icon and the bundled database in Tauri configuration.
+- [x] Validate image signatures and dimensions.
+- [ ] Produce native installers locally; blocked by unavailable Rust/Tauri dependencies.
 
-- [ ] Write failing tests for corrupt JSON, schema mismatch, duplicate favorites, bounded history, resume updates, settings defaults, queue transitions, previous/next boundaries, URL safety, time formatting, and volume clamps.
-- [ ] Implement versioned local-storage payloads and per-key recovery.
-- [ ] Limit history to 100 items and resume records to 500 items.
-- [ ] Implement deterministic queue reducer behavior without side effects.
-- [ ] Run targeted tests and 100% frontend coverage.
-- [ ] Commit as `feat: add persistent library and player state`.
-
-### Task 6: Application shell and catalogue views
+### Task 6: Make the repository public-ready
 
 **Files:**
-- Create: `src/ui/Icon.tsx`, `src/ui/Shell.tsx`, `src/ui/LoadingState.tsx`, `src/ui/EmptyState.tsx`, `src/ui/ErrorState.tsx`
-- Create: `src/home/HomeView.tsx`, `src/catalogue/ExploreView.tsx`, `src/catalogue/TeachersView.tsx`, `src/catalogue/TeacherDetailView.tsx`, `src/library/LibraryView.tsx`, `src/settings/SettingsView.tsx`, `src/app/routes.ts`, `src/app/App.tsx`
-- Test: colocated `*.test.tsx` files
+- Create: `README.md`, `LICENSE`, `DATA_LICENSE.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`, `.env.example`
+- Create: `docs/architecture/*.md`, `docs/images/dhamma-echo-home.png`
+- Create: `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/workflows/codeql.yml`
 
-**Interfaces:**
-- Consumes typed catalogue API, search reducer, persistence helpers, and player context.
-- Produces navigable views with stable `aria-label` and heading semantics.
+- [x] Document installation, development, commands, testing, packaging, security, troubleshooting, contribution, and release procedures.
+- [x] Add Mermaid context, module, sequence, and release diagrams.
+- [x] Separate MIT source/assets rights from unverified catalogue/media redistribution rights.
+- [x] Add least-privilege CI, security scanning, audits, and native release matrix.
+- [x] Record actual local verification evidence and external blockers.
 
-- [ ] Write component tests for navigation, loading, retry, empty filters, search, pagination, teacher selection, favorites, history, and settings changes.
-- [ ] Implement the responsive navigation rail and content shell.
-- [ ] Implement Home, Explore, Teachers, Teacher detail, Library, and Settings views.
-- [ ] Use direct SVG icon components; do not load a runtime icon library.
-- [ ] Verify tab order, focus visibility, labels, reduced motion, and narrow-window behavior.
-- [ ] Run component tests and 100% frontend coverage.
-- [ ] Commit as `feat: build Dhamma Echo catalogue interface`.
-
-### Task 7: Audio engine, queue, and keyboard controls
+### Task 7: Final Ralph Loop proof and delivery
 
 **Files:**
-- Create: `src/player/PlayerProvider.tsx`, `src/player/PlayerBar.tsx`, `src/player/QueuePanel.tsx`
-- Modify: `src/app/App.tsx`
-- Test: colocated `*.test.tsx` files
+- Create: `docs/verification/2026-08-04-results.md`
+- Generate outside repository: `dhamma-echo.bundle`, source archive, coverage summary, UI preview.
 
-**Interfaces:**
-- Produces `usePlayer()` with `playTrack`, `toggle`, `seek`, `setVolume`, `setRate`, `enqueue`, `removeFromQueue`, `clearQueue`, `playNext`, and `playPrevious`.
-
-- [ ] Write tests with a controlled `HTMLMediaElement` mock for metadata, time updates, play rejection, ended events, rate/volume changes, queue advancement, resume persistence, and keyboard shortcuts.
-- [ ] Create exactly one hidden `audio` element owned by `PlayerProvider`.
-- [ ] Persist progress at bounded intervals and on pause/unmount.
-- [ ] Implement Space, ArrowLeft/Right, ArrowUp/Down, `M`, and `N` shortcuts while ignoring editable elements.
-- [ ] Implement compact player and accessible queue panel.
-- [ ] Surface insecure URL and network/media failures with recoverable messages.
-- [ ] Run tests and 100% frontend coverage.
-- [ ] Commit as `feat: add resilient audio playback`.
-
-### Task 8: Original lightweight assets and polish
-
-**Files:**
-- Create: `public/logo.svg`, `public/empty-library.svg`, `src-tauri/icons/*`
-- Modify: `src/index.css`, `index.html`, `src-tauri/tauri.conf.json`
-
-**Interfaces:**
-- Produces original vector identity and platform icon exports used by the app and installer.
-
-- [ ] Create a simple original “echoing lotus/sound wave” SVG mark using project-owned vector shapes.
-- [ ] Export required PNG/ICO/ICNS icon variants using the Tauri icon command or verified local tools.
-- [ ] Add an original empty-library illustration under 20 KB.
-- [ ] Integrate logo, favicon, installer icons, and empty-state art.
-- [ ] Verify no remote font or image dependency and check asset sizes.
-- [ ] Run visual smoke checks through screenshots if a browser is available; otherwise record the exact blocker.
-- [ ] Commit as `feat: add Dhamma Echo visual identity`.
-
-### Task 9: Architecture docs, README, governance, and CI/CD
-
-**Files:**
-- Create: `README.md`, `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`, `.gitignore`, `.env.example`
-- Create: `docs/architecture/context.md`, `docs/architecture/modules.md`, `docs/architecture/data-flow.md`, `docs/architecture/release.md`
-- Create: `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/dependabot.yml`
-
-**Interfaces:**
-- CI invokes only repository scripts that exist.
-- Release workflow builds platform artifacts from version tags with least-privilege permissions.
-
-- [ ] Add valid Mermaid context, module, data-flow, sequence, and release diagrams.
-- [ ] Write an open-source README with verified install, development, testing, coverage, build, packaging, troubleshooting, security, and release commands.
-- [ ] Add MIT license and contributor/security policies.
-- [ ] Add CI jobs for frontend gates, Rust gates, CodeQL, and platform build smoke checks.
-- [ ] Add tag-only release workflow with artifact upload and no fork-secret exposure.
-- [ ] Validate YAML syntax and every referenced command.
-- [ ] Commit as `docs: make project open-source ready`.
-
-### Task 10: Ralph Loop proof, hardening, and Git bundle
-
-**Files:**
-- Modify: any confirmed failing implementation or docs files
-- Create: `docs/verification/2026-08-04-results.md`, `coverage/*`, `dhamma-echo.bundle`
-
-**Interfaces:**
-- Produces final verified repository and cloneable Git bundle.
-
-- [ ] Clean generated output and run `npm ci`.
-- [ ] Run `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm run test:coverage`, and `npm run build`.
-- [ ] Run `cargo fmt --check`, clippy with `-D warnings`, tests, and release build.
-- [ ] Install/run `cargo audit` and `cargo llvm-cov` when available; otherwise record exact installation or environment blocker.
-- [ ] Run `npm audit --audit-level=high` and resolve confirmed high-severity issues.
-- [ ] Run Tauri bundle packaging supported by the Linux environment and record unsupported macOS/Windows outputs accurately.
-- [ ] Inspect CSP, path resolution, read-only DB behavior, local-state corruption, accessibility, error paths, and idle background work.
-- [ ] Repeat failing gates until every achievable gate passes.
-- [ ] Record actual command results in `docs/verification/2026-08-04-results.md`.
-- [ ] Create `dhamma-echo.bundle` with `git bundle create dhamma-echo.bundle --all`.
-- [ ] Verify and clone-test the bundle, then run key checks from the clone.
-- [ ] Commit final verification evidence, recreate the bundle, and verify it again.
+- [x] Run offline lint, strict typecheck, 36 tests, core coverage, production web build, and web smoke checks.
+- [x] Validate JSON/TOML, database counts/hash, asset formats, and documentation links.
+- [x] Attempt standard formatter, ESLint, Rust, package, and audit commands and record exact blockers.
+- [x] Commit focused implementation/documentation changes.
+- [x] Create and verify a complete Git bundle.
+- [x] Clone the bundle into a temporary directory and rerun available web verification from the clone.

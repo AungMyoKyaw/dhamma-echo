@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Install frontend dependencies
+        run: npm install --ignore-scripts
+      - name: Format
+        run: npm exec prettier -- --check .
+      - name: Lint
+        run: npm run lint
+      - name: Type check
+        run: npm run typecheck
+      - name: Test and coverage
+        run: npm run test:coverage
+      - name: Production web build
+        run: npm run build:web
+      - name: Web smoke test
+        run: npm run smoke:web
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+      - name: Upload web build and coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-build-and-coverage
+          path: |
+            dist
+            coverage/coverage-summary.json
+          if-no-files-found: error
+
+  rust:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.97.1
+          components: rustfmt, clippy
+      - name: Install Tauri Linux prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Generate dependency lock
+        run: cargo generate-lockfile --manifest-path src-tauri/Cargo.toml
+      - name: Rust format
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+      - name: Rust lint
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings
+      - name: Rust tests
+        run: cargo test --manifest-path src-tauri/Cargo.toml --all-features
+      - name: Rust production build
+        run: cargo build --manifest-path src-tauri/Cargo.toml --release
+      - name: Rust dependency audit
+        run: |
+          cargo install cargo-audit --locked
+          cargo audit --file src-tauri/Cargo.lock

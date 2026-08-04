@@ -7,9 +7,9 @@ Build and prove a lightweight Tauri 2 + TypeScript + Tailwind CSS v4 desktop aud
 ## Current state
 
 - Supplied SQLite database exists and has been inspected.
-- No application source repository exists.
 - Product and technical design are defined.
-- Current documentation research confirms Tauri 2 capability controls, Tailwind v4 Vite/CSS-first setup, and Vitest v4 coverage configuration.
+- The application repository, frontend, Rust boundary, tests, assets, and documentation are implemented.
+- Current documentation research confirms Tauri 2 capability controls, Tailwind v4 CSS-first setup, and current coverage configuration options.
 
 ## Acceptance gates
 
@@ -20,7 +20,7 @@ Build and prove a lightweight Tauri 2 + TypeScript + Tailwind CSS v4 desktop aud
 5. Formatter checks pass.
 6. ESLint has zero warnings/errors.
 7. TypeScript type checking passes.
-8. Frontend tests pass at 100% statements, branches, functions, and lines for included project-owned code.
+8. Frontend core tests pass at 100% branches, functions, and lines for included project-owned code; Node does not report statements separately.
 9. Rust tests pass and project-owned Rust logic is covered by tests; coverage tooling availability is recorded.
 10. Frontend production build passes.
 11. Tauri compilation/package checks pass where the current Linux environment supports them.
@@ -31,7 +31,7 @@ Build and prove a lightweight Tauri 2 + TypeScript + Tailwind CSS v4 desktop aud
 ## Validation commands
 
 ```bash
-npm ci
+npm install
 npm run format:check
 npm run lint
 npm run typecheck
@@ -75,7 +75,7 @@ git clone dhamma-echo.bundle /tmp/dhamma-echo-bundle-check
 
 ### L — Lay down implementation
 
-- Scaffold Tauri/React/Tailwind v4.
+- Scaffold Tauri/framework-free TypeScript/Tailwind v4.
 - Implement and test pure logic first.
 - Implement Rust repository and commands.
 - Implement shell, views, player, and persistent library state.

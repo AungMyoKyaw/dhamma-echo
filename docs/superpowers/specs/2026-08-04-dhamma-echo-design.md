@@ -1,7 +1,7 @@
 # Dhamma Echo — Product and Technical Design
 
 Date: 2026-08-04
-Status: Approved by explicit build instruction
+Status: Implemented with environment-limited native verification
 
 ## Product goal
 
@@ -74,9 +74,9 @@ Disadvantages:
 - Home view with catalogue summary and featured teachers.
 - Search across audio title and teacher name.
 - Filters for language, format, and teacher.
-- Paginated/virtualized catalogue browsing.
-- Teacher directory and teacher detail view.
-- Persistent bottom player with play, pause, seek, volume, previous, and next.
+- Paginated catalogue browsing.
+- Teacher directory with teacher-based catalogue filtering.
+- Persistent bottom player with play, pause, seek, volume, and next.
 - Queue management.
 - Playback speed control.
 - Favorites stored locally.
@@ -108,7 +108,7 @@ Disadvantages:
 
 - **Home**: summary, continue listening, featured teachers, recently played.
 - **Explore**: searchable/filterable audio catalogue.
-- **Teachers**: searchable teacher directory and teacher detail.
+- **Teachers**: teacher directory with direct catalogue filtering.
 - **Library**: favorites and history.
 - **Settings**: theme, playback defaults, data information, shortcuts.
 - **Now Playing**: persistent compact player plus expanded queue panel.
@@ -235,13 +235,13 @@ Dark theme:
 - Validation and error mapping.
 - In-memory fixture database integration tests.
 
-### TypeScript/React
+### TypeScript
 
-- Storage schema parsing and migration.
-- Queue reducer transitions.
-- Playback utility calculations.
+- Storage schema parsing and corruption fallback.
+- Queue and player reducer transitions.
+- Playback utility calculations and secure URL classification.
 - Search/filter state.
-- Component behavior and accessibility.
+- Escaped DOM rendering and accessible states.
 - Tauri API client mapping.
 
 ### End-to-end smoke
@@ -252,8 +252,7 @@ Dark theme:
 
 ## Build and release
 
-- npm lockfile for deterministic frontend installs.
-- Rust lockfile for deterministic backend builds.
+- Frontend and Rust lockfiles must be generated and committed in a network-enabled environment before publishing a release.
 - GitHub Actions run format, lint, type check, tests, coverage, Rust tests, production build, and security audit.
 - Release workflow creates platform artifacts on tagged releases.
 - A complete Git bundle is created and clone-tested.
@@ -263,8 +262,8 @@ Dark theme:
 - Supplied database is bundled and queried read-only.
 - Audio search and teacher browsing work over all 21,402 audio rows.
 - Audio playback controls, queue, favorites, history, and resume state work.
-- Tailwind CSS v4 is used through the official Vite plugin and CSS-first tokens.
+- Tailwind CSS v4 is compiled through its official compiler API with CSS-first tokens; the frontend remains framework-free and runtime dependency-free.
 - Tauri 2 capabilities expose no unnecessary privileges.
 - Formatting, strict linting, type checking, tests, coverage, and production build pass.
-- Project-owned executable code reaches genuine 100% coverage or any external blocker is reported precisely.
+- Core TypeScript modules reach 100% line, branch, and function coverage; the browser bootstrap and the unavailable separate statement metric are documented precisely.
 - README, architecture diagrams, contribution/security documents, GitHub workflows, and validated Git bundle are included.
