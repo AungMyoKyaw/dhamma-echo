@@ -1,0 +1,6 @@
+dist
+.test-build
+coverage
+src-tauri/target
+src-tauri/resources/dhamma.db
+*.bundle

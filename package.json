@@ -1,0 +1,40 @@
+{
+  "name": "dhamma-echo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A quiet desktop library for Dhamma talks.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "npm run tauri:dev",
+    "dev:web": "node scripts/dev-server.mjs",
+    "build": "npm run build:web",
+    "build:web": "node scripts/build.mjs",
+    "smoke:web": "node scripts/smoke.mjs",
+    "clean": "node scripts/clean.mjs",
+    "format": "prettier --write . && cargo fmt --manifest-path src-tauri/Cargo.toml",
+    "format:check": "prettier --check . && cargo fmt --manifest-path src-tauri/Cargo.toml -- --check",
+    "lint": "eslint . --max-warnings 0",
+    "lint:offline": "node scripts/lint-offline.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node scripts/test.mjs",
+    "test:coverage": "node scripts/test.mjs --coverage",
+    "verify:web": "npm run lint:offline && npm run typecheck && npm run test:coverage && npm run build:web && npm run smoke:web",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build:web && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings && cargo test --manifest-path src-tauri/Cargo.toml --all-features",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.4",
+    "@tailwindcss/cli": "4.3.3",
+    "eslint": "10.7.0",
+    "prettier": "3.6.2",
+    "tailwindcss": "4.3.3",
+    "typescript": "7.0.2",
+    "typescript-eslint": "8.65.0"
+  }
+}

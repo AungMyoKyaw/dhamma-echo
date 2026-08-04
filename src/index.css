@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: Inter, "Noto Sans Myanmar", "Myanmar Text", "Pyidaungsu", system-ui, sans-serif;
+  --color-app: #2e2e2a;
+  --color-app-muted: #565550;
+  --color-app-bg: #fcf9f2;
+  --color-app-surface: #ffffff;
+  --color-app-soft: #f0eee7;
+  --color-app-border: #d5d1c8;
+  --color-app-primary: #8c3f08;
+  --color-app-primary-strong: #6d2f00;
+  --color-app-secondary: #485b37;
+  --color-app-tertiary: #6e5014;
+  --shadow-player: 0 -16px 50px rgb(46 46 42 / 0.12);
+  --radius-card: 1.25rem;
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  background: var(--color-app-bg);
+}
+
+:root.dark {
+  color-scheme: dark;
+  --color-app: #fef7f0;
+  --color-app-muted: #b2ada6;
+  --color-app-bg: #100e0a;
+  --color-app-surface: #1b1915;
+  --color-app-soft: #282521;
+  --color-app-border: #56534e;
+  --color-app-primary: #e08549;
+  --color-app-primary-strong: #f0a067;
+  --color-app-secondary: #8da374;
+  --color-app-tertiary: #c2a25a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 860px;
+  min-height: 620px;
+  margin: 0;
+  background: var(--color-app-bg);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-app-primary) 55%, transparent);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.range-accent {
+  accent-color: var(--color-app-primary);
+}
+
+.scrollbar-thin {
+  scrollbar-color: var(--color-app-border) transparent;
+  scrollbar-width: thin;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
