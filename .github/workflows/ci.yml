@@ -17,25 +17,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 22
+      - uses: oven-sh/setup-bun@v2
       - name: Install frontend dependencies
-        run: npm install --ignore-scripts
+        run: bun install --frozen-lockfile --ignore-scripts
       - name: Format
-        run: npm exec prettier -- --check .
+        run: bunx prettier --check .
       - name: Lint
-        run: npm run lint
+        run: bun run lint
       - name: Type check
-        run: npm run typecheck
+        run: bun run typecheck
       - name: Test and coverage
-        run: npm run test:coverage
+        run: bun run test:coverage
       - name: Production web build
-        run: npm run build:web
+        run: bun run build:web
       - name: Web smoke test
-        run: npm run smoke:web
+        run: bun run smoke:web
       - name: Dependency audit
-        run: npm audit --audit-level=high
+        run: bun audit --audit-level=high
       - name: Upload web build and coverage
         uses: actions/upload-artifact@v7
         with:

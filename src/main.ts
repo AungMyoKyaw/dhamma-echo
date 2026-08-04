@@ -53,14 +53,16 @@ export async function bootstrap(): Promise<DhammaApp> {
   });
 
   root.addEventListener("click", (event) => {
-    const target = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-action]") : null;
+    const target =
+      event.target instanceof Element ? event.target.closest<HTMLElement>("[data-action]") : null;
     if (target === null) return;
     const action = target.dataset.action;
     const id = parseId(target.dataset.id);
     const value = target.dataset.value;
 
     if (action === "navigate" && isRoute(value)) app.dispatch({ type: "navigate", route: value });
-    if (action === "cycle-theme") app.dispatch({ type: "set-theme", theme: nextTheme(app.state.settings.theme) });
+    if (action === "cycle-theme")
+      app.dispatch({ type: "set-theme", theme: nextTheme(app.state.settings.theme) });
     if (action === "select-teacher" && id !== null) {
       app.dispatch({ type: "set-teacher", teacherId: id });
       app.dispatch({ type: "navigate", route: "explore" });
@@ -87,11 +89,17 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (action === "retry-teachers") void app.loadTeachers();
     if (action === "retry-search") void app.search();
     if (action === "previous-page") {
-      app.dispatch({ type: "set-offset", offset: app.state.search.offset - app.state.search.limit });
+      app.dispatch({
+        type: "set-offset",
+        offset: app.state.search.offset - app.state.search.limit
+      });
       void app.search();
     }
     if (action === "next-page") {
-      app.dispatch({ type: "set-offset", offset: app.state.search.offset + app.state.search.limit });
+      app.dispatch({
+        type: "set-offset",
+        offset: app.state.search.offset + app.state.search.limit
+      });
       void app.search();
     }
   });
@@ -102,8 +110,14 @@ export async function bootstrap(): Promise<DhammaApp> {
     event.preventDefault();
     const values = new FormData(form);
     app.dispatch({ type: "set-query", query: String(values.get("query") ?? "") });
-    app.dispatch({ type: "set-language", language: String(values.get("language") ?? "all") as "all" | "myanmar" | "english" });
-    app.dispatch({ type: "set-format", format: String(values.get("format") ?? "all") as "all" | "mp3" | "wma" });
+    app.dispatch({
+      type: "set-language",
+      language: String(values.get("language") ?? "all") as "all" | "myanmar" | "english"
+    });
+    app.dispatch({
+      type: "set-format",
+      format: String(values.get("format") ?? "all") as "all" | "mp3" | "wma"
+    });
     void app.search();
   });
 
@@ -118,12 +132,18 @@ export async function bootstrap(): Promise<DhammaApp> {
     const target = event.target;
     if (!(target instanceof HTMLSelectElement)) return;
     if (target.dataset.setting === "rate") app.setRate(Number(target.value));
-    if (target.dataset.setting === "theme") app.dispatch({ type: "set-theme", theme: target.value as Theme });
+    if (target.dataset.setting === "theme")
+      app.dispatch({ type: "set-theme", theme: target.value as Theme });
   });
 
   window.addEventListener("keydown", (event) => {
     const target = event.target;
-    if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) return;
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLSelectElement ||
+      target instanceof HTMLTextAreaElement
+    )
+      return;
     if (event.code === "Space") {
       event.preventDefault();
       void app.togglePlayback();
@@ -133,7 +153,9 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (event.key.toLocaleLowerCase() === "n") void app.playNext();
   });
 
-  media.addEventListener("change", () => applyTheme(document.documentElement, app.state.settings.theme, media.matches));
+  media.addEventListener("change", () =>
+    applyTheme(document.documentElement, app.state.settings.theme, media.matches)
+  );
   window.addEventListener("beforeunload", () => app.destroy(), { once: true });
   await app.start();
   return app;

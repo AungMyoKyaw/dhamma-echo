@@ -4,14 +4,18 @@ import { escapeHtml, formatDuration } from "./utils.js";
 const icons: Record<string, string> = {
   home: '<path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
   explore: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
-  teachers: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 15.5c.9-.9 2-1.5 3.4-1.5 2.5 0 4.6 2 4.6 4.5"/>',
+  teachers:
+    '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 15.5c.9-.9 2-1.5 3.4-1.5 2.5 0 4.6 2 4.6 4.5"/>',
   library: '<path d="M5 4h14v16H5z"/><path d="M9 4v16M9 8h10"/>',
-  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
+  settings:
+    '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
   play: '<path d="m9 7 8 5-8 5z" fill="currentColor" stroke="none"/>',
   pause: '<path d="M8 7h3v10H8zM13 7h3v10h-3z" fill="currentColor" stroke="none"/>',
   next: '<path d="m7 7 7 5-7 5z" fill="currentColor" stroke="none"/><path d="M16 7v10"/>',
-  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>',
-  queue: '<path d="M4 7h10M4 12h10M4 17h7"/><path d="m16 14 4 3-4 3z" fill="currentColor" stroke="none"/>',
+  heart:
+    '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>',
+  queue:
+    '<path d="M4 7h10M4 12h10M4 17h7"/><path d="m16 14 4 3-4 3z" fill="currentColor" stroke="none"/>',
   search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/>',
   close: '<path d="m7 7 10 10M17 7 7 17"/>',
   chevron: '<path d="m9 18 6-6-6-6"/>',
@@ -85,9 +89,10 @@ function renderHome(state: AppState): string {
     return renderError(state.summary.message, "retry-summary");
   }
   const summary = state.summary.data;
-  const teacherCards = state.teachers.status === "ready" && state.teachers.data.length > 0
-    ? state.teachers.data.slice(0, 6).map(renderTeacherCard).join("")
-    : `<div class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted">Teacher highlights will appear here when the catalogue is ready.</div>`;
+  const teacherCards =
+    state.teachers.status === "ready" && state.teachers.data.length > 0
+      ? state.teachers.data.slice(0, 6).map(renderTeacherCard).join("")
+      : `<div class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted">Teacher highlights will appear here when the catalogue is ready.</div>`;
   return `<section class="space-y-8">
     <div class="relative overflow-hidden rounded-[2rem] bg-app-primary px-8 py-9 text-white shadow-lg">
       <div class="relative z-10 max-w-xl"><p class="text-sm font-bold uppercase tracking-[0.2em] text-white/70">Dhamma for daily life</p><h2 class="mt-3 text-4xl font-bold leading-tight">A calmer way to discover and hear timeless teachings.</h2><p class="mt-4 max-w-lg text-sm leading-6 text-white/75">Search thousands of talks by title, teacher, language, or format. Your favorites and listening position stay local.</p><button class="mt-6 rounded-full bg-white px-5 py-3 text-sm font-bold text-app-primary transition hover:bg-white/90" data-action="navigate" data-value="explore">Explore talks</button></div>
@@ -132,11 +137,16 @@ function renderError(message: string, action: string): string {
 
 function renderExplore(state: AppState): string {
   let content = renderLoading();
-  if (state.catalogue.status === "error") content = renderError(state.catalogue.message, "retry-search");
+  if (state.catalogue.status === "error")
+    content = renderError(state.catalogue.message, "retry-search");
   if (state.catalogue.status === "ready") {
-    content = state.catalogue.page.items.length > 0
-      ? `<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">${state.catalogue.page.items.map((track) => renderTrack(track, state)).join("")}</div>`
-      : renderEmpty("No talks match these filters", "Try a shorter search or select a different language and format.");
+    content =
+      state.catalogue.page.items.length > 0
+        ? `<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">${state.catalogue.page.items.map((track) => renderTrack(track, state)).join("")}</div>`
+        : renderEmpty(
+            "No talks match these filters",
+            "Try a shorter search or select a different language and format."
+          );
   }
   const page = state.catalogue.page;
   const from = page.total === 0 ? 0 : page.offset + 1;
@@ -145,17 +155,36 @@ function renderExplore(state: AppState): string {
 }
 
 function renderTeachers(state: AppState): string {
-  if (state.teachers.status === "error") return renderError(state.teachers.message, "retry-teachers");
+  if (state.teachers.status === "error")
+    return renderError(state.teachers.message, "retry-teachers");
   if (state.teachers.status !== "ready") return renderLoading();
-  if (state.teachers.data.length === 0) return renderEmpty("No teachers found", "The catalogue does not currently include teacher records.");
+  if (state.teachers.data.length === 0)
+    return renderEmpty(
+      "No teachers found",
+      "The catalogue does not currently include teacher records."
+    );
   return `<section><div class="grid grid-cols-3 gap-4">${state.teachers.data.map(renderTeacherCard).join("")}</div></section>`;
 }
 
 function renderLibrary(state: AppState): string {
-  const knownTracks = [state.player.current, ...state.player.queue].filter((track): track is AudioTrack => track !== null);
-  const favorites = knownTracks.filter((track, index, list) => state.library.favorites.includes(track.id) && list.findIndex((item) => item.id === track.id) === index);
-  if (state.library.favorites.length === 0) return renderEmpty("Your library is ready", "Favorite a talk while exploring to keep it close for another listening session.");
-  if (favorites.length === 0) return renderEmpty("Favorites saved", "Open Explore to load the saved talks from the catalogue.");
+  const knownTracks = [state.player.current, ...state.player.queue].filter(
+    (track): track is AudioTrack => track !== null
+  );
+  const favorites = knownTracks.filter(
+    (track, index, list) =>
+      state.library.favorites.includes(track.id) &&
+      list.findIndex((item) => item.id === track.id) === index
+  );
+  if (state.library.favorites.length === 0)
+    return renderEmpty(
+      "Your library is ready",
+      "Favorite a talk while exploring to keep it close for another listening session."
+    );
+  if (favorites.length === 0)
+    return renderEmpty(
+      "Favorites saved",
+      "Open Explore to load the saved talks from the catalogue."
+    );
   return `<section class="space-y-4"><div><h2 class="text-xl font-bold">Favorites</h2><p class="mt-1 text-sm text-app-muted">${state.library.favorites.length} saved talks</p></div><div class="overflow-hidden rounded-card border border-app-border bg-app-surface">${favorites.map((track) => renderTrack(track, state)).join("")}</div></section>`;
 }
 
@@ -171,19 +200,30 @@ function renderSettings(state: AppState): string {
 
 function renderMain(state: AppState): string {
   switch (state.route) {
-    case "home": return renderHome(state);
-    case "explore": return renderExplore(state);
-    case "teachers": return renderTeachers(state);
-    case "library": return renderLibrary(state);
-    case "settings": return renderSettings(state);
+    case "home":
+      return renderHome(state);
+    case "explore":
+      return renderExplore(state);
+    case "teachers":
+      return renderTeachers(state);
+    case "library":
+      return renderLibrary(state);
+    case "settings":
+      return renderSettings(state);
   }
 }
 
 function renderQueue(state: AppState): string {
   if (!state.player.queueOpen) return "";
-  const rows = state.player.queue.length === 0
-    ? '<p class="p-6 text-center text-sm text-app-muted">Your queue is empty.</p>'
-    : state.player.queue.map((track) => `<div class="flex items-center gap-3 border-b border-app-border p-3 last:border-0"><div class="min-w-0 flex-1"><p class="truncate text-sm font-bold">${escapeHtml(track.title)}</p><p class="truncate text-xs text-app-muted">${escapeHtml(track.teacherName)}</p></div><button class="flex size-8 items-center justify-center rounded-full hover:bg-app-soft" data-action="remove-queue" data-id="${track.id}" aria-label="Remove ${escapeHtml(track.title)} from queue"><span class="size-4">${icon("close")}</span></button></div>`).join("");
+  const rows =
+    state.player.queue.length === 0
+      ? '<p class="p-6 text-center text-sm text-app-muted">Your queue is empty.</p>'
+      : state.player.queue
+          .map(
+            (track) =>
+              `<div class="flex items-center gap-3 border-b border-app-border p-3 last:border-0"><div class="min-w-0 flex-1"><p class="truncate text-sm font-bold">${escapeHtml(track.title)}</p><p class="truncate text-xs text-app-muted">${escapeHtml(track.teacherName)}</p></div><button class="flex size-8 items-center justify-center rounded-full hover:bg-app-soft" data-action="remove-queue" data-id="${track.id}" aria-label="Remove ${escapeHtml(track.title)} from queue"><span class="size-4">${icon("close")}</span></button></div>`
+          )
+          .join("");
   return `<aside class="fixed bottom-28 right-6 z-40 w-96 overflow-hidden rounded-card border border-app-border bg-app-surface shadow-2xl"><div class="flex items-center justify-between border-b border-app-border p-4"><div><p class="font-bold">Up next</p><p class="text-xs text-app-muted">${state.player.queue.length} talks</p></div><button class="text-xs font-bold text-app-primary" data-action="clear-queue">Clear</button></div><div class="scrollbar-thin max-h-80 overflow-y-auto">${rows}</div></aside>`;
 }
 

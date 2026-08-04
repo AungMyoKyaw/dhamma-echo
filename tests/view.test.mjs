@@ -21,14 +21,20 @@ test("renderApp produces accessible navigation and home summary", () => {
 test("renderApp renders catalogue, errors, empty state, and player safely", () => {
   let state = createInitialState();
   state = reduce(state, { type: "navigate", route: "explore" });
-  state = reduce(state, { type: "search-loaded", page: { items: tracks, total: 2, limit: 50, offset: 0 } });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: tracks, total: 2, limit: 50, offset: 0 }
+  });
   state = reduce(state, { type: "play-track", track: { ...tracks[0], title: "<b>unsafe</b>" } });
   state = reduce(state, { type: "set-player-error", message: "Network unavailable" });
   let html = renderApp(state);
   assert.match(html, /&lt;b&gt;unsafe&lt;\/b&gt;/);
   assert.match(html, /Network unavailable/);
   assert.match(html, /data-action="play-track"/);
-  state = reduce(state, { type: "search-loaded", page: { items: [], total: 0, limit: 50, offset: 0 } });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: [], total: 0, limit: 50, offset: 0 }
+  });
   html = renderApp(state);
   assert.match(html, /No talks match these filters/);
   state = reduce(state, { type: "search-failed", message: "Database unavailable" });
@@ -46,7 +52,10 @@ test("renderApp covers every route and catalogue state", () => {
   state = reduce(state, { type: "navigate", route: "explore" });
   state = reduce(state, { type: "search-started" });
   assert.match(renderApp(state), /Loading talks/);
-  state = reduce(state, { type: "search-loaded", page: { items: tracks, total: 120, limit: 50, offset: 50 } });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: tracks, total: 120, limit: 50, offset: 50 }
+  });
   let html = renderApp(state);
   assert.match(html, /51–100 of 120 talks/);
   assert.doesNotMatch(html, /data-action="next-page" disabled/);
@@ -79,7 +88,12 @@ test("renderApp covers every route and catalogue state", () => {
 test("renderApp covers player, queue, unavailable tracks, and resume metadata", () => {
   let state = createInitialState();
   state = reduce(state, { type: "navigate", route: "explore" });
-  const unavailable = { ...tracks[1], url: "http://dhammadownload.com/old.wma", playable: false, teacherName: "" };
+  const unavailable = {
+    ...tracks[1],
+    url: "http://dhammadownload.com/old.wma",
+    playable: false,
+    teacherName: ""
+  };
   state = reduce(state, {
     type: "search-loaded",
     page: { items: [tracks[0], unavailable], total: 2, limit: 50, offset: 0 }

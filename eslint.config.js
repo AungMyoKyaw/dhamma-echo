@@ -19,8 +19,8 @@ export default tseslint.config(
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/switch-exhaustiveness-check": "error",
-      "eqeqeq": ["error", "always"],
-      "no-console": ["error", { "allow": ["warn", "error"] }]
+      eqeqeq: ["error", "always"],
+      "no-console": ["error", { allow: ["warn", "error"] }]
     }
   }
 );

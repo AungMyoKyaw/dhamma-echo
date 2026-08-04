@@ -24,7 +24,12 @@ export function loadLibrary(storage: StorageLike): LibraryState {
   if (raw === null) return createDefaultLibrary();
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null || !("version" in parsed) || parsed.version !== VERSION) {
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      !("version" in parsed) ||
+      parsed.version !== VERSION
+    ) {
       return createDefaultLibrary();
     }
     const record = parsed as Record<string, unknown>;
@@ -45,7 +50,10 @@ export function loadLibrary(storage: StorageLike): LibraryState {
     const resumeEntries =
       typeof record.resume === "object" && record.resume !== null
         ? Object.entries(record.resume)
-            .filter(([key, value]) => positiveInteger(Number(key)) && typeof value === "number" && value >= 0)
+            .filter(
+              ([key, value]) =>
+                positiveInteger(Number(key)) && typeof value === "number" && value >= 0
+            )
             .slice(-500)
         : [];
     return { favorites, history, resume: Object.fromEntries(resumeEntries) };
@@ -61,7 +69,9 @@ export function saveLibrary(storage: StorageLike, library: LibraryState): void {
     .slice(0, 100);
   const resume = Object.fromEntries(
     Object.entries(library.resume)
-      .filter(([key, value]) => positiveInteger(Number(key)) && Number.isFinite(value) && value >= 0)
+      .filter(
+        ([key, value]) => positiveInteger(Number(key)) && Number.isFinite(value) && value >= 0
+      )
       .slice(-500)
   );
   storage.setItem(LIBRARY_KEY, JSON.stringify({ version: VERSION, favorites, history, resume }));

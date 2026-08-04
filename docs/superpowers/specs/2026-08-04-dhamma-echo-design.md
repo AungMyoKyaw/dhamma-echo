@@ -37,10 +37,12 @@ The name is descriptive, easy to pronounce in English, and does not claim owners
 ### A. Frontend queries via `tauri-plugin-sql`
 
 Advantages:
+
 - Less Rust query code.
 - Fast initial implementation.
 
 Disadvantages:
+
 - Broader database access exposed to the webview.
 - SQL and result shaping leak into the UI layer.
 - Harder to keep a narrow security boundary.
@@ -48,20 +50,24 @@ Disadvantages:
 ### B. Narrow Rust commands with `rusqlite` — selected
 
 Advantages:
+
 - Read-only connection and query restrictions are enforced in Rust.
 - UI receives typed, purpose-built results.
 - Easy to test repository and sanitization logic independently.
 - No database write permission is needed.
 
 Disadvantages:
+
 - More Rust code and serialization types.
 
 ### C. Export SQLite data to static JSON/search indexes
 
 Advantages:
+
 - No runtime SQLite dependency.
 
 Disadvantages:
+
 - Larger generated assets.
 - Slower or more complex full-text search.
 - Data regeneration workflow becomes mandatory.
@@ -178,6 +184,7 @@ Typography uses a system-first stack with `Noto Sans Myanmar` and platform Myanm
 ### Design tokens
 
 Light theme:
+
 - Background: `#fcf9f2`
 - Surface: `#ffffff`
 - Primary: `#8c3f08`
@@ -189,6 +196,7 @@ Light theme:
 - Outline: `#72716b`
 
 Dark theme:
+
 - Background: `#100e0a`
 - Surface: `#1b1915`
 - Primary: `#e08549`

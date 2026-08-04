@@ -32,16 +32,23 @@ process.stderr.write(result.stderr ?? "");
 
 if (coverage) {
   await mkdir("coverage", { recursive: true });
-  const totalMatch = result.stdout?.match(/# all files\s+\|\s+([0-9.]+)\s+\|\s+([0-9.]+)\s+\|\s+([0-9.]+)/);
+  const totalMatch = result.stdout?.match(
+    /# all files\s+\|\s+([0-9.]+)\s+\|\s+([0-9.]+)\s+\|\s+([0-9.]+)/
+  );
   const metrics = totalMatch
-    ? { lines: Number(totalMatch[1]), branches: Number(totalMatch[2]), functions: Number(totalMatch[3]) }
+    ? {
+        lines: Number(totalMatch[1]),
+        branches: Number(totalMatch[2]),
+        functions: Number(totalMatch[3])
+      }
     : null;
   await writeFile(
     "coverage/coverage-summary.json",
     `${JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        scope: "Core TypeScript modules; browser bootstrap src/main.ts is excluded and smoke-tested separately.",
+        scope:
+          "Core TypeScript modules; browser bootstrap src/main.ts is excluded and smoke-tested separately.",
         command: `node ${args.join(" ")}`,
         exitCode: result.status,
         metrics,

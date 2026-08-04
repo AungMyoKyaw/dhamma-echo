@@ -33,7 +33,9 @@ test("library storage validates, deduplicates, and bounds data", () => {
   saveLibrary(storage, {
     favorites: [3, 3, -1, 2],
     history: Array.from({ length: 120 }, (_, index) => ({ id: index + 1, playedAt: index })),
-    resume: Object.fromEntries(Array.from({ length: 510 }, (_, index) => [String(index + 1), index + 0.5]))
+    resume: Object.fromEntries(
+      Array.from({ length: 510 }, (_, index) => [String(index + 1), index + 0.5])
+    )
   });
   const loaded = loadLibrary(storage);
   assert.deepEqual(loaded.favorites, [3, 2]);
@@ -69,14 +71,20 @@ test("library storage rejects malformed nested values", () => {
     JSON.stringify({
       version: 1,
       favorites: "bad",
-      history: [null, "bad", { id: -1, playedAt: 1 }, { id: 1, playedAt: "bad" }, { id: 2, playedAt: 2 }],
-      resume: { "-1": 3, "1": -1, "2": "bad", "3": 4 }
+      history: [
+        null,
+        "bad",
+        { id: -1, playedAt: 1 },
+        { id: 1, playedAt: "bad" },
+        { id: 2, playedAt: 2 }
+      ],
+      resume: { "-1": 3, 1: -1, 2: "bad", 3: 4 }
     })
   );
   assert.deepEqual(loadLibrary(storage), {
     favorites: [],
     history: [{ id: 2, playedAt: 2 }],
-    resume: { "3": 4 }
+    resume: { 3: 4 }
   });
   storage.setItem("dhamma-echo:library", JSON.stringify({ version: 1, resume: null }));
   assert.deepEqual(loadLibrary(storage), createDefaultLibrary());
@@ -91,12 +99,12 @@ test("library save removes invalid history and resume entries", () => {
       { id: -1, playedAt: 1 },
       { id: 2, playedAt: 4 }
     ],
-    resume: { "1": Number.NaN, "-2": 3, "3": -1, "4": 4 }
+    resume: { 1: Number.NaN, "-2": 3, 3: -1, 4: 4 }
   });
   assert.deepEqual(loadLibrary(storage), {
     favorites: [1],
     history: [{ id: 2, playedAt: 4 }],
-    resume: { "4": 4 }
+    resume: { 4: 4 }
   });
 });
 

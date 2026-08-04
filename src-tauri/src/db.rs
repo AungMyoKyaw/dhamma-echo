@@ -1,6 +1,6 @@
 use std::{path::Path, sync::Mutex, time::Duration};
 
-use rusqlite::{params, params_from_iter, types::Value, Connection, OpenFlags, Row};
+use rusqlite::{Connection, OpenFlags, Row, params, params_from_iter, types::Value};
 
 use crate::{
     error::AppError,
@@ -167,13 +167,14 @@ impl Database {
         })
     }
 
-    pub fn search_audio(
-        &self,
-        request: &AudioSearchRequest,
-    ) -> Result<AudioSearchPage, AppError> {
+    pub fn search_audio(&self, request: &AudioSearchRequest) -> Result<AudioSearchPage, AppError> {
         let limit = validate_limit(request.limit)?;
         let offset = request.offset.max(0);
-        validate_filter("language", request.language.as_deref(), &["myanmar", "english"])?;
+        validate_filter(
+            "language",
+            request.language.as_deref(),
+            &["myanmar", "english"],
+        )?;
         validate_filter("format", request.format.as_deref(), &["mp3", "wma"])?;
         if let Some(teacher_id) = request.teacher_id {
             validate_id(teacher_id)?;
@@ -184,9 +185,7 @@ impl Database {
         let query = normalize_text(&request.query).to_lowercase();
         if !query.is_empty() {
             let pattern = format!("%{query}%");
-            clauses.push(
-                "(LOWER(m.title) LIKE ? OR LOWER(COALESCE(t.name, '')) LIKE ?)".into(),
-            );
+            clauses.push("(LOWER(m.title) LIKE ? OR LOWER(COALESCE(t.name, '')) LIKE ?)".into());
             values.push(Value::Text(pattern.clone()));
             values.push(Value::Text(pattern));
         }
@@ -245,7 +244,9 @@ fn validate_id(id: i64) -> Result<(), AppError> {
     if id > 0 {
         Ok(())
     } else {
-        Err(AppError::InvalidInput("id must be a positive integer".into()))
+        Err(AppError::InvalidInput(
+            "id must be a positive integer".into(),
+        ))
     }
 }
 
@@ -263,14 +264,14 @@ fn validate_filter(name: &str, value: Option<&str>, allowed: &[&str]) -> Result<
     if value.is_none_or(|candidate| allowed.contains(&candidate)) {
         Ok(())
     } else {
-        Err(AppError::InvalidInput(format!(
-            "unsupported {name} filter"
-        )))
+        Err(AppError::InvalidInput(format!("unsupported {name} filter")))
     }
 }
 
 fn optional_normalized(value: Option<String>) -> Option<String> {
-    value.map(|text| normalize_text(&text)).filter(|text| !text.is_empty())
+    value
+        .map(|text| normalize_text(&text))
+        .filter(|text| !text.is_empty())
 }
 
 fn map_teacher_summary(row: &Row<'_>) -> rusqlite::Result<TeacherSummary> {
@@ -365,8 +366,14 @@ mod tests {
     #[test]
     fn validates_filters_limits_and_ids() {
         let database = fixture();
-        assert!(matches!(database.featured_teachers(0), Err(AppError::InvalidInput(_))));
-        assert!(matches!(database.teacher(0), Err(AppError::InvalidInput(_))));
+        assert!(matches!(
+            database.featured_teachers(0),
+            Err(AppError::InvalidInput(_))
+        ));
+        assert!(matches!(
+            database.teacher(0),
+            Err(AppError::InvalidInput(_))
+        ));
         assert!(matches!(database.audio_track(999), Err(AppError::NotFound)));
         assert!(matches!(
             database.search_audio(&AudioSearchRequest {

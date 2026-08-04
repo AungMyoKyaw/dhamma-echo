@@ -21,7 +21,10 @@ test("catalogue requests expose loading, success, and error states", () => {
   let state = createInitialState();
   state = reduce(state, { type: "search-started" });
   assert.equal(state.catalogue.status, "loading");
-  state = reduce(state, { type: "search-loaded", page: { items: tracks, total: 2, limit: 50, offset: 0 } });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: tracks, total: 2, limit: 50, offset: 0 }
+  });
   assert.equal(state.catalogue.status, "ready");
   assert.equal(state.catalogue.page.items.length, 2);
   state = reduce(state, { type: "search-failed", message: "offline" });
@@ -38,10 +41,17 @@ test("favorites, history, and queue remain unique and bounded", () => {
   state = reduce(state, { type: "enqueue", track: tracks[0] });
   state = reduce(state, { type: "enqueue", track: tracks[0] });
   state = reduce(state, { type: "enqueue", track: tracks[1] });
-  assert.deepEqual(state.player.queue.map((track) => track.id), [1, 2]);
+  assert.deepEqual(
+    state.player.queue.map((track) => track.id),
+    [1, 2]
+  );
   state = reduce(state, { type: "remove-queue", id: 1 });
-  assert.deepEqual(state.player.queue.map((track) => track.id), [2]);
-  for (let id = 1; id <= 105; id += 1) state = reduce(state, { type: "record-history", id, playedAt: id });
+  assert.deepEqual(
+    state.player.queue.map((track) => track.id),
+    [2]
+  );
+  for (let id = 1; id <= 105; id += 1)
+    state = reduce(state, { type: "record-history", id, playedAt: id });
   assert.equal(state.library.history.length, 100);
   assert.equal(state.library.history[0].id, 105);
 });
@@ -70,7 +80,7 @@ test("player actions select tracks, advance queue, and update progress", () => {
 
 test("all load, failure, persistence, queue, and settings actions are deterministic", () => {
   let state = createInitialState();
-  const library = { favorites: [1], history: [{ id: 1, playedAt: 10 }], resume: { "1": 3 } };
+  const library = { favorites: [1], history: [{ id: 1, playedAt: 10 }], resume: { 1: 3 } };
   const settings = { theme: "dark", playbackRate: 1.5, volume: 0.6 };
   state = reduce(state, { type: "hydrate", library, settings });
   assert.equal(state.settings.theme, "dark");

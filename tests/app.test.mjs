@@ -5,8 +5,12 @@ import { tracks, teachers } from "./test-data.mjs";
 
 class MemoryStorage {
   values = new Map();
-  getItem(key) { return this.values.get(key) ?? null; }
-  setItem(key, value) { this.values.set(key, value); }
+  getItem(key) {
+    return this.values.get(key) ?? null;
+  }
+  setItem(key, value) {
+    this.values.set(key, value);
+  }
 }
 
 class FakeAudio {
@@ -17,20 +21,43 @@ class FakeAudio {
   volume = 1;
   playbackRate = 1;
   paused = true;
-  addEventListener(type, listener) { this.listeners.set(type, [...(this.listeners.get(type) ?? []), listener]); }
-  removeEventListener(type, listener) { this.listeners.set(type, (this.listeners.get(type) ?? []).filter((item) => item !== listener)); }
-  async play() { this.paused = false; this.emit("play"); }
-  pause() { this.paused = true; this.emit("pause"); }
+  addEventListener(type, listener) {
+    this.listeners.set(type, [...(this.listeners.get(type) ?? []), listener]);
+  }
+  removeEventListener(type, listener) {
+    this.listeners.set(
+      type,
+      (this.listeners.get(type) ?? []).filter((item) => item !== listener)
+    );
+  }
+  async play() {
+    this.paused = false;
+    this.emit("play");
+  }
+  pause() {
+    this.paused = true;
+    this.emit("pause");
+  }
   load() {}
-  emit(type) { for (const listener of this.listeners.get(type) ?? []) listener(); }
+  emit(type) {
+    for (const listener of this.listeners.get(type) ?? []) listener();
+  }
 }
 
 function createApi(overrides = {}) {
   return {
-    async getSummary() { return { totalAudio: 21402, totalTeachers: 212, myanmarAudio: 21074, englishAudio: 328 }; },
-    async listFeaturedTeachers() { return teachers; },
-    async searchTeachers() { return teachers; },
-    async searchAudio(request) { return { items: tracks, total: tracks.length, limit: request.limit, offset: request.offset }; },
+    async getSummary() {
+      return { totalAudio: 21402, totalTeachers: 212, myanmarAudio: 21074, englishAudio: 328 };
+    },
+    async listFeaturedTeachers() {
+      return teachers;
+    },
+    async searchTeachers() {
+      return teachers;
+    },
+    async searchAudio(request) {
+      return { items: tracks, total: tracks.length, limit: request.limit, offset: request.offset };
+    },
     ...overrides
   };
 }
@@ -66,7 +93,14 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
 test("DhammaApp controls playback, queue advancement, and resume progress", async () => {
   const storage = new MemoryStorage();
   const audio = new FakeAudio();
-  const app = new DhammaApp({ api: createApi(), storage, audio, render() {}, applyTheme() {}, now: () => 999 });
+  const app = new DhammaApp({
+    api: createApi(),
+    storage,
+    audio,
+    render() {},
+    applyTheme() {},
+    now: () => 999
+  });
   await app.start();
   await app.playTrack(tracks[0]);
   assert.equal(app.state.player.current.id, 1);
@@ -94,9 +128,15 @@ test("DhammaApp exposes stable load failures and missing tracks", async () => {
   const failure = new Error("offline");
   const app = new DhammaApp({
     api: createApi({
-      async getSummary() { throw failure; },
-      async listFeaturedTeachers() { throw failure; },
-      async searchAudio() { throw failure; }
+      async getSummary() {
+        throw failure;
+      },
+      async listFeaturedTeachers() {
+        throw failure;
+      },
+      async searchAudio() {
+        throw failure;
+      }
     }),
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
@@ -150,7 +190,11 @@ test("DhammaApp covers filter requests, track lookup paths, and player errors", 
 test("DhammaApp handles non-Error failures and progress without a current track", async () => {
   const audio = new FakeAudio();
   const app = new DhammaApp({
-    api: createApi({ async getSummary() { throw "bad"; } }),
+    api: createApi({
+      async getSummary() {
+        throw "bad";
+      }
+    }),
     storage: new MemoryStorage(),
     audio,
     render() {},

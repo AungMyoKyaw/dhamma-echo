@@ -29,8 +29,7 @@ for (const [passed, label] of checks) {
   if (!passed) throw new Error(`Web smoke check failed: ${label}`);
 }
 
-const totalBytes = (await Promise.all(required.map(async (path) => (await stat(path)).size))).reduce(
-  (sum, size) => sum + size,
-  0
-);
+const totalBytes = (
+  await Promise.all(required.map(async (path) => (await stat(path)).size))
+).reduce((sum, size) => sum + size, 0);
 console.log(`web smoke: ${checks.length} checks passed; required assets ${totalBytes} bytes`);

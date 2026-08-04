@@ -78,23 +78,23 @@ Then open `http://127.0.0.1:1420`.
 
 ## Commands
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev:web` | Build and serve the browser preview |
-| `npm run tauri:dev` | Run the Tauri desktop application |
-| `npm run format` | Format web and Rust sources |
-| `npm run format:check` | Verify formatting |
-| `npm run lint` | Run strict ESLint with zero warnings |
-| `npm run lint:offline` | Run dependency-free whitespace checks |
-| `npm run typecheck` | Run strict TypeScript checking |
-| `npm test` | Run 36 core TypeScript tests |
+| Command                 | Purpose                                                               |
+| ----------------------- | --------------------------------------------------------------------- |
+| `npm run dev:web`       | Build and serve the browser preview                                   |
+| `npm run tauri:dev`     | Run the Tauri desktop application                                     |
+| `npm run format`        | Format web and Rust sources                                           |
+| `npm run format:check`  | Verify formatting                                                     |
+| `npm run lint`          | Run strict ESLint with zero warnings                                  |
+| `npm run lint:offline`  | Run dependency-free whitespace checks                                 |
+| `npm run typecheck`     | Run strict TypeScript checking                                        |
+| `npm test`              | Run 36 core TypeScript tests                                          |
 | `npm run test:coverage` | Enforce 100% line/branch/function coverage on core TypeScript modules |
-| `npm run build:web` | Produce the web assets in `dist/` |
-| `npm run smoke:web` | Validate required production web assets |
-| `npm run verify:web` | Run all locally available web quality gates |
-| `npm run verify` | Run full frontend and Rust quality gates |
-| `npm run tauri:build` | Build native installers for the current platform |
-| `npm run clean` | Remove generated web and coverage output |
+| `npm run build:web`     | Produce the web assets in `dist/`                                     |
+| `npm run smoke:web`     | Validate required production web assets                               |
+| `npm run verify:web`    | Run all locally available web quality gates                           |
+| `npm run verify`        | Run full frontend and Rust quality gates                              |
+| `npm run tauri:build`   | Build native installers for the current platform                      |
+| `npm run clean`         | Remove generated web and coverage output                              |
 
 ## Testing and coverage
 

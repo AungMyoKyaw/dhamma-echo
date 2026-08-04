@@ -24,6 +24,7 @@
 ### Task 1: Inspect source data and lock product scope
 
 **Files:**
+
 - Create: `docs/superpowers/specs/2026-08-04-dhamma-echo-design.md`
 - Create: `docs/ralph-loop.md`
 
@@ -39,11 +40,13 @@
 ### Task 2: Build the test harness and pure application core
 
 **Files:**
+
 - Create: `src/types.ts`, `src/utils.ts`, `src/persistence.ts`, `src/store.ts`, `src/api.ts`, `src/player.ts`, `src/app.ts`, `src/mock-data.ts`
 - Create: `tests/*.test.mjs`, `tests/test-data.mjs`
 - Create: `scripts/test.mjs`
 
 **Interfaces:**
+
 - Produces: `CatalogueApi`, `DhammaApp`, `AudioEngine`, deterministic reducer actions, validated storage functions, and secure URL utilities.
 
 - [x] Write failing behavior tests before each core module.
@@ -56,11 +59,13 @@
 ### Task 3: Build the accessible Tailwind interface
 
 **Files:**
+
 - Create: `src/view.ts`, `src/main.ts`, `src/index.css`, `index.html`
 - Create: `public/logo.svg`, `public/empty-library.svg`
 - Create: `scripts/build.mjs`, `scripts/dev-server.mjs`, `scripts/smoke.mjs`
 
 **Interfaces:**
+
 - Consumes: `DhammaApp`, state types, API client, and mock invoke adapter.
 - Produces: Home, Explore, Teachers, Library, Settings, queue, and persistent player UI.
 
@@ -75,11 +80,13 @@
 ### Task 4: Implement the read-only Tauri database boundary
 
 **Files:**
+
 - Create: `src-tauri/Cargo.toml`, `src-tauri/build.rs`, `src-tauri/src/*.rs`
 - Create: `src-tauri/tauri.conf.json`, `src-tauri/capabilities/default.json`
 - Copy: `src-tauri/resources/dhamma.db`
 
 **Interfaces:**
+
 - Produces commands: `get_catalogue_summary`, `list_featured_teachers`, `search_teachers`, `get_teacher`, `search_audio`, `get_audio_track`.
 
 - [x] Open SQLite with read-only flags, query-only pragma, and bounded busy timeout.
@@ -93,6 +100,7 @@
 ### Task 5: Add original platform assets and packaging configuration
 
 **Files:**
+
 - Create: `src-tauri/icons/*`
 - Modify: `src-tauri/tauri.conf.json`
 
@@ -105,6 +113,7 @@
 ### Task 6: Make the repository public-ready
 
 **Files:**
+
 - Create: `README.md`, `LICENSE`, `DATA_LICENSE.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`, `.env.example`
 - Create: `docs/architecture/*.md`, `docs/images/dhamma-echo-home.png`
 - Create: `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/workflows/codeql.yml`
@@ -118,6 +127,7 @@
 ### Task 7: Final Ralph Loop proof and delivery
 
 **Files:**
+
 - Create: `docs/verification/2026-08-04-results.md`
 - Generate outside repository: `dhamma-echo.bundle`, source archive, coverage summary, UI preview.
 

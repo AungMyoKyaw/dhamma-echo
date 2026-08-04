@@ -11,7 +11,14 @@ test("mock invoke supports summary, teachers, and filtered paginated audio", asy
   const searchedTeachers = await invoke("search_teachers", { query: "jotika", limit: 10 });
   assert.equal(searchedTeachers.length, 1);
   const page = await invoke("search_audio", {
-    request: { query: "praise", language: "english", format: "mp3", teacherId: 3, limit: 1, offset: 0 }
+    request: {
+      query: "praise",
+      language: "english",
+      format: "mp3",
+      teacherId: 3,
+      limit: 1,
+      offset: 0
+    }
   });
   assert.equal(page.items.length, 1);
   assert.equal(page.total, 1);
@@ -31,11 +38,25 @@ test("mock invoke applies defaults and every optional filter branch", async () =
   const all = await invoke("search_audio");
   assert.equal(all.items.length, 6);
   const byTeacherName = await invoke("search_audio", {
-    request: { query: "jotika", language: null, format: null, teacherId: null, limit: 50, offset: 0 }
+    request: {
+      query: "jotika",
+      language: null,
+      format: null,
+      teacherId: null,
+      limit: 50,
+      offset: 0
+    }
   });
   assert.equal(byTeacherName.items.length, 2);
   const noLanguageMatch = await invoke("search_audio", {
-    request: { query: "", language: "english", format: "wma", teacherId: null, limit: 50, offset: 0 }
+    request: {
+      query: "",
+      language: "english",
+      format: "wma",
+      teacherId: null,
+      limit: 50,
+      offset: 0
+    }
   });
   assert.equal(noLanguageMatch.total, 0);
   const noFormatMatch = await invoke("search_audio", {

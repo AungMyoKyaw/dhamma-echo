@@ -9,9 +9,9 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "npm run tauri:dev",
+    "dev": "bun run tauri:dev",
     "dev:web": "node scripts/dev-server.mjs",
-    "build": "npm run build:web",
+    "build": "bun run build:web",
     "build:web": "node scripts/build.mjs",
     "smoke:web": "node scripts/smoke.mjs",
     "clean": "node scripts/clean.mjs",
@@ -22,8 +22,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node scripts/test.mjs",
     "test:coverage": "node scripts/test.mjs --coverage",
-    "verify:web": "npm run lint:offline && npm run typecheck && npm run test:coverage && npm run build:web && npm run smoke:web",
-    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build:web && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings && cargo test --manifest-path src-tauri/Cargo.toml --all-features",
+    "verify:web": "bun run lint:offline && bun run typecheck && bun run test:coverage && bun run build:web && bun run smoke:web",
+    "verify": "bun run format:check && bun run lint && bun run typecheck && bun run test:coverage && bun run build:web && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings && cargo test --manifest-path src-tauri/Cargo.toml --all-features",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"

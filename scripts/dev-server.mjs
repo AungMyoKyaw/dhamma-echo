@@ -17,7 +17,7 @@ const types = new Map([
 ]);
 createServer(async (request, response) => {
   try {
-    const raw = request.url === "/" ? "/index.html" : request.url ?? "/index.html";
+    const raw = request.url === "/" ? "/index.html" : (request.url ?? "/index.html");
     const safe = normalize(raw).replace(/^(\.\.(\/|\\|$))+/, "");
     let path = join("dist", safe);
     try {
@@ -26,7 +26,9 @@ createServer(async (request, response) => {
       path = "dist/index.html";
     }
     const body = await readFile(path);
-    response.writeHead(200, { "content-type": types.get(extname(path)) ?? "application/octet-stream" });
+    response.writeHead(200, {
+      "content-type": types.get(extname(path)) ?? "application/octet-stream"
+    });
     response.end(body);
   } catch (error) {
     response.writeHead(500, { "content-type": "text/plain" });

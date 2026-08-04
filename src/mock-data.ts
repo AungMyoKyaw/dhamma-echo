@@ -111,7 +111,9 @@ export function createMockInvoke(): InvokeFn {
     if (command === "search_teachers") {
       const query = String(args?.query ?? "").toLocaleLowerCase();
       const limit = readNumber(args?.limit, 100);
-      return teachers.filter((teacher) => teacher.name.toLocaleLowerCase().includes(query)).slice(0, limit) as T;
+      return teachers
+        .filter((teacher) => teacher.name.toLocaleLowerCase().includes(query))
+        .slice(0, limit) as T;
     }
     if (command === "search_audio") {
       const request = (args?.request ?? {}) as Partial<AudioSearchRequest>;

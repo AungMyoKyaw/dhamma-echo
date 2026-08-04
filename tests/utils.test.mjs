@@ -9,7 +9,10 @@ import {
 } from "../.test-build/src/utils.js";
 
 test("normalizeWhitespace collapses scraped whitespace", () => {
-  assert.equal(normalizeWhitespace("  Venerable\n\t Sayadaw   U Jotika "), "Venerable Sayadaw U Jotika");
+  assert.equal(
+    normalizeWhitespace("  Venerable\n\t Sayadaw   U Jotika "),
+    "Venerable Sayadaw U Jotika"
+  );
 });
 
 test("formatDuration formats unknown, minute, and hour durations", () => {
@@ -33,5 +36,8 @@ test("clamp constrains finite and non-finite values", () => {
 });
 
 test("escapeHtml protects rendered catalogue text", () => {
-  assert.equal(escapeHtml(`<script>&"'</script>`), "&lt;script&gt;&amp;&quot;&#039;&lt;/script&gt;");
+  assert.equal(
+    escapeHtml(`<script>&"'</script>`),
+    "&lt;script&gt;&amp;&quot;&#039;&lt;/script&gt;"
+  );
 });

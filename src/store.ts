@@ -95,9 +95,15 @@ export function reduce(state: AppState, action: AppAction): AppState {
     case "teachers-loaded":
       return { ...state, teachers: { status: "ready", data: action.teachers, message: "" } };
     case "teachers-failed":
-      return { ...state, teachers: { ...state.teachers, status: "error", message: action.message } };
+      return {
+        ...state,
+        teachers: { ...state.teachers, status: "error", message: action.message }
+      };
     case "set-query":
-      return { ...state, search: { ...resetOffset(state), query: normalizeWhitespace(action.query) } };
+      return {
+        ...state,
+        search: { ...resetOffset(state), query: normalizeWhitespace(action.query) }
+      };
     case "set-language":
       return { ...state, search: { ...resetOffset(state), language: action.language } };
     case "set-format":
@@ -111,7 +117,10 @@ export function reduce(state: AppState, action: AppAction): AppState {
     case "search-loaded":
       return { ...state, catalogue: { status: "ready", page: action.page, message: "" } };
     case "search-failed":
-      return { ...state, catalogue: { ...state.catalogue, status: "error", message: action.message } };
+      return {
+        ...state,
+        catalogue: { ...state.catalogue, status: "error", message: action.message }
+      };
     case "toggle-favorite": {
       const exists = state.library.favorites.includes(action.id);
       const favorites = exists
@@ -153,7 +162,10 @@ export function reduce(state: AppState, action: AppAction): AppState {
     case "remove-queue":
       return {
         ...state,
-        player: { ...state.player, queue: state.player.queue.filter((track) => track.id !== action.id) }
+        player: {
+          ...state.player,
+          queue: state.player.queue.filter((track) => track.id !== action.id)
+        }
       };
     case "clear-queue":
       return { ...state, player: { ...state.player, queue: [] } };
@@ -192,7 +204,10 @@ export function reduce(state: AppState, action: AppAction): AppState {
     case "set-volume":
       return { ...state, settings: { ...state.settings, volume: clamp(action.volume, 0, 1) } };
     case "set-rate":
-      return { ...state, settings: { ...state.settings, playbackRate: clamp(action.rate, 0.75, 2) } };
+      return {
+        ...state,
+        settings: { ...state.settings, playbackRate: clamp(action.rate, 0.75, 2) }
+      };
     case "set-theme":
       return { ...state, settings: { ...state.settings, theme: action.theme } };
   }

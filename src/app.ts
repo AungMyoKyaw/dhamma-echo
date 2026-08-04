@@ -37,7 +37,12 @@ const libraryActions = new Set<AppAction["type"]>([
   "record-history",
   "save-resume"
 ]);
-const settingsActions = new Set<AppAction["type"]>(["hydrate", "set-volume", "set-rate", "set-theme"]);
+const settingsActions = new Set<AppAction["type"]>([
+  "hydrate",
+  "set-volume",
+  "set-rate",
+  "set-theme"
+]);
 
 export class DhammaApp {
   state = createInitialState();
@@ -61,7 +66,8 @@ export class DhammaApp {
   dispatch(action: AppAction): void {
     this.state = reduce(this.state, action);
     if (libraryActions.has(action.type)) saveLibrary(this.dependencies.storage, this.state.library);
-    if (settingsActions.has(action.type)) saveSettings(this.dependencies.storage, this.state.settings);
+    if (settingsActions.has(action.type))
+      saveSettings(this.dependencies.storage, this.state.settings);
     if (action.type === "set-theme" || action.type === "hydrate") {
       this.dependencies.applyTheme(this.state.settings.theme);
     }
@@ -100,7 +106,10 @@ export class DhammaApp {
       offset: this.state.search.offset
     };
     try {
-      this.dispatch({ type: "search-loaded", page: await this.dependencies.api.searchAudio(request) });
+      this.dispatch({
+        type: "search-loaded",
+        page: await this.dependencies.api.searchAudio(request)
+      });
     } catch (error) {
       this.dispatch({ type: "search-failed", message: messageFrom(error) });
     }
@@ -158,7 +167,11 @@ export class DhammaApp {
         this.dispatch({ type: "player-status", status: event.status });
         break;
       case "progress":
-        this.dispatch({ type: "player-progress", currentTime: event.currentTime, duration: event.duration });
+        this.dispatch({
+          type: "player-progress",
+          currentTime: event.currentTime,
+          duration: event.duration
+        });
         if (this.state.player.current !== null) {
           this.dispatch({
             type: "save-resume",

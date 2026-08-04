@@ -10,7 +10,9 @@ use crate::{
 };
 
 #[tauri::command]
-pub fn get_catalogue_summary(database: State<'_, Database>) -> Result<CatalogueSummary, CommandError> {
+pub fn get_catalogue_summary(
+    database: State<'_, Database>,
+) -> Result<CatalogueSummary, CommandError> {
     database.summary().map_err(CommandError::from)
 }
 
@@ -19,7 +21,9 @@ pub fn list_featured_teachers(
     database: State<'_, Database>,
     limit: i64,
 ) -> Result<Vec<TeacherSummary>, CommandError> {
-    database.featured_teachers(limit).map_err(CommandError::from)
+    database
+        .featured_teachers(limit)
+        .map_err(CommandError::from)
 }
 
 #[tauri::command]
@@ -34,10 +38,7 @@ pub fn search_teachers(
 }
 
 #[tauri::command]
-pub fn get_teacher(
-    database: State<'_, Database>,
-    id: i64,
-) -> Result<TeacherDetail, CommandError> {
+pub fn get_teacher(database: State<'_, Database>, id: i64) -> Result<TeacherDetail, CommandError> {
     database.teacher(id).map_err(CommandError::from)
 }
 
@@ -50,9 +51,6 @@ pub fn search_audio(
 }
 
 #[tauri::command]
-pub fn get_audio_track(
-    database: State<'_, Database>,
-    id: i64,
-) -> Result<AudioTrack, CommandError> {
+pub fn get_audio_track(database: State<'_, Database>, id: i64) -> Result<AudioTrack, CommandError> {
     database.audio_track(id).map_err(CommandError::from)
 }
