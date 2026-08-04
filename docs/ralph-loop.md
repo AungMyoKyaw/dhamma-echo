@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build and prove a lightweight Tauri 2 + React + Tailwind CSS v4 desktop audio player using the supplied read-only Dhamma SQLite database.
+Build and prove a lightweight Tauri 2 + TypeScript + Tailwind CSS v4 desktop audio player using the supplied read-only Dhamma SQLite database.
 
 ## Current state
 

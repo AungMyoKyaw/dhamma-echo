@@ -117,7 +117,7 @@ Disadvantages:
 
 ### Desktop shell
 
-Tauri 2 hosts a React/Vite frontend. Capabilities allow only the application commands required by the main window. The app does not expose arbitrary filesystem, shell, SQL, or HTTP commands.
+Tauri 2 hosts a vanilla TypeScript frontend. Capabilities allow only the application commands required by the main window. The app does not expose arbitrary filesystem, shell, SQL, or HTTP commands.
 
 ### Data layer
 
@@ -134,7 +134,7 @@ Commands:
 
 ### Frontend
 
-React components are organized by feature. A small application store uses React context and reducers; no third-party state library is required. Browser APIs manage audio playback and local persistence.
+Framework-free TypeScript modules are organized by feature. A small reducer/store and dependency-injected DOM renderer keep the runtime dependency-free. Browser APIs manage audio playback and local persistence.
 
 Modules:
 
@@ -151,11 +151,11 @@ User preferences, favorites, queue, history, and resume positions are stored in 
 
 ## Data flow
 
-1. React requests a typed catalogue operation.
+1. The TypeScript UI requests a typed catalogue operation.
 2. Tauri invokes the matching Rust command.
 3. Rust validates inputs and executes a parameterized read-only query.
 4. Results are normalized and serialized to the webview.
-5. React renders the result and the player streams the selected remote URL.
+5. The DOM renderer displays the result and the player streams the selected remote URL.
 6. Playback state is periodically persisted locally.
 
 ## Security and reliability
