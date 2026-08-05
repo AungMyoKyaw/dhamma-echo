@@ -40,6 +40,9 @@
       "icons/icon.ico"
     ],
     "category": "Music",
+    "macOS": {
+      "signingIdentity": "-"
+    },
     "shortDescription": "A quiet desktop library for Dhamma talks",
     "longDescription": "Browse and listen to a read-only catalogue of Dhamma audio talks with local favorites, history, queue, and resume positions."
   }
