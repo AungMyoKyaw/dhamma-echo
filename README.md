@@ -79,25 +79,25 @@ Then open `http://127.0.0.1:1420`.
 
 ## Commands
 
-| Command                 | Purpose                                                               |
-| ----------------------- | --------------------------------------------------------------------- |
-| `bun run dev:web`       | Build and serve the browser preview                                   |
-| `bun run tauri:dev`     | Run the Tauri desktop application                                     |
-| `bun run format`        | Format web and Rust sources                                           |
-| `bun run format:check`  | Verify formatting                                                     |
-| `bun run lint`          | Run strict ESLint with zero warnings                                  |
-| `bun run lint:offline`  | Run dependency-free whitespace checks                                 |
-| `bun run typecheck`     | Run strict TypeScript checking                                        |
-| `bun run test`          | Run 50 core TypeScript tests                                          |
-| `bun run test:coverage` | Enforce 100% line/branch/function coverage on core TypeScript modules |
-| `bun run build:web`     | Produce the web assets in `dist/`                                     |
-| `bun run smoke:web`     | Validate required production web assets                               |
+| Command                  | Purpose                                                               |
+| ------------------------ | --------------------------------------------------------------------- |
+| `bun run dev:web`        | Build and serve the browser preview                                   |
+| `bun run tauri:dev`      | Run the Tauri desktop application                                     |
+| `bun run format`         | Format web and Rust sources                                           |
+| `bun run format:check`   | Verify formatting                                                     |
+| `bun run lint`           | Run strict ESLint with zero warnings                                  |
+| `bun run lint:offline`   | Run dependency-free whitespace checks                                 |
+| `bun run typecheck`      | Run strict TypeScript checking                                        |
+| `bun run test`           | Run 50 core TypeScript tests                                          |
+| `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
+| `bun run build:web`      | Produce the web assets in `dist/`                                     |
+| `bun run smoke:web`      | Validate required production web assets                               |
 | `bun run icons:generate` | Regenerate desktop icon variants from the 1024px master               |
 | `bun run icons:check`    | Validate icon dimensions, margins, headers, and Tauri references      |
-| `bun run verify:web`    | Run all locally available web quality gates                           |
-| `bun run verify`        | Run full frontend and Rust quality gates                              |
-| `bun run tauri:build`   | Build native installers for the current platform                      |
-| `bun run clean`         | Remove generated web and coverage output                              |
+| `bun run verify:web`     | Run all locally available web quality gates                           |
+| `bun run verify`         | Run full frontend and Rust quality gates                              |
+| `bun run tauri:build`    | Build native installers for the current platform                      |
+| `bun run clean`          | Remove generated web and coverage output                              |
 
 ## Testing and coverage
 

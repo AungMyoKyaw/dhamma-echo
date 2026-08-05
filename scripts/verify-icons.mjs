@@ -42,7 +42,13 @@ function decodeRgbaPng(buffer, path) {
       width = data.readUInt32BE(0);
       height = data.readUInt32BE(4);
       const [bitDepth, colorType, compression, filter, interlace] = data.subarray(8, 13);
-      if (bitDepth !== 8 || colorType !== 6 || compression !== 0 || filter !== 0 || interlace !== 0) {
+      if (
+        bitDepth !== 8 ||
+        colorType !== 6 ||
+        compression !== 0 ||
+        filter !== 0 ||
+        interlace !== 0
+      ) {
         throw new Error(`${path}: expected non-interlaced 8-bit RGBA PNG`);
       }
     }
@@ -62,7 +68,8 @@ function decodeRgbaPng(buffer, path) {
       const value = raw[sourceOffset + 1 + x];
       const left = x >= bytesPerPixel ? pixels[y * rowLength + x - bytesPerPixel] : 0;
       const above = y > 0 ? pixels[(y - 1) * rowLength + x] : 0;
-      const upperLeft = y > 0 && x >= bytesPerPixel ? pixels[(y - 1) * rowLength + x - bytesPerPixel] : 0;
+      const upperLeft =
+        y > 0 && x >= bytesPerPixel ? pixels[(y - 1) * rowLength + x - bytesPerPixel] : 0;
       const decoded =
         filterType === 0
           ? value
@@ -75,7 +82,8 @@ function decodeRgbaPng(buffer, path) {
                 : filterType === 4
                   ? value + paeth(left, above, upperLeft)
                   : Number.NaN;
-      if (!Number.isFinite(decoded)) throw new Error(`${path}: unsupported PNG filter ${filterType}`);
+      if (!Number.isFinite(decoded))
+        throw new Error(`${path}: unsupported PNG filter ${filterType}`);
       pixels[y * rowLength + x] = decoded & 0xff;
     }
   }
@@ -127,7 +135,8 @@ for (const [path, expected] of expectedPngSizes) {
       png.pixels[(png.height - 1) * png.rowLength + 3],
       png.pixels[(png.height - 1) * png.rowLength + (png.width - 1) * 4 + 3]
     ];
-    if (cornerAlpha.some((alpha) => alpha !== 0)) throw new Error(`${path}: corners must be transparent`);
+    if (cornerAlpha.some((alpha) => alpha !== 0))
+      throw new Error(`${path}: corners must be transparent`);
     console.log(`icon geometry: ${png.width}x${png.height}; artwork bounds ${bounds.join(",")}`);
   }
 }
@@ -143,7 +152,8 @@ for (const path of required.slice(1)) {
 const icns = await readFile("src-tauri/icons/icon.icns");
 if (!icns.subarray(0, 4).equals(Buffer.from("icns"))) throw new Error("icon.icns: invalid header");
 const ico = await readFile("src-tauri/icons/icon.ico");
-if (!ico.subarray(0, 4).equals(Buffer.from([0, 0, 1, 0]))) throw new Error("icon.ico: invalid header");
+if (!ico.subarray(0, 4).equals(Buffer.from([0, 0, 1, 0])))
+  throw new Error("icon.ico: invalid header");
 
 const totalBytes = (
   await Promise.all(required.map(async (path) => (await stat(path)).size))

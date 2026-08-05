@@ -22,12 +22,14 @@
 ### Task 1: Lock the UI defects into regression tests
 
 **Files:**
+
 - Modify: `tests/view.test.mjs`
 - Modify: `tests/app.test.mjs`
 - Modify: `scripts/smoke.mjs`
 - Create: `scripts/verify-icons.mjs`
 
 **Interfaces:**
+
 - Produces expected actions `seek-backward` and `seek-forward`.
 - Produces required player classes `.transport-button`, `.transport-button-primary`, `.player-controls`, `.player-volume-control`.
 
@@ -40,10 +42,12 @@
 ### Task 2: Implement transport behavior and event routing
 
 **Files:**
+
 - Modify: `src/app.ts`
 - Modify: `src/main.ts`
 
 **Interfaces:**
+
 - `DhammaApp.seekBy(deltaSeconds: number): void` computes from current player time and delegates to `AudioEngine.seek`.
 - Click actions `seek-backward` and `seek-forward` call `seekBy(-15)` and `seekBy(15)`.
 
@@ -54,11 +58,13 @@
 ### Task 3: Rebuild player and row controls
 
 **Files:**
+
 - Modify: `src/view.ts`
 - Modify: `src/index.css`
 - Modify: `tests/view.test.mjs`
 
 **Interfaces:**
+
 - Player markup exposes metadata, transport, timeline, speed, volume, and queue as distinct groups.
 - Icon renderer supports optical alignment classes without changing icon semantics.
 
@@ -71,6 +77,7 @@
 ### Task 4: Correct and regenerate the app icon
 
 **Files:**
+
 - Create: `scripts/generate-icons.py`
 - Create: `src-tauri/icons/app-icon.png`
 - Modify: `src-tauri/icons/32x32.png`
@@ -81,6 +88,7 @@
 - Modify: `src-tauri/tauri.conf.json`
 
 **Interfaces:**
+
 - One deterministic 1024px master produces all configured icon variants.
 
 - [ ] Generate a padded warm tile and optically centered lotus mark from the existing original SVG geometry.
@@ -92,6 +100,7 @@
 ### Task 5: Visual proof, documentation, and delivery
 
 **Files:**
+
 - Modify: `README.md`
 - Modify: `CHANGELOG.md`
 - Modify: `docs/ralph-loop.md`
@@ -101,6 +110,7 @@
 - Modify: `docs/architecture/modules.md`
 
 **Interfaces:**
+
 - Produces final screenshots, verification evidence, and `dhamma-echo-macos-ui-polished.bundle`.
 
 - [ ] Build static representative states and capture 1280×820 and 860×620 screenshots.

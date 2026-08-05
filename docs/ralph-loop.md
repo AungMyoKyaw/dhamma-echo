@@ -58,7 +58,6 @@ git clone dhamma-echo-macos-ui-polished.bundle /tmp/dhamma-echo-macos-ui-polishe
 
 All locally achievable acceptance gates pass, visual screenshots at regular and compact widths are inspected, generated icon assets verify, documentation is updated, and the final Git bundle verifies and clone-tests. External toolchain blockers are explicitly documented.
 
-
 ## Completed passes
 
 1. Reproduced the oversized icon, unbalanced player, and compact-width filter collapse through source inspection and baseline screenshots.
