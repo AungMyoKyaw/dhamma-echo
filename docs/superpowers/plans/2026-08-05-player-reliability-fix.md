@@ -110,5 +110,5 @@
 - [x] Validate JSON, TOML, Markdown links, SVG safety, and SQLite catalogue counts.
 - [x] Run standard formatter/linter/Rust/package checks when tools exist; record blockers otherwise.
 - [x] Review the diff for secrets, local paths, generated junk, and accidental data changes.
-- [ ] Commit meaningful changes.
-- [ ] Create the bundle with `git bundle create ... --all`, verify inside a repository, clone it, and repeat the available web verification from the clone.
+- [x] Commit meaningful changes.
+- [x] Create the bundle with `git bundle create ... --all`, verify inside a repository, clone it, and repeat the available web verification from the clone.
