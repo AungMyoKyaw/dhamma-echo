@@ -1,33 +1,31 @@
-# Ralph Loop — Player Reliability Repair
+# Ralph Loop — macOS UI and Icon Polish
 
 ## Goal
 
-Make Dhamma Echo playback reliable in the Tauri webview, stop the fixed player from covering the catalogue, and repair adjacent interaction defects without adding a heavy dependency.
+Make Dhamma Echo feel correctly proportioned on macOS by fixing the oversized Dock icon, rebuilding the audio transport controls, and preserving usability at the 860×620 minimum window size.
 
-## Initial state
+## Current state
 
-- Playback trusted only one exact hostname and did not retry the alternate approved host.
-- Legacy same-host HTTP MP3 records were classified as unavailable even though they can be upgraded safely to HTTPS.
-- Resume time was assigned before media metadata was available.
-- Finished talks saved their end position, causing later replay to resume at the end.
-- The Tauri CSP allowed only the bare media hostname.
-- The player relied on a complex arbitrary Tailwind grid class that was absent from the production CSS, so the footer stacked vertically and covered catalogue rows.
-- Main content used a runtime-built padding class, which was also absent from the production CSS.
-- Teacher cards emitted `data-value`, while the event controller read `data-id`.
-- Every `timeupdate` caused a full render and local-storage write.
+- The 1024px icon artwork occupies almost the full canvas and includes a pre-rounded mask, so it appears oversized in the Dock.
+- Player controls use inconsistent visible sizes and glyph weights.
+- The footer has only a tiny next control beside the large play button.
+- The play glyph is optically unbalanced.
+- Compact width hides volume without a speaker affordance and crowds track, speed, and queue controls.
+- Track-row play buttons dominate adjacent actions.
 
 ## Acceptance criteria
 
-- Approved MP3 URLs produce encoded HTTPS candidates for both `www.dhammadownload.com` and `dhammadownload.com`.
-- Approved HTTP records are upgraded to HTTPS; foreign hosts, credentials, custom ports, and WMA records remain blocked.
-- Resume is applied after metadata and bounded by the media duration.
-- A failed candidate retries the alternate approved hostname once, then exposes one stable error and retry action.
-- Finished talks reset their saved position to zero.
-- Generated CSS contains a responsive three-column player grid, explicit player-clearance padding, and accessible error tokens.
-- The footer remains compact at the supported minimum window width and does not cover catalogue content.
-- Teacher selection uses the correct identifier.
+- A verified 1024×1024 master icon has an outer optical margin and generates all configured variants.
+- The Dock artwork is visibly smaller and balanced at 16px, 32px, 128px, and 256px previews.
+- The player exposes back 15 seconds, play/pause, and forward 15 seconds with consistent visual weight.
+- Icon-only controls have labels, titles, focus, hover, active, loading, and disabled states.
+- The footer remains one coherent row with no horizontal overflow at 860×620.
+- Volume remains understandable at compact width.
+- Catalogue row play controls are visually secondary to the track title.
+- Existing playback, queue, favorites, search, and resume behavior remains intact.
 - Core TypeScript coverage remains 100% lines, branches, and functions.
-- The complete Git bundle verifies, clones, and repeats all locally achievable web checks.
+- Production web build and smoke checks pass.
+- The complete Git bundle verifies, clones, and repeats locally achievable checks.
 
 ## Validation commands
 
@@ -37,33 +35,25 @@ tsc --noEmit -p tsconfig.json
 node scripts/test.mjs --coverage
 node scripts/build.mjs
 node scripts/smoke.mjs
+node scripts/verify-icons.mjs
+python3 scripts/generate-icons.py --check
 bun run format:check
 bun run lint
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings
 cargo test --manifest-path src-tauri/Cargo.toml --all-features
 cargo build --manifest-path src-tauri/Cargo.toml --release
-cargo audit --file src-tauri/Cargo.lock
-git bundle create dhamma-echo-player-fixed.bundle --all
-git bundle verify dhamma-echo-player-fixed.bundle
-git clone dhamma-echo-player-fixed.bundle /tmp/dhamma-echo-player-fixed-check
+git bundle create dhamma-echo-macos-ui-polished.bundle --all
+git bundle verify dhamma-echo-macos-ui-polished.bundle
+git clone dhamma-echo-macos-ui-polished.bundle /tmp/dhamma-echo-macos-ui-polished-check
 ```
 
-## Passes completed
+## Known risks
 
-1. **Research and reproduction:** inspected the bundle, traced player state and media URL flow, confirmed the missing CSS/layout behavior, and created failing regression tests.
-2. **Media repair:** added strict URL normalization, HTTPS upgrade, path encoding, metadata-safe resume, approved-host fallback, stable errors, and manual retry.
-3. **State hardening:** throttled progress persistence, ignored no-track controls, persisted pause state, and reset completed talks to the beginning.
-4. **UI repair:** added a static responsive player grid, explicit content clearance, loading/error/retry states, accessible error colors, and the teacher identifier fix.
-5. **Native alignment and proof:** aligned Rust classification and CSP, updated architecture/docs, restored 100% core coverage, built and smoke-tested production assets, and visually inspected a 1440×900 compiled preview.
+- The sandbox does not provide a macOS Dock or native Tauri packaging environment, so Dock scale is validated through the icon canvas, generated `.icns` contents, and multi-size previews rather than a live Dock screenshot.
+- Bun, Rust, Cargo, Prettier, and ESLint may be unavailable; every unavailable gate must be recorded honestly.
+- Remote audio availability is external and unchanged by this UI pass.
 
-## Known external risks
+## Exit conditions
 
-- The remote service can still remove, block, rate-limit, or temporarily fail a media file.
-- WebKit does not reliably support WMA, so WMA remains visible but unavailable.
-- This sandbox has no Bun, Prettier, ESLint, Rust, Cargo, or native Tauri packaging toolchain.
-- Direct remote media probing from the container is blocked by network/DNS restrictions.
-
-## Exit condition
-
-All checks achievable in this sandbox must pass. Unavailable standard frontend, Rust, security-audit, and native packaging checks must be recorded as blockers. The final bundle must verify and clone successfully, and the clean clone must repeat the available web verification.
+All locally achievable acceptance gates pass, visual screenshots at regular and compact widths are inspected, generated icon assets verify, documentation is updated, and the final Git bundle verifies and clone-tests. External toolchain blockers are explicitly documented.
