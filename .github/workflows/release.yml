@@ -46,13 +46,13 @@ jobs:
       - name: Verify web application
         run: bun run verify:web
       - name: Build and upload native bundles
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: v__VERSION__
           releaseName: Dhamma Echo v__VERSION__
           releaseBody: See the attached platform installers and CHANGELOG.md.
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
