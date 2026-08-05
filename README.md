@@ -52,6 +52,21 @@ Linux development additionally needs WebKitGTK 4.1 and the standard Tauri Linux 
 
 ## Install
 
+### Homebrew (macOS)
+
+```bash
+brew tap AungMyoKyaw/homebrew-tap
+brew install --cask AungMyoKyaw/homebrew-tap/dhamma-echo
+```
+
+The app is ad-hoc signed (no Apple Developer certificate), so the cask removes the quarantine attribute on install. If macOS still blocks it, right-click the app and choose **Open** once.
+
+### Prebuilt installers
+
+Download macOS (`.dmg`), Windows (`.msi`, `-setup.exe`), or Linux (`.deb`, `.rpm`, `.AppImage`) installers from [GitHub Releases](https://github.com/AungMyoKyaw/dhamma-echo/releases).
+
+### From source
+
 Clone or extract the repository, then run:
 
 ```bash
