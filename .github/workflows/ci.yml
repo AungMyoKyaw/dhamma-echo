@@ -34,6 +34,8 @@ jobs:
         run: bun run build:web
       - name: Web smoke test
         run: bun run smoke:web
+      - name: Desktop icon checks
+        run: bun run icons:check
       - name: Dependency audit
         run: bun audit --audit-level=high
       - name: Upload web build and coverage

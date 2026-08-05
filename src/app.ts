@@ -173,6 +173,11 @@ export class DhammaApp {
     this.engine.seek(value);
   }
 
+  seekBy(deltaSeconds: number): void {
+    if (this.state.player.current === null) return;
+    this.engine.seek(this.state.player.currentTime + deltaSeconds);
+  }
+
   setVolume(value: number): void {
     this.dispatch({ type: "set-volume", volume: value });
     this.engine.setVolume(this.state.settings.volume);

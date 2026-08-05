@@ -25,10 +25,16 @@ const checks = [
   [css.includes(".bg-app"), "generated Tailwind utilities"],
   [
     css.includes(
-      "grid-template-columns: minmax(220px, 1fr) minmax(340px, 1.5fr) minmax(180px, 1fr);"
+      "grid-template-columns: minmax(180px, 0.9fr) minmax(340px, 1.45fr) minmax(210px, 0.9fr);"
     ),
     "compact three-column player grid"
   ],
+  [css.includes(".search-form"), "responsive search styling"],
+  [css.includes(".transport-button"), "transport control styling"],
+  [css.includes(".transport-button-primary"), "primary transport styling"],
+  [css.includes(".player-controls"), "player control grouping"],
+  [css.includes(".player-volume-control"), "volume control grouping"],
+  [css.includes("@media (max-width: 980px)"), "compact player breakpoint"],
   [css.includes(".pb-40"), "player content clearance"],
   [!html.includes("http://") && !html.includes("https://"), "no remote page assets"]
 ];

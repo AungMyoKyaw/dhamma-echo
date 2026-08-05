@@ -90,6 +90,8 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (action === "clear-queue") app.dispatch({ type: "clear-queue" });
     if (action === "toggle-queue") app.dispatch({ type: "toggle-queue" });
     if (action === "toggle-play") void app.togglePlayback();
+    if (action === "seek-backward") app.seekBy(-15);
+    if (action === "seek-forward") app.seekBy(15);
     if (action === "retry-playback") void app.retryPlayback();
     if (action === "play-next") void app.playNext();
     if (action === "retry-summary") void app.loadSummary();

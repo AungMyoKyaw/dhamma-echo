@@ -9,9 +9,15 @@ const icons: Record<string, string> = {
   library: '<path d="M5 4h14v16H5z"/><path d="M9 4v16M9 8h10"/>',
   settings:
     '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
-  play: '<path d="m9 7 8 5-8 5z" fill="currentColor" stroke="none"/>',
-  pause: '<path d="M8 7h3v10H8zM13 7h3v10h-3z" fill="currentColor" stroke="none"/>',
+  play: '<path d="M8.75 6.5v11l8.5-5.5z" fill="currentColor" stroke="none"/>',
+  pause: '<path d="M8 6.5h3.25v11H8zM12.75 6.5H16v11h-3.25z" fill="currentColor" stroke="none"/>',
+  backward15:
+    '<path d="M8.2 7.1H4.8V3.7"/><path d="M5 7a7.5 7.5 0 1 1-1 7.5"/><text x="12" y="14.3" text-anchor="middle" fill="currentColor" stroke="none" font-size="6.2" font-weight="750">15</text>',
+  forward15:
+    '<path d="M15.8 7.1h3.4V3.7"/><path d="M19 7a7.5 7.5 0 1 0 1 7.5"/><text x="12" y="14.3" text-anchor="middle" fill="currentColor" stroke="none" font-size="6.2" font-weight="750">15</text>',
   next: '<path d="m7 7 7 5-7 5z" fill="currentColor" stroke="none"/><path d="M16 7v10"/>',
+  volume:
+    '<path d="M5 10v4h3l4 3V7l-4 3H5Z"/><path d="M15 9.2a4 4 0 0 1 0 5.6M17.5 6.8a7.3 7.3 0 0 1 0 10.4"/>',
   heart:
     '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>',
   queue:
@@ -104,7 +110,7 @@ function renderHome(state: AppState): string {
 }
 
 function renderFilters(state: AppState): string {
-  return `<form class="grid grid-cols-[1fr_160px_140px_auto] gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="search">
+  return `<form class="search-form grid grid-cols-[1fr_160px_140px_auto] gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="search">
     <label class="relative"><span class="sr-only">Search talks</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.search.query)}" placeholder="Search title or teacher" /></label>
     <label><span class="sr-only">Language</span><select class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="language"><option value="all"${state.search.language === "all" ? " selected" : ""}>All languages</option><option value="myanmar"${state.search.language === "myanmar" ? " selected" : ""}>Myanmar</option><option value="english"${state.search.language === "english" ? " selected" : ""}>English</option></select></label>
     <label><span class="sr-only">Format</span><select class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="format"><option value="all"${state.search.format === "all" ? " selected" : ""}>All formats</option><option value="mp3"${state.search.format === "mp3" ? " selected" : ""}>MP3</option><option value="wma"${state.search.format === "wma" ? " selected" : ""}>WMA</option></select></label>
@@ -115,11 +121,14 @@ function renderFilters(state: AppState): string {
 function renderTrack(track: AudioTrack, state: AppState): string {
   const favorite = state.library.favorites.includes(track.id);
   const current = state.player.current?.id === track.id;
+  const playing = current && state.player.status === "playing";
+  const loading = current && state.player.status === "loading";
   const resume = state.library.resume[String(track.id)] ?? 0;
-  return `<article class="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-4 last:border-0 ${current ? "bg-app-primary/5" : ""}${track.playable ? " cursor-pointer transition hover:bg-app-soft/60" : ""}"${track.playable ? ` data-action="play-track" data-id="${track.id}"` : ""}>
-    <button class="flex size-11 items-center justify-center rounded-full ${track.playable ? "bg-app-primary text-white" : "bg-app-soft text-app-muted"}" data-action="play-track" data-id="${track.id}" aria-label="Play ${escapeHtml(track.title)}" ${track.playable ? "" : "disabled"}><span class="size-5">${icon(current && state.player.status === "playing" ? "pause" : "play")}</span></button>
+  const actionLabel = loading ? "Connecting to" : playing ? "Pause" : "Play";
+  return `<article class="track-row grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-3 last:border-0 ${current ? "is-current bg-app-primary/5" : ""}${track.playable ? " cursor-pointer transition hover:bg-app-soft/60" : ""}"${track.playable ? ` data-action="play-track" data-id="${track.id}"` : ""}>
+    <button class="track-play-button ${track.playable ? "is-playable" : "is-unavailable"}${loading ? " is-loading" : ""}" data-action="play-track" data-id="${track.id}" aria-label="${actionLabel} ${escapeHtml(track.title)}" title="${actionLabel} ${escapeHtml(track.title)}" aria-pressed="${playing}" ${track.playable && !loading ? "" : "disabled"}><span class="track-play-icon ${playing ? "" : "is-play"}">${icon(playing ? "pause" : "play")}</span></button>
     <div class="min-w-0"><div class="flex items-center gap-2"><h3 class="truncate font-bold">${escapeHtml(track.title)}</h3>${track.playable ? "" : `<span class="rounded-full bg-app-soft px-2 py-0.5 text-[10px] font-bold uppercase text-app-muted">${track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Unavailable"}</span>`}</div><p class="mt-1 truncate text-sm text-app-muted">${escapeHtml(track.teacherName || "Unknown teacher")} · ${escapeHtml(track.language)} · ${escapeHtml(track.format.toUpperCase())}${resume > 0 ? ` · Resume at ${formatDuration(resume)}` : ""}</p></div>
-    <div class="flex items-center gap-2"><button class="flex size-9 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app-primary" data-action="toggle-favorite" data-id="${track.id}" aria-label="${favorite ? "Remove from" : "Add to"} favorites"><span class="size-5 ${favorite ? "fill-current text-app-primary" : ""}">${icon("heart")}</span></button><button class="rounded-full border border-app-border px-3 py-2 text-xs font-bold text-app-muted hover:text-app" data-action="enqueue" data-id="${track.id}">Queue</button></div>
+    <div class="flex items-center gap-2"><button class="row-action-button ${favorite ? "is-active" : ""}" data-action="toggle-favorite" data-id="${track.id}" aria-label="${favorite ? "Remove from" : "Add to"} favorites" title="${favorite ? "Remove from favorites" : "Add to favorites"}"><span class="size-5 ${favorite ? "fill-current text-app-primary" : ""}">${icon("heart")}</span></button><button class="row-queue-button" data-action="enqueue" data-id="${track.id}">Queue</button></div>
   </article>`;
 }
 
@@ -248,15 +257,26 @@ function renderPlayer(state: AppState): string {
   const loading = state.player.status === "loading";
   const max = state.player.duration > 0 ? state.player.duration : 1;
   const status = state.player.error
-    ? `<span class="inline-flex min-w-0 items-center gap-2 text-[11px] font-bold text-error" role="alert"><span class="truncate">${escapeHtml(state.player.error)}</span><button class="shrink-0 rounded-full border border-error/30 px-2 py-0.5 hover:bg-error/10" data-action="retry-playback">Retry</button></span>`
+    ? `<span class="player-status player-status-error" role="alert"><span class="truncate">${escapeHtml(state.player.error)}</span><button class="player-retry-button" data-action="retry-playback">Retry</button></span>`
     : loading
-      ? '<span class="inline-flex items-center gap-2 text-[11px] font-bold text-app-primary" role="status"><span class="size-2 animate-pulse rounded-full bg-app-primary"></span>Connecting…</span>'
-      : '<span class="text-[11px] text-app-muted">Space: play/pause · ←/→: seek</span>';
-  return `${renderQueue(state)}<footer class="player-shell fixed bottom-0 left-64 right-0 z-30 border-t border-app-border bg-app-surface/95 px-6 py-3 shadow-player backdrop-blur-xl" aria-label="Audio player">
-    <div class="player-grid grid items-center gap-6">
-      <div class="min-w-0" aria-live="polite"><p class="truncate text-sm font-bold">${escapeHtml(track.title)}</p><p class="truncate text-xs text-app-muted">${escapeHtml(track.teacherName || "Unknown teacher")}</p><div class="mt-1 min-h-4">${status}</div></div>
-      <div><div class="flex items-center justify-center gap-3"><button class="flex size-9 items-center justify-center rounded-full text-app-muted hover:bg-app-soft" data-action="play-next" aria-label="Play next"><span class="size-5">${icon("next")}</span></button><button class="flex size-12 items-center justify-center rounded-full bg-app-primary text-white disabled:cursor-wait disabled:opacity-70" data-action="toggle-play" aria-label="${loading ? "Connecting to audio" : playing ? "Pause" : "Play"}" ${loading ? "disabled" : ""}><span class="size-6">${icon(playing ? "pause" : "play")}</span></button></div><div class="mt-2 flex items-center gap-3 text-[11px] tabular-nums text-app-muted"><span>${formatDuration(state.player.currentTime)}</span><input class="range-accent w-full" type="range" min="0" max="${max}" step="1" value="${Math.min(state.player.currentTime, max)}" data-action="seek" aria-label="Playback position" /><span>${formatDuration(state.player.duration)}</span></div></div>
-      <div class="flex items-center justify-end gap-3"><select class="rounded-xl border border-app-border bg-app-bg px-2 py-2 text-xs font-bold" data-setting="rate" aria-label="Playback speed">${[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => option(String(rate), `${rate}×`, String(state.settings.playbackRate))).join("")}</select><input class="player-volume range-accent w-24" type="range" min="0" max="1" step="0.05" value="${state.settings.volume}" data-setting="volume" aria-label="Volume" /><button class="relative flex size-9 items-center justify-center rounded-full hover:bg-app-soft" data-action="toggle-queue" aria-label="Show queue"><span class="size-5">${icon("queue")}</span>${state.player.queue.length > 0 ? `<span class="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-app-primary text-[10px] font-bold text-white">${state.player.queue.length}</span>` : ""}</button></div>
+      ? '<span class="player-status text-app-primary" role="status"><span class="size-2 animate-pulse rounded-full bg-app-primary"></span>Connecting…</span>'
+      : '<span class="player-status player-status-hint text-app-muted">Space: play/pause · ←/→: seek</span>';
+  return `${renderQueue(state)}<footer class="player-shell fixed bottom-0 left-64 right-0 z-30 border-t border-app-border bg-app-surface/95 px-5 py-3 shadow-player backdrop-blur-xl" aria-label="Audio player">
+    <div class="player-grid">
+      <div class="player-track min-w-0" aria-live="polite"><p class="truncate text-sm font-bold">${escapeHtml(track.title)}</p><p class="truncate text-xs text-app-muted">${escapeHtml(track.teacherName || "Unknown teacher")}</p><div class="mt-1 min-h-4">${status}</div></div>
+      <div class="player-center">
+        <div class="player-controls" aria-label="Playback controls">
+          <button class="transport-button" data-action="seek-backward" aria-label="Jump back 15 seconds" title="Jump back 15 seconds"><span>${icon("backward15")}</span></button>
+          <button class="transport-button transport-button-primary" data-action="toggle-play" aria-label="${loading ? "Connecting to audio" : playing ? "Pause" : "Play"}" title="${loading ? "Connecting to audio" : playing ? "Pause" : "Play"}" aria-pressed="${playing}" ${loading ? "disabled" : ""}><span class="transport-primary-icon ${playing ? "" : "is-play"}">${icon(playing ? "pause" : "play")}</span></button>
+          <button class="transport-button" data-action="seek-forward" aria-label="Jump forward 15 seconds" title="Jump forward 15 seconds"><span>${icon("forward15")}</span></button>
+        </div>
+        <div class="player-timeline"><span>${formatDuration(state.player.currentTime)}</span><input class="range-accent" type="range" min="0" max="${max}" step="1" value="${Math.min(state.player.currentTime, max)}" data-action="seek" aria-label="Playback position" /><span>${formatDuration(state.player.duration)}</span></div>
+      </div>
+      <div class="player-session-controls">
+        <label class="player-rate-control" title="Playback speed"><span class="sr-only">Playback speed</span><select data-setting="rate" aria-label="Playback speed">${[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => option(String(rate), `${rate}×`, String(state.settings.playbackRate))).join("")}</select></label>
+        <label class="player-volume-control" title="Volume"><span class="player-volume-icon">${icon("volume")}</span><input class="player-volume range-accent" type="range" min="0" max="1" step="0.05" value="${state.settings.volume}" data-setting="volume" aria-label="Volume" /></label>
+        <button class="queue-button" data-action="toggle-queue" aria-label="Show queue" title="Show queue" aria-expanded="${state.player.queueOpen}"><span>${icon("queue")}</span>${state.player.queue.length > 0 ? `<span class="queue-count">${state.player.queue.length}</span>` : ""}</button>
+      </div>
     </div>
   </footer>`;
 }

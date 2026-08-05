@@ -125,6 +125,12 @@ test("DhammaApp controls playback, queue advancement, and resume progress", asyn
   await app.togglePlayback();
   assert.equal(audio.paused, true);
   app.seek(40);
+  audio.emit("timeupdate");
+  app.seekBy(15);
+  assert.equal(audio.currentTime, 55);
+  audio.emit("timeupdate");
+  app.seekBy(-15);
+  assert.equal(audio.currentTime, 40);
   app.setVolume(0.3);
   app.setRate(1.25);
   assert.equal(audio.currentTime, 40);
@@ -162,6 +168,7 @@ test("DhammaApp exposes stable load failures and missing tracks", async () => {
   await app.retryPlayback();
   await app.togglePlayback();
   app.seek(10);
+  app.seekBy(15);
   assert.equal(app.state.player.status, "paused");
   app.destroy();
 });
@@ -245,6 +252,25 @@ test("DhammaApp searches teachers by name", async () => {
   await app.searchTeachers("");
   assert.equal(queries.length, 2);
   assert.equal(app.state.teacherQuery, "");
+  app.destroy();
+});
+
+test("DhammaApp clears teacher results when teacher search fails", async () => {
+  const app = new DhammaApp({
+    api: createApi({
+      async searchTeachers() {
+        throw new Error("Teacher search unavailable");
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    applyTheme() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.searchTeachers("jotika");
+  assert.deepEqual(app.state.teacherResults, []);
   app.destroy();
 });
 

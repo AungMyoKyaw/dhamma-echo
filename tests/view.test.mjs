@@ -31,6 +31,7 @@ test("renderApp renders catalogue, errors, empty state, and player safely", () =
   assert.match(html, /&lt;b&gt;unsafe&lt;\/b&gt;/);
   assert.match(html, /Network unavailable/);
   assert.match(html, /data-action="play-track"/);
+  assert.match(html, /class="search-form/);
   state = reduce(state, {
     type: "search-loaded",
     page: { items: [], total: 0, limit: 50, offset: 0 }
@@ -118,6 +119,14 @@ test("renderApp covers player, queue, unavailable tracks, and resume metadata", 
   assert.match(html, /Unknown teacher/);
   assert.match(html, /Up next/);
   assert.match(html, /aria-label="Pause"/);
+  assert.match(html, /data-action="seek-backward"/);
+  assert.match(html, /data-action="seek-forward"/);
+  assert.match(html, /title="Jump back 15 seconds"/);
+  assert.match(html, /title="Jump forward 15 seconds"/);
+  assert.match(html, /class="player-controls/);
+  assert.match(html, /transport-button-primary/);
+  assert.match(html, /player-volume-control/);
+  assert.match(html, /aria-label="Volume"/);
   assert.match(html, /fill-current/);
 
   state = reduce(state, { type: "clear-queue" });
@@ -140,6 +149,8 @@ test("renderApp makes the whole track row playable only when the track is playab
   assert.match(html, /<article[^>]*data-action="play-track" data-id="1"/);
   assert.doesNotMatch(html, /<article[^>]*data-action="play-track" data-id="2"/);
   assert.match(html, /cursor-pointer/);
+  assert.match(html, /track-play-button/);
+  assert.match(html, /title="Play Praise and Blame"/);
 });
 
 test("renderApp shows a clearable teacher chip when the explore list is teacher-scoped", () => {
@@ -200,6 +211,45 @@ test("renderApp keeps the fixed player compact and exposes recovery controls", (
   const html = renderApp(state);
   assert.match(html, /data-action="select-teacher" data-id="3"/);
   assert.match(html, /pb-40/);
-  assert.match(html, /class="player-grid grid items-center gap-6"/);
+  assert.match(html, /class="player-grid/);
+  assert.match(html, /class="player-controls/);
+  assert.match(html, /transport-button-primary/);
   assert.match(html, /data-action="retry-playback"/);
+});
+
+test("renderApp covers loading and paused player control states", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: tracks, total: 2, limit: 50, offset: 0 }
+  });
+  state = reduce(state, { type: "play-track", track: tracks[0] });
+
+  let html = renderApp(state);
+  assert.match(html, /Connecting…/);
+  assert.match(html, /Connecting to Praise and Blame/);
+  assert.match(html, /aria-label="Connecting to audio"/);
+  assert.match(html, /transport-button-primary[^>]*disabled/);
+
+  state = reduce(state, { type: "player-status", status: "paused" });
+  html = renderApp(state);
+  assert.match(html, /aria-label="Play"/);
+  assert.match(html, /Space: play\/pause/);
+  assert.match(html, /track-play-icon is-play/);
+});
+
+test("renderApp resolves teacher chip names from the player and safe fallback", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, { type: "play-track", track: tracks[0] });
+  state = reduce(state, { type: "set-teacher", teacherId: tracks[0].id });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: tracks, total: 2, limit: 50, offset: 0 }
+  });
+  assert.match(renderApp(state), /Teacher: Venerable Sayadaw U Jotika/);
+
+  state = reduce(state, { type: "set-teacher", teacherId: 9999 });
+  assert.match(renderApp(state), /Teacher: selected teacher/);
 });
