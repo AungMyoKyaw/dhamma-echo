@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-05
+
+### Added
+
+- `bun run ci` script consolidating format, lint, web quality gates, and dependency audit; the CI web job runs it as a single step.
+- Ad-hoc signing for macOS release builds and LF line-ending enforcement for Windows checkouts.
+
 ### Fixed
 
 - Rescaled the macOS application icon inside a verified optical safe area and regenerated PNG, ICNS, and ICO variants.
