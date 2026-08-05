@@ -116,6 +116,16 @@ The final local pass also confirms:
 - the Python icon generator compiles;
 - tracked source contains no sandbox-specific absolute path or obvious committed credential pattern.
 
+## Git bundle and clean-clone proof
+
+```bash
+git bundle create /mnt/data/dhamma-echo-macos-ui-polished.bundle --all
+git bundle verify /mnt/data/dhamma-echo-macos-ui-polished.bundle
+git clone /mnt/data/dhamma-echo-macos-ui-polished.bundle /mnt/data/dhamma-echo-macos-ui-polished-check
+```
+
+Result: **PASS** — Git reported a complete history. The clean clone repeated offline lint, strict TypeScript checking, all 50 tests with configured 100% line/branch/function coverage, production web build, 15 smoke checks, and both icon verification commands.
+
 ## Blocked gates
 
 ### Standard formatter and ESLint
