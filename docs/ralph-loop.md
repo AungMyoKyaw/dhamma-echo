@@ -57,3 +57,17 @@ git clone dhamma-echo-macos-ui-polished.bundle /tmp/dhamma-echo-macos-ui-polishe
 ## Exit conditions
 
 All locally achievable acceptance gates pass, visual screenshots at regular and compact widths are inspected, generated icon assets verify, documentation is updated, and the final Git bundle verifies and clone-tests. External toolchain blockers are explicitly documented.
+
+
+## Completed passes
+
+1. Reproduced the oversized icon, unbalanced player, and compact-width filter collapse through source inspection and baseline screenshots.
+2. Added failing regression tests for transport actions, loading/paused states, responsive search structure, and icon geometry.
+3. Implemented and tested the back-15/play-pause/forward-15 player, compact row controls, grouped session controls, and responsive filter layout.
+4. Generated and verified the padded 1024px master plus PNG, ICNS, and ICO variants.
+5. Rebuilt production assets, reached 100% configured core line/branch/function coverage, and visually inspected 1280×820 and 860×620 outputs.
+6. Updated CI, README, changelog, architecture, screenshots, and verification evidence.
+
+## Final exit status
+
+All locally achievable acceptance criteria pass. Prettier, ESLint, Bun, Rust/Cargo, dependency audit, native Tauri packaging, and live macOS Dock inspection remain external toolchain blockers and are not claimed as passed.

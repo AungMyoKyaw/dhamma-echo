@@ -6,20 +6,23 @@ Dhamma Echo is a lightweight Tauri 2 desktop audio player built around the suppl
 
 ![Dhamma Echo home screen](docs/images/dhamma-echo-home.png)
 
-![Dhamma Echo compact player](docs/images/dhamma-echo-player-fixed.png)
+![Dhamma Echo polished player](docs/images/dhamma-echo-player-polished.png)
+
+![Dhamma Echo compact-width player](docs/images/dhamma-echo-player-polished-compact.png)
 
 ## Features
 
 - Browse 21,402 audio talks from 212 teachers.
 - Search by talk title or teacher.
 - Filter by Myanmar/English and MP3/WMA.
-- Play approved MP3 audio through HTTPS with seek, volume, speed, queue, and next-track controls.
+- Play approved MP3 audio through HTTPS with 15-second jump controls, seek, volume, speed, and queue management.
 - Normalize and encode catalogue URLs, then retry across the approved `www` and bare Dhamma Download hosts.
 - Store favorites, history, queue, settings, and resume positions locally.
 - Upgrade approved same-host HTTP MP3 records to HTTPS before playback; WMA records remain searchable but unavailable in the macOS webview.
 - Use the supplied SQLite database as an immutable bundled resource.
 - Run a dependency-free TypeScript web UI inside a small Tauri shell.
 - Render Myanmar text through system fonts; no font files are bundled.
+- Use a regenerated macOS app icon with an optical safe area so it no longer dominates the Dock.
 
 ## Architecture
 
@@ -89,10 +92,12 @@ Then open `http://127.0.0.1:1420`.
 | `bun run lint`          | Run strict ESLint with zero warnings                                  |
 | `bun run lint:offline`  | Run dependency-free whitespace checks                                 |
 | `bun run typecheck`     | Run strict TypeScript checking                                        |
-| `bun run test`          | Run 41 core TypeScript tests                                          |
+| `bun run test`          | Run 50 core TypeScript tests                                          |
 | `bun run test:coverage` | Enforce 100% line/branch/function coverage on core TypeScript modules |
 | `bun run build:web`     | Produce the web assets in `dist/`                                     |
 | `bun run smoke:web`     | Validate required production web assets                               |
+| `bun run icons:generate` | Regenerate desktop icon variants from the 1024px master               |
+| `bun run icons:check`    | Validate icon dimensions, margins, headers, and Tauri references      |
 | `bun run verify:web`    | Run all locally available web quality gates                           |
 | `bun run verify`        | Run full frontend and Rust quality gates                              |
 | `bun run tauri:build`   | Build native installers for the current platform                      |
@@ -100,7 +105,7 @@ Then open `http://127.0.0.1:1420`.
 
 ## Testing and coverage
 
-The core TypeScript modules are covered by 41 behavior-focused tests. The coverage command enforces 100% lines, branches, and functions. Node's built-in coverage reporter does not expose a separate statement metric. `src/main.ts` is a browser/Tauri bootstrap boundary and is explicitly excluded from the core metric; the production build and artifact smoke checks verify that boundary.
+The core TypeScript modules are covered by 50 behavior-focused tests. The coverage command enforces 100% lines, branches, and functions. Node's built-in coverage reporter does not expose a separate statement metric. `src/main.ts` is a browser/Tauri bootstrap boundary and is explicitly excluded from the core metric; the production build and artifact smoke checks verify that boundary.
 
 Rust tests cover normalization, request validation, query filtering, pagination, error paths, secure URL classification, and in-memory SQLite integration. Run them with:
 
@@ -108,7 +113,7 @@ Rust tests cover normalization, request validation, query filtering, pagination,
 cargo test --manifest-path src-tauri/Cargo.toml --all-features
 ```
 
-The most recent local evidence is recorded in [docs/verification/2026-08-05-player-repair.md](docs/verification/2026-08-05-player-repair.md).
+The most recent local evidence is recorded in [docs/verification/2026-08-05-macos-ui-polish.md](docs/verification/2026-08-05-macos-ui-polish.md).
 
 ## Build and package
 
@@ -124,7 +129,7 @@ No environment variables are required for development. The application uses:
 
 - `src-tauri/resources/dhamma.db` as the bundled catalogue.
 - `src-tauri/capabilities/default.json` for the minimum webview capability.
-- `src-tauri/tauri.conf.json` for CSP, window, resources, and packaging.
+- `src-tauri/tauri.conf.json` for CSP, window, resources, packaging, and generated desktop icons.
 - Browser local storage for personal settings and listening state.
 
 ## Security and privacy

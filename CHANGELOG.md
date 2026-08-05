@@ -6,6 +6,10 @@ All notable changes to this project are documented here.
 
 ### Fixed
 
+- Rescaled the macOS application icon inside a verified optical safe area and regenerated PNG, ICNS, and ICO variants.
+- Rebuilt the player transport around balanced back-15, play/pause, and forward-15 controls with optically centered glyphs.
+- Reduced catalogue-row play controls, grouped speed/volume/queue actions, and preserved the complete player at the 860×620 minimum window size.
+- Reflowed search filters at compact widths so the search field remains usable instead of collapsing to an icon-only box.
 - Repaired MP3 playback by normalizing catalogue URLs, upgrading approved HTTP records to HTTPS, encoding paths, and retrying the approved `www` and bare hosts.
 - Applied resume positions after media metadata loads and reset completed talks to the beginning.
 - Added stable loading, failure, and retry states to the player.
@@ -15,6 +19,7 @@ All notable changes to this project are documented here.
 
 ### Added
 
+- Deterministic app-icon generation and dependency-free icon geometry/configuration verification.
 - Initial Dhamma Echo Tauri 2 application.
 - Read-only SQLite catalogue commands for summaries, teachers, and audio search.
 - Search, language/format/teacher filters, pagination, favorites, history, resume positions, queue, playback speed, and theme settings.
