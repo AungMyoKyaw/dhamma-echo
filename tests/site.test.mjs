@@ -36,7 +36,7 @@ test("product page integrates the supplied demo screenshot without duplication",
   const screenshot = await stat(screenshotPath);
 
   assert.match(html, /src="images\/dhamma-echo-demo\.png"/);
-  assert.match(html, /width="3248" height="2122"/);
+  assert.match(html, /width="3248"\s+height="2122"/);
   assert.match(
     html,
     /alt="Dhamma Echo explore view with an active audio player"/,
