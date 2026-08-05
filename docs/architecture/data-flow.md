@@ -17,6 +17,7 @@ sequenceDiagram
     DB-->>IPC: Total rows
     IPC->>DB: Parameterized page query
     DB-->>IPC: Normalized tracks
+    IPC->>IPC: Mark only approved MP3 host records playable
     IPC-->>UI: AudioSearchPage
     UI-->>User: Escaped rows, paging controls, playable state
 ```
@@ -27,19 +28,31 @@ sequenceDiagram
 sequenceDiagram
     actor User
     participant UI as App controller
+    participant Guard as Media URL guard
     participant Audio as HTMLAudioElement
-    participant Remote as dhammadownload.com
+    participant Primary as www.dhammadownload.com
+    participant Fallback as dhammadownload.com
     participant Local as Local storage
 
     User->>UI: Press Play
-    UI->>UI: Verify track is playable HTTPS
     UI->>Local: Record history and load resume position
-    UI->>Audio: Set src, volume, rate, resume time
-    Audio->>Remote: Request selected media stream
-    Remote-->>Audio: Audio bytes or network error
-    Audio-->>UI: play/pause/timeupdate/ended/error events
-    UI->>Local: Persist bounded resume position
-    UI-->>User: Update player, queue, and error state
+    UI->>Guard: Validate format, scheme, host, port, credentials
+    Guard->>Guard: Upgrade HTTP to HTTPS and encode path
+    Guard-->>UI: Primary and fallback HTTPS candidates
+    UI->>Audio: Set primary source, volume, rate, then play
+    Audio->>Primary: Request media stream
+    alt Primary succeeds
+        Primary-->>Audio: Audio bytes and metadata
+    else Primary fails
+        Audio-->>UI: Media error
+        UI->>Audio: Set fallback source and play
+        Audio->>Fallback: Request media stream
+        Fallback-->>Audio: Audio bytes or final error
+    end
+    Audio-->>UI: loadedmetadata/play/pause/timeupdate/ended/error
+    UI->>Audio: Apply bounded resume after metadata
+    UI->>Local: Persist throttled resume position
+    UI-->>User: Update compact player, queue, loading, and retry states
 ```
 
-Duration is unknown in SQLite. The player displays duration only after the audio element receives media metadata.
+The database does not contain duration metadata. Resume is applied only after the audio element exposes media metadata. Completion resets the saved position to zero so replaying a finished talk starts from the beginning.

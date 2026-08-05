@@ -135,10 +135,24 @@ export class DhammaApp {
   }
 
   async togglePlayback(): Promise<void> {
+    if (this.state.player.current === null) return;
     await this.engine.toggle();
   }
 
+  async retryPlayback(): Promise<void> {
+    const track = this.state.player.current;
+    if (track === null) return;
+    this.engine.setVolume(this.state.settings.volume);
+    this.engine.setRate(this.state.settings.playbackRate);
+    const resumeAt = Math.max(
+      this.state.player.currentTime,
+      this.state.library.resume[String(track.id)] ?? 0
+    );
+    await this.engine.setTrack(track, resumeAt);
+  }
+
   seek(value: number): void {
+    if (this.state.player.current === null) return;
     this.engine.seek(value);
   }
 
@@ -160,31 +174,51 @@ export class DhammaApp {
   }
 
   destroy(): void {
+    this.persistCurrentResume(true);
     this.engine.destroy();
+  }
+
+  private persistCurrentResume(force: boolean): void {
+    const track = this.state.player.current;
+    if (track === null) return;
+    const saved = this.state.library.resume[String(track.id)] ?? 0;
+    if (!force && Math.abs(saved - this.state.player.currentTime) < 5) return;
+    this.dispatch({
+      type: "save-resume",
+      id: track.id,
+      currentTime: this.state.player.currentTime
+    });
   }
 
   private handlePlayerEvent(event: PlayerEvent): void {
     switch (event.type) {
       case "status":
         this.dispatch({ type: "player-status", status: event.status });
+        if (event.status === "paused") this.persistCurrentResume(true);
         break;
-      case "progress":
-        this.dispatch({
-          type: "player-progress",
-          currentTime: event.currentTime,
-          duration: event.duration
-        });
-        if (this.state.player.current !== null) {
+      case "progress": {
+        const secondChanged =
+          Math.floor(event.currentTime) !== Math.floor(this.state.player.currentTime);
+        const durationChanged =
+          Math.floor(event.duration) !== Math.floor(this.state.player.duration);
+        if (secondChanged || durationChanged) {
           this.dispatch({
-            type: "save-resume",
-            id: this.state.player.current.id,
-            currentTime: event.currentTime
+            type: "player-progress",
+            currentTime: event.currentTime,
+            duration: event.duration
           });
         }
+        this.persistCurrentResume(false);
         break;
-      case "ended":
+      }
+      case "ended": {
+        const track = this.state.player.current;
+        if (track !== null) {
+          this.dispatch({ type: "save-resume", id: track.id, currentTime: 0 });
+        }
         void this.playNext();
         break;
+      }
       case "error":
         this.dispatch({ type: "set-player-error", message: event.message });
         break;

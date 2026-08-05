@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Repaired MP3 playback by normalizing catalogue URLs, upgrading approved HTTP records to HTTPS, encoding paths, and retrying the approved `www` and bare hosts.
+- Applied resume positions after media metadata loads and reset completed talks to the beginning.
+- Added stable loading, failure, and retry states to the player.
+- Rebuilt the fixed footer as a compact responsive three-column layout with explicit content clearance so it no longer covers catalogue rows.
+- Fixed teacher-card selection identifiers and reduced redundant progress renders and local-storage writes.
+- Aligned Rust playability classification and the Tauri media CSP with both approved Dhamma Download hostnames while keeping WMA unavailable.
+
 ### Added
 
 - Initial Dhamma Echo Tauri 2 application.

@@ -282,14 +282,31 @@ fn map_teacher_summary(row: &Row<'_>) -> rusqlite::Result<TeacherSummary> {
     })
 }
 
+fn is_webview_playable(format: &str, url: &str) -> bool {
+    if !format.eq_ignore_ascii_case("mp3") {
+        return false;
+    }
+    let url = url.trim().to_ascii_lowercase();
+    [
+        "https://www.dhammadownload.com/",
+        "https://dhammadownload.com/",
+        "http://www.dhammadownload.com/",
+        "http://dhammadownload.com/",
+    ]
+    .iter()
+    .any(|prefix| url.starts_with(prefix))
+}
+
 fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
     let url: String = row.get(4)?;
+    let format = normalize_text(&row.get::<_, String>(2)?).to_lowercase();
+    let playable = is_webview_playable(&format, &url);
     Ok(AudioTrack {
         id: row.get(0)?,
         title: normalize_text(&row.get::<_, String>(1)?),
-        format: normalize_text(&row.get::<_, String>(2)?).to_lowercase(),
+        format,
         language: normalize_text(&row.get::<_, String>(3)?).to_lowercase(),
-        playable: url.starts_with("https://dhammadownload.com/"),
+        playable,
         url,
         date_recorded: optional_normalized(row.get(5)?),
         location: optional_normalized(row.get(6)?),
@@ -302,7 +319,7 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
 mod tests {
     use rusqlite::Connection;
 
-    use super::Database;
+    use super::{Database, is_webview_playable};
     use crate::{error::AppError, models::AudioSearchRequest};
 
     fn fixture() -> Database {
@@ -347,7 +364,31 @@ mod tests {
     }
 
     #[test]
-    fn searches_and_marks_http_audio_unplayable() {
+    fn classifies_only_approved_mp3_hosts_as_playable() {
+        assert!(is_webview_playable(
+            "mp3",
+            "http://dhammadownload.com/talk.mp3"
+        ));
+        assert!(is_webview_playable(
+            "MP3",
+            "https://www.dhammadownload.com/talk.mp3"
+        ));
+        assert!(!is_webview_playable(
+            "wma",
+            "https://dhammadownload.com/talk.wma"
+        ));
+        assert!(!is_webview_playable(
+            "mp3",
+            "https://dhammadownload.com.evil.example/talk.mp3"
+        ));
+        assert!(!is_webview_playable(
+            "mp3",
+            "https://dhammadownload.com:8443/talk.mp3"
+        ));
+    }
+
+    #[test]
+    fn searches_and_marks_wma_audio_unplayable() {
         let database = fixture();
         let page = database
             .search_audio(&AudioSearchRequest {

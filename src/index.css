@@ -14,6 +14,7 @@
   --color-app-primary-strong: #6d2f00;
   --color-app-secondary: #485b37;
   --color-app-tertiary: #6e5014;
+  --color-error: #8d3531;
   --shadow-player: 0 -16px 50px rgb(46 46 42 / 0.12);
   --radius-card: 1.25rem;
 }
@@ -36,6 +37,7 @@
   --color-app-primary-strong: #f0a067;
   --color-app-secondary: #8da374;
   --color-app-tertiary: #c2a25a;
+  --color-error: #f2847c;
 }
 
 * {
@@ -86,5 +88,20 @@ button:disabled {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+.player-grid {
+  grid-template-columns: minmax(220px, 1fr) minmax(340px, 1.5fr) minmax(180px, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .player-grid {
+    grid-template-columns: minmax(140px, 0.8fr) minmax(260px, 1.4fr) auto;
+    gap: 1rem;
+  }
+
+  .player-volume {
+    display: none;
   }
 }

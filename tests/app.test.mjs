@@ -110,8 +110,17 @@ test("DhammaApp controls playback, queue advancement, and resume progress", asyn
   audio.duration = 100;
   audio.emit("timeupdate");
   assert.equal(app.state.library.resume["1"], 24);
+  audio.currentTime = 25;
+  audio.emit("timeupdate");
+  assert.equal(app.state.library.resume["1"], 24);
+  audio.currentTime = 25.2;
+  audio.duration = 101;
+  audio.emit("timeupdate");
+  audio.currentTime = 25.3;
+  audio.emit("timeupdate");
   audio.emit("ended");
   await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(app.state.library.resume["1"], 0);
   assert.equal(app.state.player.current.id, 2);
   await app.togglePlayback();
   assert.equal(audio.paused, true);
@@ -150,6 +159,9 @@ test("DhammaApp exposes stable load failures and missing tracks", async () => {
   assert.equal(app.state.catalogue.status, "error");
   assert.equal(app.findTrack(999), null);
   await app.playNext();
+  await app.retryPlayback();
+  await app.togglePlayback();
+  app.seek(10);
   assert.equal(app.state.player.status, "paused");
   app.destroy();
 });
@@ -183,7 +195,17 @@ test("DhammaApp covers filter requests, track lookup paths, and player errors", 
   app.dispatch({ type: "search-loaded", page: { items: [], total: 0, limit: 50, offset: 0 } });
   assert.equal(app.findTrack(2).id, 2);
   audio.emit("error");
-  assert.equal(app.state.player.error, "The remote audio stream is unavailable.");
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(app.state.player.error, "");
+  audio.emit("error");
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(
+    app.state.player.error,
+    "The audio stream is unavailable from Dhamma Download."
+  );
+  await app.retryPlayback();
+  assert.equal(app.state.player.error, "");
+  assert.equal(app.state.player.status, "playing");
   app.destroy();
 });
 
@@ -204,6 +226,7 @@ test("DhammaApp handles non-Error failures and progress without a current track"
   audio.currentTime = 2;
   audio.duration = 5;
   audio.emit("timeupdate");
+  audio.emit("ended");
   await app.start();
   assert.equal(app.state.summary.message, "The catalogue is unavailable.");
   app.destroy();

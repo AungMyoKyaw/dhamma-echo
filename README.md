@@ -6,14 +6,17 @@ Dhamma Echo is a lightweight Tauri 2 desktop audio player built around the suppl
 
 ![Dhamma Echo home screen](docs/images/dhamma-echo-home.png)
 
+![Dhamma Echo compact player](docs/images/dhamma-echo-player-fixed.png)
+
 ## Features
 
 - Browse 21,402 audio talks from 212 teachers.
 - Search by talk title or teacher.
 - Filter by Myanmar/English and MP3/WMA.
-- Play secure HTTPS audio with seek, volume, speed, queue, and next-track controls.
+- Play approved MP3 audio through HTTPS with seek, volume, speed, queue, and next-track controls.
+- Normalize and encode catalogue URLs, then retry across the approved `www` and bare Dhamma Download hosts.
 - Store favorites, history, queue, settings, and resume positions locally.
-- Display legacy HTTP records without weakening the Content Security Policy; those tracks are clearly blocked from playback.
+- Upgrade approved same-host HTTP MP3 records to HTTPS before playback; WMA records remain searchable but unavailable in the macOS webview.
 - Use the supplied SQLite database as an immutable bundled resource.
 - Run a dependency-free TypeScript web UI inside a small Tauri shell.
 - Render Myanmar text through system fonts; no font files are bundled.
@@ -42,7 +45,7 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 ## Requirements
 
 - Node.js 22.13 or newer
-- npm 10 or newer
+- Bun 1.4 or newer
 - Rust 1.85 or newer with Cargo and rustfmt
 - Platform prerequisites required by Tauri 2
 
@@ -54,24 +57,23 @@ Clone or extract the repository, then run:
 
 ```bash
 cd dhamma-echo
-npm install
-cargo generate-lockfile --manifest-path src-tauri/Cargo.toml
+bun install --frozen-lockfile
 ```
 
-The source snapshot intentionally contains no generated lockfiles because the build sandbox could not reach npm or crates.io. Commit the generated `package-lock.json` and `Cargo.lock` before publishing a production release.
+The repository includes `bun.lock` and `src-tauri/Cargo.lock` for deterministic installs.
 
 ## Run
 
 Desktop development:
 
 ```bash
-npm run tauri:dev
+bun run tauri:dev
 ```
 
 Browser preview with deterministic mock catalogue data:
 
 ```bash
-npm run dev:web
+bun run dev:web
 ```
 
 Then open `http://127.0.0.1:1420`.
@@ -80,25 +82,25 @@ Then open `http://127.0.0.1:1420`.
 
 | Command                 | Purpose                                                               |
 | ----------------------- | --------------------------------------------------------------------- |
-| `npm run dev:web`       | Build and serve the browser preview                                   |
-| `npm run tauri:dev`     | Run the Tauri desktop application                                     |
-| `npm run format`        | Format web and Rust sources                                           |
-| `npm run format:check`  | Verify formatting                                                     |
-| `npm run lint`          | Run strict ESLint with zero warnings                                  |
-| `npm run lint:offline`  | Run dependency-free whitespace checks                                 |
-| `npm run typecheck`     | Run strict TypeScript checking                                        |
-| `npm test`              | Run 36 core TypeScript tests                                          |
-| `npm run test:coverage` | Enforce 100% line/branch/function coverage on core TypeScript modules |
-| `npm run build:web`     | Produce the web assets in `dist/`                                     |
-| `npm run smoke:web`     | Validate required production web assets                               |
-| `npm run verify:web`    | Run all locally available web quality gates                           |
-| `npm run verify`        | Run full frontend and Rust quality gates                              |
-| `npm run tauri:build`   | Build native installers for the current platform                      |
-| `npm run clean`         | Remove generated web and coverage output                              |
+| `bun run dev:web`       | Build and serve the browser preview                                   |
+| `bun run tauri:dev`     | Run the Tauri desktop application                                     |
+| `bun run format`        | Format web and Rust sources                                           |
+| `bun run format:check`  | Verify formatting                                                     |
+| `bun run lint`          | Run strict ESLint with zero warnings                                  |
+| `bun run lint:offline`  | Run dependency-free whitespace checks                                 |
+| `bun run typecheck`     | Run strict TypeScript checking                                        |
+| `bun run test`              | Run 41 core TypeScript tests                                          |
+| `bun run test:coverage` | Enforce 100% line/branch/function coverage on core TypeScript modules |
+| `bun run build:web`     | Produce the web assets in `dist/`                                     |
+| `bun run smoke:web`     | Validate required production web assets                               |
+| `bun run verify:web`    | Run all locally available web quality gates                           |
+| `bun run verify`        | Run full frontend and Rust quality gates                              |
+| `bun run tauri:build`   | Build native installers for the current platform                      |
+| `bun run clean`         | Remove generated web and coverage output                              |
 
 ## Testing and coverage
 
-The core TypeScript modules are covered by 36 behavior-focused tests. The coverage command enforces 100% lines, branches, and functions. Node's built-in coverage reporter does not expose a separate statement metric. `src/main.ts` is a browser/Tauri bootstrap boundary and is explicitly excluded from the core metric; the production build and static browser render smoke-test that boundary.
+The core TypeScript modules are covered by 41 behavior-focused tests. The coverage command enforces 100% lines, branches, and functions. Node's built-in coverage reporter does not expose a separate statement metric. `src/main.ts` is a browser/Tauri bootstrap boundary and is explicitly excluded from the core metric; the production build and artifact smoke checks verify that boundary.
 
 Rust tests cover normalization, request validation, query filtering, pagination, error paths, secure URL classification, and in-memory SQLite integration. Run them with:
 
@@ -106,12 +108,12 @@ Rust tests cover normalization, request validation, query filtering, pagination,
 cargo test --manifest-path src-tauri/Cargo.toml --all-features
 ```
 
-The most recent local evidence is recorded in [docs/verification/2026-08-04-results.md](docs/verification/2026-08-04-results.md).
+The most recent local evidence is recorded in [docs/verification/2026-08-05-player-repair.md](docs/verification/2026-08-05-player-repair.md).
 
 ## Build and package
 
 ```bash
-npm run tauri:build
+bun run tauri:build
 ```
 
 Tauri creates platform-native bundles under `src-tauri/target/release/bundle/`. Build and sign each platform on its native CI runner. Signing credentials must be provided only through protected GitHub Actions secrets.
@@ -130,7 +132,8 @@ No environment variables are required for development. The application uses:
 - No accounts, analytics, advertisements, or telemetry.
 - No arbitrary shell, filesystem, SQL, or network command is exposed to the webview.
 - SQLite opens read-only and uses parameterized queries.
-- The CSP permits media only from `https://dhammadownload.com`.
+- The CSP permits media only from `https://dhammadownload.com` and `https://www.dhammadownload.com`.
+- The frontend accepts only approved MP3 URLs, removes credentials/ports/fragments, upgrades HTTP to HTTPS, and encodes paths before playback.
 - Local preferences never leave the device.
 - Report security issues using [SECURITY.md](SECURITY.md).
 
@@ -142,7 +145,7 @@ Source code and original visual assets are licensed under MIT. The bundled `dham
 
 ### A track is visible but will not play
 
-The record may use legacy HTTP. Dhamma Echo keeps the record searchable but blocks insecure playback. It does not silently downgrade the CSP.
+WMA records are kept searchable but are not supported by the macOS webview player. For MP3 records, use the in-player **Retry** action; Dhamma Echo retries both approved HTTPS hostnames, but it cannot recover a file removed or blocked by the remote service.
 
 ### Myanmar text uses an unexpected font
 
@@ -150,20 +153,20 @@ Install or enable a Unicode Myanmar font such as Noto Sans Myanmar, Myanmar Text
 
 ### Native build fails on Linux
 
-Install Tauri's WebKitGTK 4.1 development dependencies and `patchelf`, then rerun `npm run tauri:build`.
+Install Tauri's WebKitGTK 4.1 development dependencies and `patchelf`, then rerun `bun run tauri:build`.
 
 ### Registry installation fails
 
-Confirm npm and Cargo can reach their configured registries. This repository does not vendor third-party packages.
+Confirm Bun and Cargo can reach their configured registries. This repository does not vendor third-party packages.
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and run `npm run verify` before opening a pull request.
+Read [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and run `bun run verify` before opening a pull request.
 
 ## Release process
 
-1. Generate and commit current lockfiles.
-2. Run `npm run verify` on a supported development machine.
+1. Refresh and commit lockfiles when dependencies change.
+2. Run `bun run verify` on a supported development machine.
 3. Test native packages on macOS, Windows, and Linux.
 4. Update [CHANGELOG.md](CHANGELOG.md) and version fields.
 5. Tag `vX.Y.Z`; the release workflow builds platform artifacts.

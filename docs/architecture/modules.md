@@ -8,12 +8,14 @@ flowchart TB
       store[src/store.ts\ndeterministic state]
       view[src/view.ts\nescaped HTML renderer]
       player[src/player.ts\nHTML audio adapter]
+      urls[src/utils.ts\nmedia URL allowlist and normalization]
       persistence[src/persistence.ts\nvalidated local state]
       api[src/api.ts\ntyped IPC client]
       main --> app
       app --> store
       app --> view
       app --> player
+      player --> urls
       app --> persistence
       app --> api
     end
@@ -28,13 +30,15 @@ flowchart TB
 
     api -->|Tauri IPC| commands
     db -->|read-only| sqlite[(Bundled SQLite)]
-    player -->|HTTPS allowlist| remote[Remote audio]
+    player -->|HTTPS allowlist: bare and www hosts| remote[Remote MP3 audio]
 ```
 
 ## Boundaries
 
 - The webview never receives a generic SQL command, filesystem path, or shell interface.
 - Rust validates identifiers, page limits, language, format, and teacher filters.
+- Rust marks only MP3 records on the approved Dhamma Download hostnames as playable.
 - The renderer escapes catalogue strings before inserting them into HTML.
-- The audio adapter independently verifies the HTTPS host before playback.
+- The audio adapter reparses every URL, rejects credentials and custom ports, upgrades approved HTTP records to HTTPS, removes fragments, encodes paths, and exposes only two approved HTTPS candidates.
+- The Tauri CSP permits media from those two HTTPS origins only.
 - Local storage data is treated as untrusted and schema-checked on every load.

@@ -21,7 +21,15 @@ const checks = [
   [html.includes('import { bootstrap } from "./main.js"'), "browser bootstrap"],
   [javascript.includes("bootstrap"), "compiled application entry"],
   [css.includes("--color-app-primary"), "design tokens"],
+  [css.includes("--color-error"), "accessible playback error token"],
   [css.includes(".bg-app"), "generated Tailwind utilities"],
+  [
+    css.includes(
+      "grid-template-columns: minmax(220px, 1fr) minmax(340px, 1.5fr) minmax(180px, 1fr);"
+    ),
+    "compact three-column player grid"
+  ],
+  [css.includes(".pb-40"), "player content clearance"],
   [!html.includes("http://") && !html.includes("https://"), "no remote page assets"]
 ];
 

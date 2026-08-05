@@ -187,7 +187,14 @@ export function reduce(state: AppState, action: AppAction): AppState {
           };
     }
     case "player-status":
-      return { ...state, player: { ...state.player, status: action.status } };
+      return {
+        ...state,
+        player: {
+          ...state.player,
+          status: action.status,
+          error: action.status === "loading" || action.status === "playing" ? "" : state.player.error
+        }
+      };
     case "player-progress":
       return {
         ...state,

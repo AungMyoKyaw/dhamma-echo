@@ -117,7 +117,7 @@ export function createMockInvoke(): InvokeFn {
       const query = readString(args?.query, "").toLocaleLowerCase();
       const limit = readNumber(args?.limit, 100);
       return teachers
-        .filter((teacher) => teacher.name.toLocaleLowerCase().includes(query))
+        .filter((teacher) => teacher.name.toLowerCase().includes(query))
         .slice(0, limit) as T;
     }
     if (command === "search_audio") {
@@ -131,8 +131,8 @@ export function createMockInvoke(): InvokeFn {
       const filtered = tracks.filter(
         (track) =>
           (query.length === 0 ||
-            track.title.toLocaleLowerCase().includes(query) ||
-            track.teacherName.toLocaleLowerCase().includes(query)) &&
+            track.title.toLowerCase().includes(query) ||
+            track.teacherName.toLowerCase().includes(query)) &&
           (language === null || track.language === language) &&
           (format === null || track.format === format) &&
           (teacherId === null || track.teacherId === teacherId)

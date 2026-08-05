@@ -92,11 +92,17 @@ test("renderApp covers player, queue, unavailable tracks, and resume metadata", 
     ...tracks[1],
     url: "http://dhammadownload.com/old.wma",
     playable: false,
+    format: "wma",
     teacherName: ""
   };
   state = reduce(state, {
     type: "search-loaded",
-    page: { items: [tracks[0], unavailable], total: 2, limit: 50, offset: 0 }
+    page: {
+      items: [tracks[0], unavailable, { ...tracks[1], playable: false }],
+      total: 3,
+      limit: 50,
+      offset: 0
+    }
   });
   state = reduce(state, { type: "save-resume", id: 1, currentTime: 65 });
   state = reduce(state, { type: "toggle-favorite", id: 1 });
@@ -106,7 +112,8 @@ test("renderApp covers player, queue, unavailable tracks, and resume metadata", 
   state = reduce(state, { type: "player-status", status: "playing" });
   state = reduce(state, { type: "toggle-queue" });
   let html = renderApp(state);
-  assert.match(html, /Legacy HTTP/);
+  assert.match(html, /WMA unavailable/);
+  assert.match(html, />Unavailable<\/span>/);
   assert.match(html, /Resume at 1:05/);
   assert.match(html, /Unknown teacher/);
   assert.match(html, /Up next/);
@@ -137,4 +144,17 @@ test("renderApp covers empty teacher highlights and every filter selection", () 
   html = renderApp(state);
   assert.match(html, /value="english" selected/);
   assert.match(html, /value="wma" selected/);
+});
+
+
+test("renderApp keeps the fixed player compact and exposes recovery controls", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "teachers-loaded", teachers });
+  state = reduce(state, { type: "play-track", track: tracks[0] });
+  state = reduce(state, { type: "set-player-error", message: "Stream failed" });
+  const html = renderApp(state);
+  assert.match(html, /data-action="select-teacher" data-id="3"/);
+  assert.match(html, /pb-40/);
+  assert.match(html, /class="player-grid grid items-center gap-6"/);
+  assert.match(html, /data-action="retry-playback"/);
 });
