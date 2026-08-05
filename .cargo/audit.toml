@@ -1,0 +1,9 @@
+[advisories]
+# ponytail: ignore advisories with no fixed release in Tauri's transitive deps
+# (quick-xml via plist, time via cookie). Remove these ignores once tauri
+# ships compatible updates; re-run `cargo audit` on each dependency bump.
+ignore = [
+    "RUSTSEC-2026-0194", # quick-xml DoS, fix requires >=0.41.0, blocked by plist
+    "RUSTSEC-2026-0195", # quick-xml memory exhaustion, same blocker
+    "RUSTSEC-2026-0009", # time stack exhaustion, fix requires >=0.3.47, blocked by cookie
+]
