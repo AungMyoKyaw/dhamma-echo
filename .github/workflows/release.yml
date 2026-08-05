@@ -46,7 +46,7 @@ jobs:
       - name: Verify web application
         run: bun run verify:web
       - name: Build and upload native bundles
-        uses: tauri-apps/tauri-action@v1
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
