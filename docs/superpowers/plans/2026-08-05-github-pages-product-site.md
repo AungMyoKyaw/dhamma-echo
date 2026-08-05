@@ -4,7 +4,7 @@
 
 **Goal:** Add a polished, dependency-free Dhamma Echo product website to the repository and deploy the validated `docs/` directory to GitHub Pages.
 
-**Architecture:** Keep the Tauri application and its webview build unchanged. Add a semantic static site under `docs/`, one small ES module for GitHub Pages link derivation, Node built-in regression tests, a dependency-free site smoke checker, and a least-privilege GitHub Pages workflow that uploads `docs/` as the deployment artifact.
+**Architecture:** Keep the Tauri application and its webview build unchanged. Add a semantic static site under `docs/`, one pure ES module plus a tiny browser bootstrap for GitHub Pages link derivation, Node built-in regression tests, a dependency-free site smoke checker, and a least-privilege GitHub Pages workflow that uploads `docs/` as the deployment artifact.
 
 **Tech Stack:** HTML5, modern CSS, browser ES modules, Node.js built-in test runner, GitHub Actions, GitHub Pages.
 
@@ -34,7 +34,7 @@
 - Consumes: future `docs/index.html`, `docs/assets/site.css`, `docs/assets/site.js`.
 - Produces: `site:test` command and failing assertions for page semantics, required copy, screenshot integration, asset safety, GitHub Pages URL derivation, and repository-link upgrades.
 
-- [ ] **Step 1: Write the failing HTML and CSS tests**
+- [x] **Step 1: Write the failing HTML and CSS tests**
 
 Create `tests/site.test.mjs` with Node's `node:test`, `node:assert/strict`, and filesystem reads. Assert:
 
@@ -52,7 +52,7 @@ assert.match(css, /:focus-visible/);
 
 Also assert that the page contains the four approved product themes: discovery, playback, local library, and privacy.
 
-- [ ] **Step 2: Write the failing link-derivation tests**
+- [x] **Step 2: Write the failing link-derivation tests**
 
 Create `tests/site-links.test.mjs` importing `deriveGitHubLinks` and `upgradeGitHubLinks` from `docs/assets/site.js`. Cover:
 
@@ -70,7 +70,7 @@ assert.equal(deriveGitHubLinks("not a url"), null);
 
 Use a small fake document object to prove `upgradeGitHubLinks` changes only matching `data-github-link` anchors and leaves unsupported environments unchanged.
 
-- [ ] **Step 3: Add the site test command**
+- [x] **Step 3: Add the site test command**
 
 Add to `package.json`:
 
@@ -78,7 +78,7 @@ Add to `package.json`:
 "site:test": "node --test tests/site.test.mjs tests/site-links.test.mjs"
 ```
 
-- [ ] **Step 4: Run the tests and confirm the expected failure**
+- [x] **Step 4: Run the tests and confirm the expected failure**
 
 Run:
 
@@ -88,7 +88,7 @@ node --test tests/site.test.mjs tests/site-links.test.mjs
 
 Expected: failure because `docs/index.html`, `docs/assets/site.css`, and `docs/assets/site.js` do not exist.
 
-- [ ] **Step 5: Commit the failing tests**
+- [x] **Step 5: Commit the failing tests**
 
 ```bash
 git add tests/site.test.mjs tests/site-links.test.mjs package.json
@@ -102,6 +102,7 @@ git commit -m "test: define product site acceptance gates"
 - Create: `docs/index.html`
 - Create: `docs/assets/site.css`
 - Create: `docs/assets/site.js`
+- Create: `docs/assets/site-bootstrap.js`
 - Create: `docs/assets/logo.svg`
 - Test: `tests/site.test.mjs`
 - Test: `tests/site-links.test.mjs`
@@ -112,15 +113,15 @@ git commit -m "test: define product site acceptance gates"
 - `upgradeGitHubLinks(documentLike: { querySelectorAll(selector: string): Iterable<AnchorLike> }, locationHref: string): boolean` updates anchors whose `dataset.githubLink` is `repository` or `releases` and returns whether an upgrade occurred.
 - The HTML uses `data-github-link="repository"` and `data-github-link="releases"` hooks with safe `#open-source` fallbacks.
 
-- [ ] **Step 1: Implement the link module minimally**
+- [x] **Step 1: Implement the link module minimally**
 
-Create `docs/assets/site.js` as an ES module. Parse the input with `new URL`, require a hostname ending in `.github.io`, take the owner from the hostname, take the first non-empty path segment as the repository, reject user-site roots without a repository segment, encode both path parts, and return the repository and latest-release URLs. Export both functions and call `upgradeGitHubLinks(document, window.location.href)` only when browser globals exist.
+Create `docs/assets/site.js` as an ES module. Parse the input with `new URL`, require a hostname ending in `.github.io`, take the owner from the hostname, take the first non-empty path segment as the repository, reject user-site roots without a repository segment, encode both path parts, and return the repository and latest-release URLs. Export both functions. Create `docs/assets/site-bootstrap.js` to import `upgradeGitHubLinks` and initialize it with browser globals, keeping the pure module directly testable.
 
-- [ ] **Step 2: Add the branded local logo**
+- [x] **Step 2: Add the branded local logo**
 
 Copy the existing original Dhamma Echo mark from `public/logo.svg` into `docs/assets/logo.svg`. Keep its title, description, viewBox, local gradient, and current brand colors.
 
-- [ ] **Step 3: Implement the semantic HTML**
+- [x] **Step 3: Implement the semantic HTML**
 
 Create `docs/index.html` with:
 
@@ -133,11 +134,11 @@ Create `docs/index.html` with:
 - A technical section naming Tauri 2, Rust, SQLite, strict TypeScript, and the six-command trust boundary.
 - No claims beyond facts already documented by the repository.
 
-- [ ] **Step 4: Implement the responsive CSS**
+- [x] **Step 4: Implement the responsive CSS**
 
 Create `docs/assets/site.css` with root tokens from the approved Design.md scheme, system-font stack, desktop/tablet/mobile layout rules, visible focus states, a 44px action target, screenshot frame, feature grid, technical cards, no horizontal overflow, and reduced-motion overrides. Keep the CSS dependency-free and under 30 KiB.
 
-- [ ] **Step 5: Run focused tests until green**
+- [x] **Step 5: Run focused tests until green**
 
 Run:
 
@@ -147,7 +148,7 @@ node --test tests/site.test.mjs tests/site-links.test.mjs
 
 Expected: all tests pass.
 
-- [ ] **Step 6: Commit the product site**
+- [x] **Step 6: Commit the product site**
 
 ```bash
 git add docs/index.html docs/assets tests/site.test.mjs tests/site-links.test.mjs
@@ -167,11 +168,11 @@ git commit -m "feat: add Dhamma Echo product website"
 - Produces `site:smoke` and `site:verify` commands.
 - The smoke checker reads `docs/index.html`, resolves local `href` and `src` values, rejects missing assets, absolute filesystem paths, remote scripts/styles/fonts, duplicate IDs, unsafe placeholder URLs, and a missing screenshot.
 
-- [ ] **Step 1: Add a failing smoke integration test**
+- [x] **Step 1: Add a failing smoke integration test**
 
 Extend `tests/site.test.mjs` to spawn `node scripts/site-smoke.mjs` and assert exit status `0` plus a summary containing `Product site smoke checks passed`.
 
-- [ ] **Step 2: Run the focused test and confirm failure**
+- [x] **Step 2: Run the focused test and confirm failure**
 
 Run:
 
@@ -181,7 +182,7 @@ node --test tests/site.test.mjs
 
 Expected: failure because `scripts/site-smoke.mjs` does not exist.
 
-- [ ] **Step 3: Implement the smoke checker**
+- [x] **Step 3: Implement the smoke checker**
 
 Create `scripts/site-smoke.mjs` using only Node built-ins. Check:
 
@@ -195,16 +196,17 @@ Create `scripts/site-smoke.mjs` using only Node built-ins. Check:
 
 Print the number of validated assets and total static asset size.
 
-- [ ] **Step 4: Add aggregate commands**
+- [x] **Step 4: Add aggregate commands**
 
 Add to `package.json`:
 
 ```json
 "site:smoke": "node scripts/site-smoke.mjs",
-"site:verify": "npm run site:test && npm run site:smoke"
+"site:coverage": "node --experimental-test-coverage --test-coverage-include='docs/assets/site.js' --test-coverage-include='docs/assets/site-bootstrap.js' --test-coverage-lines=100 --test-coverage-functions=100 --test-coverage-branches=100 --test tests/site-links.test.mjs",
+"site:verify": "npm run site:test && npm run site:coverage && npm run site:smoke"
 ```
 
-- [ ] **Step 5: Run the site verification**
+- [x] **Step 5: Run the site verification**
 
 Run:
 
@@ -214,7 +216,7 @@ npm run site:verify
 
 Expected: tests and smoke validation pass.
 
-- [ ] **Step 6: Commit site verification tooling**
+- [x] **Step 6: Commit site verification tooling**
 
 ```bash
 git add scripts/site-smoke.mjs tests/site.test.mjs package.json
@@ -238,15 +240,15 @@ git commit -m "test: add product site smoke validation"
 - Deployment uses `actions/checkout@v6`, `actions/configure-pages@v5`, `actions/upload-pages-artifact@v4`, and `actions/deploy-pages@v4`.
 - Workflow permissions are `contents: read`, `pages: write`, and `id-token: write`; deployment uses the `github-pages` environment.
 
-- [ ] **Step 1: Add the Pages workflow**
+- [x] **Step 1: Add the Pages workflow**
 
 Create `.github/workflows/pages.yml` triggered by pushes to `master` and manual dispatch. Use one validation/upload job and one dependent deploy job. Configure deployment concurrency as `pages` with `cancel-in-progress: false`. Upload only `docs/`.
 
-- [ ] **Step 2: Document the product-site architecture**
+- [x] **Step 2: Document the product-site architecture**
 
 Create `docs/architecture/product-site.md` with Mermaid diagrams for the browser asset flow and GitHub Pages deployment flow. Explain the static trust boundary, runtime link derivation, performance budget, and why the desktop app build is separate.
 
-- [ ] **Step 3: Update release and contributor documentation**
+- [x] **Step 3: Update release and contributor documentation**
 
 Update:
 
@@ -255,11 +257,11 @@ Update:
 - `CHANGELOG.md` with the new product site and Pages workflow.
 - `docs/ralph-loop.md` with project-specific site acceptance gates and commands.
 
-- [ ] **Step 4: Validate workflow and documentation references**
+- [x] **Step 4: Validate workflow and documentation references**
 
 Run a Node or Python structural parse for package JSON, parse all workflow YAML conservatively for required action/version strings and permissions, and check every changed Markdown relative link exists.
 
-- [ ] **Step 5: Run site verification again**
+- [x] **Step 5: Run site verification again**
 
 Run:
 
@@ -269,7 +271,7 @@ npm run site:verify
 
 Expected: pass.
 
-- [ ] **Step 6: Commit deployment and documentation**
+- [x] **Step 6: Commit deployment and documentation**
 
 ```bash
 git add .github/workflows/pages.yml docs/architecture/product-site.md docs/architecture/release.md README.md CHANGELOG.md docs/ralph-loop.md
@@ -288,7 +290,7 @@ git commit -m "ci: deploy product site to GitHub Pages"
 
 - Produces verified source history, a clean clone, and the complete Git bundle.
 
-- [ ] **Step 1: Run clean site checks**
+- [x] **Step 1: Run clean site checks**
 
 Run:
 
@@ -300,11 +302,11 @@ git diff --check
 
 Record exact output, asset counts, and sizes.
 
-- [ ] **Step 2: Run all available existing project gates**
+- [x] **Step 2: Run all available existing project gates**
 
 Attempt the repository's formatter, lint, typecheck, tests, coverage, web build, smoke, icon, Rust, audit, and package commands. Where Bun, Rust, registry access, or native packaging is unavailable, record the exact blocker and run the dependency-free underlying checks that are available without presenting them as substitutes.
 
-- [ ] **Step 3: Harden the product site**
+- [x] **Step 3: Harden the product site**
 
 Inspect for:
 
@@ -319,11 +321,11 @@ Inspect for:
 
 Fix every confirmed issue and rerun `npm run site:verify`.
 
-- [ ] **Step 4: Write verification evidence**
+- [x] **Step 4: Write verification evidence**
 
 Create `docs/verification/2026-08-05-github-pages-product-site.md` with Ralph Loop passes, actual command results, coverage status, build/toolchain blockers, workflow validation, asset sizes, and known limitations.
 
-- [ ] **Step 5: Mark the implementation plan complete and commit**
+- [x] **Step 5: Mark the implementation plan complete and commit**
 
 Change completed plan checkboxes to `[x]`, then commit:
 

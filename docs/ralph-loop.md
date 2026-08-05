@@ -20,7 +20,7 @@ Create a polished, lightweight Dhamma Echo product website inside the repository
 - The page has semantic landmarks, one `h1`, logical headings, skip navigation, visible focus, 44px primary targets, meaningful image text, and reduced-motion handling.
 - No analytics, trackers, external fonts, remote runtime scripts/styles/images, local machine paths, unresolved templates, duplicate IDs, or path traversal exist.
 - GitHub repository and release links are derived only on standard project Pages URLs and fail safely elsewhere.
-- Node site tests and smoke checks pass.
+- Node site tests, 100% site JavaScript coverage, and smoke checks pass.
 - GitHub Pages workflow validates first, uploads only `docs/`, uses least-privilege permissions, and deploys through the `github-pages` environment.
 - Existing desktop source, database, and Tauri build inputs remain unchanged.
 - The final Git bundle verifies, clones, and repeats site verification from the clean clone.
@@ -30,6 +30,7 @@ Create a polished, lightweight Dhamma Echo product website inside the repository
 ```bash
 node --test tests/site.test.mjs tests/site-links.test.mjs
 node scripts/site-smoke.mjs
+npm run site:coverage
 npm run site:verify
 git diff --check
 python3 -m http.server 4173 --directory docs
