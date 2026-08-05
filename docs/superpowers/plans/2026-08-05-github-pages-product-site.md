@@ -334,7 +334,7 @@ git add docs/verification/2026-08-05-github-pages-product-site.md docs/superpowe
 git commit -m "docs: record product site verification"
 ```
 
-- [ ] **Step 6: Create and verify the final Git bundle**
+- [x] **Step 6: Create and verify the final Git bundle**
 
 Run:
 

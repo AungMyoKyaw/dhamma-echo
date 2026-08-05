@@ -214,6 +214,28 @@ No audit pass is claimed. The existing GitHub CI retains the Bun audit gate.
 
 The local sandbox cannot publish the repository or execute its GitHub-hosted deployment environment. Workflow structure and the exact uploaded `docs/` artifact were validated locally; the live URL requires pushing the branch and enabling GitHub Pages with GitHub Actions as its source.
 
-## Exit status before bundle proof
+## Git bundle and clean-clone proof
 
-Every product-site and existing-project gate achievable in this sandbox passes. Remaining blockers require Bun/Prettier/ESLint, Rust/Cargo, native macOS packaging, an npm-compatible lockfile, or GitHub-hosted deployment. Final bundle verification and clean-clone evidence are performed after committing this report.
+A complete-history bundle was created after the verification report commit and tested from a fresh clone:
+
+```bash
+git bundle create /mnt/data/dhamma-echo-product-site.bundle --all
+git bundle verify /mnt/data/dhamma-echo-product-site.bundle
+git clone /mnt/data/dhamma-echo-product-site.bundle /mnt/data/dhamma-echo-product-site-clone
+npm --prefix /mnt/data/dhamma-echo-product-site-clone run site:verify
+git -C /mnt/data/dhamma-echo-product-site-clone status --short
+```
+
+Result: **PASS**.
+
+- Git reported a complete history using SHA-1 object IDs.
+- The bundle contained the feature branch, `master`, tag `v0.1.0`, remote refs, and a bundle `HEAD` on `feat/github-pages-product-site`.
+- The clean clone checked out `feat/github-pages-product-site`.
+- The clone repeated 12/12 site tests, 100% line/branch/function site JavaScript coverage, and the 5-asset smoke check.
+- Clone status was clean.
+
+The final handoff bundle is recreated and reverified after the plan-completion commit so it contains this evidence and the completed checklist.
+
+## Exit status
+
+Every product-site and existing-project gate achievable in this sandbox passes. Remaining blockers require Bun/Prettier/ESLint, Rust/Cargo, native macOS packaging, an npm-compatible lockfile, or GitHub-hosted deployment.
