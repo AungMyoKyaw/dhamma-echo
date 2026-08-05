@@ -82,3 +82,38 @@ test("leaves fallback links unchanged outside GitHub Pages", () => {
   );
   assert.equal(anchor.href, "#open-source");
 });
+
+test("upgrades GitHub links automatically in a browser environment", async () => {
+  const anchors = [
+    { dataset: { githubLink: "repository" }, href: "#open-source" },
+    { dataset: { githubLink: "releases" }, href: "#open-source" },
+  ];
+
+  globalThis.document = {
+    querySelectorAll(selector) {
+      assert.equal(selector, "[data-github-link]");
+      return anchors;
+    },
+  };
+  globalThis.window = {
+    location: {
+      href: "https://aungmyokyaw.github.io/dhamma-echo/",
+    },
+  };
+
+  try {
+    await import("../docs/assets/site-bootstrap.js");
+  } finally {
+    delete globalThis.document;
+    delete globalThis.window;
+  }
+
+  assert.equal(
+    anchors[0].href,
+    "https://github.com/aungmyokyaw/dhamma-echo",
+  );
+  assert.equal(
+    anchors[1].href,
+    "https://github.com/aungmyokyaw/dhamma-echo/releases/latest",
+  );
+});

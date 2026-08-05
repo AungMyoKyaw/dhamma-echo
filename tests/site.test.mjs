@@ -70,7 +70,7 @@ test("product page includes safe GitHub link hooks and local runtime assets", as
   assert.match(html, /data-github-link="repository"/);
   assert.match(html, /data-github-link="releases"/);
   assert.match(html, /href="assets\/site\.css"/);
-  assert.match(html, /src="assets\/site\.js"/);
+  assert.match(html, /src="assets\/site-bootstrap\.js"/);
   assert.doesNotMatch(html, /https?:\/\/[^"']+\.(?:js|css|woff2?)/i);
 });
 

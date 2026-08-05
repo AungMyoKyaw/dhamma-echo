@@ -39,7 +39,3 @@ export function upgradeGitHubLinks(documentLike, locationHref) {
 
   return true;
 }
-
-if (typeof document !== "undefined" && typeof window !== "undefined") {
-  upgradeGitHubLinks(document, window.location.href);
-}
