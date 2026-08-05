@@ -5,7 +5,9 @@ const coverage = process.argv.includes("--coverage");
 await rm(".test-build", { recursive: true, force: true });
 if (coverage) await rm("coverage", { recursive: true, force: true });
 
-const compile = spawnSync("tsc", ["-p", "tsconfig.json"], { stdio: "inherit" });
+const compile = spawnSync("node", ["node_modules/typescript/bin/tsc", "-p", "tsconfig.json"], {
+  stdio: "inherit"
+});
 if (compile.status !== 0) process.exit(compile.status ?? 1);
 
 const testFiles = (await readdir("tests"))

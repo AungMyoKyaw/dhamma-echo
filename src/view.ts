@@ -116,7 +116,7 @@ function renderTrack(track: AudioTrack, state: AppState): string {
   const favorite = state.library.favorites.includes(track.id);
   const current = state.player.current?.id === track.id;
   const resume = state.library.resume[String(track.id)] ?? 0;
-  return `<article class="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-4 last:border-0 ${current ? "bg-app-primary/5" : ""}">
+  return `<article class="grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-4 last:border-0 ${current ? "bg-app-primary/5" : ""}${track.playable ? " cursor-pointer transition hover:bg-app-soft/60" : ""}"${track.playable ? ` data-action="play-track" data-id="${track.id}"` : ""}>
     <button class="flex size-11 items-center justify-center rounded-full ${track.playable ? "bg-app-primary text-white" : "bg-app-soft text-app-muted"}" data-action="play-track" data-id="${track.id}" aria-label="Play ${escapeHtml(track.title)}" ${track.playable ? "" : "disabled"}><span class="size-5">${icon(current && state.player.status === "playing" ? "pause" : "play")}</span></button>
     <div class="min-w-0"><div class="flex items-center gap-2"><h3 class="truncate font-bold">${escapeHtml(track.title)}</h3>${track.playable ? "" : `<span class="rounded-full bg-app-soft px-2 py-0.5 text-[10px] font-bold uppercase text-app-muted">${track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Unavailable"}</span>`}</div><p class="mt-1 truncate text-sm text-app-muted">${escapeHtml(track.teacherName || "Unknown teacher")} · ${escapeHtml(track.language)} · ${escapeHtml(track.format.toUpperCase())}${resume > 0 ? ` · Resume at ${formatDuration(resume)}` : ""}</p></div>
     <div class="flex items-center gap-2"><button class="flex size-9 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app-primary" data-action="toggle-favorite" data-id="${track.id}" aria-label="${favorite ? "Remove from" : "Add to"} favorites"><span class="size-5 ${favorite ? "fill-current text-app-primary" : ""}">${icon("heart")}</span></button><button class="rounded-full border border-app-border px-3 py-2 text-xs font-bold text-app-muted hover:text-app" data-action="enqueue" data-id="${track.id}">Queue</button></div>
@@ -151,7 +151,19 @@ function renderExplore(state: AppState): string {
   const page = state.catalogue.page;
   const from = page.total === 0 ? 0 : page.offset + 1;
   const to = Math.min(page.offset + page.limit, page.total);
-  return `<section class="space-y-5">${renderFilters(state)}<div class="flex items-center justify-between"><p class="text-sm text-app-muted">${page.total > 0 ? `${from.toLocaleString("en-US")}–${to.toLocaleString("en-US")} of ${page.total.toLocaleString("en-US")} talks` : "Search the complete audio catalogue"}</p><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-page" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-page" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${content}</section>`;
+  const teacherChip =
+    state.search.teacherId !== null
+      ? `<div class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary">Teacher: ${escapeHtml(teacherName(state))}<button class="flex size-5 items-center justify-center rounded-full hover:bg-app-primary/20" data-action="clear-teacher" aria-label="Clear teacher filter"><span class="size-3">${icon("close")}</span></button></div>`
+      : "";
+  return `<section class="space-y-5">${renderFilters(state)}${teacherChip}<div class="flex items-center justify-between"><p class="text-sm text-app-muted">${page.total > 0 ? `${from.toLocaleString("en-US")}–${to.toLocaleString("en-US")} of ${page.total.toLocaleString("en-US")} talks` : "Search the complete audio catalogue"}</p><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-page" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-page" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${content}</section>`;
+}
+
+function teacherName(state: AppState): string {
+  const fromList = state.teachers.data.find((t) => t.id === state.search.teacherId)?.name;
+  if (fromList) return fromList;
+  return state.player.current?.id === state.search.teacherId
+    ? state.player.current.teacherName
+    : "selected teacher";
 }
 
 function renderTeachers(state: AppState): string {
@@ -163,7 +175,9 @@ function renderTeachers(state: AppState): string {
       "No teachers found",
       "The catalogue does not currently include teacher records."
     );
-  return `<section><div class="grid grid-cols-3 gap-4">${state.teachers.data.map(renderTeacherCard).join("")}</div></section>`;
+  const searching = state.teacherQuery.length > 0;
+  const results = searching ? state.teacherResults : state.teachers.data;
+  return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search"><label class="relative flex-1"><span class="sr-only">Search teachers</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.teacherQuery)}" placeholder="Search teacher name" /></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map(renderTeacherCard).join("")}</div>`}</section>`;
 }
 
 function renderLibrary(state: AppState): string {

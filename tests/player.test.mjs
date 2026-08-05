@@ -134,7 +134,6 @@ test("AudioEngine reports media events and non-finite metadata safely", async ()
   assert.deepEqual(events.at(-1), { type: "error", message: "The audio stream could not start." });
 });
 
-
 test("AudioEngine waits for metadata, clamps resume, and retries the alternate approved host", async () => {
   const audio = new FakeAudio();
   const events = [];
@@ -161,7 +160,10 @@ test("AudioEngine waits for metadata, clamps resume, and retries the alternate a
     audio.src,
     "https://dhammadownload.com/MP3Library/Myanmar/%E1%80%90%E1%80%9B%E1%80%AC%E1%80%B8%20%E1%80%90%E1%80%B1%E1%80%AC%E1%80%BA.mp3"
   );
-  assert.equal(events.some((event) => event.type === "error"), false);
+  assert.equal(
+    events.some((event) => event.type === "error"),
+    false
+  );
   assert.equal(audio.playCalls, 2);
 
   audio.emit("error");
@@ -183,7 +185,10 @@ test("AudioEngine ignores a synchronous media error while the candidate is start
   const engine = new AudioEngine(audio, (event) => events.push(event));
   assert.equal(await engine.setTrack(tracks[0]), true);
   assert.equal(audio.playCalls, 1);
-  assert.equal(events.some((event) => event.type === "error"), false);
+  assert.equal(
+    events.some((event) => event.type === "error"),
+    false
+  );
 });
 
 test("AudioEngine rejects unsupported formats before changing the media source", async () => {

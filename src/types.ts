@@ -98,6 +98,8 @@ export interface AppState {
   route: Route;
   summary: Loadable<CatalogueSummary>;
   teachers: Loadable<TeacherSummary[]>;
+  teacherQuery: string;
+  teacherResults: TeacherSummary[];
   search: SearchState;
   catalogue: CatalogueState;
   library: LibraryState;

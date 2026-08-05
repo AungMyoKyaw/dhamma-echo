@@ -52,12 +52,6 @@ body {
   background: var(--color-app-bg);
 }
 
-button,
-input,
-select {
-  font: inherit;
-}
-
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,

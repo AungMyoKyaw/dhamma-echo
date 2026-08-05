@@ -6,7 +6,9 @@ import { pathToFileURL } from "node:url";
 await rm("dist", { recursive: true, force: true });
 await mkdir("dist/assets", { recursive: true });
 
-const tsc = spawnSync("tsc", ["-p", "tsconfig.app.json"], { stdio: "inherit" });
+const tsc = spawnSync("node", ["node_modules/typescript/bin/tsc", "-p", "tsconfig.app.json"], {
+  stdio: "inherit"
+});
 if (tsc.status !== 0) process.exit(tsc.status ?? 1);
 
 await Promise.all([

@@ -404,6 +404,27 @@ mod tests {
         assert!(!page.items[0].playable);
     }
 
+    // Diagnostic: run with `cargo test blank_query_real_db -- --ignored` to verify the
+    // bundled catalogue returns rows through the production search path.
+    #[test]
+    #[ignore]
+    fn blank_query_real_db() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/dhamma.db");
+        let database = Database::open_read_only(&path).expect("open bundled db");
+        let page = database
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: None,
+                teacher_id: None,
+                limit: 50,
+                offset: 0,
+            })
+            .expect("blank search");
+        assert_eq!(page.total, 21402);
+        assert_eq!(page.items.len(), 50);
+    }
+
     #[test]
     fn validates_filters_limits_and_ids() {
         let database = fixture();

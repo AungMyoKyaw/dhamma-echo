@@ -97,6 +97,22 @@ export class DhammaApp {
     }
   }
 
+  async searchTeachers(query: string): Promise<void> {
+    this.dispatch({ type: "set-teacher-query", query });
+    if (this.state.teacherQuery.length === 0) {
+      this.dispatch({ type: "teacher-results", teachers: [] });
+      return;
+    }
+    try {
+      this.dispatch({
+        type: "teacher-results",
+        teachers: await this.dependencies.api.searchTeachers(this.state.teacherQuery)
+      });
+    } catch {
+      this.dispatch({ type: "teacher-results", teachers: [] });
+    }
+  }
+
   async search(): Promise<void> {
     this.dispatch({ type: "search-started" });
     const request: AudioSearchRequest = {
@@ -127,6 +143,7 @@ export class DhammaApp {
   }
 
   async playTrack(track: AudioTrack): Promise<void> {
+    if (!track.playable) return;
     this.dispatch({ type: "play-track", track });
     this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
     this.engine.setVolume(this.state.settings.volume);

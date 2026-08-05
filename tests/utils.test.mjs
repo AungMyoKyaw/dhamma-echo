@@ -44,29 +44,19 @@ test("escapeHtml protects rendered catalogue text", () => {
   );
 });
 
-
 test("mediaUrlCandidates normalizes approved MP3 sources and blocks unsupported media", () => {
   assert.deepEqual(
-    mediaUrlCandidates(
-      "http://dhammadownload.com/MP3Library/Myanmar/တရား တော်.mp3",
-      "MP3"
-    ),
+    mediaUrlCandidates("http://dhammadownload.com/MP3Library/Myanmar/တရား တော်.mp3", "MP3"),
     [
       "https://www.dhammadownload.com/MP3Library/Myanmar/%E1%80%90%E1%80%9B%E1%80%AC%E1%80%B8%20%E1%80%90%E1%80%B1%E1%80%AC%E1%80%BA.mp3",
       "https://dhammadownload.com/MP3Library/Myanmar/%E1%80%90%E1%80%9B%E1%80%AC%E1%80%B8%20%E1%80%90%E1%80%B1%E1%80%AC%E1%80%BA.mp3"
     ]
   );
-  assert.deepEqual(
-    mediaUrlCandidates("https://www.dhammadownload.com/audio/talk.mp3", "mp3"),
-    [
-      "https://www.dhammadownload.com/audio/talk.mp3",
-      "https://dhammadownload.com/audio/talk.mp3"
-    ]
-  );
-  assert.deepEqual(
-    mediaUrlCandidates("https://dhammadownload.com/audio/talk.wma", "wma"),
-    []
-  );
+  assert.deepEqual(mediaUrlCandidates("https://www.dhammadownload.com/audio/talk.mp3", "mp3"), [
+    "https://www.dhammadownload.com/audio/talk.mp3",
+    "https://dhammadownload.com/audio/talk.mp3"
+  ]);
+  assert.deepEqual(mediaUrlCandidates("https://dhammadownload.com/audio/talk.wma", "wma"), []);
   assert.deepEqual(mediaUrlCandidates("https://example.com/audio/talk.mp3", "mp3"), []);
   assert.deepEqual(mediaUrlCandidates("https://dhammadownload.com:8443/audio/talk.mp3", "mp3"), []);
   assert.deepEqual(mediaUrlCandidates("https://user@dhammadownload.com/audio/talk.mp3", "mp3"), []);

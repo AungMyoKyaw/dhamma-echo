@@ -25,6 +25,8 @@ export type AppAction =
   | { type: "set-language"; language: LanguageFilter }
   | { type: "set-format"; format: FormatFilter }
   | { type: "set-teacher"; teacherId: number | null }
+  | { type: "set-teacher-query"; query: string }
+  | { type: "teacher-results"; teachers: TeacherSummary[] }
   | { type: "set-offset"; offset: number }
   | { type: "search-started" }
   | { type: "search-loaded"; page: AudioSearchPage }
@@ -58,6 +60,8 @@ export function createInitialState(): AppState {
     route: "home",
     summary: { status: "idle", data: emptySummary, message: "" },
     teachers: { status: "idle", data: [], message: "" },
+    teacherQuery: "",
+    teacherResults: [],
     search: { query: "", language: "all", format: "all", teacherId: null, limit: 50, offset: 0 },
     catalogue: { status: "idle", page: emptyPage, message: "" },
     library: createDefaultLibrary(),
@@ -74,8 +78,10 @@ export function createInitialState(): AppState {
   };
 }
 
+// The Explore form exposes query/language/format but no teacher field, so any
+// form change must drop the hidden teacherId scope set by "select-teacher".
 function resetOffset(state: AppState): AppState["search"] {
-  return { ...state.search, offset: 0 };
+  return { ...state.search, offset: 0, teacherId: null };
 }
 
 export function reduce(state: AppState, action: AppAction): AppState {
@@ -110,6 +116,10 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return { ...state, search: { ...resetOffset(state), format: action.format } };
     case "set-teacher":
       return { ...state, search: { ...resetOffset(state), teacherId: action.teacherId } };
+    case "set-teacher-query":
+      return { ...state, teacherQuery: normalizeWhitespace(action.query) };
+    case "teacher-results":
+      return { ...state, teacherResults: action.teachers };
     case "set-offset":
       return { ...state, search: { ...state.search, offset: Math.max(0, action.offset) } };
     case "search-started":
@@ -192,7 +202,8 @@ export function reduce(state: AppState, action: AppAction): AppState {
         player: {
           ...state.player,
           status: action.status,
-          error: action.status === "loading" || action.status === "playing" ? "" : state.player.error
+          error:
+            action.status === "loading" || action.status === "playing" ? "" : state.player.error
         }
       };
     case "player-progress":

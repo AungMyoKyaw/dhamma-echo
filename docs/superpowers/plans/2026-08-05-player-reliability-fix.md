@@ -22,12 +22,14 @@
 ### Task 1: Reproduce the media and layout failures
 
 **Files:**
+
 - Modify: `tests/utils.test.mjs`
 - Modify: `tests/player.test.mjs`
 - Modify: `tests/view.test.mjs`
 - Modify: `scripts/smoke.mjs`
 
 **Interfaces:**
+
 - Consumes: current `AudioEngine`, `isPlayableUrl`, `renderApp`, and compiled CSS.
 - Produces: failing regression tests for alternate HTTPS hosts, URL encoding, metadata-safe resume, fallback after media error, explicit player padding, and the compiled static player grid.
 
@@ -41,12 +43,14 @@
 ### Task 2: Add safe media-source normalization and fallback
 
 **Files:**
+
 - Modify: `src/utils.ts`
 - Modify: `src/player.ts`
 - Modify: `src/types.ts`
 - Modify: `src/app.ts`
 
 **Interfaces:**
+
 - Produces: `mediaUrlCandidates(value: string, format: string): string[]`.
 - `AudioEngine.setTrack(track, resumeAt)` uses candidates, applies resume on metadata, retries once across approved hosts, and reports stable failure state.
 - `DhammaApp.retryPlayback()` restarts the current track from the saved/current position.
@@ -61,12 +65,14 @@
 ### Task 3: Repair player layout and adjacent interaction bugs
 
 **Files:**
+
 - Modify: `src/view.ts`
 - Modify: `src/main.ts`
 - Modify: `src/index.css`
 - Modify: `scripts/smoke.mjs`
 
 **Interfaces:**
+
 - Consumes: player state and `retryPlayback()`.
 - Produces: fixed three-column footer, explicit content clearance, visible loading/error states, retry action, and working teacher selection.
 
@@ -80,6 +86,7 @@
 ### Task 4: Align backend classification and desktop security policy
 
 **Files:**
+
 - Modify: `src-tauri/src/db.rs`
 - Modify: `src-tauri/tauri.conf.json`
 - Modify: `README.md`
@@ -87,6 +94,7 @@
 - Modify: `docs/ralph-loop.md`
 
 **Interfaces:**
+
 - Rust maps only MP3 records on the approved host to webview-playable and treats same-host HTTP as safely upgradeable by the frontend.
 - CSP permits only the bare and `www` HTTPS media origins.
 
@@ -99,10 +107,12 @@
 ### Task 5: Prove, harden, commit, and bundle
 
 **Files:**
+
 - Modify: `docs/verification/2026-08-05-player-repair.md`
 - Modify: `CHANGELOG.md`
 
 **Interfaces:**
+
 - Produces: verified source state and `dhamma-echo-player-fixed.bundle`.
 
 - [x] Run offline lint, strict typecheck, all TypeScript tests, configured 100% coverage, production build, and web smoke checks from a clean state.

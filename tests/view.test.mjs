@@ -129,6 +129,52 @@ test("renderApp covers player, queue, unavailable tracks, and resume metadata", 
   assert.match(html, /viewBox="0 0 24 24"/);
 });
 
+test("renderApp makes the whole track row playable only when the track is playable", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: [tracks[0], { ...tracks[1], playable: false }], total: 2, limit: 50, offset: 0 }
+  });
+  const html = renderApp(state);
+  assert.match(html, /<article[^>]*data-action="play-track" data-id="1"/);
+  assert.doesNotMatch(html, /<article[^>]*data-action="play-track" data-id="2"/);
+  assert.match(html, /cursor-pointer/);
+});
+
+test("renderApp shows a clearable teacher chip when the explore list is teacher-scoped", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, { type: "teachers-loaded", teachers });
+  state = reduce(state, { type: "set-teacher", teacherId: 3 });
+  state = reduce(state, {
+    type: "search-loaded",
+    page: { items: tracks, total: 2, limit: 50, offset: 0 }
+  });
+  const html = renderApp(state);
+  assert.match(html, /Teacher: Venerable Sayadaw U Jotika/);
+  assert.match(html, /data-action="clear-teacher"/);
+  const cleared = reduce(state, { type: "set-teacher", teacherId: null });
+  assert.doesNotMatch(renderApp(cleared), /clear-teacher/);
+});
+
+test("renderApp renders the teacher search bar and results", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "teachers" });
+  state = reduce(state, { type: "teachers-loaded", teachers });
+  let html = renderApp(state);
+  assert.match(html, /data-form="teacher-search"/);
+  assert.match(html, /Venerable Sayadaw U Jotika/);
+  state = reduce(state, { type: "set-teacher-query", query: "dhammasami" });
+  state = reduce(state, { type: "teacher-results", teachers: [teachers[1]] });
+  html = renderApp(state);
+  assert.match(html, /value="dhammasami"/);
+  assert.match(html, /Dr\. K\. Dhammasami/);
+  assert.doesNotMatch(html, /U Jotika/);
+  state = reduce(state, { type: "teacher-results", teachers: [] });
+  assert.match(renderApp(state), /No teachers match/);
+});
+
 test("renderApp covers empty teacher highlights and every filter selection", () => {
   let state = createInitialState();
   state = reduce(state, { type: "teachers-loaded", teachers: [] });
@@ -145,7 +191,6 @@ test("renderApp covers empty teacher highlights and every filter selection", () 
   assert.match(html, /value="english" selected/);
   assert.match(html, /value="wma" selected/);
 });
-
 
 test("renderApp keeps the fixed player compact and exposes recovery controls", () => {
   let state = createInitialState();

@@ -97,9 +97,10 @@ export class AudioEngine {
   }
 
   seek(value: number): void {
-    const maximum = Number.isFinite(this.audio.duration) && this.audio.duration > 0
-      ? this.audio.duration
-      : Number.POSITIVE_INFINITY;
+    const maximum =
+      Number.isFinite(this.audio.duration) && this.audio.duration > 0
+        ? this.audio.duration
+        : Number.POSITIVE_INFINITY;
     this.audio.currentTime = clamp(value, 0, maximum);
     this.resumeAt = this.audio.currentTime;
   }

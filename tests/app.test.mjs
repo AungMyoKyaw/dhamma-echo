@@ -199,13 +199,77 @@ test("DhammaApp covers filter requests, track lookup paths, and player errors", 
   assert.equal(app.state.player.error, "");
   audio.emit("error");
   await new Promise((resolve) => setTimeout(resolve, 0));
-  assert.equal(
-    app.state.player.error,
-    "The audio stream is unavailable from Dhamma Download."
-  );
+  assert.equal(app.state.player.error, "The audio stream is unavailable from Dhamma Download.");
   await app.retryPlayback();
   assert.equal(app.state.player.error, "");
   assert.equal(app.state.player.status, "playing");
+  app.destroy();
+});
+
+test("DhammaApp refuses to play unplayable tracks", async () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    applyTheme() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.playTrack({ ...tracks[0], playable: false });
+  assert.equal(app.state.player.current, null);
+  assert.equal(app.state.player.status, "idle");
+  app.destroy();
+});
+
+test("DhammaApp searches teachers by name", async () => {
+  const queries = [];
+  const app = new DhammaApp({
+    api: createApi({
+      async searchTeachers(query) {
+        queries.push(query);
+        return query === "jotika" ? [teachers[0]] : [];
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    applyTheme() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.searchTeachers("jotika");
+  assert.deepEqual(app.state.teacherResults, [teachers[0]]);
+  await app.searchTeachers("nobody");
+  assert.deepEqual(app.state.teacherResults, []);
+  await app.searchTeachers("");
+  assert.equal(queries.length, 2);
+  assert.equal(app.state.teacherQuery, "");
+  app.destroy();
+});
+
+test("DhammaApp clears the teacher filter when a fresh search runs", async () => {
+  const requests = [];
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        requests.push(request);
+        return { items: [], total: 0, limit: request.limit, offset: request.offset };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    applyTheme() {},
+    now: () => 0
+  });
+  await app.start();
+  app.dispatch({ type: "set-teacher", teacherId: 45 });
+  await app.search();
+  assert.equal(requests.at(-1).teacherId, 45);
+  app.dispatch({ type: "set-query", query: "" });
+  await app.search();
+  assert.equal(requests.at(-1).teacherId, null);
   app.destroy();
 });
 

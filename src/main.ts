@@ -70,6 +70,10 @@ export async function bootstrap(): Promise<DhammaApp> {
       app.dispatch({ type: "navigate", route: "explore" });
       void app.search();
     }
+    if (action === "clear-teacher") {
+      app.dispatch({ type: "set-teacher", teacherId: null });
+      void app.search();
+    }
     if (action === "play-track" && id !== null) {
       const track = app.findTrack(id);
       if (track !== null) {
@@ -109,13 +113,18 @@ export async function bootstrap(): Promise<DhammaApp> {
 
   root.addEventListener("submit", (event) => {
     const form = event.target;
-    if (!(form instanceof HTMLFormElement) || form.dataset.form !== "search") return;
+    if (!(form instanceof HTMLFormElement)) return;
+    if (form.dataset.form !== "search" && form.dataset.form !== "teacher-search") return;
     event.preventDefault();
     const values = new FormData(form);
     const text = (key: string, fallback: string): string => {
       const value = values.get(key);
       return typeof value === "string" ? value : fallback;
     };
+    if (form.dataset.form === "teacher-search") {
+      void app.searchTeachers(text("query", ""));
+      return;
+    }
     app.dispatch({ type: "set-query", query: text("query", "") });
     app.dispatch({
       type: "set-language",

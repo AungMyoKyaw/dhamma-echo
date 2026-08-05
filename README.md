@@ -89,7 +89,7 @@ Then open `http://127.0.0.1:1420`.
 | `bun run lint`          | Run strict ESLint with zero warnings                                  |
 | `bun run lint:offline`  | Run dependency-free whitespace checks                                 |
 | `bun run typecheck`     | Run strict TypeScript checking                                        |
-| `bun run test`              | Run 41 core TypeScript tests                                          |
+| `bun run test`          | Run 41 core TypeScript tests                                          |
 | `bun run test:coverage` | Enforce 100% line/branch/function coverage on core TypeScript modules |
 | `bun run build:web`     | Produce the web assets in `dist/`                                     |
 | `bun run smoke:web`     | Validate required production web assets                               |
