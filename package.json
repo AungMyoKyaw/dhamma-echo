@@ -29,12 +29,13 @@
     "tauri:build": "tauri build"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.11.4",
+    "@eslint/js": "^10.0.1",
     "@tailwindcss/cli": "4.3.3",
+    "@tauri-apps/cli": "2.11.4",
     "eslint": "10.7.0",
     "prettier": "3.6.2",
     "tailwindcss": "4.3.3",
-    "typescript": "7.0.2",
+    "typescript": "^6",
     "typescript-eslint": "8.65.0"
   }
 }

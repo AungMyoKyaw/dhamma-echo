@@ -22,13 +22,13 @@ async function scan(path) {
     if (entry.isDirectory()) await scan(full);
     else if ([".ts", ".html"].includes(extname(entry.name))) {
       const content = await readFile(full, "utf8");
-      for (const match of content.matchAll(/[A-Za-z0-9_:\-/\[\].%]+/g)) candidates.add(match[0]);
+      for (const match of content.matchAll(/[A-Za-z0-9_:/[\].%-]+/g)) candidates.add(match[0]);
     }
   }
 }
 await scan("src");
 const html = await readFile("index.html", "utf8");
-for (const match of html.matchAll(/[A-Za-z0-9_:\-/\[\].%]+/g)) candidates.add(match[0]);
+for (const match of html.matchAll(/[A-Za-z0-9_:/[\].%-]+/g)) candidates.add(match[0]);
 
 let tailwind;
 try {

@@ -28,7 +28,7 @@ function icon(name: keyof typeof icons): string {
   return `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icons[name]}</svg>`;
 }
 
-const routes: Array<{ route: Route; label: string; icon: keyof typeof icons }> = [
+const routes: { route: Route; label: string; icon: keyof typeof icons }[] = [
   { route: "home", label: "Home", icon: "home" },
   { route: "explore", label: "Explore", icon: "explore" },
   { route: "teachers", label: "Teachers", icon: "teachers" },

@@ -16,17 +16,25 @@ export interface AudioLike {
 }
 
 export class AudioEngine {
-  private readonly onPlay = (): void => this.emit({ type: "status", status: "playing" });
-  private readonly onPause = (): void => this.emit({ type: "status", status: "paused" });
-  private readonly onTimeUpdate = (): void =>
+  private readonly onPlay = (): void => {
+    this.emit({ type: "status", status: "playing" });
+  };
+  private readonly onPause = (): void => {
+    this.emit({ type: "status", status: "paused" });
+  };
+  private readonly onTimeUpdate = (): void => {
     this.emit({
       type: "progress",
       currentTime: Number.isFinite(this.audio.currentTime) ? this.audio.currentTime : 0,
       duration: Number.isFinite(this.audio.duration) ? this.audio.duration : 0
     });
-  private readonly onEnded = (): void => this.emit({ type: "ended" });
-  private readonly onError = (): void =>
+  };
+  private readonly onEnded = (): void => {
+    this.emit({ type: "ended" });
+  };
+  private readonly onError = (): void => {
     this.emit({ type: "error", message: "The remote audio stream is unavailable." });
+  };
 
   constructor(
     private readonly audio: AudioLike,

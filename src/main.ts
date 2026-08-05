@@ -49,7 +49,9 @@ export async function bootstrap(): Promise<DhammaApp> {
     render: (state) => {
       root.innerHTML = renderApp(state);
     },
-    applyTheme: (theme) => applyTheme(document.documentElement, theme, media.matches)
+    applyTheme: (theme) => {
+      applyTheme(document.documentElement, theme, media.matches);
+    }
   });
 
   root.addEventListener("click", (event) => {
@@ -109,14 +111,18 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (!(form instanceof HTMLFormElement) || form.dataset.form !== "search") return;
     event.preventDefault();
     const values = new FormData(form);
-    app.dispatch({ type: "set-query", query: String(values.get("query") ?? "") });
+    const text = (key: string, fallback: string): string => {
+      const value = values.get(key);
+      return typeof value === "string" ? value : fallback;
+    };
+    app.dispatch({ type: "set-query", query: text("query", "") });
     app.dispatch({
       type: "set-language",
-      language: String(values.get("language") ?? "all") as "all" | "myanmar" | "english"
+      language: text("language", "all") as "all" | "myanmar" | "english"
     });
     app.dispatch({
       type: "set-format",
-      format: String(values.get("format") ?? "all") as "all" | "mp3" | "wma"
+      format: text("format", "all") as "all" | "mp3" | "wma"
     });
     void app.search();
   });
@@ -153,10 +159,16 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (event.key.toLocaleLowerCase() === "n") void app.playNext();
   });
 
-  media.addEventListener("change", () =>
-    applyTheme(document.documentElement, app.state.settings.theme, media.matches)
+  media.addEventListener("change", () => {
+    applyTheme(document.documentElement, app.state.settings.theme, media.matches);
+  });
+  window.addEventListener(
+    "beforeunload",
+    () => {
+      app.destroy();
+    },
+    { once: true }
   );
-  window.addEventListener("beforeunload", () => app.destroy(), { once: true });
   await app.start();
   return app;
 }

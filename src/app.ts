@@ -49,7 +49,9 @@ export class DhammaApp {
   private readonly engine: AudioEngine;
 
   constructor(private readonly dependencies: AppDependencies) {
-    this.engine = new AudioEngine(dependencies.audio, (event) => this.handlePlayerEvent(event));
+    this.engine = new AudioEngine(dependencies.audio, (event) => {
+      this.handlePlayerEvent(event);
+    });
   }
 
   async start(): Promise<void> {

@@ -102,14 +102,19 @@ function readNumber(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
+function readString(value: unknown, fallback: string): string {
+  return typeof value === "string" ? value : fallback;
+}
+
 export function createMockInvoke(): InvokeFn {
+  // eslint-disable-next-line @typescript-eslint/require-await -- mock invoke must be async to match InvokeFn
   return async <T>(command: string, args?: Record<string, unknown>): Promise<T> => {
     if (command === "get_catalogue_summary") return summary as T;
     if (command === "list_featured_teachers") {
       return teachers.slice(0, readNumber(args?.limit, 12)) as T;
     }
     if (command === "search_teachers") {
-      const query = String(args?.query ?? "").toLocaleLowerCase();
+      const query = readString(args?.query, "").toLocaleLowerCase();
       const limit = readNumber(args?.limit, 100);
       return teachers
         .filter((teacher) => teacher.name.toLocaleLowerCase().includes(query))
@@ -117,7 +122,7 @@ export function createMockInvoke(): InvokeFn {
     }
     if (command === "search_audio") {
       const request = (args?.request ?? {}) as Partial<AudioSearchRequest>;
-      const query = String(request.query ?? "").toLocaleLowerCase();
+      const query = readString(request.query, "").toLocaleLowerCase();
       const language = request.language ?? null;
       const format = request.format ?? null;
       const teacherId = request.teacherId ?? null;
