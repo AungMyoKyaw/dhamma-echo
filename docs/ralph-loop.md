@@ -1,72 +1,61 @@
-# Ralph Loop — macOS UI and Icon Polish
+# Ralph Loop — GitHub Pages Product Website
 
 ## Goal
 
-Make Dhamma Echo feel correctly proportioned on macOS by fixing the oversized Dock icon, rebuilding the audio transport controls, and preserving usability at the 860×620 minimum window size.
+Create a polished, lightweight Dhamma Echo product website inside the repository, include the supplied `docs/images/dhamma-echo-demo.png` screenshot, and deploy the validated `docs/` directory through GitHub Pages.
 
 ## Current state
 
-- The 1024px icon artwork occupies almost the full canvas and includes a pre-rounded mask, so it appears oversized in the Dock.
-- Player controls use inconsistent visible sizes and glyph weights.
-- The footer has only a tiny next control beside the large play button.
-- The play glyph is optically unbalanced.
-- Compact width hides volume without a speaker affordance and crowds track, speed, and queue controls.
-- Track-row play buttons dominate adjacent actions.
+- The repository documents the product but has no product website entry point under `docs/`.
+- The supplied application screenshot already exists at the required path.
+- The repository owner and final GitHub URL are absent from the Git bundle, so links must not be invented.
+- Existing CI validates the desktop app but does not publish GitHub Pages.
+- The execution environment has Node.js but does not provide Bun, Rust, Cargo, Prettier, or ESLint.
 
 ## Acceptance criteria
 
-- A verified 1024×1024 master icon has an outer optical margin and generates all configured variants.
-- The Dock artwork is visibly smaller and balanced at 16px, 32px, 128px, and 256px previews.
-- The player exposes back 15 seconds, play/pause, and forward 15 seconds with consistent visual weight.
-- Icon-only controls have labels, titles, focus, hover, active, loading, and disabled states.
-- The footer remains one coherent row with no horizontal overflow at 860×620.
-- Volume remains understandable at compact width.
-- Catalogue row play controls are visually secondary to the track title.
-- Existing playback, queue, favorites, search, and resume behavior remains intact.
-- Core TypeScript coverage remains 100% lines, branches, and functions.
-- Production web build and smoke checks pass.
-- The complete Git bundle verifies, clones, and repeats locally achievable checks.
+- `docs/index.html` presents the product goal, screenshot, core features, privacy model, architecture, and open-source path.
+- The supplied screenshot is referenced directly and retains its native 3248×2122 aspect ratio.
+- HTML, CSS, logo, and browser JavaScript are local, dependency-free, responsive, and individually below 100 KiB.
+- The page has semantic landmarks, one `h1`, logical headings, skip navigation, visible focus, 44px primary targets, meaningful image text, and reduced-motion handling.
+- No analytics, trackers, external fonts, remote runtime scripts/styles/images, local machine paths, unresolved templates, duplicate IDs, or path traversal exist.
+- GitHub repository and release links are derived only on standard project Pages URLs and fail safely elsewhere.
+- Node site tests and smoke checks pass.
+- GitHub Pages workflow validates first, uploads only `docs/`, uses least-privilege permissions, and deploys through the `github-pages` environment.
+- Existing desktop source, database, and Tauri build inputs remain unchanged.
+- The final Git bundle verifies, clones, and repeats site verification from the clean clone.
 
 ## Validation commands
 
 ```bash
-node scripts/lint-offline.mjs
-tsc --noEmit -p tsconfig.json
-node scripts/test.mjs --coverage
-node scripts/build.mjs
-node scripts/smoke.mjs
-node scripts/verify-icons.mjs
-python3 scripts/generate-icons.py --check
+node --test tests/site.test.mjs tests/site-links.test.mjs
+node scripts/site-smoke.mjs
+npm run site:verify
+git diff --check
+python3 -m http.server 4173 --directory docs
+chromium --headless --screenshot # desktop and mobile visual inspection
 bun run format:check
 bun run lint
+bun run typecheck
+bun run test:coverage
+bun run build:web
+bun run smoke:web
+bun run icons:check
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings
 cargo test --manifest-path src-tauri/Cargo.toml --all-features
-cargo build --manifest-path src-tauri/Cargo.toml --release
-git bundle create dhamma-echo-macos-ui-polished.bundle --all
-git bundle verify dhamma-echo-macos-ui-polished.bundle
-git clone dhamma-echo-macos-ui-polished.bundle /tmp/dhamma-echo-macos-ui-polished-check
+git bundle create /mnt/data/dhamma-echo-product-site.bundle --all
+git bundle verify /mnt/data/dhamma-echo-product-site.bundle
+git clone /mnt/data/dhamma-echo-product-site.bundle /mnt/data/dhamma-echo-product-site-clone
 ```
 
 ## Known risks
 
-- The sandbox does not provide a macOS Dock or native Tauri packaging environment, so Dock scale is validated through the icon canvas, generated `.icns` contents, and multi-size previews rather than a live Dock screenshot.
-- Bun, Rust, Cargo, Prettier, and ESLint may be unavailable; every unavailable gate must be recorded honestly.
-- Remote audio availability is external and unchanged by this UI pass.
+- GitHub Pages cannot be published from the local sandbox; workflow structure and artifact contents can be validated, while the live deployment requires repository Actions to run.
+- A custom domain cannot be mapped safely to a repository URL without configuration, so source/release buttons retain in-page fallbacks there.
+- The screenshot is intentionally large because the user required the existing asset; duplicating or replacing it is outside scope.
+- Bun, Rust/Cargo, Prettier, ESLint, dependency audit, and native packaging may remain unavailable and must not be claimed as passed.
 
 ## Exit conditions
 
-All locally achievable acceptance gates pass, visual screenshots at regular and compact widths are inspected, generated icon assets verify, documentation is updated, and the final Git bundle verifies and clone-tests. External toolchain blockers are explicitly documented.
-
-## Completed passes
-
-1. Reproduced the oversized icon, unbalanced player, and compact-width filter collapse through source inspection and baseline screenshots.
-2. Added failing regression tests for transport actions, loading/paused states, responsive search structure, and icon geometry.
-3. Implemented and tested the back-15/play-pause/forward-15 player, compact row controls, grouped session controls, and responsive filter layout.
-4. Generated and verified the padded 1024px master plus PNG, ICNS, and ICO variants.
-5. Rebuilt production assets, reached 100% configured core line/branch/function coverage, and visually inspected 1280×820 and 860×620 outputs.
-6. Updated CI, README, changelog, architecture, screenshots, and verification evidence.
-
-## Final exit status
-
-All locally achievable acceptance criteria pass. Prettier, ESLint, Bun, Rust/Cargo, dependency audit, native Tauri packaging, and live macOS Dock inspection remain external toolchain blockers and are not claimed as passed.
+All locally achievable site tests, smoke checks, workflow/documentation validation, browser visual checks, security review, and clean-clone verification pass. Toolchain and live-deployment blockers are recorded explicitly. The final Git bundle contains complete history and the feature branch.

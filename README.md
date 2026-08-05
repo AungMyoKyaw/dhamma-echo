@@ -6,6 +6,24 @@ Dhamma Echo is a lightweight Tauri 2 desktop audio player built around the suppl
 
 ![Dhamma Echo explore view with active player](docs/images/dhamma-echo-demo.png)
 
+## Product website
+
+The repository includes a dependency-free product website in [`docs/`](docs/index.html). It reuses the application screenshot above and deploys through the dedicated GitHub Pages workflow.
+
+Preview it locally without installing dependencies:
+
+```bash
+python3 -m http.server 4173 --directory docs
+```
+
+Then open `http://127.0.0.1:4173`. Validate the complete static site with:
+
+```bash
+npm run site:verify
+```
+
+The site architecture and deployment boundary are documented in [Product website architecture](docs/architecture/product-site.md).
+
 ## Features
 
 - Browse 21,402 audio talks from 212 teachers.
@@ -28,6 +46,8 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 - [Modules and trust boundaries](docs/architecture/modules.md)
 - [Catalogue and playback data flow](docs/architecture/data-flow.md)
 - [Build and release flow](docs/architecture/release.md)
+- [Product website architecture](docs/architecture/product-site.md)
+- [Product website design](docs/superpowers/specs/2026-08-05-github-pages-product-site-design.md)
 - [Product and technical design](docs/superpowers/specs/2026-08-04-dhamma-echo-design.md)
 - [Ralph Loop](docs/ralph-loop.md)
 
@@ -90,6 +110,9 @@ Then open `http://127.0.0.1:1420`.
 | `bun run typecheck`      | Run strict TypeScript checking                                        |
 | `bun run test`           | Run 50 core TypeScript tests                                          |
 | `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
+| `npm run site:test`       | Run product website behavior and link tests                           |
+| `npm run site:smoke`      | Validate static assets, paths, budgets, and runtime isolation          |
+| `npm run site:verify`     | Run all dependency-free product website checks                        |
 | `bun run build:web`      | Produce the web assets in `dist/`                                     |
 | `bun run smoke:web`      | Validate required production web assets                               |
 | `bun run icons:generate` | Regenerate desktop icon variants from the 1024px master               |
