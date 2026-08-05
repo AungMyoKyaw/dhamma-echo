@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
@@ -80,4 +81,15 @@ test("product styles preserve keyboard focus and reduced motion", async () => {
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css, /min-height:\s*44px/);
   assert.match(css, /overflow-x:\s*hidden/);
+});
+
+
+test("site smoke command passes", () => {
+  const result = spawnSync(process.execPath, ["scripts/site-smoke.mjs"], {
+    cwd: new URL("..", import.meta.url),
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /Product site smoke checks passed/);
 });
