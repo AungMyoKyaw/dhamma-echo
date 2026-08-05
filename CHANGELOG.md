@@ -26,6 +26,8 @@ All notable changes to this project are documented here.
 
 ### Added
 
+- Dependency-free Dhamma Echo product website under `docs/` with the supplied explore/player screenshot, responsive design, local assets, accessibility states, and GitHub Pages-safe repository links.
+- Product-site behavior tests, static asset smoke checks, architecture diagrams, and a least-privilege GitHub Pages deployment workflow.
 - Deterministic app-icon generation and dependency-free icon geometry/configuration verification.
 - Initial Dhamma Echo Tauri 2 application.
 - Read-only SQLite catalogue commands for summaries, teachers, and audio search.

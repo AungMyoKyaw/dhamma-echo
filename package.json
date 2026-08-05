@@ -22,6 +22,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "node scripts/test.mjs",
     "test:coverage": "node scripts/test.mjs --coverage",
+    "site:test": "node --test tests/site.test.mjs tests/site-links.test.mjs",
+    "site:smoke": "node scripts/site-smoke.mjs",
+    "site:verify": "npm run site:test && npm run site:coverage && npm run site:smoke",
     "verify:web": "bun run lint:offline && bun run typecheck && bun run test:coverage && bun run build:web && bun run smoke:web && bun run icons:check",
     "verify": "bun run format:check && bun run lint && bun run typecheck && bun run test:coverage && bun run build:web && bun run smoke:web && bun run icons:check && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings && cargo test --manifest-path src-tauri/Cargo.toml --all-features",
     "ci": "bunx prettier --check . && bun run lint && bun run verify:web && bun audit --audit-level=high",
@@ -29,7 +32,8 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "icons:generate": "python3 scripts/generate-icons.py",
-    "icons:check": "node scripts/verify-icons.mjs"
+    "icons:check": "node scripts/verify-icons.mjs",
+    "site:coverage": "node --experimental-test-coverage --test-coverage-include='docs/assets/site.js' --test-coverage-include='docs/assets/site-bootstrap.js' --test-coverage-lines=100 --test-coverage-functions=100 --test-coverage-branches=100 --test tests/site-links.test.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
