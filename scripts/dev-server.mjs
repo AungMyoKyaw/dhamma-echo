@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { readFile, stat } from "node:fs/promises";
+import { open } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { spawn } from "node:child_process";
 
@@ -20,16 +20,29 @@ createServer(async (request, response) => {
     const raw = request.url === "/" ? "/index.html" : (request.url ?? "/index.html");
     const safe = normalize(raw).replace(/^(\.\.(\/|\\|$))+/, "");
     let path = join("dist", safe);
+    let file;
     try {
-      if ((await stat(path)).isDirectory()) path = join(path, "index.html");
+      file = await open(path);
+      if ((await file.stat()).isDirectory()) {
+        await file.close();
+        file = undefined;
+        path = join(path, "index.html");
+        file = await open(path);
+      }
     } catch {
+      await file?.close();
       path = "dist/index.html";
+      file = await open(path);
     }
-    const body = await readFile(path);
-    response.writeHead(200, {
-      "content-type": types.get(extname(path)) ?? "application/octet-stream"
-    });
-    response.end(body);
+    try {
+      const body = await file.readFile();
+      response.writeHead(200, {
+        "content-type": types.get(extname(path)) ?? "application/octet-stream"
+      });
+      response.end(body);
+    } finally {
+      await file.close();
+    }
   } catch (error) {
     response.writeHead(500, { "content-type": "text/plain" });
     response.end(error instanceof Error ? error.message : "Unknown server error");
