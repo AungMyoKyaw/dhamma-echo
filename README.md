@@ -125,9 +125,9 @@ Then open `http://127.0.0.1:1420`.
 | `bun run typecheck`      | Run strict TypeScript checking                                        |
 | `bun run test`           | Run 50 core TypeScript tests                                          |
 | `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
-| `npm run site:test`       | Run product website behavior and link tests                           |
-| `npm run site:smoke`      | Validate static assets, paths, budgets, and runtime isolation          |
-| `npm run site:verify`     | Run all dependency-free product website checks                        |
+| `npm run site:test`      | Run product website behavior and link tests                           |
+| `npm run site:smoke`     | Validate static assets, paths, budgets, and runtime isolation         |
+| `npm run site:verify`    | Run all dependency-free product website checks                        |
 | `bun run build:web`      | Produce the web assets in `dist/`                                     |
 | `bun run smoke:web`      | Validate required production web assets                               |
 | `bun run icons:generate` | Regenerate desktop icon variants from the 1024px master               |

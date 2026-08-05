@@ -57,13 +57,10 @@ Also assert that the page contains the four approved product themes: discovery, 
 Create `tests/site-links.test.mjs` importing `deriveGitHubLinks` and `upgradeGitHubLinks` from `docs/assets/site.js`. Cover:
 
 ```js
-assert.deepEqual(
-  deriveGitHubLinks("https://aungmyokyaw.github.io/dhamma-echo/"),
-  {
-    repository: "https://github.com/aungmyokyaw/dhamma-echo",
-    releases: "https://github.com/aungmyokyaw/dhamma-echo/releases/latest"
-  }
-);
+assert.deepEqual(deriveGitHubLinks("https://aungmyokyaw.github.io/dhamma-echo/"), {
+  repository: "https://github.com/aungmyokyaw/dhamma-echo",
+  releases: "https://github.com/aungmyokyaw/dhamma-echo/releases/latest"
+});
 assert.equal(deriveGitHubLinks("https://example.com/"), null);
 assert.equal(deriveGitHubLinks("not a url"), null);
 ```

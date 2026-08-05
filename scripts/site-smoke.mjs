@@ -23,7 +23,7 @@ function assertInsideDocs(filePath, reference) {
   const relative = path.relative(docsRoot, filePath);
   assert.ok(
     relative && !relative.startsWith("..") && !path.isAbsolute(relative),
-    `Reference escapes docs/: ${reference}`,
+    `Reference escapes docs/: ${reference}`
   );
 }
 
@@ -50,7 +50,7 @@ function duplicateIds(html) {
 function remoteRuntimeAssets(html) {
   const matches = [];
   for (const match of html.matchAll(
-    /<(script|link|img|iframe)\b[^>]*(?:src|href)="(https?:\/\/[^"]+)"[^>]*>/gi,
+    /<(script|link|img|iframe)\b[^>]*(?:src|href)="(https?:\/\/[^"]+)"[^>]*>/gi
   )) {
     matches.push(`${match[1]}:${match[2]}`);
   }
@@ -63,14 +63,10 @@ async function main() {
   assert.doesNotMatch(
     html,
     /(?:file:\/\/|\/Users\/|\/home\/|\/mnt\/|\{\{[^}]+\}\})/,
-    "Product site contains a local path or unresolved template value",
+    "Product site contains a local path or unresolved template value"
   );
   assert.deepEqual(duplicateIds(html), [], "Product site contains duplicate IDs");
-  assert.deepEqual(
-    remoteRuntimeAssets(html),
-    [],
-    "Product site contains remote runtime assets",
-  );
+  assert.deepEqual(remoteRuntimeAssets(html), [], "Product site contains remote runtime assets");
 
   const references = localReferences(html);
   let totalBytes = 0;
@@ -84,26 +80,15 @@ async function main() {
 
   const screenshot = await stat(screenshotPath);
   assert.ok(screenshot.isFile(), "Supplied Dhamma Echo screenshot is missing");
-  assert.ok(
-    screenshot.size > 100 * 1024,
-    "Supplied Dhamma Echo screenshot is unexpectedly small",
-  );
+  assert.ok(screenshot.size > 100 * 1024, "Supplied Dhamma Echo screenshot is unexpectedly small");
 
-  for (const relative of [
-    "index.html",
-    "assets/site.css",
-    "assets/site.js",
-    "assets/logo.svg",
-  ]) {
+  for (const relative of ["index.html", "assets/site.css", "assets/site.js", "assets/logo.svg"]) {
     const info = await stat(path.join(docsRoot, relative));
-    assert.ok(
-      info.size < textAssetLimit,
-      `${relative} exceeds the 100 KiB static asset budget`,
-    );
+    assert.ok(info.size < textAssetLimit, `${relative} exceeds the 100 KiB static asset budget`);
   }
 
   console.log(
-    `Product site smoke checks passed: ${references.length} local assets, ${totalBytes.toLocaleString("en-US")} bytes referenced.`,
+    `Product site smoke checks passed: ${references.length} local assets, ${totalBytes.toLocaleString("en-US")} bytes referenced.`
   );
 }
 

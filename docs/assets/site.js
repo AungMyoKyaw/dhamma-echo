@@ -17,7 +17,7 @@ export function deriveGitHubLinks(input) {
     const base = `https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}`;
     return {
       repository: base,
-      releases: `${base}/releases/latest`,
+      releases: `${base}/releases/latest`
     };
   } catch {
     return null;

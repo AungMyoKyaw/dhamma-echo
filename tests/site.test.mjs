@@ -5,26 +5,17 @@ import test from "node:test";
 
 const htmlPath = new URL("../docs/index.html", import.meta.url);
 const cssPath = new URL("../docs/assets/site.css", import.meta.url);
-const screenshotPath = new URL(
-  "../docs/images/dhamma-echo-demo.png",
-  import.meta.url,
-);
+const screenshotPath = new URL("../docs/images/dhamma-echo-demo.png", import.meta.url);
 
 async function readSite() {
-  const [html, css] = await Promise.all([
-    readFile(htmlPath, "utf8"),
-    readFile(cssPath, "utf8"),
-  ]);
+  const [html, css] = await Promise.all([readFile(htmlPath, "utf8"), readFile(cssPath, "utf8")]);
   return { html, css };
 }
 
 test("product page exposes the approved semantic structure", async () => {
   const { html } = await readSite();
 
-  assert.match(
-    html,
-    /<title>Dhamma Echo — A quiet desktop library<\/title>/,
-  );
+  assert.match(html, /<title>Dhamma Echo — A quiet desktop library<\/title>/);
   assert.match(html, /<main id="main-content">/);
   assert.match(html, /<h1[^>]*>[^<]*Dhamma talks[^<]*<\/h1>/i);
   assert.match(html, /<nav[^>]+aria-label="Primary"/);
@@ -38,10 +29,7 @@ test("product page integrates the supplied demo screenshot without duplication",
 
   assert.match(html, /src="images\/dhamma-echo-demo\.png"/);
   assert.match(html, /width="3248"\s+height="2122"/);
-  assert.match(
-    html,
-    /alt="Dhamma Echo explore view with an active audio player"/,
-  );
+  assert.match(html, /alt="Dhamma Echo explore view with an active audio player"/);
   assert.equal(screenshot.isFile(), true);
   assert.ok(screenshot.size > 100_000);
 });
@@ -53,7 +41,7 @@ test("product page communicates the four approved product themes", async () => {
     "Discover the catalogue",
     "Focused playback",
     "Your library stays local",
-    "Private by default",
+    "Private by default"
   ]) {
     assert.match(html, new RegExp(phrase, "i"));
   }
@@ -83,11 +71,10 @@ test("product styles preserve keyboard focus and reduced motion", async () => {
   assert.match(css, /overflow-x:\s*hidden/);
 });
 
-
 test("site smoke command passes", () => {
   const result = spawnSync(process.execPath, ["scripts/site-smoke.mjs"], {
     cwd: new URL("..", import.meta.url),
-    encoding: "utf8",
+    encoding: "utf8"
   });
 
   assert.equal(result.status, 0, result.stderr || result.stdout);

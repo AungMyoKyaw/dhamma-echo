@@ -65,13 +65,13 @@ The smoke checker confirms local references stay within `docs/`, every reference
 
 ### Static asset sizes
 
-| Asset | Bytes |
-| --- | ---: |
-| `docs/index.html` | 12,663 |
-| `docs/assets/site.css` | 15,585 |
-| `docs/assets/site.js` | 1,066 |
-| `docs/assets/site-bootstrap.js` | 101 |
-| `docs/assets/logo.svg` | 1,019 |
+| Asset                              |     Bytes |
+| ---------------------------------- | --------: |
+| `docs/index.html`                  |    12,663 |
+| `docs/assets/site.css`             |    15,585 |
+| `docs/assets/site.js`              |     1,066 |
+| `docs/assets/site-bootstrap.js`    |       101 |
+| `docs/assets/logo.svg`             |     1,019 |
 | `docs/images/dhamma-echo-demo.png` | 1,133,542 |
 
 The supplied screenshot is intentionally the dominant payload. It is referenced once and was not copied or recompressed.
@@ -169,15 +169,15 @@ The accepted reference was the supplied Dhamma Echo application screenshot plus 
 
 The Browser integration was unavailable, and direct local navigation in sandbox Chromium was blocked by administrator policy. The fallback used Playwright with system Chromium, production HTML/CSS, and routed local production assets. The page was rendered and inspected at 1440px desktop and 390px mobile widths; the screenshot frame was also captured independently to avoid Chromium's full-page offscreen-raster limitation.
 
-| Comparison point | Result |
-| --- | --- |
-| Product identity and palette | Existing lotus mark and restrained earth tones remain consistent with the supplied application screenshot. |
-| First viewport hierarchy | Exact approved headline, lead, two actions, and three catalogue facts remain readable without an invented eyebrow or badge. |
-| Screenshot treatment | The supplied 3248×2122 image renders uncropped in one macOS-style product frame with an explanatory caption. |
-| Typography and spacing | System fonts keep the site dependency-free; heading scale, measure, spacing, and section rhythm remain clear at desktop and mobile widths. |
-| Container model | Open page bands, one product frame, a focused feature grid, a dark quiet-listening band, and one open-source panel match the approved structure without unnecessary nested cards. |
-| Responsive behavior | Desktop and 390px mobile renders have no horizontal overflow; actions stack, navigation simplifies, cards collapse, and the product frame remains usable. |
-| Interaction and safety | Anchor navigation works, GitHub project Pages URLs upgrade repository/release links, unsupported hosts retain safe in-page fallbacks, and the browser console is clean. |
+| Comparison point             | Result                                                                                                                                                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product identity and palette | Existing lotus mark and restrained earth tones remain consistent with the supplied application screenshot.                                                                        |
+| First viewport hierarchy     | Exact approved headline, lead, two actions, and three catalogue facts remain readable without an invented eyebrow or badge.                                                       |
+| Screenshot treatment         | The supplied 3248×2122 image renders uncropped in one macOS-style product frame with an explanatory caption.                                                                      |
+| Typography and spacing       | System fonts keep the site dependency-free; heading scale, measure, spacing, and section rhythm remain clear at desktop and mobile widths.                                        |
+| Container model              | Open page bands, one product frame, a focused feature grid, a dark quiet-listening band, and one open-source panel match the approved structure without unnecessary nested cards. |
+| Responsive behavior          | Desktop and 390px mobile renders have no horizontal overflow; actions stack, navigation simplifies, cards collapse, and the product frame remains usable.                         |
+| Interaction and safety       | Anchor navigation works, GitHub project Pages URLs upgrade repository/release links, unsupported hosts retain safe in-page fallbacks, and the browser console is clean.           |
 
 Above-the-fold copy diff: **PASS**. The rendered header, headline, lead, CTA labels, and catalogue facts match the approved copy. No unapproved hero badge, eyebrow, metric, or external link was introduced.
 
