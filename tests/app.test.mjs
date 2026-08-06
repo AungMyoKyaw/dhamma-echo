@@ -58,6 +58,9 @@ function createApi(overrides = {}) {
     async searchAudio(request) {
       return { items: tracks, total: tracks.length, limit: request.limit, offset: request.offset };
     },
+    async getAudioTrack(id) {
+      return tracks.find((track) => track.id === id);
+    },
     ...overrides
   };
 }
@@ -296,6 +299,63 @@ test("DhammaApp clears the teacher filter when a fresh search runs", async () =>
   app.dispatch({ type: "set-query", query: "" });
   await app.search();
   assert.equal(requests.at(-1).teacherId, null);
+  app.destroy();
+});
+
+test("DhammaApp loads recent tracks from history for the home screen", async () => {
+  const requested = [];
+  const storage = new MemoryStorage();
+  const app = new DhammaApp({
+    api: createApi({
+      async getAudioTrack(id) {
+        requested.push(id);
+        if (id === 2) throw new Error("gone");
+        return tracks.find((track) => track.id === id);
+      }
+    }),
+    storage,
+    audio: new FakeAudio(),
+    render() {},
+    applyTheme() {},
+    now: () => 0
+  });
+  await app.start();
+  assert.equal(app.state.homeRecent.status, "ready");
+  assert.deepEqual(app.state.homeRecent.tracks, []);
+
+  app.dispatch({ type: "record-history", id: 1, playedAt: 10 });
+  app.dispatch({ type: "record-history", id: 2, playedAt: 20 });
+  await app.loadRecent();
+  assert.deepEqual(requested, [2, 1]);
+  assert.equal(app.state.homeRecent.status, "ready");
+  assert.deepEqual(
+    app.state.homeRecent.tracks.map((track) => track.id),
+    [1]
+  );
+
+  await app.loadRecent();
+  assert.equal(requested.length, 4);
+  app.destroy();
+});
+
+test("DhammaApp marks recent history unavailable when every track lookup fails", async () => {
+  const app = new DhammaApp({
+    api: createApi({
+      async getAudioTrack() {
+        throw new Error("gone");
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    applyTheme() {},
+    now: () => 0
+  });
+  await app.start();
+  app.dispatch({ type: "record-history", id: 1, playedAt: 10 });
+  await app.loadRecent();
+  assert.equal(app.state.homeRecent.status, "error");
+  assert.deepEqual(app.state.homeRecent.tracks, []);
   app.destroy();
 });
 

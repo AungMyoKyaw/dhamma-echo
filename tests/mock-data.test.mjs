@@ -24,6 +24,13 @@ test("mock invoke supports summary, teachers, and filtered paginated audio", asy
   assert.equal(page.total, 1);
 });
 
+test("mock invoke resolves a single track by id and rejects unknown ids", async () => {
+  const invoke = createMockInvoke();
+  const track = await invoke("get_audio_track", { id: 1 });
+  assert.equal(track.title, "Praise and Blame");
+  await assert.rejects(invoke("get_audio_track", { id: 999 }), /Unsupported command/);
+});
+
 test("mock invoke rejects unknown commands", async () => {
   const invoke = createMockInvoke();
   await assert.rejects(invoke("delete_everything"), /Unsupported command/);

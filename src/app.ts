@@ -16,6 +16,7 @@ export interface CatalogueClient {
   listFeaturedTeachers: CatalogueApi["listFeaturedTeachers"];
   searchTeachers: CatalogueApi["searchTeachers"];
   searchAudio: CatalogueApi["searchAudio"];
+  getAudioTrack: CatalogueApi["getAudioTrack"];
 }
 
 interface AppDependencies {
@@ -62,7 +63,7 @@ export class DhammaApp {
     });
     this.engine.setVolume(this.state.settings.volume);
     this.engine.setRate(this.state.settings.playbackRate);
-    await Promise.all([this.loadSummary(), this.loadTeachers(), this.search()]);
+    await Promise.all([this.loadSummary(), this.loadTeachers(), this.search(), this.loadRecent()]);
   }
 
   dispatch(action: AppAction): void {
@@ -95,6 +96,30 @@ export class DhammaApp {
     } catch (error) {
       this.dispatch({ type: "teachers-failed", message: messageFrom(error) });
     }
+  }
+
+  async loadRecent(): Promise<void> {
+    const ids = this.state.library.history.slice(0, 5).map((entry) => entry.id);
+    if (ids.length === 0) {
+      this.dispatch({ type: "recent-loaded", tracks: [] });
+      return;
+    }
+    this.dispatch({ type: "recent-started" });
+    const results = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          return await this.dependencies.api.getAudioTrack(id);
+        } catch {
+          return null;
+        }
+      })
+    );
+    const tracks = results.filter((track): track is AudioTrack => track !== null);
+    if (tracks.length === 0) {
+      this.dispatch({ type: "recent-failed" });
+      return;
+    }
+    this.dispatch({ type: "recent-loaded", tracks });
   }
 
   async searchTeachers(query: string): Promise<void> {

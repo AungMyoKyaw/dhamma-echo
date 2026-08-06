@@ -145,6 +145,11 @@ export function createMockInvoke(): InvokeFn {
       };
       return page as T;
     }
+    if (command === "get_audio_track") {
+      const id = readNumber(args?.id, 0);
+      const track = tracks.find((item) => item.id === id);
+      if (track !== undefined) return track as T;
+    }
     throw new Error(`Unsupported command: ${command}`);
   };
 }
