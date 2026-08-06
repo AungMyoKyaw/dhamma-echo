@@ -4,6 +4,30 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-07
+
+### Added
+
+- Continue-listening section on home screen from recent history.
+- `homeRecent` store slice for continue-listening data.
+- `getAudioTrack` API for single-track lookup.
+- Featured teachers curated to top 30 (then narrowed to 6 hand-picked).
+
+### Changed
+
+- Home header simplified to "Home — Discover the Dhamma".
+- Catalogue stats shown only when listening history exists.
+- Limit continue-listening rows for compact display.
+
+### Fixed
+
+- Player resume tracks from home recent list.
+- Dev server file race condition.
+
+### Security
+
+- Dev server file race fix (Tauri permission boundary).
+
 ## [0.2.0] - 2026-08-05
 
 ### Added
