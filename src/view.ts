@@ -124,13 +124,10 @@ function renderHome(state: AppState): string {
     state.teachers.status === "ready" && state.teachers.data.length > 0
       ? state.teachers.data.slice(0, 6).map(renderTeacherCard).join("")
       : `<div class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted">Teacher highlights will appear here when the catalogue is ready.</div>`;
+  const hasHistory = state.library.history.length > 0;
   return `<section class="space-y-8">
-    <div class="relative overflow-hidden rounded-[2rem] bg-app-primary px-8 py-9 text-white shadow-lg">
-      <div class="relative z-10 max-w-xl"><p class="text-sm font-bold uppercase tracking-[0.2em] text-white/70">Dhamma for daily life</p><h2 class="mt-3 text-4xl font-bold leading-tight">A calmer way to discover and hear timeless teachings.</h2><p class="mt-4 max-w-lg text-sm leading-6 text-white/75">Search thousands of talks by title, teacher, language, or format. Your favorites and listening position stay local.</p><button class="mt-6 rounded-full bg-white px-5 py-3 text-sm font-bold text-app-primary transition hover:bg-white/90" data-action="navigate" data-value="explore">Explore talks</button></div>
-      <div class="absolute -bottom-24 -right-16 size-80 rounded-full border-[48px] border-white/10"></div><div class="absolute right-24 top-8 size-24 rounded-full bg-white/10"></div>
-    </div>
-    <div class="grid grid-cols-4 gap-4">${stat("Audio talks", summary.totalAudio, "Ready to stream")}${stat("Teachers", summary.totalTeachers, "Across traditions")}${stat("Myanmar", summary.myanmarAudio, "Myanmar language")}${stat("English", summary.englishAudio, "English language")}</div>
     ${renderRecent(state)}
+    ${hasHistory ? "" : `<div class="grid grid-cols-4 gap-4">${stat("Audio talks", summary.totalAudio, "Ready to stream")}${stat("Teachers", summary.totalTeachers, "Across traditions")}${stat("Myanmar", summary.myanmarAudio, "Myanmar language")}${stat("English", summary.englishAudio, "English language")}</div>`}
     <div><div class="mb-4 flex items-end justify-between"><div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Browse by voice</p><h2 class="mt-1 text-2xl font-bold">Featured teachers</h2></div><button class="text-sm font-bold text-app-primary" data-action="navigate" data-value="teachers">View all</button></div><div class="scrollbar-thin flex gap-4 overflow-x-auto pb-3">${teacherCards}</div></div>
   </section>`;
 }
