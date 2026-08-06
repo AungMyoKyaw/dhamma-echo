@@ -167,6 +167,17 @@ export class DhammaApp {
     );
   }
 
+  async resolveTrack(id: number): Promise<AudioTrack | null> {
+    const known =
+      this.findTrack(id) ?? this.state.homeRecent.tracks.find((track) => track.id === id) ?? null;
+    if (known !== null) return known;
+    try {
+      return await this.dependencies.api.getAudioTrack(id);
+    } catch {
+      return null;
+    }
+  }
+
   async playTrack(track: AudioTrack): Promise<void> {
     if (!track.playable) return;
     this.dispatch({ type: "play-track", track });

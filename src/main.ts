@@ -62,7 +62,10 @@ export async function bootstrap(): Promise<DhammaApp> {
     const id = parseId(target.dataset.id);
     const value = target.dataset.value;
 
-    if (action === "navigate" && isRoute(value)) app.dispatch({ type: "navigate", route: value });
+    if (action === "navigate" && isRoute(value)) {
+      app.dispatch({ type: "navigate", route: value });
+      if (value === "home") void app.loadRecent();
+    }
     if (action === "cycle-theme")
       app.dispatch({ type: "set-theme", theme: nextTheme(app.state.settings.theme) });
     if (action === "select-teacher" && id !== null) {
@@ -75,10 +78,11 @@ export async function bootstrap(): Promise<DhammaApp> {
       void app.search();
     }
     if (action === "play-track" && id !== null) {
-      const track = app.findTrack(id);
-      if (track !== null) {
-        if (app.state.player.current?.id === id) void app.togglePlayback();
-        else void app.playTrack(track);
+      if (app.state.player.current?.id === id) void app.togglePlayback();
+      else {
+        void app.resolveTrack(id).then((track) => {
+          if (track !== null) return app.playTrack(track);
+        });
       }
     }
     if (action === "toggle-favorite" && id !== null) app.dispatch({ type: "toggle-favorite", id });

@@ -381,3 +381,34 @@ test("DhammaApp handles non-Error failures and progress without a current track"
   assert.equal(app.state.summary.message, "The catalogue is unavailable.");
   app.destroy();
 });
+
+test("DhammaApp resolves tracks from recent list and the catalogue", async () => {
+  const fetched = [];
+  const app = new DhammaApp({
+    api: createApi({
+      async getAudioTrack(id) {
+        fetched.push(id);
+        if (id === 42) throw new Error("missing");
+        return tracks.find((track) => track.id === id);
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    applyTheme() {},
+    now: () => 0
+  });
+  await app.start();
+  assert.equal((await app.resolveTrack(1))?.id, 1);
+  assert.deepEqual(fetched, []);
+
+  app.dispatch({ type: "search-loaded", page: { items: [], total: 0, limit: 50, offset: 0 } });
+  app.dispatch({ type: "recent-loaded", tracks: [tracks[1]] });
+  assert.equal((await app.resolveTrack(2))?.id, 2);
+  assert.deepEqual(fetched, []);
+
+  assert.equal((await app.resolveTrack(1))?.id, 1);
+  assert.deepEqual(fetched, [1]);
+  assert.equal(await app.resolveTrack(42), null);
+  app.destroy();
+});
