@@ -1,4 +1,5 @@
 export const teachers = [
+  { id: 26, name: "Nandamalabhivamsa", audioCount: 3116 },
   { id: 3, name: "Venerable Sayadaw U Jotika", audioCount: 120 },
   { id: 4, name: "Venerable Dr. K. Dhammasami", audioCount: 80 }
 ];

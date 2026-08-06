@@ -120,9 +120,11 @@ function renderHome(state: AppState): string {
     return renderError(state.summary.message, "retry-summary");
   }
   const summary = state.summary.data;
+  const featuredIds = new Set([26, 28, 40, 56, 69, 41, 30, 92, 53, 45, 84, 29, 91, 57, 51, 104, 66, 44, 31, 80, 87, 67, 35, 81, 46, 43, 39, 86, 60, 9]);
+  const featured = state.teachers.data.filter((t) => featuredIds.has(t.id));
   const teacherCards =
-    state.teachers.status === "ready" && state.teachers.data.length > 0
-      ? state.teachers.data.slice(0, 6).map(renderTeacherCard).join("")
+    state.teachers.status === "ready" && featured.length > 0
+      ? featured.slice(0, 6).map(renderTeacherCard).join("")
       : `<div class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted">Teacher highlights will appear here when the catalogue is ready.</div>`;
   const hasHistory = state.library.history.length > 0;
   return `<section class="space-y-8">

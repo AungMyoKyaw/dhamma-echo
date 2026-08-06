@@ -82,7 +82,6 @@ impl Database {
                 "SELECT t.id, t.name, COUNT(m.id) AS audio_count
                  FROM teachers t
                  JOIN media m ON m.teacher_id = t.id AND m.type = 'audio'
-                 WHERE t.id IN (26)
                  GROUP BY t.id, t.name
                  ORDER BY audio_count DESC, LOWER(t.name), t.id
                  LIMIT ?1",
@@ -345,9 +344,9 @@ mod tests {
                     location TEXT,
                     teacher_id INTEGER
                  );
-                 INSERT INTO teachers VALUES (26, '  Teacher  One ', NULL, NULL, NULL);
+                 INSERT INTO teachers VALUES (1, '  Teacher  One ', NULL, NULL, NULL);
                  INSERT INTO teachers VALUES (2, 'Teacher Two', NULL, NULL, NULL);
-                 INSERT INTO media VALUES (1, ' Talk One ', 'audio', 'mp3', 'english', 'https://dhammadownload.com/one.mp3', NULL, NULL, 26);
+                 INSERT INTO media VALUES (1, ' Talk One ', 'audio', 'mp3', 'english', 'https://dhammadownload.com/one.mp3', NULL, NULL, 1);
                  INSERT INTO media VALUES (2, 'Talk Two', 'audio', 'wma', 'myanmar', 'http://dhammadownload.com/two.wma', NULL, NULL, 2);
                  INSERT INTO media VALUES (3, 'Video', 'video', 'mp4', 'myanmar', 'https://dhammadownload.com/video.mp4', NULL, NULL, 2);",
             )
@@ -360,7 +359,7 @@ mod tests {
         let database = fixture();
         assert_eq!(database.summary().expect("summary").total_audio, 2);
         let teachers = database.featured_teachers(10).expect("teachers");
-        assert_eq!(teachers.len(), 1);
+        assert_eq!(teachers.len(), 2);
         assert_eq!(teachers[0].name, "Teacher One");
     }
 
