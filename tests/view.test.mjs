@@ -205,6 +205,7 @@ test("renderApp covers empty teacher highlights and every filter selection", () 
 
 test("renderApp keeps the fixed player compact and exposes recovery controls", () => {
   let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "teachers" });
   state = reduce(state, { type: "teachers-loaded", teachers });
   state = reduce(state, { type: "play-track", track: tracks[0] });
   state = reduce(state, { type: "set-player-error", message: "Stream failed" });

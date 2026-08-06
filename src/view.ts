@@ -120,7 +120,10 @@ function renderHome(state: AppState): string {
     return renderError(state.summary.message, "retry-summary");
   }
   const summary = state.summary.data;
-  const featuredIds = new Set([26, 28, 40, 56, 69, 41, 30, 92, 53, 45, 84, 29, 91, 57, 51, 104, 66, 44, 31, 80, 87, 67, 35, 81, 46, 43, 39, 86, 60, 9]);
+  const featuredIds = new Set([
+    26, 28, 40, 56, 69, 41, 30, 92, 53, 45, 84, 29, 91, 57, 51, 104, 66, 44, 31, 80, 87, 67, 35, 81,
+    46, 43, 39, 86, 58, 75
+  ]);
   const featured = state.teachers.data.filter((t) => featuredIds.has(t.id));
   const teacherCards =
     state.teachers.status === "ready" && featured.length > 0
