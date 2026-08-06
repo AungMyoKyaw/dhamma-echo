@@ -90,6 +90,30 @@ function renderTeacherCard(teacher: TeacherSummary): string {
   </button>`;
 }
 
+function renderRecent(state: AppState): string {
+  const recent = state.homeRecent;
+  if (recent.status === "idle" || recent.status === "error") return "";
+  if (recent.status === "loading") {
+    return `<section class="space-y-4"><div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Continue listening</p></div><div class="h-20 animate-pulse rounded-card bg-app-soft"></div></section>`;
+  }
+  const [latest, ...rest] = recent.tracks;
+  if (latest === undefined) return "";
+  const resume = state.library.resume[String(latest.id)] ?? 0;
+  const playing = state.player.current?.id === latest.id && state.player.status === "playing";
+  const rows = rest
+    .filter((track) => track.playable)
+    .map((track) => renderTrack(track, state))
+    .join("");
+  return `<section class="space-y-4">
+    <div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Continue listening</p><h2 class="mt-1 text-2xl font-bold">Pick up where you left off</h2></div>
+    <div class="flex items-center gap-4 rounded-card border border-app-border bg-app-surface p-5">
+      <button class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-white transition hover:opacity-90${latest.playable ? "" : " cursor-not-allowed opacity-50"}"${latest.playable ? ` data-action="play-track" data-id="${latest.id}"` : " disabled"} aria-label="Resume ${escapeHtml(latest.title)}"><span class="ml-0.5 size-6">${icon(playing ? "pause" : "play")}</span></button>
+      <div class="min-w-0"><h3 class="truncate font-bold">${escapeHtml(latest.title)}</h3><p class="mt-1 truncate text-sm text-app-muted">${escapeHtml(latest.teacherName || "Unknown teacher")}${resume > 0 ? ` · Resume at ${formatDuration(resume)}` : ""}</p></div>
+    </div>
+    ${rows.length > 0 ? `<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">${rows}</div>` : ""}
+  </section>`;
+}
+
 function renderHome(state: AppState): string {
   if (state.summary.status === "error") {
     return renderError(state.summary.message, "retry-summary");
@@ -105,6 +129,7 @@ function renderHome(state: AppState): string {
       <div class="absolute -bottom-24 -right-16 size-80 rounded-full border-[48px] border-white/10"></div><div class="absolute right-24 top-8 size-24 rounded-full bg-white/10"></div>
     </div>
     <div class="grid grid-cols-4 gap-4">${stat("Audio talks", summary.totalAudio, "Ready to stream")}${stat("Teachers", summary.totalTeachers, "Across traditions")}${stat("Myanmar", summary.myanmarAudio, "Myanmar language")}${stat("English", summary.englishAudio, "English language")}</div>
+    ${renderRecent(state)}
     <div><div class="mb-4 flex items-end justify-between"><div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Browse by voice</p><h2 class="mt-1 text-2xl font-bold">Featured teachers</h2></div><button class="text-sm font-bold text-app-primary" data-action="navigate" data-value="teachers">View all</button></div><div class="scrollbar-thin flex gap-4 overflow-x-auto pb-3">${teacherCards}</div></div>
   </section>`;
 }

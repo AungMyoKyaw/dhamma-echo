@@ -253,3 +253,55 @@ test("renderApp resolves teacher chip names from the player and safe fallback", 
   state = reduce(state, { type: "set-teacher", teacherId: 9999 });
   assert.match(renderApp(state), /Teacher: selected teacher/);
 });
+
+test("renderApp shows continue-listening on home and hides it without history", () => {
+  let state = createInitialState();
+  assert.doesNotMatch(renderApp(state), /Continue listening/);
+
+  state = reduce(state, { type: "record-history", id: 1, playedAt: 10 });
+  state = reduce(state, { type: "record-history", id: 2, playedAt: 20 });
+  state = reduce(state, { type: "recent-started" });
+  assert.match(renderApp(state), /Continue listening/);
+  assert.match(renderApp(state), /h-20 animate-pulse rounded-card bg-app-soft/);
+
+  state = reduce(state, { type: "recent-failed" });
+  assert.doesNotMatch(renderApp(state), /Continue listening/);
+
+  state = reduce(state, { type: "recent-loaded", tracks });
+  assert.doesNotMatch(renderApp(state), /Resume at/);
+  state = reduce(state, { type: "save-resume", id: 1, currentTime: 95 });
+  const html = renderApp(state);
+  assert.match(html, /Continue listening/);
+  assert.match(html, /Resume at 1:35/);
+  assert.match(html, /data-action="play-track" data-id="2"/);
+  assert.match(html, /Praise and Blame/);
+
+  const emptyResume = reduce(state, { type: "save-resume", id: 1, currentTime: 0 });
+  assert.doesNotMatch(renderApp(emptyResume), /Resume at/);
+
+  const playing = reduce(
+    reduce(state, { type: "play-track", track: tracks[0] }),
+    { type: "player-status", status: "playing" }
+  );
+  assert.match(renderApp(playing), /<path d="M8 6.5h3.25v11H8zM12.75 6.5H16v11h-3.25z"/);
+
+  const rowsEmpty = reduce(state, { type: "recent-loaded", tracks: [tracks[0]] });
+  assert.doesNotMatch(renderApp(rowsEmpty), /overflow-hidden rounded-card border border-app-border bg-app-surface"><article/);
+
+  const emptyRecent = reduce(state, { type: "recent-loaded", tracks: [] });
+  assert.doesNotMatch(renderApp(emptyRecent), /Continue listening/);
+
+  const unknownTeacher = reduce(state, {
+    type: "recent-loaded",
+    tracks: [{ ...tracks[0], teacherName: "" }]
+  });
+  assert.match(renderApp(unknownTeacher), /Unknown teacher/);
+
+  const unplayable = reduce(state, {
+    type: "recent-loaded",
+    tracks: [{ ...tracks[0], playable: false }]
+  });
+  const unplayableHtml = renderApp(unplayable);
+  assert.match(unplayableHtml, /Continue listening/);
+  assert.doesNotMatch(unplayableHtml, /data-action="play-track" data-id="1"/);
+});
