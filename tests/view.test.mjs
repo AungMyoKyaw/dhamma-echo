@@ -279,14 +279,17 @@ test("renderApp shows continue-listening on home and hides it without history", 
   const emptyResume = reduce(state, { type: "save-resume", id: 1, currentTime: 0 });
   assert.doesNotMatch(renderApp(emptyResume), /Resume at/);
 
-  const playing = reduce(
-    reduce(state, { type: "play-track", track: tracks[0] }),
-    { type: "player-status", status: "playing" }
-  );
+  const playing = reduce(reduce(state, { type: "play-track", track: tracks[0] }), {
+    type: "player-status",
+    status: "playing"
+  });
   assert.match(renderApp(playing), /<path d="M8 6.5h3.25v11H8zM12.75 6.5H16v11h-3.25z"/);
 
   const rowsEmpty = reduce(state, { type: "recent-loaded", tracks: [tracks[0]] });
-  assert.doesNotMatch(renderApp(rowsEmpty), /overflow-hidden rounded-card border border-app-border bg-app-surface"><article/);
+  assert.doesNotMatch(
+    renderApp(rowsEmpty),
+    /overflow-hidden rounded-card border border-app-border bg-app-surface"><article/
+  );
 
   const emptyRecent = reduce(state, { type: "recent-loaded", tracks: [] });
   assert.doesNotMatch(renderApp(emptyRecent), /Continue listening/);

@@ -21,10 +21,12 @@
 ### Task 1: `CatalogueApi.getAudioTrack`
 
 **Files:**
+
 - Modify: `src/api.ts:40-55`
 - Test: `tests/api.test.mjs`
 
 **Interfaces:**
+
 - Produces: `getAudioTrack(id: number): Promise<AudioTrack>` on `CatalogueApi`, invoking Tauri command `get_audio_track` with args `{ id }`. Consumed by Task 4 (`CatalogueClient`) and Task 5 (fallback playback).
 
 - [ ] **Step 1: Write the failing test**
@@ -100,11 +102,13 @@ git commit -m "feat(api): add getAudioTrack for single-track lookup"
 ### Task 2: `homeRecent` state slice and reducers
 
 **Files:**
+
 - Modify: `src/types.ts` (add `RecentState`, extend `AppState`)
 - Modify: `src/store.ts:15-48` (actions), `src/store.ts:58-79` (initial state), `src/store.ts:87-232` (reducer cases)
 - Test: `tests/store.test.mjs`
 
 **Interfaces:**
+
 - Produces:
   - Type `RecentState = { status: "idle" | "loading" | "ready" | "error"; tracks: AudioTrack[] }`
   - `AppState.homeRecent: RecentState`
@@ -197,11 +201,13 @@ git commit -m "feat(store): add homeRecent slice for continue-listening"
 ### Task 3: Mock invoke + `DhammaApp.loadRecent`
 
 **Files:**
+
 - Modify: `src/mock-data.ts:109-149` (handle `get_audio_track`)
 - Modify: `src/app.ts:14-19` (CatalogueClient), `src/app.ts:57-66` (start), add `loadRecent` method
 - Test: `tests/app.test.mjs`, `tests/mock-data.test.mjs`
 
 **Interfaces:**
+
 - Consumes: `CatalogueApi["getAudioTrack"]` (Task 1), actions from Task 2.
 - Produces: `DhammaApp.loadRecent(): Promise<void>` — resolves first 5 `library.history` IDs to tracks via parallel `getAudioTrack` calls, drops failures, preserves history order, dispatches `recent-started`/`recent-loaded`/`recent-failed`. Empty history dispatches `recent-loaded` with `[]` and makes no API calls.
 
@@ -352,10 +358,12 @@ git commit -m "feat(app): load recent history tracks for home screen"
 ### Task 4: Home "Continue listening" view
 
 **Files:**
+
 - Modify: `src/view.ts` — `renderHome` (around line 90-110), new `renderRecent` helper
 - Test: `tests/view.test.mjs`
 
 **Interfaces:**
+
 - Consumes: `state.homeRecent` (Task 2), `state.library.resume`, existing `icon("play")`, `formatDuration`, `escapeHtml`, `data-action="play-track"` convention.
 - Produces: HTML section with `data-action="play-track" data-id="<id>"` buttons; no new actions.
 
@@ -471,11 +479,13 @@ git commit -m "feat(view): continue-listening section on home"
 ### Task 5: Playback fallback + Home navigation refresh
 
 **Files:**
+
 - Modify: `src/main.ts:77-83` (play-track handler), `src/main.ts:65` (navigate handler)
 - Modify: `src/app.ts` — add `resolveTrack(id)` helper
 - Test: `tests/app.test.mjs`
 
 **Interfaces:**
+
 - Consumes: `homeRecent.tracks` (Task 2), `getAudioTrack` (Task 1).
 - Produces: `DhammaApp.resolveTrack(id: number): Promise<AudioTrack | null>` — checks `findTrack`, then `homeRecent.tracks`, then `api.getAudioTrack`; returns `null` on failure. Used by `main.ts`.
 
