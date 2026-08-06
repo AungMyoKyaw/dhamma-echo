@@ -177,7 +177,7 @@ test("renderApp renders the teacher search bar and results", () => {
   assert.match(html, /data-form="teacher-search"/);
   assert.match(html, /Venerable Sayadaw U Jotika/);
   state = reduce(state, { type: "set-teacher-query", query: "dhammasami" });
-  state = reduce(state, { type: "teacher-results", teachers: [teachers[1]] });
+  state = reduce(state, { type: "teacher-results", teachers: [teachers[2]] });
   html = renderApp(state);
   assert.match(html, /value="dhammasami"/);
   assert.match(html, /Dr\. K\. Dhammasami/);

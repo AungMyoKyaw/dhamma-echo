@@ -81,7 +81,7 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
   await app.start();
   assert.equal(app.state.summary.data.totalAudio, 21402);
   assert.equal(app.state.catalogue.page.items.length, 2);
-  assert.equal(app.state.teachers.data.length, 2);
+  assert.equal(app.state.teachers.data.length, 3);
   assert.equal(renders.length > 3, true);
   assert.deepEqual(themes, ["system"]);
 
