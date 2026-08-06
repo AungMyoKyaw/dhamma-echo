@@ -94,6 +94,11 @@ export interface PlayerState {
   queueOpen: boolean;
 }
 
+export interface RecentState {
+  status: "idle" | "loading" | "ready" | "error";
+  tracks: AudioTrack[];
+}
+
 export interface AppState {
   route: Route;
   summary: Loadable<CatalogueSummary>;
@@ -102,6 +107,7 @@ export interface AppState {
   teacherResults: TeacherSummary[];
   search: SearchState;
   catalogue: CatalogueState;
+  homeRecent: RecentState;
   library: LibraryState;
   settings: SettingsState;
   player: PlayerState;

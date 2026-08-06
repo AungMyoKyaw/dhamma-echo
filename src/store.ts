@@ -31,6 +31,9 @@ export type AppAction =
   | { type: "search-started" }
   | { type: "search-loaded"; page: AudioSearchPage }
   | { type: "search-failed"; message: string }
+  | { type: "recent-started" }
+  | { type: "recent-loaded"; tracks: AudioTrack[] }
+  | { type: "recent-failed" }
   | { type: "toggle-favorite"; id: number }
   | { type: "record-history"; id: number; playedAt: number }
   | { type: "save-resume"; id: number; currentTime: number }
@@ -64,6 +67,7 @@ export function createInitialState(): AppState {
     teacherResults: [],
     search: { query: "", language: "all", format: "all", teacherId: null, limit: 50, offset: 0 },
     catalogue: { status: "idle", page: emptyPage, message: "" },
+    homeRecent: { status: "idle", tracks: [] },
     library: createDefaultLibrary(),
     settings: createDefaultSettings(),
     player: {
@@ -131,6 +135,12 @@ export function reduce(state: AppState, action: AppAction): AppState {
         ...state,
         catalogue: { ...state.catalogue, status: "error", message: action.message }
       };
+    case "recent-started":
+      return { ...state, homeRecent: { status: "loading", tracks: state.homeRecent.tracks } };
+    case "recent-loaded":
+      return { ...state, homeRecent: { status: "ready", tracks: action.tracks } };
+    case "recent-failed":
+      return { ...state, homeRecent: { status: "error", tracks: [] } };
     case "toggle-favorite": {
       const exists = state.library.favorites.includes(action.id);
       const favorites = exists

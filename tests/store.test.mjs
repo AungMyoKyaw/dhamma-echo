@@ -104,3 +104,19 @@ test("all load, failure, persistence, queue, and settings actions are determinis
   state = reduce(state, { type: "set-rate", rate: 4 });
   assert.deepEqual(state.settings, { theme: "light", volume: 0, playbackRate: 2 });
 });
+
+test("recent actions track loading, results, and failure", () => {
+  let state = createInitialState();
+  assert.deepEqual(state.homeRecent, { status: "idle", tracks: [] });
+  state = reduce(state, { type: "recent-started" });
+  assert.equal(state.homeRecent.status, "loading");
+  state = reduce(state, { type: "recent-loaded", tracks });
+  assert.equal(state.homeRecent.status, "ready");
+  assert.deepEqual(
+    state.homeRecent.tracks.map((track) => track.id),
+    [1, 2]
+  );
+  state = reduce(state, { type: "recent-failed" });
+  assert.equal(state.homeRecent.status, "error");
+  assert.deepEqual(state.homeRecent.tracks, []);
+});
