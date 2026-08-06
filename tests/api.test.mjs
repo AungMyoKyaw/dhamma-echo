@@ -71,3 +71,25 @@ test("CatalogueApi exposes teacher commands and default limits", async () => {
     { command: "search_teachers", args: { query: "dhammasami", limit: 8 } }
   ]);
 });
+
+test("CatalogueApi fetches a single audio track by id", async () => {
+  const calls = [];
+  const track = {
+    id: 7,
+    title: "Dhamma Talk",
+    format: "mp3",
+    language: "english",
+    url: "https://dhammadownload.com/MP3Library/talk.mp3",
+    dateRecorded: null,
+    location: null,
+    teacherId: 3,
+    teacherName: "Sayadaw",
+    playable: true
+  };
+  const api = new CatalogueApi(async (command, args) => {
+    calls.push({ command, args });
+    return track;
+  });
+  assert.deepEqual(await api.getAudioTrack(7), track);
+  assert.deepEqual(calls, [{ command: "get_audio_track", args: { id: 7 } }]);
+});

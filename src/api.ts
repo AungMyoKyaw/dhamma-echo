@@ -1,6 +1,7 @@
 import type {
   AudioSearchPage,
   AudioSearchRequest,
+  AudioTrack,
   CatalogueSummary,
   InvokeFn,
   TeacherSummary
@@ -43,6 +44,10 @@ export class CatalogueApi {
 
   listFeaturedTeachers(limit = 12): Promise<TeacherSummary[]> {
     return this.call("list_featured_teachers", { limit });
+  }
+
+  getAudioTrack(id: number): Promise<AudioTrack> {
+    return this.call("get_audio_track", { id });
   }
 
   searchTeachers(query: string, limit = 100): Promise<TeacherSummary[]> {
