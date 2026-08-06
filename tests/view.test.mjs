@@ -297,6 +297,15 @@ test("renderApp shows continue-listening on home and hides it without history", 
   });
   assert.match(renderApp(unknownTeacher), /Unknown teacher/);
 
+  const manyRecent = reduce(state, {
+    type: "recent-loaded",
+    tracks: [
+      tracks[0],
+      ...Array.from({ length: 5 }, (_, index) => ({ ...tracks[1], id: index + 2 }))
+    ]
+  });
+  assert.equal([...renderApp(manyRecent).matchAll(/<article class="track-row/g)].length, 4);
+
   const unplayable = reduce(state, {
     type: "recent-loaded",
     tracks: [{ ...tracks[0], playable: false }]

@@ -102,6 +102,7 @@ function renderRecent(state: AppState): string {
   const playing = state.player.current?.id === latest.id && state.player.status === "playing";
   const rows = rest
     .filter((track) => track.playable)
+    .slice(0, 4)
     .map((track) => renderTrack(track, state))
     .join("");
   return `<section class="space-y-4">
