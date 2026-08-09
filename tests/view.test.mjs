@@ -48,6 +48,55 @@ test("renderApp uses the mobile featured teacher list and exact order", () => {
   assert.deepEqual(missingIds, [30, 58, 67, 75, 26]);
 });
 
+test("renderApp pins featured teachers and labels their cards on the Teachers page", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "teachers" });
+  state = reduce(state, {
+    type: "teachers-loaded",
+    teachers: [
+      { id: 900, name: "First regular", audioCount: 900 },
+      { id: 26, name: "Teacher 26", audioCount: 26 },
+      { id: 901, name: "Second regular", audioCount: 901 },
+      { id: 30, name: "Teacher 30", audioCount: 30 },
+      { id: 67, name: "Teacher 67", audioCount: 67 }
+    ]
+  });
+
+  const html = renderApp(state);
+  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
+    Number(id)
+  );
+  assert.deepEqual(ids, [30, 67, 26, 900, 901]);
+  assert.equal((html.match(/>Featured</gu) ?? []).length, 3);
+  assert.match(html, /Teacher 30[\s\S]*?>Featured</u);
+  assert.doesNotMatch(html, /First regular[\s\S]*?>Featured</u);
+});
+
+test("renderApp preserves teacher search order while labeling featured matches", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "teachers" });
+  state = reduce(state, {
+    type: "teachers-loaded",
+    teachers: [{ id: 900, name: "Loaded teacher", audioCount: 1 }]
+  });
+  state = reduce(state, { type: "set-teacher-query", query: "teacher" });
+  state = reduce(state, {
+    type: "teacher-results",
+    teachers: [
+      { id: 900, name: "First regular", audioCount: 900 },
+      { id: 26, name: "Featured match", audioCount: 26 },
+      { id: 901, name: "Second regular", audioCount: 901 }
+    ]
+  });
+
+  const html = renderApp(state);
+  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
+    Number(id)
+  );
+  assert.deepEqual(ids, [900, 26, 901]);
+  assert.equal((html.match(/>Featured</gu) ?? []).length, 1);
+});
+
 test("renderApp renders catalogue, errors, empty state, and player safely", () => {
   let state = createInitialState();
   state = reduce(state, { type: "navigate", route: "explore" });

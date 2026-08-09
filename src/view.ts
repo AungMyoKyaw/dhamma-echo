@@ -2,6 +2,21 @@ import type { AppState, AudioTrack, Route, TeacherSummary } from "./types.js";
 import { escapeHtml, formatDuration } from "./utils.js";
 
 const CURATED_FEATURED_TEACHER_IDS = [30, 58, 53, 67, 75, 26] as const;
+const CURATED_FEATURED_TEACHER_ID_SET = new Set<number>(CURATED_FEATURED_TEACHER_IDS);
+
+function isCuratedFeaturedTeacher(id: number): boolean {
+  return CURATED_FEATURED_TEACHER_ID_SET.has(id);
+}
+
+function orderTeachersFeaturedFirst(teachers: TeacherSummary[]): TeacherSummary[] {
+  const teachersById = new Map(teachers.map((teacher) => [teacher.id, teacher]));
+  const featured = CURATED_FEATURED_TEACHER_IDS.flatMap((id) => {
+    const teacher = teachersById.get(id);
+    return teacher === undefined ? [] : [teacher];
+  });
+  const remaining = teachers.filter((teacher) => !isCuratedFeaturedTeacher(teacher.id));
+  return [...featured, ...remaining];
+}
 
 const icons: Record<string, string> = {
   home: '<path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -87,7 +102,7 @@ function stat(label: string, value: number, detail: string): string {
 function renderTeacherCard(teacher: TeacherSummary): string {
   return `<button class="group min-w-60 rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="select-teacher" data-id="${teacher.id}">
     <div class="flex size-12 items-center justify-center rounded-full bg-app-secondary/15 text-lg font-bold text-app-secondary">${escapeHtml(teacher.name.charAt(0))}</div>
-    <p class="mt-4 line-clamp-2 font-bold">${escapeHtml(teacher.name)}</p><p class="mt-1 text-sm text-app-muted">${teacher.audioCount.toLocaleString("en-US")} talks</p>
+    <div class="mt-4 flex items-start gap-2"><p class="line-clamp-2 font-bold">${escapeHtml(teacher.name)}</p>${isCuratedFeaturedTeacher(teacher.id) ? '<span class="shrink-0 rounded-full bg-app-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-app-primary">Featured</span>' : ""}</div><p class="mt-1 text-sm text-app-muted">${teacher.audioCount.toLocaleString("en-US")} talks</p>
     <span class="mt-5 inline-flex items-center gap-1 text-xs font-bold text-app-primary">Browse talks <span class="size-4">${icon("chevron")}</span></span>
   </button>`;
 }
@@ -215,7 +230,9 @@ function renderTeachers(state: AppState): string {
       "The catalogue does not currently include teacher records."
     );
   const searching = state.teacherQuery.length > 0;
-  const results = searching ? state.teacherResults : state.teachers.data;
+  const results = searching
+    ? state.teacherResults
+    : orderTeachersFeaturedFirst(state.teachers.data);
   return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search"><label class="relative flex-1"><span class="sr-only">Search teachers</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.teacherQuery)}" placeholder="Search teacher name" /></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map(renderTeacherCard).join("")}</div>`}</section>`;
 }
 
