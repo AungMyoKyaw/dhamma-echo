@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-08-09
+
+### Changed
+
+- Show curated featured teachers first on the default Teachers page while preserving the existing order of all other teachers.
+- Add a `Featured` badge to curated teacher cards without changing teacher-search result ordering.
+
 ## [0.2.3] - 2026-08-09
 
 ### Changed
