@@ -37,8 +37,8 @@ test("renderApp pins featured teachers and labels their cards on the Teachers pa
   });
 
   const html = renderApp(state);
-  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(
-    ([, id]) => Number(id)
+  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
+    Number(id)
   );
   assert.deepEqual(ids, [30, 67, 26, 900, 901]);
   assert.equal((html.match(/>Featured</gu) ?? []).length, 3);
@@ -72,8 +72,8 @@ test("renderApp preserves teacher search order while labeling featured matches",
   });
 
   const html = renderApp(state);
-  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(
-    ([, id]) => Number(id)
+  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
+    Number(id)
   );
   assert.deepEqual(ids, [900, 26, 901]);
   assert.equal((html.match(/>Featured</gu) ?? []).length, 1);
@@ -129,9 +129,7 @@ Keep the surrounding button, talk count, and browse action unchanged.
 In `renderTeachers`, replace the result selection with:
 
 ```ts
-  const results = searching
-    ? state.teacherResults
-    : orderTeachersFeaturedFirst(state.teachers.data);
+const results = searching ? state.teacherResults : orderTeachersFeaturedFirst(state.teachers.data);
 ```
 
 This deliberately preserves backend search-result ordering while allowing the shared card renderer to badge featured matches.

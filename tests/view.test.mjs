@@ -93,8 +93,18 @@ test("renderApp preserves teacher search order while labeling featured matches",
   const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
     Number(id)
   );
+  const cards = new Map(
+    [
+      ...html.matchAll(
+        /<button[^>]*data-action="select-teacher" data-id="(\d+)"[^>]*>([\s\S]*?)<\/button>/gu
+      )
+    ].map(([, id, card]) => [Number(id), card])
+  );
   assert.deepEqual(ids, [900, 26, 901]);
   assert.equal((html.match(/>Featured</gu) ?? []).length, 1);
+  assert.match(cards.get(26) ?? "", />Featured</u);
+  assert.doesNotMatch(cards.get(900) ?? "", />Featured</u);
+  assert.doesNotMatch(cards.get(901) ?? "", />Featured</u);
 });
 
 test("renderApp renders catalogue, errors, empty state, and player safely", () => {
