@@ -18,14 +18,25 @@ test("renderApp produces accessible navigation and home summary", () => {
   let state = createInitialState();
   state = reduce(state, {
     type: "summary-loaded",
-    summary: { totalAudio: 21402, totalTeachers: 212, myanmarAudio: 21074, englishAudio: 328 }
+    summary: { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 }
   });
   state = reduce(state, { type: "teachers-loaded", teachers });
   const html = renderApp(state);
   assert.match(html, /Dhamma Echo/);
-  assert.match(html, /21,402/);
+  assert.match(html, /30,563/);
   assert.match(html, /aria-label="Primary navigation"/);
   assert.match(html, /data-action="navigate" data-value="explore"/);
+});
+
+test("renderApp uses the loaded catalogue size in the Explore header", () => {
+  let state = createInitialState();
+  state = reduce(state, {
+    type: "summary-loaded",
+    summary: { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 }
+  });
+  state = reduce(state, { type: "navigate", route: "explore" });
+
+  assert.match(renderApp(state), /30,563 audio talks/);
 });
 
 test("renderApp uses the mobile featured teacher list and exact order", () => {

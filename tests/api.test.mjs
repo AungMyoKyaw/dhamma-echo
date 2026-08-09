@@ -7,11 +7,11 @@ test("CatalogueApi maps command names and request arguments", async () => {
   const invoke = async (command, args) => {
     calls.push({ command, args });
     return command === "get_catalogue_summary"
-      ? { totalAudio: 21402 }
+      ? { totalAudio: 30563 }
       : { items: [], total: 0, limit: 50, offset: 0 };
   };
   const api = new CatalogueApi(invoke);
-  assert.equal((await api.getSummary()).totalAudio, 21402);
+  assert.equal((await api.getSummary()).totalAudio, 30563);
   await api.searchAudio({
     query: "metta",
     language: null,

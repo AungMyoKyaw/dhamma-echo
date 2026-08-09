@@ -5,7 +5,7 @@ import { createMockInvoke } from "../.test-build/src/mock-data.js";
 test("mock invoke supports summary, teachers, and filtered paginated audio", async () => {
   const invoke = createMockInvoke();
   const summary = await invoke("get_catalogue_summary");
-  assert.equal(summary.totalAudio, 21402);
+  assert.equal(summary.totalAudio, 30563);
   const teachers = await invoke("list_featured_teachers", { limit: 1 });
   assert.equal(teachers.length, 1);
   const searchedTeachers = await invoke("search_teachers", { query: "jotika", limit: 10 });

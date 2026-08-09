@@ -83,7 +83,10 @@ function renderSidebar(state: AppState): string {
 function renderHeader(state: AppState): string {
   const labels: Record<Route, { eyebrow: string; title: string }> = {
     home: { eyebrow: "Home", title: "Discover the Dhamma" },
-    explore: { eyebrow: "21,402 audio talks", title: "Explore the Dhamma library" },
+    explore: {
+      eyebrow: `${state.summary.data.totalAudio.toLocaleString("en-US")} audio talks`,
+      title: "Explore the Dhamma library"
+    },
     teachers: { eyebrow: "Teachers", title: "Learn from trusted voices" },
     library: { eyebrow: "Your space", title: "Continue listening" },
     settings: { eyebrow: "Preferences", title: "Make listening yours" }

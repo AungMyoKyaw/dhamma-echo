@@ -47,7 +47,7 @@ test("product page communicates the four approved product themes", async () => {
     assert.match(html, new RegExp(phrase, "i"));
   }
 
-  assert.match(html, /21,402/);
+  assert.match(html, /30,563/);
   assert.match(html, /Tauri 2/);
   assert.match(html, /SQLite/);
   assert.match(html, /strict TypeScript/);

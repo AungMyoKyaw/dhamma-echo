@@ -47,7 +47,7 @@ class FakeAudio {
 function createApi(overrides = {}) {
   return {
     async getSummary() {
-      return { totalAudio: 21402, totalTeachers: 212, myanmarAudio: 21074, englishAudio: 328 };
+      return { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 };
     },
     async listFeaturedTeachers() {
       return teachers;
@@ -79,7 +79,7 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
     now: () => 123
   });
   await app.start();
-  assert.equal(app.state.summary.data.totalAudio, 21402);
+  assert.equal(app.state.summary.data.totalAudio, 30563);
   assert.equal(app.state.catalogue.page.items.length, 2);
   assert.equal(app.state.teachers.data.length, 3);
   assert.equal(renders.length > 3, true);

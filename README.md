@@ -26,7 +26,7 @@ The site architecture and deployment boundary are documented in [Product website
 
 ## Features
 
-- Browse 21,402 audio talks from 212 teachers.
+- Browse 30,563 audio talks from 267 teachers.
 - Search by talk title or teacher.
 - Filter by Myanmar/English and MP3/WMA.
 - Play approved MP3 audio through HTTPS with 15-second jump controls, seek, volume, speed, and queue management.

@@ -92,10 +92,10 @@ const tracks: AudioTrack[] = [
 ];
 
 const summary: CatalogueSummary = {
-  totalAudio: 21402,
-  totalTeachers: 212,
-  myanmarAudio: 21074,
-  englishAudio: 328
+  totalAudio: 30563,
+  totalTeachers: 267,
+  myanmarAudio: 30098,
+  englishAudio: 465
 };
 
 function readNumber(value: unknown, fallback: number): number {

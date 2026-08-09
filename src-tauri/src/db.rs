@@ -473,13 +473,19 @@ mod tests {
         assert!(!page.items[0].playable);
     }
 
-    // Diagnostic: run with `cargo test blank_query_real_db -- --ignored` to verify the
-    // bundled catalogue returns rows through the production search path.
     #[test]
-    #[ignore]
-    fn blank_query_real_db() {
+    fn bundled_database_exposes_current_catalogue() {
         let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/dhamma.db");
         let database = Database::open_read_only(&path).expect("open bundled db");
+        assert_eq!(
+            database.summary().expect("summary"),
+            crate::models::CatalogueSummary {
+                total_audio: 30563,
+                total_teachers: 267,
+                myanmar_audio: 30098,
+                english_audio: 465,
+            }
+        );
         let page = database
             .search_audio(&AudioSearchRequest {
                 query: String::new(),
@@ -490,7 +496,7 @@ mod tests {
                 offset: 0,
             })
             .expect("blank search");
-        assert_eq!(page.total, 21402);
+        assert_eq!(page.total, 30563);
         assert_eq!(page.items.len(), 50);
     }
 
