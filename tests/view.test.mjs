@@ -18,6 +18,36 @@ test("renderApp produces accessible navigation and home summary", () => {
   assert.match(html, /data-action="navigate" data-value="explore"/);
 });
 
+test("renderApp uses the mobile featured teacher list and exact order", () => {
+  let state = createInitialState();
+  const loaded = [
+    { id: 26, name: "Teacher 26", audioCount: 3116 },
+    { id: 999, name: "Unrelated", audioCount: 9999 },
+    { id: 67, name: "Teacher 67", audioCount: 229 },
+    { id: 30, name: "Teacher 30", audioCount: 942 },
+    { id: 75, name: "Teacher 75", audioCount: 73 },
+    { id: 53, name: "Teacher 53", audioCount: 670 },
+    { id: 58, name: "Teacher 58", audioCount: 96 }
+  ];
+  state = reduce(state, { type: "teachers-loaded", teachers: loaded });
+
+  const html = renderApp(state);
+  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
+    Number(id)
+  );
+  assert.deepEqual(ids, [30, 58, 53, 67, 75, 26]);
+  assert.doesNotMatch(html, /Unrelated/);
+
+  state = reduce(state, {
+    type: "teachers-loaded",
+    teachers: loaded.filter(({ id }) => id !== 53)
+  });
+  const missingIds = [
+    ...renderApp(state).matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)
+  ].map(([, id]) => Number(id));
+  assert.deepEqual(missingIds, [30, 58, 67, 75, 26]);
+});
+
 test("renderApp renders catalogue, errors, empty state, and player safely", () => {
   let state = createInitialState();
   state = reduce(state, { type: "navigate", route: "explore" });

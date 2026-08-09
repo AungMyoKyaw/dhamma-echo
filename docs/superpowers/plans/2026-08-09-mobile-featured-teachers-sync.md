@@ -36,16 +36,19 @@ test("renderApp uses the mobile featured teacher list and exact order", () => {
   state = reduce(state, { type: "teachers-loaded", teachers: loaded });
 
   const html = renderApp(state);
-  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(
-    ([, id]) => Number(id)
+  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
+    Number(id)
   );
   assert.deepEqual(ids, [30, 58, 53, 67, 75, 26]);
   assert.doesNotMatch(html, /Unrelated/);
 
-  state = reduce(state, { type: "teachers-loaded", teachers: loaded.filter(({ id }) => id !== 53) });
-  const missingIds = [...renderApp(state).matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(
-    ([, id]) => Number(id)
-  );
+  state = reduce(state, {
+    type: "teachers-loaded",
+    teachers: loaded.filter(({ id }) => id !== 53)
+  });
+  const missingIds = [
+    ...renderApp(state).matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)
+  ].map(([, id]) => Number(id));
   assert.deepEqual(missingIds, [30, 58, 67, 75, 26]);
 });
 ```

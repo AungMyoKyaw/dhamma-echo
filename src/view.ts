@@ -1,6 +1,8 @@
 import type { AppState, AudioTrack, Route, TeacherSummary } from "./types.js";
 import { escapeHtml, formatDuration } from "./utils.js";
 
+const CURATED_FEATURED_TEACHER_IDS = [30, 58, 53, 67, 75, 26] as const;
+
 const icons: Record<string, string> = {
   home: '<path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
   explore: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
@@ -120,11 +122,14 @@ function renderHome(state: AppState): string {
     return renderError(state.summary.message, "retry-summary");
   }
   const summary = state.summary.data;
-  const featuredIds = new Set([26, 75, 58, 30, 53, 67]);
-  const featured = state.teachers.data.filter((t) => featuredIds.has(t.id));
+  const teachersById = new Map(state.teachers.data.map((teacher) => [teacher.id, teacher]));
+  const featured = CURATED_FEATURED_TEACHER_IDS.flatMap((id) => {
+    const teacher = teachersById.get(id);
+    return teacher === undefined ? [] : [teacher];
+  });
   const teacherCards =
     state.teachers.status === "ready" && featured.length > 0
-      ? featured.slice(0, 6).map(renderTeacherCard).join("")
+      ? featured.map(renderTeacherCard).join("")
       : `<div class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted">Teacher highlights will appear here when the catalogue is ready.</div>`;
   const hasHistory = state.library.history.length > 0;
   return `<section class="space-y-8">
