@@ -4,6 +4,7 @@ import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
 
 const htmlPath = new URL("../docs/index.html", import.meta.url);
+const privacyPath = new URL("../docs/privacy/index.html", import.meta.url);
 const cssPath = new URL("../docs/assets/site.css", import.meta.url);
 const screenshotPath = new URL("../docs/images/dhamma-echo-demo.png", import.meta.url);
 
@@ -69,6 +70,26 @@ test("product styles preserve keyboard focus and reduced motion", async () => {
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css, /min-height:\s*44px/);
   assert.match(css, /overflow-x:\s*hidden/);
+});
+
+test("privacy policy publishes the required user-data disclosures", async () => {
+  const [privacy, landing] = await Promise.all([
+    readFile(privacyPath, "utf8"),
+    readFile(htmlPath, "utf8")
+  ]);
+
+  assert.match(privacy, /<title>Privacy Policy — Dhamma Echo<\/title>/);
+  assert.equal((privacy.match(/<h1\b/g) ?? []).length, 1);
+  assert.match(privacy, /Effective date:\s*August 9, 2026/i);
+  assert.match(privacy, /builtbyamk@duck\.com/);
+  assert.match(privacy, /stored locally on your device/i);
+  assert.match(privacy, /dhammadownload\.com/);
+  assert.match(privacy, /www\.dhammadownload\.com/);
+  assert.match(privacy, /IP address/i);
+  assert.match(privacy, /do not sell/i);
+  assert.match(privacy, /clearing the app's data or uninstalling/i);
+  assert.match(privacy, /children/i);
+  assert.match(landing, /href="privacy\/"/);
 });
 
 test("site smoke command passes", () => {
