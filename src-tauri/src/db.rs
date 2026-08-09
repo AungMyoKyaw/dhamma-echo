@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, path::Path, sync::Mutex, time::Duration};
+use std::{path::Path, sync::Mutex, time::Duration};
 
 use rusqlite::{Connection, OpenFlags, Row, params, params_from_iter, types::Value};
 
@@ -10,8 +10,6 @@ use crate::{
     },
     normalize::normalize_text,
 };
-
-const NATURAL_TITLE_COLLATION: &str = "NATURAL_TITLE";
 
 pub struct Database {
     connection: Mutex<Connection>,
@@ -30,20 +28,16 @@ impl Database {
         connection
             .pragma_update(None, "query_only", true)
             .map_err(|error| AppError::DatabaseOpen(error.to_string()))?;
-        register_collations(&connection)
-            .map_err(|error| AppError::DatabaseOpen(error.to_string()))?;
         Ok(Self {
             connection: Mutex::new(connection),
         })
     }
 
     #[cfg(test)]
-    fn from_connection(connection: Connection) -> Result<Self, AppError> {
-        register_collations(&connection)
-            .map_err(|error| AppError::DatabaseOpen(error.to_string()))?;
-        Ok(Self {
+    fn from_connection(connection: Connection) -> Self {
+        Self {
             connection: Mutex::new(connection),
-        })
+        }
     }
 
     fn with_connection<T>(
@@ -225,7 +219,7 @@ impl Database {
                  FROM media m
                  LEFT JOIN teachers t ON t.id = m.teacher_id
                  WHERE {where_clause}
-                 ORDER BY LOWER(COALESCE(t.name, '')), m.title COLLATE NATURAL_TITLE, m.id
+                 ORDER BY LOWER(COALESCE(t.name, '')), m.id
                  LIMIT ? OFFSET ?"
             );
             let mut page_values = values;
@@ -280,53 +274,6 @@ fn optional_normalized(value: Option<String>) -> Option<String> {
         .filter(|text| !text.is_empty())
 }
 
-fn decimal_digit(character: char) -> Option<u8> {
-    match character {
-        '0'..='9' => Some(character as u8 - b'0'),
-        '၀'..='၉' => Some((character as u32 - '၀' as u32) as u8),
-        _ => None,
-    }
-}
-
-fn leading_number(value: &str) -> Option<Vec<u8>> {
-    let digits: Vec<u8> = value
-        .trim_start()
-        .chars()
-        .map_while(decimal_digit)
-        .collect();
-    (!digits.is_empty()).then_some(digits)
-}
-
-fn compare_digit_runs(left: &[u8], right: &[u8]) -> Ordering {
-    let left = left
-        .iter()
-        .skip_while(|digit| **digit == 0)
-        .copied()
-        .collect::<Vec<_>>();
-    let right = right
-        .iter()
-        .skip_while(|digit| **digit == 0)
-        .copied()
-        .collect::<Vec<_>>();
-    left.len().cmp(&right.len()).then_with(|| left.cmp(&right))
-}
-
-fn natural_title_order(left: &str, right: &str) -> Ordering {
-    let lexical = || left.to_lowercase().cmp(&right.to_lowercase());
-    match (leading_number(left), leading_number(right)) {
-        (Some(left_number), Some(right_number)) => {
-            compare_digit_runs(&left_number, &right_number).then_with(lexical)
-        }
-        (Some(_), None) => Ordering::Less,
-        (None, Some(_)) => Ordering::Greater,
-        (None, None) => lexical(),
-    }
-}
-
-fn register_collations(connection: &Connection) -> rusqlite::Result<()> {
-    connection.create_collation(NATURAL_TITLE_COLLATION, natural_title_order)
-}
-
 fn map_teacher_summary(row: &Row<'_>) -> rusqlite::Result<TeacherSummary> {
     Ok(TeacherSummary {
         id: row.get(0)?,
@@ -370,11 +317,9 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
 
 #[cfg(test)]
 mod tests {
-    use std::cmp::Ordering;
-
     use rusqlite::Connection;
 
-    use super::{Database, is_webview_playable, natural_title_order};
+    use super::{Database, is_webview_playable};
     use crate::{error::AppError, models::AudioSearchRequest};
 
     fn fixture() -> Database {
@@ -406,10 +351,10 @@ mod tests {
                  INSERT INTO media VALUES (3, 'Video', 'video', 'mp4', 'myanmar', 'https://dhammadownload.com/video.mp4', NULL, NULL, 2);",
             )
             .expect("seed fixture");
-        Database::from_connection(connection).expect("configure fixture")
+        Database::from_connection(connection)
     }
 
-    fn numbered_title_fixture() -> Database {
+    fn source_order_fixture() -> Database {
         let connection = Connection::open_in_memory().expect("open numbered fixture");
         connection
             .execute_batch(
@@ -442,7 +387,7 @@ mod tests {
                  INSERT INTO media VALUES (8, '၀၉-၀၄-၂၀၂၄ တရား', 'audio', 'mp3', 'myanmar', 'https://dhammadownload.com/8.mp3', NULL, NULL, 1);",
             )
             .expect("seed numbered fixture");
-        Database::from_connection(connection).expect("configure numbered fixture")
+        Database::from_connection(connection)
     }
 
     #[test]
@@ -455,31 +400,8 @@ mod tests {
     }
 
     #[test]
-    fn naturally_compares_ascii_and_burmese_numbered_titles() {
-        let cases = [
-            ("1 Talk", "2 Talk", Ordering::Less),
-            ("9 Talk", "10 Talk", Ordering::Less),
-            ("၂ တရား", "၁၀ တရား", Ordering::Less),
-            ("  2 Talk", "၁၀ တရား", Ordering::Less),
-            ("2 Talk", "၂ တရား", "2 talk".cmp("၂ တရား")),
-            ("02 Talk", "2 Talk", "02 talk".cmp("2 talk")),
-            ("Alpha", "beta", Ordering::Less),
-            ("2 Talk", "Alpha", Ordering::Less),
-        ];
-
-        for (left, right, expected) in cases {
-            assert_eq!(
-                natural_title_order(left, right),
-                expected,
-                "{left:?} vs {right:?}"
-            );
-            assert_eq!(natural_title_order(right, left), expected.reverse());
-        }
-    }
-
-    #[test]
     fn search_audio_preserves_repeated_series_across_pages() {
-        let database = numbered_title_fixture();
+        let database = source_order_fixture();
         let first = database
             .search_audio(&AudioSearchRequest {
                 query: String::new(),
