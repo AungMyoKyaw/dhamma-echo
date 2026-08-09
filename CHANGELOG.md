@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-08-09
+
+### Changed
+
+- Match the desktop Home featured-teacher list and exact card order to the curated Expo mobile selection.
+- Keep featured-teacher curation frontend-only while preserving live catalogue names and talk counts.
+
 ## [0.2.2] - 2026-08-09
 
 ### Added
