@@ -11,6 +11,8 @@ use crate::{
     normalize::normalize_text,
 };
 
+const NATURAL_TITLE_COLLATION: &str = "NATURAL_TITLE";
+
 pub struct Database {
     connection: Mutex<Connection>,
 }
@@ -28,16 +30,20 @@ impl Database {
         connection
             .pragma_update(None, "query_only", true)
             .map_err(|error| AppError::DatabaseOpen(error.to_string()))?;
+        register_collations(&connection)
+            .map_err(|error| AppError::DatabaseOpen(error.to_string()))?;
         Ok(Self {
             connection: Mutex::new(connection),
         })
     }
 
     #[cfg(test)]
-    fn from_connection(connection: Connection) -> Self {
-        Self {
+    fn from_connection(connection: Connection) -> Result<Self, AppError> {
+        register_collations(&connection)
+            .map_err(|error| AppError::DatabaseOpen(error.to_string()))?;
+        Ok(Self {
             connection: Mutex::new(connection),
-        }
+        })
     }
 
     fn with_connection<T>(
@@ -219,7 +225,7 @@ impl Database {
                  FROM media m
                  LEFT JOIN teachers t ON t.id = m.teacher_id
                  WHERE {where_clause}
-                 ORDER BY LOWER(COALESCE(t.name, '')), LOWER(m.title), m.id
+                 ORDER BY LOWER(COALESCE(t.name, '')), m.title COLLATE NATURAL_TITLE, m.id
                  LIMIT ? OFFSET ?"
             );
             let mut page_values = values;
@@ -317,6 +323,10 @@ fn natural_title_order(left: &str, right: &str) -> Ordering {
     }
 }
 
+fn register_collations(connection: &Connection) -> rusqlite::Result<()> {
+    connection.create_collation(NATURAL_TITLE_COLLATION, natural_title_order)
+}
+
 fn map_teacher_summary(row: &Row<'_>) -> rusqlite::Result<TeacherSummary> {
     Ok(TeacherSummary {
         id: row.get(0)?,
@@ -396,7 +406,41 @@ mod tests {
                  INSERT INTO media VALUES (3, 'Video', 'video', 'mp4', 'myanmar', 'https://dhammadownload.com/video.mp4', NULL, NULL, 2);",
             )
             .expect("seed fixture");
-        Database::from_connection(connection)
+        Database::from_connection(connection).expect("configure fixture")
+    }
+
+    fn numbered_title_fixture() -> Database {
+        let connection = Connection::open_in_memory().expect("open numbered fixture");
+        connection
+            .execute_batch(
+                "CREATE TABLE teachers (
+                    id INTEGER PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    name_myanmar TEXT,
+                    title TEXT,
+                    description TEXT
+                 );
+                 CREATE TABLE media (
+                    id INTEGER PRIMARY KEY,
+                    title TEXT NOT NULL,
+                    type TEXT NOT NULL,
+                    format TEXT,
+                    language TEXT NOT NULL,
+                    url TEXT NOT NULL,
+                    date_recorded TEXT,
+                    location TEXT,
+                    teacher_id INTEGER
+                 );
+                 INSERT INTO teachers VALUES (1, 'Teacher', NULL, NULL, NULL);
+                 INSERT INTO media VALUES (6, 'Alpha', 'audio', 'mp3', 'english', 'https://dhammadownload.com/6.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (5, '10 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/5.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (4, '10 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/4.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (3, '9 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/3.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (2, '၂ မြန်မာ', 'audio', 'mp3', 'myanmar', 'https://dhammadownload.com/2.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (1, '1 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/1.mp3', NULL, NULL, 1);",
+            )
+            .expect("seed numbered fixture");
+        Database::from_connection(connection).expect("configure numbered fixture")
     }
 
     #[test]
@@ -429,6 +473,39 @@ mod tests {
             );
             assert_eq!(natural_title_order(right, left), expected.reverse());
         }
+    }
+
+    #[test]
+    fn search_audio_naturally_sorts_numbered_titles_across_pages() {
+        let database = numbered_title_fixture();
+        let first = database
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: None,
+                teacher_id: Some(1),
+                limit: 3,
+                offset: 0,
+            })
+            .expect("first page");
+        let second = database
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: None,
+                teacher_id: Some(1),
+                limit: 3,
+                offset: 3,
+            })
+            .expect("second page");
+
+        let ordered_ids = first
+            .items
+            .into_iter()
+            .chain(second.items)
+            .map(|track| track.id)
+            .collect::<Vec<_>>();
+        assert_eq!(ordered_ids, vec![1, 2, 3, 4, 5, 6]);
     }
 
     #[test]
