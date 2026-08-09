@@ -4,6 +4,16 @@ import { renderApp } from "../.test-build/src/view.js";
 import { createInitialState, reduce } from "../.test-build/src/store.js";
 import { tracks, teachers } from "./test-data.mjs";
 
+function teacherCards(html) {
+  return new Map(
+    [
+      ...html.matchAll(
+        /<button[^>]*data-action="select-teacher" data-id="(\d+)"[^>]*>([\s\S]*?)<\/button>/gu
+      )
+    ].map(([, id, card]) => [Number(id), card])
+  );
+}
+
 test("renderApp produces accessible navigation and home summary", () => {
   let state = createInitialState();
   state = reduce(state, {
@@ -55,10 +65,14 @@ test("renderApp pins featured teachers and labels their cards on the Teachers pa
     type: "teachers-loaded",
     teachers: [
       { id: 900, name: "First regular", audioCount: 900 },
-      { id: 26, name: "Teacher 26", audioCount: 26 },
+      { id: 58, name: "Teacher 58", audioCount: 58 },
       { id: 901, name: "Second regular", audioCount: 901 },
+      { id: 26, name: "Teacher 26", audioCount: 26 },
+      { id: 902, name: "Third regular", audioCount: 902 },
       { id: 30, name: "Teacher 30", audioCount: 30 },
-      { id: 67, name: "Teacher 67", audioCount: 67 }
+      { id: 67, name: "Teacher 67", audioCount: 67 },
+      { id: 53, name: "Teacher 53", audioCount: 53 },
+      { id: 75, name: "Teacher 75", audioCount: 75 }
     ]
   });
 
@@ -66,10 +80,49 @@ test("renderApp pins featured teachers and labels their cards on the Teachers pa
   const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
     Number(id)
   );
-  assert.deepEqual(ids, [30, 67, 26, 900, 901]);
-  assert.equal((html.match(/>Featured</gu) ?? []).length, 3);
-  assert.match(html, /Teacher 30[\s\S]*?>Featured</u);
-  assert.doesNotMatch(html, /First regular[\s\S]*?>Featured</u);
+  const cards = teacherCards(html);
+  assert.deepEqual(ids, [30, 58, 53, 67, 75, 26, 900, 901, 902]);
+  for (const id of [30, 58, 53, 67, 75, 26]) {
+    const card = cards.get(id);
+    assert.ok(card, `Missing featured teacher card ${id}`);
+    assert.equal((card.match(/>Featured</gu) ?? []).length, 1);
+  }
+  for (const id of [900, 901, 902]) {
+    const card = cards.get(id);
+    assert.ok(card, `Missing regular teacher card ${id}`);
+    assert.equal((card.match(/>Featured</gu) ?? []).length, 0);
+  }
+});
+
+test("renderApp skips missing curated teachers while preserving default ordering", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "teachers" });
+  state = reduce(state, {
+    type: "teachers-loaded",
+    teachers: [
+      { id: 900, name: "First regular", audioCount: 900 },
+      { id: 53, name: "Teacher 53", audioCount: 53 },
+      { id: 901, name: "Second regular", audioCount: 901 },
+      { id: 30, name: "Teacher 30", audioCount: 30 }
+    ]
+  });
+
+  const html = renderApp(state);
+  const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
+    Number(id)
+  );
+  const cards = teacherCards(html);
+  assert.deepEqual(ids, [30, 53, 900, 901]);
+  for (const id of [30, 53]) {
+    const card = cards.get(id);
+    assert.ok(card, `Missing featured teacher card ${id}`);
+    assert.equal((card.match(/>Featured</gu) ?? []).length, 1);
+  }
+  for (const id of [900, 901]) {
+    const card = cards.get(id);
+    assert.ok(card, `Missing regular teacher card ${id}`);
+    assert.equal((card.match(/>Featured</gu) ?? []).length, 0);
+  }
 });
 
 test("renderApp preserves teacher search order while labeling featured matches", () => {
@@ -93,13 +146,7 @@ test("renderApp preserves teacher search order while labeling featured matches",
   const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
     Number(id)
   );
-  const cards = new Map(
-    [
-      ...html.matchAll(
-        /<button[^>]*data-action="select-teacher" data-id="(\d+)"[^>]*>([\s\S]*?)<\/button>/gu
-      )
-    ].map(([, id, card]) => [Number(id), card])
-  );
+  const cards = teacherCards(html);
   assert.deepEqual(ids, [900, 26, 901]);
   assert.equal((html.match(/>Featured</gu) ?? []).length, 1);
   assert.match(cards.get(26) ?? "", />Featured</u);
