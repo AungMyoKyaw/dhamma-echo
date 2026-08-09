@@ -432,12 +432,14 @@ mod tests {
                     teacher_id INTEGER
                  );
                  INSERT INTO teachers VALUES (1, 'Teacher', NULL, NULL, NULL);
-                 INSERT INTO media VALUES (6, 'Alpha', 'audio', 'mp3', 'english', 'https://dhammadownload.com/6.mp3', NULL, NULL, 1);
-                 INSERT INTO media VALUES (5, '10 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/5.mp3', NULL, NULL, 1);
-                 INSERT INTO media VALUES (4, '10 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/4.mp3', NULL, NULL, 1);
-                 INSERT INTO media VALUES (3, '9 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/3.mp3', NULL, NULL, 1);
-                 INSERT INTO media VALUES (2, '၂ မြန်မာ', 'audio', 'mp3', 'myanmar', 'https://dhammadownload.com/2.mp3', NULL, NULL, 1);
-                 INSERT INTO media VALUES (1, '1 English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/1.mp3', NULL, NULL, 1);",
+                 INSERT INTO media VALUES (1, '1: Series A', 'audio', 'mp3', 'english', 'https://dhammadownload.com/1.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (2, '2: Series A', 'audio', 'mp3', 'english', 'https://dhammadownload.com/2.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (3, '10: Series A', 'audio', 'mp3', 'english', 'https://dhammadownload.com/3.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (4, '1: Series B', 'audio', 'mp3', 'english', 'https://dhammadownload.com/4.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (5, '2: Series B', 'audio', 'mp3', 'english', 'https://dhammadownload.com/5.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (6, '10: Series B', 'audio', 'mp3', 'english', 'https://dhammadownload.com/6.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (7, '၁၀-၀၄-၂၀၂၄ တရား', 'audio', 'mp3', 'myanmar', 'https://dhammadownload.com/7.mp3', NULL, NULL, 1);
+                 INSERT INTO media VALUES (8, '၀၉-၀၄-၂၀၂၄ တရား', 'audio', 'mp3', 'myanmar', 'https://dhammadownload.com/8.mp3', NULL, NULL, 1);",
             )
             .expect("seed numbered fixture");
         Database::from_connection(connection).expect("configure numbered fixture")
@@ -476,7 +478,7 @@ mod tests {
     }
 
     #[test]
-    fn search_audio_naturally_sorts_numbered_titles_across_pages() {
+    fn search_audio_preserves_repeated_series_across_pages() {
         let database = numbered_title_fixture();
         let first = database
             .search_audio(&AudioSearchRequest {
@@ -484,7 +486,7 @@ mod tests {
                 language: None,
                 format: None,
                 teacher_id: Some(1),
-                limit: 3,
+                limit: 4,
                 offset: 0,
             })
             .expect("first page");
@@ -494,8 +496,8 @@ mod tests {
                 language: None,
                 format: None,
                 teacher_id: Some(1),
-                limit: 3,
-                offset: 3,
+                limit: 4,
+                offset: 4,
             })
             .expect("second page");
 
@@ -505,7 +507,7 @@ mod tests {
             .chain(second.items)
             .map(|track| track.id)
             .collect::<Vec<_>>();
-        assert_eq!(ordered_ids, vec![1, 2, 3, 4, 5, 6]);
+        assert_eq!(ordered_ids, vec![1, 2, 3, 4, 5, 6, 7, 8]);
     }
 
     #[test]
