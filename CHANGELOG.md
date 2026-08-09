@@ -4,6 +4,17 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-08-09
+
+### Added
+
+- Privacy policy page for the published product site.
+
+### Fixed
+
+- Preserve each teacher's original catalogue order so repeated numbered teaching series remain together across pages.
+- Stop treating Burmese date prefixes as track sequence numbers, which could make expected talks appear missing after pagination.
+
 ## [0.2.1] - 2026-08-07
 
 ### Added
