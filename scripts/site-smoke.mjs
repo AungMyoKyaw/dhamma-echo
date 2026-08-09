@@ -71,9 +71,14 @@ async function main() {
   const references = localReferences(html);
   let totalBytes = 0;
   for (const reference of references) {
-    const resolved = path.resolve(docsRoot, reference);
+    let resolved = path.resolve(docsRoot, reference);
     assertInsideDocs(resolved, reference);
-    const info = await stat(resolved);
+    let info = await stat(resolved);
+    if (info.isDirectory()) {
+      resolved = path.join(resolved, "index.html");
+      assertInsideDocs(resolved, reference);
+      info = await stat(resolved);
+    }
     assert.ok(info.isFile(), `Referenced asset is not a file: ${reference}`);
     totalBytes += info.size;
   }

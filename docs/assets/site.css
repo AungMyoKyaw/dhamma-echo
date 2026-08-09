@@ -774,12 +774,114 @@ blockquote footer {
   text-align: center;
 }
 
-.footer-inner > a {
+.footer-inner > a,
+.footer-links a {
   min-height: 44px;
   padding: 10px 0;
   color: var(--primary);
   font-size: 13px;
   font-weight: 720;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.policy-main {
+  padding-bottom: clamp(72px, 9vw, 120px);
+}
+
+.policy-hero {
+  padding: clamp(68px, 9vw, 112px) 0 clamp(42px, 6vw, 72px);
+}
+
+.policy-kicker {
+  margin-bottom: 14px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 760;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.policy-hero h1 {
+  max-width: 840px;
+  margin-bottom: 24px;
+  font-size: clamp(48px, 7vw, 82px);
+}
+
+.policy-lead {
+  max-width: 760px;
+  margin-bottom: 26px;
+  color: #56554f;
+  font-size: clamp(18px, 2.2vw, 22px);
+}
+
+.policy-meta {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.policy-card {
+  max-width: 900px;
+  padding: clamp(30px, 6vw, 70px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-large);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.policy-section + .policy-section {
+  margin-top: 42px;
+  padding-top: 42px;
+  border-top: 1px solid var(--line);
+}
+
+.policy-section h2 {
+  margin-bottom: 14px;
+  font-size: clamp(24px, 3vw, 32px);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.policy-section p {
+  margin-bottom: 16px;
+  color: #56554f;
+}
+
+.policy-section p:last-child {
+  margin-bottom: 0;
+}
+
+.policy-section code {
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: var(--surface-low);
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.policy-contact {
+  padding: 30px;
+  border: 1px solid #d8c2b1;
+  border-radius: var(--radius-medium);
+  background: var(--primary-soft);
+}
+
+.policy-section + .policy-contact {
+  border-top-color: #d8c2b1;
+}
+
+.policy-contact a {
+  color: var(--primary-strong);
+  font-weight: 720;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 @keyframes rise-in {
@@ -942,6 +1044,10 @@ blockquote footer {
   .footer-inner {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
   }
 
   .footer-inner > p {
