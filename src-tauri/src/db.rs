@@ -1,4 +1,4 @@
-use std::{path::Path, sync::Mutex, time::Duration};
+use std::{cmp::Ordering, path::Path, sync::Mutex, time::Duration};
 
 use rusqlite::{Connection, OpenFlags, Row, params, params_from_iter, types::Value};
 
@@ -274,6 +274,49 @@ fn optional_normalized(value: Option<String>) -> Option<String> {
         .filter(|text| !text.is_empty())
 }
 
+fn decimal_digit(character: char) -> Option<u8> {
+    match character {
+        '0'..='9' => Some(character as u8 - b'0'),
+        '၀'..='၉' => Some((character as u32 - '၀' as u32) as u8),
+        _ => None,
+    }
+}
+
+fn leading_number(value: &str) -> Option<Vec<u8>> {
+    let digits: Vec<u8> = value
+        .trim_start()
+        .chars()
+        .map_while(decimal_digit)
+        .collect();
+    (!digits.is_empty()).then_some(digits)
+}
+
+fn compare_digit_runs(left: &[u8], right: &[u8]) -> Ordering {
+    let left = left
+        .iter()
+        .skip_while(|digit| **digit == 0)
+        .copied()
+        .collect::<Vec<_>>();
+    let right = right
+        .iter()
+        .skip_while(|digit| **digit == 0)
+        .copied()
+        .collect::<Vec<_>>();
+    left.len().cmp(&right.len()).then_with(|| left.cmp(&right))
+}
+
+fn natural_title_order(left: &str, right: &str) -> Ordering {
+    let lexical = || left.to_lowercase().cmp(&right.to_lowercase());
+    match (leading_number(left), leading_number(right)) {
+        (Some(left_number), Some(right_number)) => {
+            compare_digit_runs(&left_number, &right_number).then_with(lexical)
+        }
+        (Some(_), None) => Ordering::Less,
+        (None, Some(_)) => Ordering::Greater,
+        (None, None) => lexical(),
+    }
+}
+
 fn map_teacher_summary(row: &Row<'_>) -> rusqlite::Result<TeacherSummary> {
     Ok(TeacherSummary {
         id: row.get(0)?,
@@ -317,9 +360,11 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
 
 #[cfg(test)]
 mod tests {
+    use std::cmp::Ordering;
+
     use rusqlite::Connection;
 
-    use super::{Database, is_webview_playable};
+    use super::{Database, is_webview_playable, natural_title_order};
     use crate::{error::AppError, models::AudioSearchRequest};
 
     fn fixture() -> Database {
@@ -361,6 +406,29 @@ mod tests {
         let teachers = database.featured_teachers(10).expect("teachers");
         assert_eq!(teachers.len(), 2);
         assert_eq!(teachers[0].name, "Teacher One");
+    }
+
+    #[test]
+    fn naturally_compares_ascii_and_burmese_numbered_titles() {
+        let cases = [
+            ("1 Talk", "2 Talk", Ordering::Less),
+            ("9 Talk", "10 Talk", Ordering::Less),
+            ("၂ တရား", "၁၀ တရား", Ordering::Less),
+            ("  2 Talk", "၁၀ တရား", Ordering::Less),
+            ("2 Talk", "၂ တရား", "2 talk".cmp("၂ တရား")),
+            ("02 Talk", "2 Talk", "02 talk".cmp("2 talk")),
+            ("Alpha", "beta", Ordering::Less),
+            ("2 Talk", "Alpha", Ordering::Less),
+        ];
+
+        for (left, right, expected) in cases {
+            assert_eq!(
+                natural_title_order(left, right),
+                expected,
+                "{left:?} vs {right:?}"
+            );
+            assert_eq!(natural_title_order(right, left), expected.reverse());
+        }
     }
 
     #[test]
