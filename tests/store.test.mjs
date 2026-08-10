@@ -165,3 +165,26 @@ test("audio discovery loadable states preserve independent pagination", () => {
   state = reduce(state, { type: "return-to-list" });
   assert.equal(state.route, "home");
 });
+
+test("audio discovery failures and remaining transitions stay isolated", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "categories-started" });
+  assert.equal(state.categories.status, "loading");
+  state = reduce(state, { type: "categories-failed", message: "categories offline" });
+  assert.equal(state.categories.message, "categories offline");
+  state = reduce(state, { type: "set-collection", collectionId: 10 });
+  state = reduce(state, { type: "clear-collection" });
+  assert.equal(state.search.collectionId, null);
+  state = reduce(state, { type: "set-collection-teacher", teacherId: 3 });
+  assert.equal(state.collectionSearch.teacherId, 3);
+  state = reduce(state, { type: "collections-started" });
+  assert.equal(state.collections.status, "loading");
+  state = reduce(state, { type: "collections-failed", message: "collections offline" });
+  assert.equal(state.collections.message, "collections offline");
+  state = reduce(state, { type: "teacher-detail-failed", message: "teacher missing" });
+  assert.equal(state.teacherDetail.message, "teacher missing");
+  state = reduce(state, { type: "teacher-talks-started" });
+  assert.equal(state.teacherTalks.status, "loading");
+  state = reduce(state, { type: "teacher-talks-failed", message: "talks offline" });
+  assert.equal(state.teacherTalks.message, "talks offline");
+});

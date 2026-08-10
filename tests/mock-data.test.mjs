@@ -90,7 +90,31 @@ test("mock invoke supports categories, collections, and detail records", async (
   });
   assert.equal(page.items.length, 2);
   const collection = await invoke("get_collection", { id: 10 });
-  assert.equal(collection.tracks.some((track) => track.playable), true);
+  assert.equal(
+    collection.tracks.some((track) => track.playable),
+    true
+  );
   const teacher = await invoke("get_teacher", { id: 3 });
   assert.equal(teacher.id, 3);
+  const teacherPage = await invoke("search_collections", {
+    request: { query: "", teacherId: 3, limit: 1, offset: 0 }
+  });
+  assert.equal(teacherPage.items.length, 1);
+  const defaultPage = await invoke("search_collections");
+  assert.equal(defaultPage.items.length, 2);
+  const byCategory = await invoke("search_audio", {
+    request: {
+      query: "",
+      language: null,
+      format: null,
+      teacherId: null,
+      categoryId: 7,
+      collectionId: 10,
+      limit: 50,
+      offset: 0
+    }
+  });
+  assert.equal(byCategory.items.length, 2);
+  await assert.rejects(invoke("get_collection", { id: 999 }), /Unsupported command/);
+  await assert.rejects(invoke("get_teacher", { id: 999 }), /Unsupported command/);
 });

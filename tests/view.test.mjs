@@ -567,3 +567,121 @@ test("renderApp renders collection and teacher details with playable incomplete 
   assert.match(html, /data-action="previous-teacher-talks"/);
   assert.match(html, /data-action="next-teacher-talks"/);
 });
+
+test("renderApp covers discovery loading, empty, and error states", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "collections" });
+  assert.match(renderApp(state), /Loading talks/);
+  state = reduce(state, { type: "teachers-loaded", teachers });
+  state = reduce(state, { type: "set-collection-teacher", teacherId: teachers[1].id });
+  state = reduce(state, { type: "collections-failed", message: "Collection failure" });
+  let html = renderApp(state);
+  assert.match(html, /retry-collections/);
+  assert.match(html, /Collection teacher/);
+  assert.match(html, /selected/);
+  state = reduce(state, {
+    type: "collections-loaded",
+    page: { items: [], total: 0, limit: 24, offset: 0 }
+  });
+  assert.match(renderApp(state), /No collections match/);
+
+  state = reduce(state, { type: "open-collection", collectionId: 99, returnRoute: "collections" });
+  state = reduce(state, { type: "collection-detail-failed", message: "Missing collection" });
+  assert.match(renderApp(state), /retry-collection/);
+  state = reduce(state, {
+    type: "collection-detail-loaded",
+    detail: {
+      id: 99,
+      name: "Empty collection",
+      description: "Description",
+      teacherId: null,
+      teacherName: "",
+      audioCount: 0,
+      tracks: []
+    }
+  });
+  html = renderApp(state);
+  assert.match(html, /No audio talks in this collection/);
+  assert.match(html, /Unknown teacher/);
+  assert.match(html, /Description/);
+
+  state = reduce(state, { type: "open-teacher", teacherId: 99, returnRoute: "teachers" });
+  state = reduce(state, { type: "teacher-detail-failed", message: "Missing teacher" });
+  assert.match(renderApp(state), /retry-teacher-detail/);
+  state = reduce(state, {
+    type: "teacher-detail-loaded",
+    detail: {
+      id: 99,
+      name: "Teacher",
+      nameMyanmar: null,
+      title: null,
+      description: null,
+      audioCount: 0,
+      collections: []
+    }
+  });
+  state = reduce(state, { type: "teacher-talks-failed", message: "Talk failure" });
+  assert.match(renderApp(state), /Talk failure/);
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    page: { items: [], total: 0, limit: 50, offset: 0 }
+  });
+  assert.match(renderApp(state), /No talks found/);
+});
+
+test("renderApp covers discovery selection and pagination alternatives", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, { type: "categories-loaded", categories });
+  let html = renderApp(state);
+  assert.match(html, /bg-app-primary text-white[^>]*data-action="filter-category" data-id="0"/);
+
+  state = reduce(state, { type: "navigate", route: "collections" });
+  state = reduce(state, {
+    type: "collections-loaded",
+    page: {
+      items: [{ ...collections[0], teacherName: "" }, collections[1]],
+      total: 50,
+      limit: 24,
+      offset: 24
+    }
+  });
+  html = renderApp(state);
+  assert.doesNotMatch(html, /data-action="previous-collections" disabled/);
+  assert.doesNotMatch(html, /data-action="next-collections" disabled/);
+  assert.match(html, /Unknown teacher/);
+
+  state = {
+    ...state,
+    route: "collection-detail",
+    collectionDetail: { status: "ready", data: null, message: "" }
+  };
+  assert.match(renderApp(state), /Loading talks/);
+
+  state = {
+    ...state,
+    route: "teacher-detail",
+    teacherDetail: { status: "ready", data: null, message: "" }
+  };
+  assert.match(renderApp(state), /Loading talks/);
+
+  state = reduce(state, {
+    type: "teacher-detail-loaded",
+    detail: {
+      id: 3,
+      name: "Teacher",
+      nameMyanmar: null,
+      title: null,
+      description: null,
+      audioCount: 100,
+      collections: []
+    }
+  });
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    page: { items: tracks, total: 120, limit: 50, offset: 50 }
+  });
+  html = renderApp(state);
+  assert.doesNotMatch(html, /data-action="previous-teacher-talks" disabled/);
+  assert.doesNotMatch(html, /data-action="next-teacher-talks" disabled/);
+});

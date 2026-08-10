@@ -264,7 +264,9 @@ function renderTeachers(state: AppState): string {
   return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search"><label class="relative flex-1"><span class="sr-only">Search teachers</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.teacherQuery)}" placeholder="Search teacher name" /></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map((teacher) => renderTeacherCard(teacher)).join("")}</div>`}</section>`;
 }
 
-function renderCollectionCard(collection: AppState["collections"]["page"]["items"][number]): string {
+function renderCollectionCard(
+  collection: AppState["collections"]["page"]["items"][number]
+): string {
   return `<button class="group flex min-w-0 flex-col rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="open-collection" data-id="${collection.id}"><p class="font-bold leading-7">${escapeHtml(collection.name)}</p><p class="mt-2 text-sm text-app-muted">${escapeHtml(collection.teacherName || "Unknown teacher")}</p><p class="mt-4 text-xs font-bold text-app-primary">${collection.audioCount.toLocaleString("en-US")} talks</p></button>`;
 }
 
@@ -276,7 +278,10 @@ function renderCollections(state: AppState): string {
   if (collectionState.status === "ready") {
     content =
       collectionState.page.items.length === 0
-        ? renderEmpty("No collections match", "Try a shorter collection name or clear the teacher filter.")
+        ? renderEmpty(
+            "No collections match",
+            "Try a shorter collection name or clear the teacher filter."
+          )
         : `<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">${collectionState.page.items.map(renderCollectionCard).join("")}</div>`;
   }
   const page = collectionState.page;
@@ -300,7 +305,10 @@ function renderCollectionDetail(state: AppState): string {
   if (state.collectionDetail.status !== "ready" || detail === null) return renderLoading();
   const tracks =
     detail.tracks.length === 0
-      ? renderEmpty("No audio talks in this collection", "This collection has no audio records to play.")
+      ? renderEmpty(
+          "No audio talks in this collection",
+          "This collection has no audio records to play."
+        )
       : `<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">${detail.tracks.map((track) => renderTrack(track, state)).join("")}</div>`;
   return `<section class="space-y-5">${renderBackButton()}<div class="rounded-card border border-app-border bg-app-surface p-6"><p class="text-xs font-bold uppercase tracking-wider text-app-primary">${detail.audioCount.toLocaleString("en-US")} talks</p><h2 class="mt-2 text-2xl font-bold">${escapeHtml(detail.name)}</h2><p class="mt-2 text-sm text-app-muted">${escapeHtml(detail.teacherName || "Unknown teacher")}</p>${detail.description === null ? "" : `<p class="mt-4 text-sm leading-6 text-app-muted">${escapeHtml(detail.description)}</p>`}</div>${tracks}</section>`;
 }

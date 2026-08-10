@@ -432,7 +432,12 @@ test("DhammaApp loads categories and forwards discovery filters", async () => {
     api: createApi({
       async searchAudio(request) {
         requests.push(request);
-        return { items: tracks, total: tracks.length, limit: request.limit, offset: request.offset };
+        return {
+          items: tracks,
+          total: tracks.length,
+          limit: request.limit,
+          offset: request.offset
+        };
       }
     }),
     storage: new MemoryStorage(),
@@ -469,12 +474,70 @@ test("DhammaApp loads collection and teacher detail flows", async () => {
   assert.equal(collectionRequests.at(-1).limit, 24);
   await app.openCollection(10, "collections");
   assert.equal(app.state.collectionDetail.data.id, 10);
+  app.dispatch({ type: "search-loaded", page: { items: [], total: 0, limit: 50, offset: 0 } });
   assert.equal(app.findTrack(1).id, 1);
   await app.openTeacher(3, "teachers");
   assert.equal(app.state.teacherDetail.data.id, 3);
   assert.equal(app.state.teacherTalks.page.total, tracks.length);
+  app.state = {
+    ...app.state,
+    collectionDetail: { status: "idle", data: null, message: "" }
+  };
+  assert.equal(app.findTrack(1).id, 1);
+  assert.equal(app.findTrack(999), null);
   app.dispatch({ type: "set-teacher-talk-offset", offset: 50 });
   await app.loadTeacherTalks();
   assert.equal(app.state.teacherTalks.page.offset, 50);
   app.destroy();
+});
+
+test("DhammaApp reports category, collection, and detail failures", async () => {
+  const failure = new Error("discovery offline");
+  const app = new DhammaApp({
+    api: createApi({
+      async listAudioCategories() {
+        throw failure;
+      },
+      async searchCollections() {
+        throw failure;
+      },
+      async getCollection() {
+        throw failure;
+      },
+      async getTeacher() {
+        throw failure;
+      },
+      async searchAudio(request) {
+        if (request.teacherId !== null) throw failure;
+        return { items: [], total: 0, limit: request.limit, offset: request.offset };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  assert.equal(app.state.categories.status, "error");
+  await app.searchCollections();
+  assert.equal(app.state.collections.status, "error");
+  await app.openCollection(999, "collections");
+  assert.equal(app.state.collectionDetail.status, "error");
+  await app.openTeacher(999, "teachers");
+  assert.equal(app.state.teacherDetail.status, "error");
+  assert.equal(app.state.teacherTalks.status, "error");
+  app.dispatch({ type: "return-to-list" });
+  await app.loadTeacherTalks();
+  app.destroy();
+
+  const idle = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await idle.loadTeacherTalks();
+  assert.equal(idle.state.teacherTalks.status, "idle");
+  idle.destroy();
 });
