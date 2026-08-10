@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createInitialState } from "../.test-build/src/store.js";
 import {
-  CURATED_FEATURED_TEACHER_IDS,
   featuredTeachers,
   groupCollectionsByTeacher,
   isCuratedFeaturedTeacher,
@@ -21,7 +20,6 @@ const teachers = [
   { id: 901, name: "Regular B", audioCount: 5 }
 ];
 test("featured teacher helpers preserve curated order", () => {
-  assert.deepEqual(CURATED_FEATURED_TEACHER_IDS, [16, 42, 40, 53, 61, 8]);
   assert.equal(isCuratedFeaturedTeacher(42), true);
   assert.equal(isCuratedFeaturedTeacher(900), false);
   assert.deepEqual(

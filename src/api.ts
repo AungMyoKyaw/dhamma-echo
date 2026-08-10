@@ -12,7 +12,7 @@ import type {
   TeacherSummary
 } from "./types.js";
 
-export class CatalogueError extends Error {
+class CatalogueError extends Error {
   constructor(
     readonly code: string,
     message: string

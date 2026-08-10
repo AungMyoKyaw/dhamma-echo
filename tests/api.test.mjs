@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CatalogueApi, CatalogueError } from "../.test-build/src/api.js";
+import { CatalogueApi } from "../.test-build/src/api.js";
 
 test("CatalogueApi maps command names and request arguments", async () => {
   const calls = [];
@@ -43,7 +43,8 @@ test("CatalogueApi exposes stable errors", async () => {
     throw { code: "database_query", message: "Database unavailable" };
   });
   await assert.rejects(api.getSummary(), (error) => {
-    assert.equal(error instanceof CatalogueError, true);
+    assert.equal(error instanceof Error, true);
+    assert.equal(error.name, "CatalogueError");
     assert.equal(error.code, "database_query");
     assert.equal(error.message, "Database unavailable");
     return true;

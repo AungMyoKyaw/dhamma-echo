@@ -104,7 +104,7 @@ export interface AudioSearchPage {
   offset: number;
 }
 
-export interface HistoryEntry {
+interface HistoryEntry {
   id: number;
   playedAt: number;
 }
@@ -120,7 +120,7 @@ export interface SettingsState {
   volume: number;
 }
 
-export interface SearchState {
+interface SearchState {
   query: string;
   language: LanguageFilter;
   format: FormatFilter;
@@ -131,7 +131,7 @@ export interface SearchState {
   offset: number;
 }
 
-export interface CollectionBrowseState {
+interface CollectionBrowseState {
   status: "idle" | "loading" | "ready" | "error";
   page: CollectionSearchPage;
   message: string;
@@ -144,13 +144,13 @@ export interface CollectionBrowseState {
   exhausted: boolean;
 }
 
-export interface Loadable<T> {
+interface Loadable<T> {
   status: "idle" | "loading" | "ready" | "error";
   data: T;
   message: string;
 }
 
-export interface CatalogueState {
+interface CatalogueState {
   status: "idle" | "loading" | "ready" | "error";
   page: AudioSearchPage;
   message: string;
@@ -159,9 +159,9 @@ export interface CatalogueState {
   exhausted: boolean;
 }
 
-export type TeacherTalksState = CatalogueState;
+type TeacherTalksState = CatalogueState;
 
-export interface PlayerState {
+interface PlayerState {
   current: AudioTrack | null;
   queue: AudioTrack[];
   status: PlayerStatus;
@@ -171,7 +171,7 @@ export interface PlayerState {
   queueOpen: boolean;
 }
 
-export interface RecentState {
+interface RecentState {
   status: "idle" | "loading" | "ready" | "error";
   tracks: AudioTrack[];
 }

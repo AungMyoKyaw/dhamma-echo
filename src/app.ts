@@ -11,7 +11,7 @@ import type {
   StorageLike
 } from "./types.js";
 
-export interface CatalogueClient {
+interface CatalogueClient {
   getSummary: CatalogueApi["getSummary"];
   listFeaturedTeachers: CatalogueApi["listFeaturedTeachers"];
   searchTeachers: CatalogueApi["searchTeachers"];

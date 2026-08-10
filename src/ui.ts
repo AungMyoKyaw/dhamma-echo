@@ -1,6 +1,6 @@
 import type { AppState, AudioTrack, CollectionSummary, Route, TeacherSummary } from "./types.js";
 
-export const CURATED_FEATURED_TEACHER_IDS = [16, 42, 40, 53, 61, 8] as const;
+const CURATED_FEATURED_TEACHER_IDS = [16, 42, 40, 53, 61, 8] as const;
 const FEATURED = new Set<number>(CURATED_FEATURED_TEACHER_IDS);
 
 export function isCuratedFeaturedTeacher(id: number): boolean {
@@ -51,7 +51,7 @@ export function teacherFilterName(state: AppState): string {
     : "selected teacher";
 }
 
-export interface CollectionGroup {
+interface CollectionGroup {
   key: string;
   name: string;
   items: CollectionSummary[];
