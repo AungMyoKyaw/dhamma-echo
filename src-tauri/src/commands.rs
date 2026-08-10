@@ -4,7 +4,8 @@ use crate::{
     db::Database,
     error::CommandError,
     models::{
-        AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary, TeacherDetail,
+        AudioCategory, AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary,
+        CollectionDetail, CollectionSearchPage, CollectionSearchRequest, TeacherDetail,
         TeacherSummary,
     },
 };
@@ -14,6 +15,31 @@ pub fn get_catalogue_summary(
     database: State<'_, Database>,
 ) -> Result<CatalogueSummary, CommandError> {
     database.summary().map_err(CommandError::from)
+}
+
+#[tauri::command]
+pub fn list_audio_categories(
+    database: State<'_, Database>,
+) -> Result<Vec<AudioCategory>, CommandError> {
+    database.audio_categories().map_err(CommandError::from)
+}
+
+#[tauri::command]
+pub fn search_collections(
+    database: State<'_, Database>,
+    request: CollectionSearchRequest,
+) -> Result<CollectionSearchPage, CommandError> {
+    database
+        .search_collections(&request)
+        .map_err(CommandError::from)
+}
+
+#[tauri::command]
+pub fn get_collection(
+    database: State<'_, Database>,
+    id: i64,
+) -> Result<CollectionDetail, CommandError> {
+    database.collection(id).map_err(CommandError::from)
 }
 
 #[tauri::command]
