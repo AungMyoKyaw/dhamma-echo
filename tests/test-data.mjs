@@ -30,3 +30,26 @@ export const tracks = [
     playable: true
   }
 ];
+
+export const categories = [
+  { id: 1, name: "Audio in Myanmar", language: "myanmar", audioCount: 30098 },
+  { id: 7, name: "Audio in English", language: "english", audioCount: 465 }
+];
+
+export const collections = [
+  { id: 10, name: "Dhamma Disc", teacherId: 3, teacherName: teachers[1].name, audioCount: 2 },
+  { id: 11, name: "Dhamma Disc", teacherId: 4, teacherName: teachers[2].name, audioCount: 1 }
+];
+
+export const incompleteTrack = {
+  id: 99,
+  title: "Untitled talk",
+  format: "mp3",
+  language: "myanmar",
+  url: "https://dhammadownload.com/MP3Library/unknown.mp3",
+  dateRecorded: null,
+  location: null,
+  teacherId: null,
+  teacherName: "Unknown teacher",
+  playable: true
+};

@@ -48,7 +48,7 @@ test("mock invoke applies defaults and every optional filter branch", async () =
   const allTeachers = await invoke("search_teachers");
   assert.equal(allTeachers.length, 12);
   const all = await invoke("search_audio");
-  assert.equal(all.items.length, 6);
+  assert.equal(all.items.length, 7);
   const byTeacherName = await invoke("search_audio", {
     request: {
       query: "jotika",
@@ -79,4 +79,18 @@ test("mock invoke applies defaults and every optional filter branch", async () =
     request: { query: "", language: null, format: null, teacherId: 999, limit: 50, offset: 0 }
   });
   assert.equal(noTeacherMatch.total, 0);
+});
+
+test("mock invoke supports categories, collections, and detail records", async () => {
+  const invoke = createMockInvoke();
+  const categories = await invoke("list_audio_categories");
+  assert.equal(categories.length > 0, true);
+  const page = await invoke("search_collections", {
+    request: { query: "disc", teacherId: null, limit: 24, offset: 0 }
+  });
+  assert.equal(page.items.length, 2);
+  const collection = await invoke("get_collection", { id: 10 });
+  assert.equal(collection.tracks.some((track) => track.playable), true);
+  const teacher = await invoke("get_teacher", { id: 3 });
+  assert.equal(teacher.id, 3);
 });

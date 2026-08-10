@@ -1,8 +1,12 @@
 import type {
+  AudioCategory,
   AudioSearchPage,
   AudioSearchRequest,
   AudioTrack,
   CatalogueSummary,
+  CollectionSearchPage,
+  CollectionSearchRequest,
+  CollectionSummary,
   InvokeFn,
   TeacherSummary
 } from "./types.js";
@@ -102,12 +106,63 @@ const tracks: AudioTrack[] = [
     teacherId: 31,
     teacherName: "Sitagu Sayadaw",
     playable: false
+  },
+  {
+    id: 99,
+    title: "Untitled talk",
+    format: "mp3",
+    language: "myanmar",
+    url: "https://dhammadownload.com/MP3Library/unknown.mp3",
+    dateRecorded: null,
+    location: null,
+    teacherId: null,
+    teacherName: "Unknown teacher",
+    playable: true
   }
 ];
 
+const categories: AudioCategory[] = [
+  { id: 1, name: "Audio in Myanmar", language: "myanmar", audioCount: 30098 },
+  { id: 4, name: "Abhidhamma in Myanmar", language: "myanmar", audioCount: 99 },
+  { id: 5, name: "Abhidhamma in English", language: "english", audioCount: 136 },
+  { id: 7, name: "Audio in English", language: "english", audioCount: 465 }
+];
+
+const collections: CollectionSummary[] = [
+  {
+    id: 10,
+    name: "Dhamma Disc",
+    teacherId: 3,
+    teacherName: "Venerable Sayadaw U Jotika",
+    audioCount: 2
+  },
+  {
+    id: 11,
+    name: "Dhamma Disc",
+    teacherId: 4,
+    teacherName: "Venerable Dr. K. Dhammasami",
+    audioCount: 1
+  }
+];
+
+const categoryByTrack = new Map<number, number>([
+  [1, 7],
+  [2, 1],
+  [3, 7],
+  [4, 1],
+  [5, 7],
+  [6, 1],
+  [99, 4]
+]);
+const collectionByTrack = new Map<number, number>([
+  [1, 10],
+  [3, 10],
+  [2, 11]
+]);
+
 const summary: CatalogueSummary = {
   totalAudio: 30563,
-  totalTeachers: 267,
+  totalTeachers: 257,
   myanmarAudio: 30098,
   englishAudio: 465
 };
@@ -127,6 +182,50 @@ export function createMockInvoke(): InvokeFn {
     if (command === "list_featured_teachers") {
       return teachers.slice(0, readNumber(args?.limit, 12)) as T;
     }
+    if (command === "list_audio_categories") return categories as T;
+    if (command === "search_collections") {
+      const request = (args?.request ?? {}) as Partial<CollectionSearchRequest>;
+      const query = readString(request.query, "").toLowerCase();
+      const teacherId = request.teacherId ?? null;
+      const limit = readNumber(request.limit, 24);
+      const offset = readNumber(request.offset, 0);
+      const filtered = collections.filter(
+        (collection) =>
+          collection.name.toLowerCase().includes(query) &&
+          (teacherId === null || collection.teacherId === teacherId)
+      );
+      const page: CollectionSearchPage = {
+        items: filtered.slice(offset, offset + limit),
+        total: filtered.length,
+        limit,
+        offset
+      };
+      return page as T;
+    }
+    if (command === "get_collection") {
+      const id = readNumber(args?.id, 0);
+      const collection = collections.find((item) => item.id === id);
+      if (collection !== undefined) {
+        return {
+          ...collection,
+          description: null,
+          tracks: tracks.filter((track) => collectionByTrack.get(track.id) === id)
+        } as T;
+      }
+    }
+    if (command === "get_teacher") {
+      const id = readNumber(args?.id, 0);
+      const teacher = teachers.find((item) => item.id === id);
+      if (teacher !== undefined) {
+        return {
+          ...teacher,
+          nameMyanmar: null,
+          title: null,
+          description: null,
+          collections: collections.filter((collection) => collection.teacherId === id)
+        } as T;
+      }
+    }
     if (command === "search_teachers") {
       const query = readString(args?.query, "").toLocaleLowerCase();
       const limit = readNumber(args?.limit, 100);
@@ -140,6 +239,8 @@ export function createMockInvoke(): InvokeFn {
       const language = request.language ?? null;
       const format = request.format ?? null;
       const teacherId = request.teacherId ?? null;
+      const categoryId = request.categoryId ?? null;
+      const collectionId = request.collectionId ?? null;
       const limit = readNumber(request.limit, 50);
       const offset = readNumber(request.offset, 0);
       const filtered = tracks.filter(
@@ -149,7 +250,9 @@ export function createMockInvoke(): InvokeFn {
             track.teacherName.toLowerCase().includes(query)) &&
           (language === null || track.language === language) &&
           (format === null || track.format === format) &&
-          (teacherId === null || track.teacherId === teacherId)
+          (teacherId === null || track.teacherId === teacherId) &&
+          (categoryId === null || categoryByTrack.get(track.id) === categoryId) &&
+          (collectionId === null || collectionByTrack.get(track.id) === collectionId)
       );
       const page: AudioSearchPage = {
         items: filtered.slice(offset, offset + limit),

@@ -7,6 +7,7 @@ import type {
   AudioSearchRequest,
   AudioTrack,
   PlayerEvent,
+  Route,
   StorageLike
 } from "./types.js";
 
@@ -16,6 +17,10 @@ export interface CatalogueClient {
   searchTeachers: CatalogueApi["searchTeachers"];
   searchAudio: CatalogueApi["searchAudio"];
   getAudioTrack: CatalogueApi["getAudioTrack"];
+  listAudioCategories: CatalogueApi["listAudioCategories"];
+  searchCollections: CatalogueApi["searchCollections"];
+  getCollection: CatalogueApi["getCollection"];
+  getTeacher: CatalogueApi["getTeacher"];
 }
 
 interface AppDependencies {
@@ -56,7 +61,13 @@ export class DhammaApp {
     });
     this.engine.setVolume(this.state.settings.volume);
     this.engine.setRate(this.state.settings.playbackRate);
-    await Promise.all([this.loadSummary(), this.loadTeachers(), this.search(), this.loadRecent()]);
+    await Promise.all([
+      this.loadSummary(),
+      this.loadTeachers(),
+      this.loadCategories(),
+      this.search(),
+      this.loadRecent()
+    ]);
   }
 
   dispatch(action: AppAction): void {
@@ -86,6 +97,71 @@ export class DhammaApp {
     } catch (error) {
       this.dispatch({ type: "teachers-failed", message: messageFrom(error) });
     }
+  }
+
+  async loadCategories(): Promise<void> {
+    this.dispatch({ type: "categories-started" });
+    try {
+      this.dispatch({
+        type: "categories-loaded",
+        categories: await this.dependencies.api.listAudioCategories()
+      });
+    } catch (error) {
+      this.dispatch({ type: "categories-failed", message: messageFrom(error) });
+    }
+  }
+
+  async searchCollections(): Promise<void> {
+    this.dispatch({ type: "collections-started" });
+    try {
+      this.dispatch({
+        type: "collections-loaded",
+        page: await this.dependencies.api.searchCollections(this.state.collectionSearch)
+      });
+    } catch (error) {
+      this.dispatch({ type: "collections-failed", message: messageFrom(error) });
+    }
+  }
+
+  async openCollection(id: number, returnRoute: Route): Promise<void> {
+    this.dispatch({ type: "open-collection", collectionId: id, returnRoute });
+    this.dispatch({ type: "collection-detail-started" });
+    try {
+      this.dispatch({
+        type: "collection-detail-loaded",
+        detail: await this.dependencies.api.getCollection(id)
+      });
+    } catch (error) {
+      this.dispatch({ type: "collection-detail-failed", message: messageFrom(error) });
+    }
+  }
+
+  async openTeacher(id: number, returnRoute: Route): Promise<void> {
+    this.dispatch({ type: "open-teacher", teacherId: id, returnRoute });
+    this.dispatch({ type: "teacher-detail-started" });
+    this.dispatch({ type: "teacher-talks-started" });
+    const detail = this.dependencies.api
+      .getTeacher(id)
+      .then((value) => this.dispatch({ type: "teacher-detail-loaded", detail: value }))
+      .catch((error: unknown) =>
+        this.dispatch({ type: "teacher-detail-failed", message: messageFrom(error) })
+      );
+    const talks = this.dependencies.api
+      .searchAudio({
+        query: "",
+        language: null,
+        format: null,
+        teacherId: id,
+        categoryId: null,
+        collectionId: null,
+        limit: this.state.teacherTalks.page.limit,
+        offset: this.state.teacherTalks.page.offset
+      })
+      .then((page) => this.dispatch({ type: "teacher-talks-loaded", page }))
+      .catch((error: unknown) =>
+        this.dispatch({ type: "teacher-talks-failed", message: messageFrom(error) })
+      );
+    await Promise.all([detail, talks]);
   }
 
   async loadRecent(): Promise<void> {
@@ -135,8 +211,8 @@ export class DhammaApp {
       language: this.state.search.language === "all" ? null : this.state.search.language,
       format: this.state.search.format === "all" ? null : this.state.search.format,
       teacherId: this.state.search.teacherId,
-      categoryId: null,
-      collectionId: null,
+      categoryId: this.state.search.categoryId,
+      collectionId: this.state.search.collectionId,
       limit: this.state.search.limit,
       offset: this.state.search.offset
     };
@@ -154,6 +230,8 @@ export class DhammaApp {
     if (this.state.player.current?.id === id) return this.state.player.current;
     return (
       this.state.catalogue.page.items.find((track) => track.id === id) ??
+      this.state.collectionDetail.data?.tracks.find((track) => track.id === id) ??
+      this.state.teacherTalks.page.items.find((track) => track.id === id) ??
       this.state.player.queue.find((track) => track.id === id) ??
       null
     );

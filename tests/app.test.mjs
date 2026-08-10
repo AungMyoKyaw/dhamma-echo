@@ -52,6 +52,34 @@ function createApi(overrides = {}) {
     async listFeaturedTeachers() {
       return teachers;
     },
+    async listAudioCategories() {
+      return [{ id: 7, name: "Audio in English", language: "english", audioCount: 465 }];
+    },
+    async searchCollections(request) {
+      return { items: [], total: 0, limit: request.limit, offset: request.offset };
+    },
+    async getCollection(id) {
+      return {
+        id,
+        name: "Course",
+        description: null,
+        teacherId: 3,
+        teacherName: teachers[0].name,
+        audioCount: tracks.length,
+        tracks
+      };
+    },
+    async getTeacher(id) {
+      return {
+        id,
+        name: teachers[0].name,
+        nameMyanmar: null,
+        title: null,
+        description: null,
+        audioCount: tracks.length,
+        collections: []
+      };
+    },
     async searchTeachers() {
       return teachers;
     },
@@ -395,5 +423,55 @@ test("DhammaApp resolves tracks from recent list and the catalogue", async () =>
   assert.equal((await app.resolveTrack(1))?.id, 1);
   assert.deepEqual(fetched, [1]);
   assert.equal(await app.resolveTrack(42), null);
+  app.destroy();
+});
+
+test("DhammaApp loads categories and forwards discovery filters", async () => {
+  const requests = [];
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        requests.push(request);
+        return { items: tracks, total: tracks.length, limit: request.limit, offset: request.offset };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  assert.equal(app.state.categories.status, "ready");
+  app.dispatch({ type: "set-category", categoryId: 7 });
+  app.dispatch({ type: "set-collection", collectionId: 10 });
+  await app.search();
+  assert.equal(requests.at(-1).categoryId, 7);
+  assert.equal(requests.at(-1).collectionId, 10);
+  app.destroy();
+});
+
+test("DhammaApp loads collection and teacher detail flows", async () => {
+  const collectionRequests = [];
+  const app = new DhammaApp({
+    api: createApi({
+      async searchCollections(request) {
+        collectionRequests.push(request);
+        return { items: [], total: 0, limit: request.limit, offset: request.offset };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.searchCollections();
+  assert.equal(collectionRequests.at(-1).limit, 24);
+  await app.openCollection(10, "collections");
+  assert.equal(app.state.collectionDetail.data.id, 10);
+  assert.equal(app.findTrack(1).id, 1);
+  await app.openTeacher(3, "teachers");
+  assert.equal(app.state.teacherDetail.data.id, 3);
+  assert.equal(app.state.teacherTalks.page.total, tracks.length);
   app.destroy();
 });
