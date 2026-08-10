@@ -101,6 +101,7 @@ test("renderApp keeps featured teachers compact with recent content", () => {
   assert.match(html, /Continue listening/);
   assert.match(html, /data-featured-layout="carousel"/);
   assert.match(html, /scrollbar-thin flex gap-4 overflow-x-auto/);
+  assert.match(html, /-mx-2 px-2 pb-4 pt-2/);
 });
 
 test("renderApp pins featured teachers and labels their cards on the Teachers page", () => {

@@ -160,7 +160,7 @@ function renderHome(state: AppState): string {
       ? featured.map((teacher) => renderTeacherCard(teacher, hasRecentContent)).join("")
       : `<div class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted">Teacher highlights will appear here when the catalogue is ready.</div>`;
   const featuredLayout = hasRecentContent
-    ? "scrollbar-thin flex gap-4 overflow-x-auto pb-3"
+    ? "scrollbar-thin flex gap-4 overflow-x-auto -mx-2 px-2 pb-4 pt-2"
     : "grid grid-cols-3 gap-4";
   return `<section class="space-y-8">
     ${renderRecent(state)}
