@@ -46,49 +46,49 @@ Final exit status: repository cleanup and runnable behavior gates pass; toolchai
 
 Measured against tag/base commit `v0.4.0` / `master` from the supplied bundle:
 
-| Area | Baseline | Final | Delta |
-| --- | ---: | ---: | ---: |
-| Frontend executable files | 32 | 32 | 0 |
-| Frontend executable lines | 3,434 | 3,406 | -28 |
-| Frontend executable bytes | 119,940 | 119,260 | -680 |
-| Rust executable files | 7 | 7 | 0 |
-| Rust executable lines | 1,363 | 1,363 | 0 |
-| Rust executable bytes | 49,117 | 49,117 | 0 |
-| Tooling script files | 7 | 6 | -1 |
-| Tooling script lines | 559 | 521 | -38 |
-| Tooling script bytes | 19,827 | 18,752 | -1,075 |
+| Area                      | Baseline |   Final |  Delta |
+| ------------------------- | -------: | ------: | -----: |
+| Frontend executable files |       32 |      32 |      0 |
+| Frontend executable lines |    3,434 |   3,406 |    -28 |
+| Frontend executable bytes |  119,940 | 119,260 |   -680 |
+| Rust executable files     |        7 |       7 |      0 |
+| Rust executable lines     |    1,363 |   1,363 |      0 |
+| Rust executable bytes     |   49,117 |  49,117 |      0 |
+| Tooling script files      |        7 |       6 |     -1 |
+| Tooling script lines      |      559 |     521 |    -38 |
+| Tooling script bytes      |   19,827 |  18,752 | -1,075 |
 
 These are source-footprint measurements, not packaged runtime-size measurements. Production web/native artifacts could not be rebuilt in this environment because the pinned build toolchains are unavailable.
 
 ## Quality Gates
 
-| Gate | Status | Evidence | Notes |
-| --- | --- | --- | --- |
-| Dead-code / module reachability | `PASS` | import-graph scan from `src/entry.ts` | 32/32 executable TypeScript/Svelte modules reachable; removed confirmed dead helpers/files. |
-| Dependency / lockfile verification | `PASS` | `git diff master -- bun.lock src-tauri/Cargo.lock` | No dependency or lockfile changes. |
-| Tracked whitespace | `PASS` | `git diff --check master...HEAD` | No whitespace errors. |
-| Core behavior tests | `PASS` | `node scripts/test.mjs --coverage` | 82 passed, 0 failed, 0 skipped, 0 todo. |
-| Product-site tests | `PASS` | `node --test tests/site.test.mjs tests/site-links.test.mjs` | 14 passed, 0 failed, 0 skipped. |
-| Zero skipped/focused tests | `PASS` | source scan plus Node test summaries | 0 skipped in executed suites; no test `.skip`/`.only` markers found. |
-| Core TypeScript coverage | `PASS` | `node scripts/test.mjs --coverage` | 100% lines, 100% branches, 100% functions for the instrumented core TypeScript behavior modules. |
-| Product-site JS coverage | `PASS` | Node experimental coverage on `docs/assets/site.js` and `site-bootstrap.js` | 100% lines, 100% branches, 100% functions. |
-| Project-wide 100% statement/component coverage | `BLOCKED` | Node coverage metadata + unavailable Svelte toolchain | Node built-in coverage does not report a separate statement metric and this setup does not instrument `.svelte` components. No broader 100% claim is made. |
-| Fallback TypeScript compile | `PASS` | global TypeScript 5.8.3: `tsc -p tsconfig.test.json` | Useful fallback evidence only; not a substitute for repository-pinned TypeScript 6 + Svelte Check. |
-| Pinned type checker | `BLOCKED` | `svelte-check` unavailable; project dependencies cannot be installed from this sandbox | `bun run typecheck` could not execute. |
-| Formatter | `BLOCKED` | `prettier`, `cargo`, and `rustfmt` unavailable | `bun run format:check` could not execute. |
-| Linter | `BLOCKED` | `eslint` and Cargo/Clippy unavailable | `bun run lint` and `cargo clippy --locked ...` could not execute. |
-| Production web build | `BLOCKED` | `bun`/`vite` unavailable | `bun run build:web` could not execute. |
-| Rust tests/build | `BLOCKED` | `cargo`/`rustc` unavailable | Locked Cargo test/build gates could not execute. |
-| Packaging | `BLOCKED` | Bun/Tauri/Cargo toolchain unavailable | `bun run package` could not execute. |
-| Dependency audits | `BLOCKED` | `bun` and Cargo audit tooling unavailable | No vulnerability-clean claim is made. |
-| Source secret scan | `PASS` | repository regex scan excluding generated/vendor paths | No matching AWS access key, private-key header, GitHub token, or OpenAI-style key pattern found. |
-| Product-site smoke | `PASS` | `node scripts/site-smoke.mjs` | 6 local assets checked; 1,159,923 referenced bytes. |
-| Icon validation | `PASS` | `node scripts/verify-icons.mjs` | 1024×1024 geometry; 6 assets; 411,514 bytes. |
-| CI workflow syntax | `PASS` | PyYAML parse of all `.github/workflows/*.yml` | `ci.yml`, `codeql.yml`, `pages.yml`, and `release.yml` parse successfully. |
-| UI visual verification | `NOT APPLICABLE` | diff classification | No user-facing Svelte markup, styles, layout, copy, or interaction behavior was changed in this cleanup. |
-| Design.md | `NOT APPLICABLE` | scope classification | No UI/UX design change. |
-| Runtime/package-size measurement | `BLOCKED` | production build toolchain unavailable | Source-footprint deltas are recorded instead. |
-| Git bundle verification | `PASS` | `git bundle create ... --all`, `git bundle verify`, clone test | A pre-report bundle from the release branch verified and cloned successfully; final artifact is re-created and re-verified after this report is committed. |
+| Gate                                           | Status           | Evidence                                                                               | Notes                                                                                                                                                      |
+| ---------------------------------------------- | ---------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dead-code / module reachability                | `PASS`           | import-graph scan from `src/entry.ts`                                                  | 32/32 executable TypeScript/Svelte modules reachable; removed confirmed dead helpers/files.                                                                |
+| Dependency / lockfile verification             | `PASS`           | `git diff master -- bun.lock src-tauri/Cargo.lock`                                     | No dependency or lockfile changes.                                                                                                                         |
+| Tracked whitespace                             | `PASS`           | `git diff --check master...HEAD`                                                       | No whitespace errors.                                                                                                                                      |
+| Core behavior tests                            | `PASS`           | `node scripts/test.mjs --coverage`                                                     | 82 passed, 0 failed, 0 skipped, 0 todo.                                                                                                                    |
+| Product-site tests                             | `PASS`           | `node --test tests/site.test.mjs tests/site-links.test.mjs`                            | 14 passed, 0 failed, 0 skipped.                                                                                                                            |
+| Zero skipped/focused tests                     | `PASS`           | source scan plus Node test summaries                                                   | 0 skipped in executed suites; no test `.skip`/`.only` markers found.                                                                                       |
+| Core TypeScript coverage                       | `PASS`           | `node scripts/test.mjs --coverage`                                                     | 100% lines, 100% branches, 100% functions for the instrumented core TypeScript behavior modules.                                                           |
+| Product-site JS coverage                       | `PASS`           | Node experimental coverage on `docs/assets/site.js` and `site-bootstrap.js`            | 100% lines, 100% branches, 100% functions.                                                                                                                 |
+| Project-wide 100% statement/component coverage | `BLOCKED`        | Node coverage metadata + unavailable Svelte toolchain                                  | Node built-in coverage does not report a separate statement metric and this setup does not instrument `.svelte` components. No broader 100% claim is made. |
+| Fallback TypeScript compile                    | `PASS`           | global TypeScript 5.8.3: `tsc -p tsconfig.test.json`                                   | Useful fallback evidence only; not a substitute for repository-pinned TypeScript 6 + Svelte Check.                                                         |
+| Pinned type checker                            | `BLOCKED`        | `svelte-check` unavailable; project dependencies cannot be installed from this sandbox | `bun run typecheck` could not execute.                                                                                                                     |
+| Formatter                                      | `BLOCKED`        | `prettier`, `cargo`, and `rustfmt` unavailable                                         | `bun run format:check` could not execute.                                                                                                                  |
+| Linter                                         | `BLOCKED`        | `eslint` and Cargo/Clippy unavailable                                                  | `bun run lint` and `cargo clippy --locked ...` could not execute.                                                                                          |
+| Production web build                           | `BLOCKED`        | `bun`/`vite` unavailable                                                               | `bun run build:web` could not execute.                                                                                                                     |
+| Rust tests/build                               | `BLOCKED`        | `cargo`/`rustc` unavailable                                                            | Locked Cargo test/build gates could not execute.                                                                                                           |
+| Packaging                                      | `BLOCKED`        | Bun/Tauri/Cargo toolchain unavailable                                                  | `bun run package` could not execute.                                                                                                                       |
+| Dependency audits                              | `BLOCKED`        | `bun` and Cargo audit tooling unavailable                                              | No vulnerability-clean claim is made.                                                                                                                      |
+| Source secret scan                             | `PASS`           | repository regex scan excluding generated/vendor paths                                 | No matching AWS access key, private-key header, GitHub token, or OpenAI-style key pattern found.                                                           |
+| Product-site smoke                             | `PASS`           | `node scripts/site-smoke.mjs`                                                          | 6 local assets checked; 1,159,923 referenced bytes.                                                                                                        |
+| Icon validation                                | `PASS`           | `node scripts/verify-icons.mjs`                                                        | 1024×1024 geometry; 6 assets; 411,514 bytes.                                                                                                               |
+| CI workflow syntax                             | `PASS`           | PyYAML parse of all `.github/workflows/*.yml`                                          | `ci.yml`, `codeql.yml`, `pages.yml`, and `release.yml` parse successfully.                                                                                 |
+| UI visual verification                         | `NOT APPLICABLE` | diff classification                                                                    | No user-facing Svelte markup, styles, layout, copy, or interaction behavior was changed in this cleanup.                                                   |
+| Design.md                                      | `NOT APPLICABLE` | scope classification                                                                   | No UI/UX design change.                                                                                                                                    |
+| Runtime/package-size measurement               | `BLOCKED`        | production build toolchain unavailable                                                 | Source-footprint deltas are recorded instead.                                                                                                              |
+| Git bundle verification                        | `PASS`           | `git bundle create ... --all`, `git bundle verify`, clone test                         | A pre-report bundle from the release branch verified and cloned successfully; final artifact is re-created and re-verified after this report is committed. |
 
 ## Exact Runnable Evidence
 

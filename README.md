@@ -120,7 +120,7 @@ Then open `http://127.0.0.1:1420`.
 | Command                  | Purpose                                                               |
 | ------------------------ | --------------------------------------------------------------------- |
 | `bun run dev:web`        | Start the Vite browser preview with HMR                               |
-| `bun run dev`      | Run the Tauri desktop application                                     |
+| `bun run dev`            | Run the Tauri desktop application                                     |
 | `bun run format`         | Format web and Rust sources                                           |
 | `bun run format:check`   | Verify formatting                                                     |
 | `bun run lint`           | Run strict ESLint with zero warnings                                  |

@@ -26,12 +26,14 @@
 ### Task 1: Remove dead post-migration code
 
 **Files:**
+
 - Modify: `src/runtime.ts`
 - Modify: `src/utils.ts`
 - Modify: `tests/runtime.test.mjs`
 - Modify: `tests/utils.test.mjs`
 
 **Interfaces:**
+
 - Consumes: existing Svelte keyboard/runtime helpers and audio URL normalization.
 - Produces: the same production runtime behavior with only production-reachable helpers remaining.
 
@@ -45,6 +47,7 @@
 ### Task 2: Narrow unnecessary module API surface
 
 **Files:**
+
 - Modify: `src/api.ts`
 - Modify: `src/app.ts`
 - Modify: `src/types.ts`
@@ -53,6 +56,7 @@
 - Modify: `tests/ui.test.mjs`
 
 **Interfaces:**
+
 - Consumes: `CatalogueApi`, `DhammaApp`, `AppState`, and UI helper functions used across modules.
 - Produces: only symbols that cross a module boundary remain exported; internal implementation types/constants become private.
 
@@ -66,12 +70,14 @@
 ### Task 3: Remove obsolete and duplicate quality tooling
 
 **Files:**
+
 - Delete: `tsconfig.app.json`
 - Delete: `scripts/lint-offline.mjs`
 - Modify: `package.json`
 - Modify: `docs/ralph-loop.md`
 
 **Interfaces:**
+
 - Consumes: the existing Bun, ESLint, Prettier, Svelte Check, Node test, Vite, and Cargo commands.
 - Produces: one canonical command per quality concern with no legacy fallback path.
 
@@ -86,10 +92,12 @@
 ### Task 4: Make CI deterministic around the committed Rust lockfile
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yml`
 - Modify: `.github/workflows/release.yml` only if required for equivalent lockfile discipline.
 
 **Interfaces:**
+
 - Consumes: committed `src-tauri/Cargo.lock` and existing CI/release jobs.
 - Produces: CI that fails on lockfile drift instead of silently regenerating dependencies.
 
@@ -102,10 +110,12 @@
 ### Task 5: Full release verification and artifact handoff
 
 **Files:**
+
 - Create: `docs/verification/2026-08-10-code-quality-release.md`
 - Create: final Git bundle in `/mnt/data`.
 
 **Interfaces:**
+
 - Consumes: all repository quality commands and the finalized branch.
 - Produces: evidence for formatter, lint, typecheck, tests, skipped-test scan, coverage, build, security/audit, Rust gates, UI-impact classification, lightweight measurements, and Git bundle verification/clone test.
 
