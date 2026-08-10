@@ -9,7 +9,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "bun run tauri:dev",
+    "dev": "tauri dev",
     "dev:web": "vite --host 127.0.0.1 --port 1420 --strictPort",
     "build": "bun run build:web",
     "build:web": "vite build",
@@ -30,12 +30,10 @@
     "verify": "bun run format:check && bun run verify:web && bun run site:verify && bun audit --audit-level=high && cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings && cargo test --locked --manifest-path src-tauri/Cargo.toml --all-features && cargo build --locked --manifest-path src-tauri/Cargo.toml --release",
     "ci": "bun run format:web:check && bun run lint && bun run typecheck && bun run test:coverage && bun run build:web && bun run smoke:web && bun run icons:check && bun audit --audit-level=high",
     "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
     "icons:generate": "python3 scripts/generate-icons.py",
     "icons:check": "node scripts/verify-icons.mjs",
     "site:coverage": "node --experimental-test-coverage --test-coverage-include='docs/assets/site.js' --test-coverage-include='docs/assets/site-bootstrap.js' --test-coverage-lines=100 --test-coverage-functions=100 --test-coverage-branches=100 --test tests/site-links.test.mjs",
-    "package": "bun run tauri:build"
+    "package": "tauri build"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
