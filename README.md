@@ -94,10 +94,10 @@ Clone or extract the repository, then run:
 
 ```bash
 cd dhamma-echo
-bun install --frozen-lockfile
+bun install
 ```
 
-The repository includes `bun.lock` and `src-tauri/Cargo.lock` for deterministic installs.
+This Svelte migration changes the frontend build dependencies. The execution sandbox used for the migration could not resolve Svelte packages, so it could not safely regenerate `bun.lock`. Run `bun install` once on a networked development machine with Bun 1.3.14, review and commit the resulting lockfile diff, then return to `bun install --frozen-lockfile --ignore-scripts` for deterministic CI/release installs. `src-tauri/Cargo.lock` remains unchanged.
 
 ## Run
 
@@ -150,7 +150,7 @@ Rust tests cover normalization, request validation, query filtering, pagination,
 cargo test --manifest-path src-tauri/Cargo.toml --all-features
 ```
 
-The most recent local evidence is recorded in [docs/verification/2026-08-05-macos-ui-polish.md](docs/verification/2026-08-05-macos-ui-polish.md).
+The migration evidence and explicit blocked gates are recorded in [docs/verification/2026-08-10-svelte-frontend-migration.md](docs/verification/2026-08-10-svelte-frontend-migration.md).
 
 ## Build and package
 
