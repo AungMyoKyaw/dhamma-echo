@@ -4,10 +4,20 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-10
+
+### Added
+
+- Rebuilt the desktop interface with Svelte 5 components and a Vite frontend pipeline.
+- Added focused component, runtime, and UI tests for the Svelte frontend.
+- Added Svelte-aware formatting, linting, type checking, build, and smoke-test tooling.
+
 ### Changed
 
-- Replaced the HTML-string/DOM-delegation desktop frontend with Svelte 5 components.
-- Switched the frontend development and production pipeline to Vite while preserving Tauri 2, Tailwind CSS v4, and the existing application controller/state modules.
+- Replaced the HTML-string/DOM-delegation desktop frontend with Svelte 5 components while preserving Tauri 2, Tailwind CSS v4, and the existing application controller/state modules.
+- Switched frontend development and production builds to Vite.
+- Kept playback updates local to the affected controls and corrected scroll-jitter behavior.
+- Updated CI quality gates for the Svelte frontend and Vite build.
 
 ## [0.3.0] - 2026-08-10
 
