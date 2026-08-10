@@ -32,8 +32,8 @@ The page makes no runtime request for fonts, scripts, styles, analytics, or medi
 ```mermaid
 flowchart LR
     push[Push to master or manual run] --> checkout[Checkout repository]
-    checkout --> node[Set up Node.js 22]
-    node --> verify[npm run site:verify]
+    checkout --> bun[Set up Bun 1.3.14]
+    bun --> verify[bun run site:verify]
     verify --> artifact[Upload docs/ Pages artifact]
     artifact --> deploy[Deploy with GitHub Pages]
     deploy --> environment[github-pages environment URL]
@@ -58,4 +58,4 @@ The build job has read-only repository permission. The deploy job receives only 
 
 ## Validation
 
-`npm run site:verify` runs Node built-in behavior tests and a dependency-free smoke checker. The smoke checker validates local references, unique IDs, asset containment under `docs/`, static file budgets, screenshot presence, and the absence of remote runtime dependencies or local machine paths.
+`bun run site:verify` runs Node built-in behavior tests and a dependency-free smoke checker. The smoke checker validates local references, unique IDs, asset containment under `docs/`, static file budgets, screenshot presence, and the absence of remote runtime dependencies or local machine paths.

@@ -1,69 +1,93 @@
-# Ralph Loop — Svelte Frontend Migration
+# Ralph Loop — Code Quality Release
 
 ## Goal
 
-Replace Dhamma Echo's HTML-string/DOM-delegation frontend with Svelte 5 + Vite while preserving Tauri, catalogue behavior, playback behavior, local data, public website, and the existing light visual identity.
+Ship a behavior-preserving cleanup of Dhamma Echo that removes dead post-migration code, narrows internal module surfaces, removes obsolete tooling, and makes release verification deterministic without changing the Svelte UI, product behavior, package manager, or production dependencies.
 
-## Baseline state
+## Current state
 
-- Tauri 2 loaded a custom TypeScript renderer from `dist/` on `127.0.0.1:1420` in development.
-- `src/view.ts` rendered complete HTML strings and `src/main.ts` delegated DOM events from `#app`.
-- `DhammaApp`, reducer/state, API, persistence, and player modules already isolated product behavior from rendering and remain intact.
-- Tailwind CSS v4 and the warm light design tokens already existed.
+- The desktop application uses Svelte 5 + Vite for presentation, a TypeScript application core, and a Tauri 2/Rust catalogue backend.
+- The repository uses Bun with `bun.lock` and Rust with the committed `src-tauri/Cargo.lock`.
+- TypeScript already enables `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noUnusedLocals`, and `noUnusedParameters`.
+- ESLint is configured with zero-warning tolerance and type-aware TypeScript rules.
+- Core TypeScript behavior is covered by the Node test runner with 100% line, branch, and function thresholds; Svelte components are validated separately by `svelte-check`, the production build, and smoke verification.
+- This release has no intended user-facing UI change, so visual verification is `NOT APPLICABLE` unless an implementation change touches rendered behavior.
 
 ## Acceptance criteria
 
-- Svelte 5 components render every desktop route and player/queue surface.
-- No catalogue content is rendered through HTML strings or `{@html}`.
-- Direct Svelte handlers replace `data-action` event delegation.
-- Navigation, searches/filters, progressive loading, favorites, queue, player controls, retries, keyboard shortcuts, and local settings remain wired to `DhammaApp`.
-- Vite serves `127.0.0.1:1420` and emits production assets to `dist/` for Tauri.
-- Tailwind v4 runs through `@tailwindcss/vite`.
-- Prettier, ESLint, `svelte-check`, tests/coverage, build, smoke, icons, audit, and Rust gates are run when the environment supports them.
-- Architecture docs and README describe the Svelte frontend.
-- The final Git bundle verifies and clone-tests successfully.
+- No known production-dead helpers remain from the pre-Svelte renderer/runtime.
+- Internal-only implementation types and constants are not exported as public module API.
+- No obsolete fallback lint/config files remain.
+- JavaScript tooling consistently uses Bun at the repository command layer.
+- CI validates the committed Rust lockfile and never regenerates it as part of normal verification.
+- No new production dependency is introduced.
+- Formatter, lint, type checking, required tests, coverage, builds, smoke checks, audits, Rust gates, and Git bundle validation are run when the execution environment supports them.
+- Required tests contain zero skipped, disabled, focused-only, or quarantined cases.
+- Final completion evidence uses only `PASS`, `FAIL`, `BLOCKED`, or `NOT APPLICABLE`.
 
-## Fast inner loop
+## Fast inner Ralph Loop
+
+Use the smallest relevant subset after each code-quality slice:
 
 ```bash
 git diff --check
-node scripts/lint-offline.mjs
 tsc -p tsconfig.test.json
-node --test tests/runtime.test.mjs tests/ui.test.mjs
-bun run typecheck
-bun run lint
-bun run build:web
-bun run smoke:web
+node --test tests/runtime.test.mjs tests/utils.test.mjs
+node --test tests/api.test.mjs tests/ui.test.mjs
 ```
 
-## Full release loop
+When the Bun dependency stack is available, also run:
+
+```bash
+bun run format:web:check
+bun run lint
+bun run typecheck
+```
+
+For Rust changes, also run:
+
+```bash
+cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
+cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings
+cargo test --locked --manifest-path src-tauri/Cargo.toml --all-features
+```
+
+## Full release Ralph Loop
 
 ```bash
 bun install --frozen-lockfile --ignore-scripts
-bun run format:web:check
+bun run format:check
 bun run lint
 bun run typecheck
 bun run test:coverage
 bun run build:web
 bun run smoke:web
 bun run icons:check
+bun run site:verify
 bun audit --audit-level=high
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
-cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings
-cargo test --manifest-path src-tauri/Cargo.toml --all-features
+cargo clippy --locked --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings
+cargo test --locked --manifest-path src-tauri/Cargo.toml --all-features
+cargo build --locked --manifest-path src-tauri/Cargo.toml --release
+cargo audit --file src-tauri/Cargo.lock
 git diff --check
-git bundle create /mnt/data/dhamma-echo-svelte.bundle --all
-git bundle verify /mnt/data/dhamma-echo-svelte.bundle
-git clone /mnt/data/dhamma-echo-svelte.bundle /mnt/data/dhamma-echo-svelte-clone
+git bundle create /mnt/data/dhamma-echo-code-quality.bundle --all
+git bundle verify /mnt/data/dhamma-echo-code-quality.bundle
+git clone /mnt/data/dhamma-echo-code-quality.bundle /mnt/data/dhamma-echo-code-quality-clone
 ```
 
 ## Known risks
 
-- The execution sandbox has Node.js but not Bun or Cargo, and its configured npm mirror does not contain Svelte. Dependency-backed Svelte and native gates may therefore be blocked locally.
-- Svelte must remain a presentation layer; business state stays canonical in `DhammaApp` and `src/store.ts`.
-- Vite emits hashed asset filenames, so smoke checks discover built JS/CSS from `dist/assets/`.
-- Existing Tauri CSP must remain compatible with Vite production output; no remote runtime frontend dependencies are introduced.
+- Bun, Cargo, or their registries may be unavailable in a restricted execution environment. A missing toolchain or unreachable dependency registry is reported as `BLOCKED`, never converted to `PASS` from source inspection.
+- The Node fallback TypeScript compiler available in some sandboxes may be older than the repository's TypeScript 6 dependency; it can provide focused evidence but does not replace the pinned release type-check gate.
+- Historical design/verification documents intentionally remain as project history even when they mention commands removed by later releases.
 
 ## Exit conditions
 
-The source migration is complete, no old renderer/delegated-action implementation remains, all locally runnable gates have evidence, external blockers are recorded, documentation/CI reflect the Svelte pipeline, and the final Git bundle verifies and clones.
+- Requested cleanup is implemented without user-visible behavior changes.
+- Focused tests for changed TypeScript behavior pass.
+- Full available release gates have final evidence.
+- Dead-code and skipped-test scans find no in-scope violations.
+- Dependency and lockfile diffs contain no unintended change.
+- Documentation reflects the current verification path.
+- The final Git bundle is created, verified, and clone-tested.

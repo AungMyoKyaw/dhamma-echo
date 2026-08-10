@@ -2,8 +2,8 @@
 
 ```mermaid
 flowchart LR
-    commit[Commit or pull request] --> install[Install Node and Rust dependencies]
-    install --> format[Prettier/Svelte + rustfmt]
+    commit[Commit or pull request] --> install[Install Bun-managed web and Rust dependencies]
+    install --> format[Prettier + rustfmt]
     format --> lint[ESLint + clippy]
     lint --> typecheck[svelte-check + TypeScript]
     typecheck --> test[TypeScript + Rust tests]
@@ -20,7 +20,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    pagesCommit[Push affecting product site] --> siteTests[npm run site:verify]
+    pagesCommit[Push affecting product site] --> siteTests[bun run site:verify]
     siteTests --> siteArtifact[Upload docs/ Pages artifact]
     siteArtifact --> pagesDeploy[Deploy to github-pages environment]
 ```

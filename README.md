@@ -19,7 +19,7 @@ python3 -m http.server 4173 --directory docs
 Then open `http://127.0.0.1:4173`. Validate the complete static site with:
 
 ```bash
-npm run site:verify
+bun run site:verify
 ```
 
 The site architecture and deployment boundary are documented in [Product website architecture](docs/architecture/product-site.md).
@@ -124,20 +124,19 @@ Then open `http://127.0.0.1:1420`.
 | `bun run format`         | Format web and Rust sources                                           |
 | `bun run format:check`   | Verify formatting                                                     |
 | `bun run lint`           | Run strict ESLint with zero warnings                                  |
-| `bun run lint:offline`   | Run dependency-free whitespace checks                                 |
 | `bun run typecheck`      | Run `svelte-check` and strict TypeScript checking                     |
 | `bun run test`           | Run the core TypeScript behavior tests                                |
 | `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
-| `npm run site:test`      | Run product website behavior and link tests                           |
-| `npm run site:smoke`     | Validate static assets, paths, budgets, and runtime isolation         |
-| `npm run site:verify`    | Run all dependency-free product website checks                        |
+| `bun run site:test`      | Run product website behavior and link tests                           |
+| `bun run site:smoke`     | Validate static assets, paths, budgets, and runtime isolation         |
+| `bun run site:verify`    | Run all dependency-free product website checks                        |
 | `bun run build:web`      | Produce the web assets in `dist/`                                     |
 | `bun run smoke:web`      | Validate required production web assets                               |
 | `bun run icons:generate` | Regenerate desktop icon variants from the 1024px master               |
 | `bun run icons:check`    | Validate icon dimensions, margins, headers, and Tauri references      |
 | `bun run verify:web`     | Run all locally available web quality gates                           |
 | `bun run verify`         | Run full frontend and Rust quality gates                              |
-| `bun run tauri:build`    | Build native installers for the current platform                      |
+| `bun run package`        | Build native installers for the current platform                      |
 | `bun run clean`          | Remove generated web and coverage output                              |
 
 ## Testing and coverage
@@ -155,7 +154,7 @@ The migration evidence and explicit blocked gates are recorded in [docs/verifica
 ## Build and package
 
 ```bash
-bun run tauri:build
+bun run package
 ```
 
 Tauri creates platform-native bundles under `src-tauri/target/release/bundle/`. Build and sign each platform on its native CI runner. Signing credentials must be provided only through protected GitHub Actions secrets.
@@ -195,7 +194,7 @@ Install or enable a Unicode Myanmar font such as Noto Sans Myanmar, Myanmar Text
 
 ### Native build fails on Linux
 
-Install Tauri's WebKitGTK 4.1 development dependencies and `patchelf`, then rerun `bun run tauri:build`.
+Install Tauri's WebKitGTK 4.1 development dependencies and `patchelf`, then rerun `bun run package`.
 
 ### Registry installation fails
 
