@@ -1,10 +1,4 @@
-import type {
-  AppState,
-  AudioTrack,
-  CollectionSummary,
-  Route,
-  TeacherSummary
-} from "./types.js";
+import type { AppState, AudioTrack, CollectionSummary, Route, TeacherSummary } from "./types.js";
 
 export const CURATED_FEATURED_TEACHER_IDS = [16, 42, 40, 53, 61, 8] as const;
 const FEATURED = new Set<number>(CURATED_FEATURED_TEACHER_IDS);
@@ -30,10 +24,7 @@ export function isMyanmarText(value: string): boolean {
   return /[\u1000-\u109F]/u.test(value);
 }
 
-export function routeLabel(
-  route: Route,
-  totalAudio: number
-): { eyebrow: string; title: string } {
+export function routeLabel(route: Route, totalAudio: number): { eyebrow: string; title: string } {
   const labels: Record<Route, { eyebrow: string; title: string }> = {
     home: { eyebrow: "Home", title: "Discover the Dhamma" },
     explore: {
@@ -51,7 +42,9 @@ export function routeLabel(
 }
 
 export function teacherFilterName(state: AppState): string {
-  const fromList = state.teachers.data.find((teacher) => teacher.id === state.search.teacherId)?.name;
+  const fromList = state.teachers.data.find(
+    (teacher) => teacher.id === state.search.teacherId
+  )?.name;
   if (fromList !== undefined) return fromList;
   return state.player.current?.id === state.search.teacherId
     ? state.player.current.teacherName

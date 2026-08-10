@@ -20,7 +20,11 @@ export default tseslint.config(
   {
     files: ["**/*.svelte"],
     languageOptions: {
-      parserOptions: { parser: tseslint.parser, projectService: true, extraFileExtensions: [".svelte"] }
+      parserOptions: {
+        parser: tseslint.parser,
+        projectService: true,
+        extraFileExtensions: [".svelte"]
+      }
     },
     rules: {
       "@typescript-eslint/no-floating-promises": "error",
@@ -28,7 +32,29 @@ export default tseslint.config(
     }
   },
   {
-    files: ["tests/**/*.mjs", "scripts/**/*.mjs", "*.config.js"],
+    files: ["**/*.js", "**/*.mjs"],
     ...tseslint.configs.disableTypeChecked
+  },
+  {
+    files: ["docs/assets/**/*.js"],
+    languageOptions: {
+      globals: {
+        URL: "readonly",
+        document: "readonly",
+        window: "readonly"
+      }
+    }
+  },
+  {
+    files: ["scripts/**/*.mjs", "tests/**/*.mjs"],
+    languageOptions: {
+      globals: {
+        Buffer: "readonly",
+        URL: "readonly",
+        console: "readonly",
+        process: "readonly",
+        setTimeout: "readonly"
+      }
+    }
   }
 );

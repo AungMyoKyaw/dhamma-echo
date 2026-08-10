@@ -20,10 +20,22 @@
 
   function keydown(event: KeyboardEvent): void {
     if (isEditableTarget(event.target)) return;
-    if (event.code === "Space") { event.preventDefault(); void app.togglePlayback(); }
-    if (event.code === "ArrowLeft") { event.preventDefault(); app.seekBy(-10); }
-    if (event.code === "ArrowRight") { event.preventDefault(); app.seekBy(10); }
-    if (event.key.toLowerCase() === "n") { event.preventDefault(); void app.playNext(); }
+    if (event.code === "Space") {
+      event.preventDefault();
+      void app.togglePlayback();
+    }
+    if (event.code === "ArrowLeft") {
+      event.preventDefault();
+      app.seekBy(-10);
+    }
+    if (event.code === "ArrowRight") {
+      event.preventDefault();
+      app.seekBy(10);
+    }
+    if (event.key.toLowerCase() === "n") {
+      event.preventDefault();
+      void app.playNext();
+    }
   }
 </script>
 

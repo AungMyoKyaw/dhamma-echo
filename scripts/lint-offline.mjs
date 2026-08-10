@@ -2,7 +2,17 @@ import { readFile, readdir } from "node:fs/promises";
 import { extname, join } from "node:path";
 
 const roots = ["src", "tests", "scripts"];
-const allowed = new Set([".ts", ".mjs", ".css", ".html", ".json", ".md", ".rs", ".toml", ".svelte"]);
+const allowed = new Set([
+  ".ts",
+  ".mjs",
+  ".css",
+  ".html",
+  ".json",
+  ".md",
+  ".rs",
+  ".toml",
+  ".svelte"
+]);
 const failures = [];
 
 async function walk(path) {

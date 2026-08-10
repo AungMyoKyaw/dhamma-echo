@@ -119,14 +119,14 @@ Then open `http://127.0.0.1:1420`.
 
 | Command                  | Purpose                                                               |
 | ------------------------ | --------------------------------------------------------------------- |
-| `bun run dev:web`        | Start the Vite browser preview with HMR                              |
+| `bun run dev:web`        | Start the Vite browser preview with HMR                               |
 | `bun run tauri:dev`      | Run the Tauri desktop application                                     |
 | `bun run format`         | Format web and Rust sources                                           |
 | `bun run format:check`   | Verify formatting                                                     |
 | `bun run lint`           | Run strict ESLint with zero warnings                                  |
 | `bun run lint:offline`   | Run dependency-free whitespace checks                                 |
-| `bun run typecheck`      | Run `svelte-check` and strict TypeScript checking                    |
-| `bun run test`           | Run the core TypeScript behavior tests                               |
+| `bun run typecheck`      | Run `svelte-check` and strict TypeScript checking                     |
+| `bun run test`           | Run the core TypeScript behavior tests                                |
 | `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
 | `npm run site:test`      | Run product website behavior and link tests                           |
 | `npm run site:smoke`     | Validate static assets, paths, budgets, and runtime isolation         |

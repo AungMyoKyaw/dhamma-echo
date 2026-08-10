@@ -16,14 +16,61 @@
     else await app.playTrack(track);
   }
 </script>
-<article class="track-row grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-3 last:border-0 {current ? 'is-current bg-app-primary/5' : ''} {track.playable ? 'transition hover:bg-app-soft/60' : ''}">
-  <button class="track-play-button {track.playable ? 'is-playable' : 'is-unavailable'} {loading ? 'is-loading' : ''}" type="button" onclick={() => void play()} aria-label="{actionLabel} {track.title}" title="{actionLabel} {track.title}" aria-pressed={playing} disabled={!track.playable || loading}><span class="track-play-icon {playing ? '' : 'is-play'}"><Icon name={playing ? "pause" : "play"} /></span></button>
-  <button class="min-w-0 text-left {track.playable ? 'cursor-pointer' : 'cursor-default'}" type="button" onclick={() => void play()} disabled={!track.playable || loading} aria-label="{actionLabel} {track.title}">
-    <span class="flex items-center gap-2"><span class="truncate font-bold">{track.title}</span>{#if !track.playable}<span class="rounded-full bg-app-soft px-2 py-0.5 text-[10px] font-bold uppercase text-app-muted">{track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Unavailable"}</span>{/if}</span>
-    <span class="mt-1 block truncate text-sm text-app-muted">{track.teacherName || "Unknown teacher"} · {track.language} · {track.format.toUpperCase()}{resume > 0 ? ` · Resume at ${formatDuration(resume)}` : ""}</span>
+
+<article
+  class="track-row grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-3 last:border-0 {current
+    ? 'is-current bg-app-primary/5'
+    : ''} {track.playable ? 'transition hover:bg-app-soft/60' : ''}"
+>
+  <button
+    class="track-play-button {track.playable ? 'is-playable' : 'is-unavailable'} {loading
+      ? 'is-loading'
+      : ''}"
+    type="button"
+    onclick={() => void play()}
+    aria-label="{actionLabel} {track.title}"
+    title="{actionLabel} {track.title}"
+    aria-pressed={playing}
+    disabled={!track.playable || loading}
+    ><span class="track-play-icon {playing ? '' : 'is-play'}"
+      ><Icon name={playing ? "pause" : "play"} /></span
+    ></button
+  >
+  <button
+    class="min-w-0 text-left {track.playable ? 'cursor-pointer' : 'cursor-default'}"
+    type="button"
+    onclick={() => void play()}
+    disabled={!track.playable || loading}
+    aria-label="{actionLabel} {track.title}"
+  >
+    <span class="flex items-center gap-2"
+      ><span class="truncate font-bold">{track.title}</span>{#if !track.playable}<span
+          class="rounded-full bg-app-soft px-2 py-0.5 text-[10px] font-bold uppercase text-app-muted"
+          >{track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Unavailable"}</span
+        >{/if}</span
+    >
+    <span class="mt-1 block truncate text-sm text-app-muted"
+      >{track.teacherName || "Unknown teacher"} · {track.language} · {track.format.toUpperCase()}{resume >
+      0
+        ? ` · Resume at ${formatDuration(resume)}`
+        : ""}</span
+    >
   </button>
   <div class="flex items-center gap-2">
-    <button class="row-action-button {favorite ? 'is-active' : ''}" type="button" onclick={() => app.dispatch({ type: "toggle-favorite", id: track.id })} aria-label={favorite ? "Remove from favorites" : "Add to favorites"} title={favorite ? "Remove from favorites" : "Add to favorites"}><span class="size-5 {favorite ? 'fill-current text-app-primary' : ''}"><Icon name="heart" /></span></button>
-    <button class="row-queue-button" type="button" onclick={() => app.dispatch({ type: "enqueue", track })}>Queue</button>
+    <button
+      class="row-action-button {favorite ? 'is-active' : ''}"
+      type="button"
+      onclick={() => app.dispatch({ type: "toggle-favorite", id: track.id })}
+      aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+      title={favorite ? "Remove from favorites" : "Add to favorites"}
+      ><span class="size-5 {favorite ? 'fill-current text-app-primary' : ''}"
+        ><Icon name="heart" /></span
+      ></button
+    >
+    <button
+      class="row-queue-button"
+      type="button"
+      onclick={() => app.dispatch({ type: "enqueue", track })}>Queue</button
+    >
   </div>
 </article>

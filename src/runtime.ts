@@ -24,5 +24,7 @@ export function isEditableTarget(target: EventTarget | null): boolean {
   if (target === null || typeof target !== "object") return false;
   const element = target as { tagName?: unknown; isContentEditable?: unknown };
   const tag = typeof element.tagName === "string" ? element.tagName.toLowerCase() : "";
-  return tag === "input" || tag === "select" || tag === "textarea" || element.isContentEditable === true;
+  return (
+    tag === "input" || tag === "select" || tag === "textarea" || element.isContentEditable === true
+  );
 }

@@ -9,7 +9,6 @@ All notable changes to this project are documented here.
 - Replaced the HTML-string/DOM-delegation desktop frontend with Svelte 5 components.
 - Switched the frontend development and production pipeline to Vite while preserving Tauri 2, Tailwind CSS v4, and the existing application controller/state modules.
 
-
 ## [0.3.0] - 2026-08-10
 
 ### Added
