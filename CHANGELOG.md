@@ -4,6 +4,27 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-10
+
+### Added
+
+- Full audio catalogue browsing backed by the bundled SQLite database.
+- Load-more pagination for catalogue, collection, and teacher-talk lists.
+- Curated featured teachers with badges and consistent ordering.
+- Clear buttons for all text search fields.
+
+### Changed
+
+- Sort teacher collections by teacher, then naturally by collection name and disc number.
+- Group and naturally sort collections on the collections page, with compact search controls.
+- Preserve Burmese text clusters when titles wrap.
+- Reduce the bundled database by removing crawler-only tables while preserving the catalogue.
+- Fetch Git LFS database assets explicitly in CI and release builds.
+
+### Fixed
+
+- Prevent featured teacher cards from being clipped during hover interactions.
+
 ## [0.2.4] - 2026-08-09
 
 ### Changed
