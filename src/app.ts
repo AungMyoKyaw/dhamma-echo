@@ -139,14 +139,20 @@ export class DhammaApp {
   async openTeacher(id: number, returnRoute: Route): Promise<void> {
     this.dispatch({ type: "open-teacher", teacherId: id, returnRoute });
     this.dispatch({ type: "teacher-detail-started" });
-    this.dispatch({ type: "teacher-talks-started" });
     const detail = this.dependencies.api
       .getTeacher(id)
       .then((value) => this.dispatch({ type: "teacher-detail-loaded", detail: value }))
       .catch((error: unknown) =>
         this.dispatch({ type: "teacher-detail-failed", message: messageFrom(error) })
       );
-    const talks = this.dependencies.api
+    await Promise.all([detail, this.loadTeacherTalks()]);
+  }
+
+  async loadTeacherTalks(): Promise<void> {
+    const id = this.state.selectedTeacherId;
+    if (id === null) return;
+    this.dispatch({ type: "teacher-talks-started" });
+    await this.dependencies.api
       .searchAudio({
         query: "",
         language: null,
@@ -161,7 +167,6 @@ export class DhammaApp {
       .catch((error: unknown) =>
         this.dispatch({ type: "teacher-talks-failed", message: messageFrom(error) })
       );
-    await Promise.all([detail, talks]);
   }
 
   async loadRecent(): Promise<void> {

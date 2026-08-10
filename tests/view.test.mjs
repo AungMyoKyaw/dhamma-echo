@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { renderApp } from "../.test-build/src/view.js";
 import { createInitialState, reduce } from "../.test-build/src/store.js";
-import { tracks, teachers } from "./test-data.mjs";
+import { categories, collections, incompleteTrack, tracks, teachers } from "./test-data.mjs";
 
 function teacherCards(html) {
   return new Map(
@@ -497,4 +497,73 @@ test("renderApp shows continue-listening on home and hides it without history", 
   const unplayableHtml = renderApp(unplayable);
   assert.match(unplayableHtml, /Continue listening/);
   assert.doesNotMatch(unplayableHtml, /data-action="play-track" data-id="1"/);
+});
+
+test("renderApp exposes collection navigation and audio category filters", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, { type: "categories-loaded", categories });
+  state = reduce(state, { type: "set-category", categoryId: 7 });
+  state = reduce(state, { type: "set-collection", collectionId: 10 });
+  const html = renderApp(state);
+  assert.match(html, /data-value="collections"/);
+  assert.match(html, /Audio in English/);
+  assert.match(html, /data-action="clear-category"/);
+  assert.match(html, /data-action="clear-collection"/);
+});
+
+test("renderApp distinguishes duplicate collection names with teacher context", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "collections" });
+  state = reduce(state, {
+    type: "collections-loaded",
+    page: { items: collections, total: 2, limit: 24, offset: 0 }
+  });
+  const html = renderApp(state);
+  assert.equal((html.match(/Dhamma Disc/gu) ?? []).length, 2);
+  assert.match(html, /Venerable Sayadaw U Jotika/);
+  assert.match(html, /Venerable Dr\. K\. Dhammasami/);
+  assert.match(html, /data-action="open-collection" data-id="10"/);
+});
+
+test("renderApp renders collection and teacher details with playable incomplete audio", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "open-collection", collectionId: 10, returnRoute: "collections" });
+  state = reduce(state, {
+    type: "collection-detail-loaded",
+    detail: {
+      ...collections[0],
+      description: null,
+      tracks: [incompleteTrack, tracks[0]]
+    }
+  });
+  let html = renderApp(state);
+  assert.match(html, /Untitled talk/);
+  assert.match(html, /Unknown teacher/);
+  assert.match(html, /title="Play Untitled talk"/);
+  assert.match(html, /data-action="back-to-list"/);
+
+  state = reduce(state, { type: "open-teacher", teacherId: 3, returnRoute: "teachers" });
+  state = reduce(state, {
+    type: "teacher-detail-loaded",
+    detail: {
+      id: 3,
+      name: teachers[1].name,
+      nameMyanmar: null,
+      title: null,
+      description: null,
+      audioCount: 2,
+      collections: [collections[0]]
+    }
+  });
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    page: { items: tracks, total: 2, limit: 50, offset: 0 }
+  });
+  html = renderApp(state);
+  assert.match(html, /2 talks/);
+  assert.match(html, /Dhamma Disc/);
+  assert.match(html, /data-action="filter-teacher"/);
+  assert.match(html, /data-action="previous-teacher-talks"/);
+  assert.match(html, /data-action="next-teacher-talks"/);
 });

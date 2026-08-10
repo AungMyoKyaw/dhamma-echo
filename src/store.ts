@@ -53,6 +53,7 @@ export type AppAction =
   | { type: "teacher-detail-loaded"; detail: NonNullable<AppState["teacherDetail"]["data"]> }
   | { type: "teacher-detail-failed"; message: string }
   | { type: "teacher-talks-started" }
+  | { type: "set-teacher-talk-offset"; offset: number }
   | { type: "teacher-talks-loaded"; page: AudioSearchPage }
   | { type: "teacher-talks-failed"; message: string }
   | { type: "return-to-list" }
@@ -285,6 +286,14 @@ export function reduce(state: AppState, action: AppAction): AppState {
       };
     case "teacher-talks-started":
       return { ...state, teacherTalks: { ...state.teacherTalks, status: "loading", message: "" } };
+    case "set-teacher-talk-offset":
+      return {
+        ...state,
+        teacherTalks: {
+          ...state.teacherTalks,
+          page: { ...state.teacherTalks.page, offset: Math.max(0, action.offset) }
+        }
+      };
     case "teacher-talks-loaded":
       return { ...state, teacherTalks: { status: "ready", page: action.page, message: "" } };
     case "teacher-talks-failed":

@@ -156,6 +156,9 @@ test("audio discovery loadable states preserve independent pagination", () => {
   state = reduce(state, { type: "set-collection-offset", offset: 24 });
   assert.equal(state.collectionSearch.offset, 24);
   assert.equal(state.search.offset, 0);
+  state = reduce(state, { type: "set-teacher-talk-offset", offset: 50 });
+  assert.equal(state.teacherTalks.page.offset, 50);
+  assert.equal(state.collectionSearch.offset, 24);
   state = reduce(state, { type: "collection-detail-failed", message: "missing" });
   assert.equal(state.collectionDetail.status, "error");
   assert.equal(state.collectionDetail.message, "missing");

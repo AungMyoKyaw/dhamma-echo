@@ -473,5 +473,8 @@ test("DhammaApp loads collection and teacher detail flows", async () => {
   await app.openTeacher(3, "teachers");
   assert.equal(app.state.teacherDetail.data.id, 3);
   assert.equal(app.state.teacherTalks.page.total, tracks.length);
+  app.dispatch({ type: "set-teacher-talk-offset", offset: 50 });
+  await app.loadTeacherTalks();
+  assert.equal(app.state.teacherTalks.page.offset, 50);
   app.destroy();
 });

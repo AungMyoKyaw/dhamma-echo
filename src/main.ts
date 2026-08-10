@@ -16,7 +16,9 @@ function parseId(value: string | undefined): number | null {
 }
 
 function isRoute(value: string | undefined): value is Route {
-  return ["home", "explore", "teachers", "library", "settings"].includes(value ?? "");
+  return ["home", "explore", "collections", "teachers", "library", "settings"].includes(
+    value ?? ""
+  );
 }
 
 export function selectInvoke(candidate: InvokeFn | undefined): InvokeFn {
@@ -51,14 +53,36 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (action === "navigate" && isRoute(value)) {
       app.dispatch({ type: "navigate", route: value });
       if (value === "home") void app.loadRecent();
+      if (value === "collections") void app.searchCollections();
     }
     if (action === "select-teacher" && id !== null) {
+      const returnRoute = app.state.route === "home" ? "home" : "teachers";
+      void app.openTeacher(id, returnRoute);
+    }
+    if (action === "open-collection" && id !== null) {
+      const returnRoute = app.state.route === "teacher-detail" ? "teacher-detail" : "collections";
+      void app.openCollection(id, returnRoute);
+    }
+    if (action === "back-to-list") app.dispatch({ type: "return-to-list" });
+    if (action === "filter-teacher" && id !== null) {
       app.dispatch({ type: "set-teacher", teacherId: id });
       app.dispatch({ type: "navigate", route: "explore" });
       void app.search();
     }
+    if (action === "filter-category") {
+      app.dispatch({ type: "set-category", categoryId: id });
+      void app.search();
+    }
     if (action === "clear-teacher") {
       app.dispatch({ type: "set-teacher", teacherId: null });
+      void app.search();
+    }
+    if (action === "clear-category") {
+      app.dispatch({ type: "clear-category" });
+      void app.search();
+    }
+    if (action === "clear-collection") {
+      app.dispatch({ type: "clear-collection" });
       void app.search();
     }
     if (action === "play-track" && id !== null) {
@@ -85,6 +109,17 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (action === "retry-summary") void app.loadSummary();
     if (action === "retry-teachers") void app.loadTeachers();
     if (action === "retry-search") void app.search();
+    if (action === "retry-collections") void app.searchCollections();
+    if (action === "retry-collection" && app.state.selectedCollectionId !== null)
+      void app.openCollection(
+        app.state.selectedCollectionId,
+        app.state.navigationContext?.returnRoute ?? "collections"
+      );
+    if (action === "retry-teacher-detail" && app.state.selectedTeacherId !== null)
+      void app.openTeacher(
+        app.state.selectedTeacherId,
+        app.state.navigationContext?.returnRoute ?? "teachers"
+      );
     if (action === "previous-page") {
       app.dispatch({
         type: "set-offset",
@@ -99,12 +134,45 @@ export async function bootstrap(): Promise<DhammaApp> {
       });
       void app.search();
     }
+    if (action === "previous-collections") {
+      app.dispatch({
+        type: "set-collection-offset",
+        offset: app.state.collectionSearch.offset - app.state.collectionSearch.limit
+      });
+      void app.searchCollections();
+    }
+    if (action === "next-collections") {
+      app.dispatch({
+        type: "set-collection-offset",
+        offset: app.state.collectionSearch.offset + app.state.collectionSearch.limit
+      });
+      void app.searchCollections();
+    }
+    if (action === "previous-teacher-talks") {
+      app.dispatch({
+        type: "set-teacher-talk-offset",
+        offset: app.state.teacherTalks.page.offset - app.state.teacherTalks.page.limit
+      });
+      void app.loadTeacherTalks();
+    }
+    if (action === "next-teacher-talks") {
+      app.dispatch({
+        type: "set-teacher-talk-offset",
+        offset: app.state.teacherTalks.page.offset + app.state.teacherTalks.page.limit
+      });
+      void app.loadTeacherTalks();
+    }
   });
 
   root.addEventListener("submit", (event) => {
     const form = event.target;
     if (!(form instanceof HTMLFormElement)) return;
-    if (form.dataset.form !== "search" && form.dataset.form !== "teacher-search") return;
+    if (
+      form.dataset.form !== "search" &&
+      form.dataset.form !== "teacher-search" &&
+      form.dataset.form !== "collection-search"
+    )
+      return;
     event.preventDefault();
     const values = new FormData(form);
     const text = (key: string, fallback: string): string => {
@@ -113,6 +181,13 @@ export async function bootstrap(): Promise<DhammaApp> {
     };
     if (form.dataset.form === "teacher-search") {
       void app.searchTeachers(text("query", ""));
+      return;
+    }
+    if (form.dataset.form === "collection-search") {
+      app.dispatch({ type: "set-collection-query", query: text("query", "") });
+      const teacherId = parseId(text("teacherId", ""));
+      app.dispatch({ type: "set-collection-teacher", teacherId });
+      void app.searchCollections();
       return;
     }
     app.dispatch({ type: "set-query", query: text("query", "") });

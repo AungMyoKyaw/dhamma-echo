@@ -52,6 +52,7 @@ function icon(name: keyof typeof icons): string {
 const routes: { route: Route; label: string; icon: keyof typeof icons }[] = [
   { route: "home", label: "Home", icon: "home" },
   { route: "explore", label: "Explore", icon: "explore" },
+  { route: "collections", label: "Collections", icon: "library" },
   { route: "teachers", label: "Teachers", icon: "teachers" },
   { route: "library", label: "My library", icon: "library" },
   { route: "settings", label: "Settings", icon: "settings" }
@@ -60,7 +61,10 @@ const routes: { route: Route; label: string; icon: keyof typeof icons }[] = [
 function renderSidebar(state: AppState): string {
   const links = routes
     .map(({ route, label, icon: iconName }) => {
-      const active = state.route === route;
+      const active =
+        state.route === route ||
+        (route === "collections" && state.route === "collection-detail") ||
+        (route === "teachers" && state.route === "teacher-detail");
       return `<button class="group flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-semibold transition ${active ? "bg-app-primary text-white shadow-sm" : "text-app-muted hover:bg-app-soft hover:text-app"}" data-action="navigate" data-value="${route}" aria-current="${active ? "page" : "false"}"><span class="size-5">${icon(iconName)}</span><span>${label}</span></button>`;
     })
     .join("");
@@ -166,11 +170,15 @@ function renderHome(state: AppState): string {
 }
 
 function renderFilters(state: AppState): string {
-  return `<form class="search-form grid grid-cols-[1fr_160px_140px_auto] gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="search">
+  const categories =
+    state.categories.status === "ready"
+      ? `<div class="col-span-full flex flex-wrap gap-2" aria-label="Audio categories"><button class="rounded-full px-3 py-2 text-xs font-bold ${state.search.categoryId === null ? "bg-app-primary text-white" : "bg-app-soft text-app-muted"}" data-action="filter-category" data-id="0" type="button">All audio</button>${state.categories.data.map((category) => `<button class="rounded-full px-3 py-2 text-xs font-bold ${state.search.categoryId === category.id ? "bg-app-primary text-white" : "bg-app-soft text-app-muted"}" data-action="filter-category" data-id="${category.id}" type="button">${escapeHtml(category.name)} · ${category.audioCount.toLocaleString("en-US")}</button>`).join("")}</div>`
+      : "";
+  return `<form class="search-form grid grid-cols-[minmax(0,1fr)_160px_140px_auto] gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="search">
     <label class="relative"><span class="sr-only">Search talks</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.search.query)}" placeholder="Search title or teacher" /></label>
     <label><span class="sr-only">Language</span><select class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="language"><option value="all"${state.search.language === "all" ? " selected" : ""}>All languages</option><option value="myanmar"${state.search.language === "myanmar" ? " selected" : ""}>Myanmar</option><option value="english"${state.search.language === "english" ? " selected" : ""}>English</option></select></label>
     <label><span class="sr-only">Format</span><select class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="format"><option value="all"${state.search.format === "all" ? " selected" : ""}>All formats</option><option value="mp3"${state.search.format === "mp3" ? " selected" : ""}>MP3</option><option value="wma"${state.search.format === "wma" ? " selected" : ""}>WMA</option></select></label>
-    <button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button>
+    <button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button>${categories}
   </form>`;
 }
 
@@ -220,7 +228,16 @@ function renderExplore(state: AppState): string {
     state.search.teacherId !== null
       ? `<div class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary">Teacher: ${escapeHtml(teacherName(state))}<button class="flex size-5 items-center justify-center rounded-full hover:bg-app-primary/20" data-action="clear-teacher" aria-label="Clear teacher filter"><span class="size-3">${icon("close")}</span></button></div>`
       : "";
-  return `<section class="space-y-5">${renderFilters(state)}${teacherChip}<div class="flex items-center justify-between"><p class="text-sm text-app-muted">${page.total > 0 ? `${from.toLocaleString("en-US")}–${to.toLocaleString("en-US")} of ${page.total.toLocaleString("en-US")} talks` : "Search the complete audio catalogue"}</p><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-page" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-page" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${content}</section>`;
+  const category = state.categories.data.find((item) => item.id === state.search.categoryId);
+  const categoryChip =
+    category === undefined
+      ? ""
+      : `<div class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary">Category: ${escapeHtml(category.name)}<button data-action="clear-category" aria-label="Clear category filter"><span class="size-3">${icon("close")}</span></button></div>`;
+  const collectionChip =
+    state.search.collectionId === null
+      ? ""
+      : `<div class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary">Collection filter<button data-action="clear-collection" aria-label="Clear collection filter"><span class="size-3">${icon("close")}</span></button></div>`;
+  return `<section class="space-y-5">${renderFilters(state)}<div class="flex flex-wrap gap-2">${teacherChip}${categoryChip}${collectionChip}</div><div class="flex items-center justify-between"><p class="text-sm text-app-muted">${page.total > 0 ? `${from.toLocaleString("en-US")}–${to.toLocaleString("en-US")} of ${page.total.toLocaleString("en-US")} talks` : "Search the complete audio catalogue"}</p><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-page" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-page" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${content}</section>`;
 }
 
 function teacherName(state: AppState): string {
@@ -245,6 +262,66 @@ function renderTeachers(state: AppState): string {
     ? state.teacherResults
     : orderTeachersFeaturedFirst(state.teachers.data);
   return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search"><label class="relative flex-1"><span class="sr-only">Search teachers</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.teacherQuery)}" placeholder="Search teacher name" /></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map((teacher) => renderTeacherCard(teacher)).join("")}</div>`}</section>`;
+}
+
+function renderCollectionCard(collection: AppState["collections"]["page"]["items"][number]): string {
+  return `<button class="group flex min-w-0 flex-col rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="open-collection" data-id="${collection.id}"><p class="font-bold leading-7">${escapeHtml(collection.name)}</p><p class="mt-2 text-sm text-app-muted">${escapeHtml(collection.teacherName || "Unknown teacher")}</p><p class="mt-4 text-xs font-bold text-app-primary">${collection.audioCount.toLocaleString("en-US")} talks</p></button>`;
+}
+
+function renderCollections(state: AppState): string {
+  const collectionState = state.collections;
+  let content = renderLoading();
+  if (collectionState.status === "error")
+    content = renderError(collectionState.message, "retry-collections");
+  if (collectionState.status === "ready") {
+    content =
+      collectionState.page.items.length === 0
+        ? renderEmpty("No collections match", "Try a shorter collection name or clear the teacher filter.")
+        : `<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">${collectionState.page.items.map(renderCollectionCard).join("")}</div>`;
+  }
+  const page = collectionState.page;
+  const teacherOptions = state.teachers.data
+    .map(
+      (teacher) =>
+        `<option value="${teacher.id}"${state.collectionSearch.teacherId === teacher.id ? " selected" : ""}>${escapeHtml(teacher.name)}</option>`
+    )
+    .join("");
+  return `<section class="space-y-5"><form class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="collection-search"><label class="relative min-w-64 flex-1"><span class="sr-only">Search collections</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm" name="query" value="${escapeHtml(state.collectionSearch.query)}" placeholder="Search collection name" /></label><label><span class="sr-only">Collection teacher</span><select class="h-12 max-w-64 rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="teacherId"><option value="">All teachers</option>${teacherOptions}</select></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form><div class="flex items-center justify-between"><p class="text-sm text-app-muted">${page.total.toLocaleString("en-US")} audio collections</p><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-collections" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-collections" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${content}</section>`;
+}
+
+function renderBackButton(): string {
+  return `<button class="rounded-full border border-app-border px-4 py-2 text-sm font-bold text-app-primary" data-action="back-to-list">Back</button>`;
+}
+
+function renderCollectionDetail(state: AppState): string {
+  if (state.collectionDetail.status === "error")
+    return `${renderBackButton()}${renderError(state.collectionDetail.message, "retry-collection")}`;
+  const detail = state.collectionDetail.data;
+  if (state.collectionDetail.status !== "ready" || detail === null) return renderLoading();
+  const tracks =
+    detail.tracks.length === 0
+      ? renderEmpty("No audio talks in this collection", "This collection has no audio records to play.")
+      : `<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">${detail.tracks.map((track) => renderTrack(track, state)).join("")}</div>`;
+  return `<section class="space-y-5">${renderBackButton()}<div class="rounded-card border border-app-border bg-app-surface p-6"><p class="text-xs font-bold uppercase tracking-wider text-app-primary">${detail.audioCount.toLocaleString("en-US")} talks</p><h2 class="mt-2 text-2xl font-bold">${escapeHtml(detail.name)}</h2><p class="mt-2 text-sm text-app-muted">${escapeHtml(detail.teacherName || "Unknown teacher")}</p>${detail.description === null ? "" : `<p class="mt-4 text-sm leading-6 text-app-muted">${escapeHtml(detail.description)}</p>`}</div>${tracks}</section>`;
+}
+
+function renderTeacherDetail(state: AppState): string {
+  if (state.teacherDetail.status === "error")
+    return `${renderBackButton()}${renderError(state.teacherDetail.message, "retry-teacher-detail")}`;
+  const detail = state.teacherDetail.data;
+  if (state.teacherDetail.status !== "ready" || detail === null) return renderLoading();
+  let talks = renderLoading();
+  if (state.teacherTalks.status === "error")
+    talks = renderError(state.teacherTalks.message, "retry-teacher-detail");
+  if (state.teacherTalks.status === "ready") {
+    talks =
+      state.teacherTalks.page.items.length === 0
+        ? renderEmpty("No talks found", "This teacher has no audio talks in the catalogue.")
+        : `<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">${state.teacherTalks.page.items.map((track) => renderTrack(track, state)).join("")}</div>`;
+  }
+  const collectionCards = detail.collections.map(renderCollectionCard).join("");
+  const page = state.teacherTalks.page;
+  return `<section class="space-y-6">${renderBackButton()}<div class="rounded-card border border-app-border bg-app-surface p-6"><p class="text-xs font-bold uppercase tracking-wider text-app-primary">${detail.audioCount.toLocaleString("en-US")} talks</p><h2 class="mt-2 text-2xl font-bold">${escapeHtml(detail.name)}</h2><button class="mt-4 rounded-full bg-app-primary px-4 py-2 text-xs font-bold text-white" data-action="filter-teacher" data-id="${detail.id}">Explore this teacher</button></div>${collectionCards.length === 0 ? "" : `<div><h3 class="mb-3 text-lg font-bold">Collections</h3><div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">${collectionCards}</div></div>`}<div><div class="mb-3 flex items-center justify-between"><h3 class="text-lg font-bold">Talks</h3><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-teacher-talks" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-teacher-talks" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${talks}</div></section>`;
 }
 
 function renderLibrary(state: AppState): string {
@@ -285,9 +362,11 @@ function renderMain(state: AppState): string {
     case "explore":
       return renderExplore(state);
     case "collections":
+      return renderCollections(state);
     case "collection-detail":
+      return renderCollectionDetail(state);
     case "teacher-detail":
-      return renderLoading();
+      return renderTeacherDetail(state);
     case "teachers":
       return renderTeachers(state);
     case "library":
