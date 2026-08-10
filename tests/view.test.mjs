@@ -263,8 +263,8 @@ test("renderApp covers every route and catalogue state", () => {
 
   state = reduce(state, { type: "navigate", route: "settings" });
   html = renderApp(state);
-  assert.match(html, /Follow system/);
   assert.match(html, /Default speed/);
+  assert.doesNotMatch(html, /Appearance|data-setting="theme"/);
 });
 
 test("renderApp covers player, queue, unavailable tracks, and resume metadata", () => {
@@ -313,10 +313,9 @@ test("renderApp covers player, queue, unavailable tracks, and resume metadata", 
   state = reduce(state, { type: "clear-queue" });
   html = renderApp(state);
   assert.match(html, /Your queue is empty/);
-  state = reduce(state, { type: "set-theme", theme: "dark" });
+  state = reduce(state, { type: "navigate", route: "settings" });
   html = renderApp(state);
-  assert.match(html, /aria-label="Change color theme"/);
-  assert.match(html, /viewBox="0 0 24 24"/);
+  assert.doesNotMatch(html, /cycle-theme|data-setting="theme"|Appearance/);
 });
 
 test("renderApp makes the whole track row playable only when the track is playable", () => {

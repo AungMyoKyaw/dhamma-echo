@@ -1,5 +1,4 @@
 export type Route = "home" | "explore" | "teachers" | "library" | "settings";
-export type Theme = "system" | "light" | "dark";
 export type LanguageFilter = "all" | "myanmar" | "english";
 export type FormatFilter = "all" | "mp3" | "wma";
 export type PlayerStatus = "idle" | "loading" | "playing" | "paused";
@@ -58,7 +57,6 @@ export interface LibraryState {
 }
 
 export interface SettingsState {
-  theme: Theme;
   playbackRate: number;
   volume: number;
 }

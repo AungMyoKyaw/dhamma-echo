@@ -2,7 +2,7 @@
 
 **A quiet desktop library for Dhamma talks.**
 
-Dhamma Echo is a lightweight Tauri 2 desktop audio player built around the supplied read-only SQLite catalogue. It provides fast search, teacher browsing, queue management, favorites, listening history, resume positions, playback speed controls, and light/dark themes without accounts, analytics, or background services.
+Dhamma Echo is a lightweight Tauri 2 desktop audio player built around the supplied read-only SQLite catalogue. It provides fast search, teacher browsing, queue management, favorites, listening history, resume positions, playback speed controls, and a calm light interface without accounts, analytics, or background services.
 
 ![Dhamma Echo explore view with active player](docs/images/dhamma-echo-demo.png)
 

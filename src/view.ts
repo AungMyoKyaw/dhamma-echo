@@ -42,9 +42,7 @@ const icons: Record<string, string> = {
   search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/>',
   close: '<path d="m7 7 10 10M17 7 7 17"/>',
   chevron: '<path d="m9 18 6-6-6-6"/>',
-  leaf: '<path d="M20 4C12 4 5 8 5 15c0 2 1 4 3 5 0-5 4-9 10-12-5 4-7 8-7 12 6-1 10-6 9-16Z"/>',
-  moon: '<path d="M20 15.2A8.5 8.5 0 0 1 8.8 4a8.5 8.5 0 1 0 11.2 11.2Z"/>',
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+  leaf: '<path d="M20 4C12 4 5 8 5 15c0 2 1 4 3 5 0-5 4-9 10-12-5 4-7 8-7 12 6-1 10-6 9-16Z"/>'
 };
 
 function icon(name: keyof typeof icons): string {
@@ -92,9 +90,8 @@ function renderHeader(state: AppState): string {
     settings: { eyebrow: "Preferences", title: "Make listening yours" }
   };
   const label = labels[state.route];
-  return `<header class="flex items-center justify-between gap-6 px-10 pb-4 pt-8">
+  return `<header class="flex items-center gap-6 px-10 pb-4 pt-8">
     <div><p class="text-xs font-bold uppercase tracking-[0.2em] text-app-primary">${label.eyebrow}</p><h1 class="mt-1 text-3xl font-bold tracking-tight">${label.title}</h1></div>
-    <button class="flex size-11 items-center justify-center rounded-2xl border border-app-border bg-app-surface text-app-muted transition hover:text-app" data-action="cycle-theme" aria-label="Change color theme"><span class="size-5">${icon(state.settings.theme === "dark" ? "sun" : "moon")}</span></button>
   </header>`;
 }
 
@@ -197,7 +194,7 @@ function renderEmpty(title: string, detail: string): string {
 }
 
 function renderError(message: string, action: string): string {
-  return `<div class="flex min-h-64 flex-col items-center justify-center rounded-card border border-red-300/40 bg-red-50/50 p-8 text-center dark:bg-red-950/20"><h2 class="text-xl font-bold">The library needs another try</h2><p class="mt-2 max-w-md text-sm text-app-muted">${escapeHtml(message)}</p><button class="mt-5 rounded-full bg-app-primary px-5 py-2.5 text-sm font-bold text-white" data-action="${action}">Try again</button></div>`;
+  return `<div class="flex min-h-64 flex-col items-center justify-center rounded-card border border-red-300/40 bg-red-50/50 p-8 text-center"><h2 class="text-xl font-bold">The library needs another try</h2><p class="mt-2 max-w-md text-sm text-app-muted">${escapeHtml(message)}</p><button class="mt-5 rounded-full bg-app-primary px-5 py-2.5 text-sm font-bold text-white" data-action="${action}">Try again</button></div>`;
 }
 
 function renderExplore(state: AppState): string {
@@ -274,8 +271,7 @@ function option(value: string, label: string, selected: string): string {
 }
 
 function renderSettings(state: AppState): string {
-  return `<section class="mx-auto max-w-3xl space-y-4"><div class="rounded-card border border-app-border bg-app-surface p-6"><h2 class="text-lg font-bold">Appearance</h2><p class="mt-1 text-sm text-app-muted">Choose how Dhamma Echo looks on this device.</p><label class="mt-5 block text-sm font-bold">Theme<select class="mt-2 h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 font-normal" data-setting="theme">${option("system", "Follow system", state.settings.theme)}${option("light", "Light", state.settings.theme)}${option("dark", "Dark", state.settings.theme)}</select></label></div>
-  <div class="rounded-card border border-app-border bg-app-surface p-6"><h2 class="text-lg font-bold">Playback</h2><div class="mt-5 grid grid-cols-2 gap-4"><label class="text-sm font-bold">Default speed<select class="mt-2 h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 font-normal" data-setting="rate">${[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => option(String(rate), `${rate}×`, String(state.settings.playbackRate))).join("")}</select></label><label class="text-sm font-bold">Default volume<span class="mt-2 flex h-12 items-center rounded-2xl border border-app-border bg-app-bg px-4"><input class="range-accent w-full" type="range" min="0" max="1" step="0.05" value="${state.settings.volume}" data-setting="volume" aria-label="Default volume" /></span></label></div></div>
+  return `<section class="mx-auto max-w-3xl space-y-4"><div class="rounded-card border border-app-border bg-app-surface p-6"><h2 class="text-lg font-bold">Playback</h2><div class="mt-5 grid grid-cols-2 gap-4"><label class="text-sm font-bold">Default speed<select class="mt-2 h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 font-normal" data-setting="rate">${[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => option(String(rate), `${rate}×`, String(state.settings.playbackRate))).join("")}</select></label><label class="text-sm font-bold">Default volume<span class="mt-2 flex h-12 items-center rounded-2xl border border-app-border bg-app-bg px-4"><input class="range-accent w-full" type="range" min="0" max="1" step="0.05" value="${state.settings.volume}" data-setting="volume" aria-label="Default volume" /></span></label></div></div>
   <div class="rounded-card border border-app-border bg-app-soft p-6"><h2 class="text-sm font-bold">Privacy</h2><p class="mt-2 text-sm leading-6 text-app-muted">Favorites, history, playback position, and settings are stored locally. The bundled catalogue is read-only. Audio is requested from dhammadownload.com only when played.</p></div></section>`;
 }
 

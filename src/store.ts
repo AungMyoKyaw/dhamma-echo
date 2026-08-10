@@ -47,8 +47,7 @@ export type AppAction =
   | { type: "set-player-error"; message: string }
   | { type: "toggle-queue" }
   | { type: "set-volume"; volume: number }
-  | { type: "set-rate"; rate: number }
-  | { type: "set-theme"; theme: AppState["settings"]["theme"] };
+  | { type: "set-rate"; rate: number };
 
 const emptyPage: AudioSearchPage = { items: [], total: 0, limit: 50, offset: 0 };
 const emptySummary: CatalogueSummary = {
@@ -236,7 +235,5 @@ export function reduce(state: AppState, action: AppAction): AppState {
         ...state,
         settings: { ...state.settings, playbackRate: clamp(action.rate, 0.75, 2) }
       };
-    case "set-theme":
-      return { ...state, settings: { ...state.settings, theme: action.theme } };
   }
 }

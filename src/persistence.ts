@@ -1,18 +1,17 @@
-import type { LibraryState, SettingsState, StorageLike, Theme } from "./types.js";
+import type { LibraryState, SettingsState, StorageLike } from "./types.js";
 import { clamp } from "./utils.js";
 
 const LIBRARY_KEY = "dhamma-echo:library";
 const SETTINGS_KEY = "dhamma-echo:settings";
 const VERSION = 1;
 const RATES = new Set([0.75, 1, 1.25, 1.5, 1.75, 2]);
-const THEMES = new Set<Theme>(["system", "light", "dark"]);
 
 export function createDefaultLibrary(): LibraryState {
   return { favorites: [], history: [], resume: {} };
 }
 
 export function createDefaultSettings(): SettingsState {
-  return { theme: "system", playbackRate: 1, volume: 0.8 };
+  return { playbackRate: 1, volume: 0.8 };
 }
 
 function positiveInteger(value: unknown): value is number {
@@ -86,8 +85,6 @@ export function loadSettings(storage: StorageLike): SettingsState {
     const record = parsed as Record<string, unknown>;
     if (
       record.version !== VERSION ||
-      typeof record.theme !== "string" ||
-      !THEMES.has(record.theme as Theme) ||
       typeof record.playbackRate !== "number" ||
       !RATES.has(record.playbackRate) ||
       typeof record.volume !== "number" ||
@@ -97,7 +94,6 @@ export function loadSettings(storage: StorageLike): SettingsState {
       return createDefaultSettings();
     }
     return {
-      theme: record.theme as Theme,
       playbackRate: record.playbackRate,
       volume: clamp(record.volume, 0, 1)
     };
@@ -107,5 +103,12 @@ export function loadSettings(storage: StorageLike): SettingsState {
 }
 
 export function saveSettings(storage: StorageLike, settings: SettingsState): void {
-  storage.setItem(SETTINGS_KEY, JSON.stringify({ version: VERSION, ...settings }));
+  storage.setItem(
+    SETTINGS_KEY,
+    JSON.stringify({
+      version: VERSION,
+      playbackRate: settings.playbackRate,
+      volume: settings.volume
+    })
+  );
 }

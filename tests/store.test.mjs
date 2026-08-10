@@ -81,9 +81,9 @@ test("player actions select tracks, advance queue, and update progress", () => {
 test("all load, failure, persistence, queue, and settings actions are deterministic", () => {
   let state = createInitialState();
   const library = { favorites: [1], history: [{ id: 1, playedAt: 10 }], resume: { 1: 3 } };
-  const settings = { theme: "dark", playbackRate: 1.5, volume: 0.6 };
+  const settings = { playbackRate: 1.5, volume: 0.6 };
   state = reduce(state, { type: "hydrate", library, settings });
-  assert.equal(state.settings.theme, "dark");
+  assert.equal(state.settings.playbackRate, 1.5);
   state = reduce(state, { type: "summary-started" });
   state = reduce(state, { type: "summary-failed", message: "summary fail" });
   assert.equal(state.summary.message, "summary fail");
@@ -99,10 +99,9 @@ test("all load, failure, persistence, queue, and settings actions are determinis
   assert.deepEqual(state.player.queue, []);
   state = reduce(state, { type: "toggle-queue" });
   assert.equal(state.player.queueOpen, true);
-  state = reduce(state, { type: "set-theme", theme: "light" });
   state = reduce(state, { type: "set-volume", volume: -2 });
   state = reduce(state, { type: "set-rate", rate: 4 });
-  assert.deepEqual(state.settings, { theme: "light", volume: 0, playbackRate: 2 });
+  assert.deepEqual(state.settings, { volume: 0, playbackRate: 2 });
 });
 
 test("recent actions track loading, results, and failure", () => {

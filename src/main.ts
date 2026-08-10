@@ -1,7 +1,7 @@
 import { CatalogueApi } from "./api.js";
 import { DhammaApp } from "./app.js";
 import { createMockInvoke } from "./mock-data.js";
-import type { InvokeFn, Route, Theme } from "./types.js";
+import type { InvokeFn, Route } from "./types.js";
 import { renderApp } from "./view.js";
 
 declare global {
@@ -19,16 +19,6 @@ function isRoute(value: string | undefined): value is Route {
   return ["home", "explore", "teachers", "library", "settings"].includes(value ?? "");
 }
 
-function nextTheme(theme: Theme): Theme {
-  if (theme === "system") return "light";
-  if (theme === "light") return "dark";
-  return "system";
-}
-
-export function applyTheme(element: HTMLElement, theme: Theme, systemDark: boolean): void {
-  element.classList.toggle("dark", theme === "dark" || (theme === "system" && systemDark));
-}
-
 export function selectInvoke(candidate: InvokeFn | undefined): InvokeFn {
   return candidate ?? createMockInvoke();
 }
@@ -37,7 +27,6 @@ export async function bootstrap(): Promise<DhammaApp> {
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app root element.");
 
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
   const audio = new Audio();
   audio.preload = "metadata";
   const invoke = selectInvoke(window.__TAURI__?.core?.invoke);
@@ -48,9 +37,6 @@ export async function bootstrap(): Promise<DhammaApp> {
     now: () => Date.now(),
     render: (state) => {
       root.innerHTML = renderApp(state);
-    },
-    applyTheme: (theme) => {
-      applyTheme(document.documentElement, theme, media.matches);
     }
   });
 
@@ -66,8 +52,6 @@ export async function bootstrap(): Promise<DhammaApp> {
       app.dispatch({ type: "navigate", route: value });
       if (value === "home") void app.loadRecent();
     }
-    if (action === "cycle-theme")
-      app.dispatch({ type: "set-theme", theme: nextTheme(app.state.settings.theme) });
     if (action === "select-teacher" && id !== null) {
       app.dispatch({ type: "set-teacher", teacherId: id });
       app.dispatch({ type: "navigate", route: "explore" });
@@ -154,8 +138,6 @@ export async function bootstrap(): Promise<DhammaApp> {
     const target = event.target;
     if (!(target instanceof HTMLSelectElement)) return;
     if (target.dataset.setting === "rate") app.setRate(Number(target.value));
-    if (target.dataset.setting === "theme")
-      app.dispatch({ type: "set-theme", theme: target.value as Theme });
   });
 
   window.addEventListener("keydown", (event) => {
@@ -175,9 +157,6 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (event.key.toLowerCase() === "n") void app.playNext();
   });
 
-  media.addEventListener("change", () => {
-    applyTheme(document.documentElement, app.state.settings.theme, media.matches);
-  });
   window.addEventListener(
     "beforeunload",
     () => {

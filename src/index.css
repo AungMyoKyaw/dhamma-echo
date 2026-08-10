@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --font-sans: Inter, "Noto Sans Myanmar", "Myanmar Text", "Pyidaungsu", system-ui, sans-serif;
   --color-app: #2e2e2a;
@@ -23,21 +21,6 @@
   color-scheme: light;
   font-family: var(--font-sans);
   background: var(--color-app-bg);
-}
-
-:root.dark {
-  color-scheme: dark;
-  --color-app: #fef7f0;
-  --color-app-muted: #b2ada6;
-  --color-app-bg: #100e0a;
-  --color-app-surface: #1b1915;
-  --color-app-soft: #282521;
-  --color-app-border: #56534e;
-  --color-app-primary: #e08549;
-  --color-app-primary-strong: #f0a067;
-  --color-app-secondary: #8da374;
-  --color-app-tertiary: #c2a25a;
-  --color-error: #f2847c;
 }
 
 * {

@@ -69,13 +69,11 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
   const storage = new MemoryStorage();
   const audio = new FakeAudio();
   const renders = [];
-  const themes = [];
   const app = new DhammaApp({
     api: createApi(),
     storage,
     audio,
     render: (state) => renders.push(state),
-    applyTheme: (theme) => themes.push(theme),
     now: () => 123
   });
   await app.start();
@@ -83,13 +81,11 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
   assert.equal(app.state.catalogue.page.items.length, 2);
   assert.equal(app.state.teachers.data.length, 3);
   assert.equal(renders.length > 3, true);
-  assert.deepEqual(themes, ["system"]);
-
   app.dispatch({ type: "toggle-favorite", id: 1 });
-  app.dispatch({ type: "set-theme", theme: "dark" });
+  app.setRate(1.5);
   assert.match(storage.getItem("dhamma-echo:library"), /"favorites":\[1\]/);
-  assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"dark"/);
-  assert.deepEqual(themes, ["system", "dark"]);
+  assert.match(storage.getItem("dhamma-echo:settings"), /"playbackRate":1.5/);
+  assert.doesNotMatch(storage.getItem("dhamma-echo:settings"), /theme/);
   app.destroy();
 });
 
@@ -101,7 +97,6 @@ test("DhammaApp controls playback, queue advancement, and resume progress", asyn
     storage,
     audio,
     render() {},
-    applyTheme() {},
     now: () => 999
   });
   await app.start();
@@ -159,7 +154,6 @@ test("DhammaApp exposes stable load failures and missing tracks", async () => {
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();
@@ -189,7 +183,6 @@ test("DhammaApp covers filter requests, track lookup paths, and player errors", 
     storage: new MemoryStorage(),
     audio,
     render() {},
-    applyTheme() {},
     now: () => 1
   });
   await app.start();
@@ -222,7 +215,6 @@ test("DhammaApp refuses to play unplayable tracks", async () => {
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();
@@ -244,7 +236,6 @@ test("DhammaApp searches teachers by name", async () => {
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();
@@ -268,7 +259,6 @@ test("DhammaApp clears teacher results when teacher search fails", async () => {
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();
@@ -289,7 +279,6 @@ test("DhammaApp clears the teacher filter when a fresh search runs", async () =>
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();
@@ -316,7 +305,6 @@ test("DhammaApp loads recent tracks from history for the home screen", async () 
     storage,
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();
@@ -348,7 +336,6 @@ test("DhammaApp marks recent history unavailable when every track lookup fails",
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();
@@ -370,7 +357,6 @@ test("DhammaApp handles non-Error failures and progress without a current track"
     storage: new MemoryStorage(),
     audio,
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   audio.currentTime = 2;
@@ -395,7 +381,6 @@ test("DhammaApp resolves tracks from recent list and the catalogue", async () =>
     storage: new MemoryStorage(),
     audio: new FakeAudio(),
     render() {},
-    applyTheme() {},
     now: () => 0
   });
   await app.start();

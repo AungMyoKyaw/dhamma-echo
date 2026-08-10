@@ -7,8 +7,7 @@ import type {
   AudioSearchRequest,
   AudioTrack,
   PlayerEvent,
-  StorageLike,
-  Theme
+  StorageLike
 } from "./types.js";
 
 export interface CatalogueClient {
@@ -24,7 +23,6 @@ interface AppDependencies {
   storage: StorageLike;
   audio: AudioLike;
   render: (state: AppState) => void;
-  applyTheme: (theme: Theme) => void;
   now: () => number;
 }
 
@@ -38,12 +36,7 @@ const libraryActions = new Set<AppAction["type"]>([
   "record-history",
   "save-resume"
 ]);
-const settingsActions = new Set<AppAction["type"]>([
-  "hydrate",
-  "set-volume",
-  "set-rate",
-  "set-theme"
-]);
+const settingsActions = new Set<AppAction["type"]>(["hydrate", "set-volume", "set-rate"]);
 
 export class DhammaApp {
   state = createInitialState();
@@ -71,9 +64,6 @@ export class DhammaApp {
     if (libraryActions.has(action.type)) saveLibrary(this.dependencies.storage, this.state.library);
     if (settingsActions.has(action.type))
       saveSettings(this.dependencies.storage, this.state.settings);
-    if (action.type === "set-theme" || action.type === "hydrate") {
-      this.dependencies.applyTheme(this.state.settings.theme);
-    }
     this.dependencies.render(this.state);
   }
 
