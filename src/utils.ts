@@ -44,16 +44,3 @@ export function mediaUrlCandidates(value: string, format: string): string[] {
     return [];
   }
 }
-
-export function isPlayableUrl(value: string): boolean {
-  return mediaUrlCandidates(value, "mp3").length > 0;
-}
-
-export function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}

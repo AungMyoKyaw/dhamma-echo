@@ -2,9 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   clamp,
-  escapeHtml,
   formatDuration,
-  isPlayableUrl,
   mediaUrlCandidates,
   normalizeWhitespace
 } from "../.test-build/src/utils.js";
@@ -22,26 +20,11 @@ test("formatDuration formats unknown, minute, and hour durations", () => {
   assert.equal(formatDuration(3661), "1:01:01");
 });
 
-test("isPlayableUrl only permits secure Dhamma Download media", () => {
-  assert.equal(isPlayableUrl("https://dhammadownload.com/a.mp3"), true);
-  assert.equal(isPlayableUrl("http://dhammadownload.com/a.mp3"), true);
-  assert.equal(isPlayableUrl("https://www.dhammadownload.com/a.mp3"), true);
-  assert.equal(isPlayableUrl("https://example.com/a.mp3"), false);
-  assert.equal(isPlayableUrl("not a url"), false);
-});
-
 test("clamp constrains finite and non-finite values", () => {
   assert.equal(clamp(5, 0, 10), 5);
   assert.equal(clamp(-1, 0, 10), 0);
   assert.equal(clamp(11, 0, 10), 10);
   assert.equal(clamp(Number.NaN, 0, 10), 0);
-});
-
-test("escapeHtml protects rendered catalogue text", () => {
-  assert.equal(
-    escapeHtml(`<script>&"'</script>`),
-    "&lt;script&gt;&amp;&quot;&#039;&lt;/script&gt;"
-  );
 });
 
 test("mediaUrlCandidates normalizes approved MP3 sources and blocks unsupported media", () => {
