@@ -1,4 +1,4 @@
-use std::{path::Path, sync::Mutex, time::Duration};
+use std::{cmp::Ordering, path::Path, sync::Mutex, time::Duration};
 
 use rusqlite::{Connection, OpenFlags, Row, params, params_from_iter, types::Value};
 
@@ -275,12 +275,13 @@ impl Database {
                  JOIN media m ON m.id = mc.media_id AND m.type = 'audio'
                  LEFT JOIN teachers t ON t.id = c.teacher_id
                  WHERE c.teacher_id = ?1
-                 GROUP BY c.id, c.name, c.teacher_id, t.name
-                 ORDER BY LOWER(c.name), c.id",
+                 GROUP BY c.id, c.name, c.teacher_id, t.name",
             )?;
-            detail.collections = statement
+            let mut collections = statement
                 .query_map([id], map_collection_summary)?
                 .collect::<rusqlite::Result<Vec<_>>>()?;
+            collections.sort_by(natural_name_cmp);
+            detail.collections = collections;
             Ok(detail)
         })
     }
@@ -392,6 +393,62 @@ impl Database {
             })
         })
     }
+}
+
+fn natural_name_cmp(left: &CollectionSummary, right: &CollectionSummary) -> Ordering {
+    natural_text_cmp(&left.name, &right.name).then_with(|| left.id.cmp(&right.id))
+}
+
+fn natural_text_cmp(left: &str, right: &str) -> Ordering {
+    let left = left.trim().to_lowercase();
+    let right = right.trim().to_lowercase();
+    let (left, right) = (left.as_bytes(), right.as_bytes());
+    let (mut left_index, mut right_index) = (0, 0);
+
+    while left_index < left.len() && right_index < right.len() {
+        if left[left_index].is_ascii_digit() && right[right_index].is_ascii_digit() {
+            let left_end = digit_run_end(left, left_index);
+            let right_end = digit_run_end(right, right_index);
+            let left_digits = &left[left_index..left_end];
+            let right_digits = &right[right_index..right_end];
+            let left_significant = trim_zeroes(left_digits);
+            let right_significant = trim_zeroes(right_digits);
+            let ordering = left_significant
+                .len()
+                .cmp(&right_significant.len())
+                .then_with(|| left_significant.cmp(right_significant))
+                .then_with(|| left_digits.len().cmp(&right_digits.len()));
+            if ordering != Ordering::Equal {
+                return ordering;
+            }
+            left_index = left_end;
+            right_index = right_end;
+            continue;
+        }
+
+        let ordering = left[left_index].cmp(&right[right_index]);
+        if ordering != Ordering::Equal {
+            return ordering;
+        }
+        left_index += 1;
+        right_index += 1;
+    }
+
+    left.len().cmp(&right.len())
+}
+
+fn digit_run_end(value: &[u8], start: usize) -> usize {
+    value[start..]
+        .iter()
+        .position(|byte| !byte.is_ascii_digit())
+        .map_or(value.len(), |offset| start + offset)
+}
+
+fn trim_zeroes(value: &[u8]) -> &[u8] {
+    value
+        .iter()
+        .position(|byte| *byte != b'0')
+        .map_or(&value[value.len()..], |start| &value[start..])
 }
 
 fn validate_id(id: i64) -> Result<(), AppError> {
@@ -557,6 +614,63 @@ mod tests {
         Database::from_connection(connection)
     }
 
+    fn teacher_collection_sort_fixture() -> Database {
+        let connection = Connection::open_in_memory().expect("open collection sort fixture");
+        connection
+            .execute_batch(
+                "CREATE TABLE teachers (
+                    id INTEGER PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    name_myanmar TEXT,
+                    title TEXT,
+                    description TEXT
+                 );
+                 CREATE TABLE media (
+                    id INTEGER PRIMARY KEY,
+                    title TEXT,
+                    type TEXT NOT NULL,
+                    format TEXT,
+                    language TEXT NOT NULL,
+                    url TEXT NOT NULL,
+                    date_recorded TEXT,
+                    location TEXT,
+                    teacher_id INTEGER,
+                    category_id INTEGER
+                 );
+                 CREATE TABLE collections (
+                    id INTEGER PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    description TEXT,
+                    teacher_id INTEGER,
+                    type TEXT,
+                    source_page TEXT
+                 );
+                 CREATE TABLE media_collections (
+                    media_id INTEGER NOT NULL,
+                    collection_id INTEGER NOT NULL,
+                    track_number INTEGER,
+                    PRIMARY KEY (media_id, collection_id)
+                 );
+                 INSERT INTO teachers VALUES (1, 'Teacher', NULL, NULL, NULL);
+                 INSERT INTO media VALUES
+                    (1, 'One', 'audio', 'mp3', 'english', 'https://dhammadownload.com/1.mp3', NULL, NULL, 1, NULL),
+                    (2, 'Two', 'audio', 'mp3', 'english', 'https://dhammadownload.com/2.mp3', NULL, NULL, 1, NULL),
+                    (3, 'Three', 'audio', 'mp3', 'english', 'https://dhammadownload.com/3.mp3', NULL, NULL, 1, NULL),
+                    (4, 'Four', 'audio', 'mp3', 'english', 'https://dhammadownload.com/4.mp3', NULL, NULL, 1, NULL),
+                    (5, 'Five', 'audio', 'mp3', 'english', 'https://dhammadownload.com/5.mp3', NULL, NULL, 1, NULL);
+                 INSERT INTO collections VALUES
+                    (11, ' alpha 10 ', NULL, 1, 'audio', NULL),
+                    (12, 'Alpha 2', NULL, 1, 'audio', NULL),
+                    (13, 'alpha 1', NULL, 1, 'audio', NULL),
+                    (14, 'alpha 02', NULL, 1, 'audio', NULL),
+                    (15, 'alpha 10', NULL, 1, 'audio', NULL);
+                 INSERT INTO media_collections VALUES
+                    (1, 11, 1), (2, 12, 1), (3, 13, 1), (4, 14, 1), (5, 15, 1);",
+            )
+            .expect("seed collection sort fixture");
+        Database::from_connection(connection)
+    }
+
     fn source_order_fixture() -> Database {
         let connection = Connection::open_in_memory().expect("open numbered fixture");
         connection
@@ -702,6 +816,30 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![2, 1, 4]
         );
+    }
+
+    #[test]
+    fn teacher_collections_use_trimmed_case_insensitive_natural_order() {
+        let database = teacher_collection_sort_fixture();
+        let detail = database.teacher(1).expect("teacher detail");
+        assert_eq!(
+            detail
+                .collections
+                .iter()
+                .map(|collection| collection.id)
+                .collect::<Vec<_>>(),
+            vec![13, 12, 14, 11, 15]
+        );
+
+        let collections = database
+            .search_collections(&CollectionSearchRequest {
+                query: String::new(),
+                teacher_id: Some(1),
+                limit: 20,
+                offset: 0,
+            })
+            .expect("collection search");
+        assert_eq!(collections.items[0].id, 11);
     }
 
     #[test]
