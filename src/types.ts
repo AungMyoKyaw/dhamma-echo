@@ -1,4 +1,12 @@
-export type Route = "home" | "explore" | "teachers" | "library" | "settings";
+export type Route =
+  | "home"
+  | "explore"
+  | "collections"
+  | "collection-detail"
+  | "teachers"
+  | "teacher-detail"
+  | "library"
+  | "settings";
 export type LanguageFilter = "all" | "myanmar" | "english";
 export type FormatFilter = "all" | "mp3" | "wma";
 export type PlayerStatus = "idle" | "loading" | "playing" | "paused";
@@ -117,6 +125,18 @@ export interface SearchState {
   language: LanguageFilter;
   format: FormatFilter;
   teacherId: number | null;
+  categoryId: number | null;
+  collectionId: number | null;
+  limit: number;
+  offset: number;
+}
+
+export interface CollectionBrowseState {
+  status: "idle" | "loading" | "ready" | "error";
+  page: CollectionSearchPage;
+  message: string;
+  query: string;
+  teacherId: number | null;
   limit: number;
   offset: number;
 }
@@ -152,10 +172,19 @@ export interface AppState {
   route: Route;
   summary: Loadable<CatalogueSummary>;
   teachers: Loadable<TeacherSummary[]>;
+  categories: Loadable<AudioCategory[]>;
   teacherQuery: string;
   teacherResults: TeacherSummary[];
   search: SearchState;
   catalogue: CatalogueState;
+  collections: CollectionBrowseState;
+  collectionSearch: Pick<CollectionBrowseState, "query" | "teacherId" | "limit" | "offset">;
+  collectionDetail: Loadable<CollectionDetail | null>;
+  teacherDetail: Loadable<TeacherDetail | null>;
+  teacherTalks: CatalogueState;
+  selectedCollectionId: number | null;
+  selectedTeacherId: number | null;
+  navigationContext: { returnRoute: Route } | null;
   homeRecent: RecentState;
   library: LibraryState;
   settings: SettingsState;

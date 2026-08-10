@@ -21,16 +21,41 @@ export type AppAction =
   | { type: "teachers-started" }
   | { type: "teachers-loaded"; teachers: TeacherSummary[] }
   | { type: "teachers-failed"; message: string }
+  | { type: "categories-started" }
+  | { type: "categories-loaded"; categories: AppState["categories"]["data"] }
+  | { type: "categories-failed"; message: string }
   | { type: "set-query"; query: string }
   | { type: "set-language"; language: LanguageFilter }
   | { type: "set-format"; format: FormatFilter }
   | { type: "set-teacher"; teacherId: number | null }
+  | { type: "set-category"; categoryId: number | null }
+  | { type: "clear-category" }
+  | { type: "set-collection"; collectionId: number | null }
+  | { type: "clear-collection" }
   | { type: "set-teacher-query"; query: string }
   | { type: "teacher-results"; teachers: TeacherSummary[] }
   | { type: "set-offset"; offset: number }
   | { type: "search-started" }
   | { type: "search-loaded"; page: AudioSearchPage }
   | { type: "search-failed"; message: string }
+  | { type: "set-collection-query"; query: string }
+  | { type: "set-collection-teacher"; teacherId: number | null }
+  | { type: "set-collection-offset"; offset: number }
+  | { type: "collections-started" }
+  | { type: "collections-loaded"; page: AppState["collections"]["page"] }
+  | { type: "collections-failed"; message: string }
+  | { type: "open-collection"; collectionId: number; returnRoute: Route }
+  | { type: "collection-detail-started" }
+  | { type: "collection-detail-loaded"; detail: NonNullable<AppState["collectionDetail"]["data"]> }
+  | { type: "collection-detail-failed"; message: string }
+  | { type: "open-teacher"; teacherId: number; returnRoute: Route }
+  | { type: "teacher-detail-started" }
+  | { type: "teacher-detail-loaded"; detail: NonNullable<AppState["teacherDetail"]["data"]> }
+  | { type: "teacher-detail-failed"; message: string }
+  | { type: "teacher-talks-started" }
+  | { type: "teacher-talks-loaded"; page: AudioSearchPage }
+  | { type: "teacher-talks-failed"; message: string }
+  | { type: "return-to-list" }
   | { type: "recent-started" }
   | { type: "recent-loaded"; tracks: AudioTrack[] }
   | { type: "recent-failed" }
@@ -56,16 +81,43 @@ const emptySummary: CatalogueSummary = {
   myanmarAudio: 0,
   englishAudio: 0
 };
+const emptyCollectionPage = { items: [], total: 0, limit: 24, offset: 0 };
 
 export function createInitialState(): AppState {
   return {
     route: "home",
     summary: { status: "idle", data: emptySummary, message: "" },
     teachers: { status: "idle", data: [], message: "" },
+    categories: { status: "idle", data: [], message: "" },
     teacherQuery: "",
     teacherResults: [],
-    search: { query: "", language: "all", format: "all", teacherId: null, limit: 50, offset: 0 },
+    search: {
+      query: "",
+      language: "all",
+      format: "all",
+      teacherId: null,
+      categoryId: null,
+      collectionId: null,
+      limit: 50,
+      offset: 0
+    },
     catalogue: { status: "idle", page: emptyPage, message: "" },
+    collections: {
+      status: "idle",
+      page: emptyCollectionPage,
+      message: "",
+      query: "",
+      teacherId: null,
+      limit: 24,
+      offset: 0
+    },
+    collectionSearch: { query: "", teacherId: null, limit: 24, offset: 0 },
+    collectionDetail: { status: "idle", data: null, message: "" },
+    teacherDetail: { status: "idle", data: null, message: "" },
+    teacherTalks: { status: "idle", page: emptyPage, message: "" },
+    selectedCollectionId: null,
+    selectedTeacherId: null,
+    navigationContext: null,
     homeRecent: { status: "idle", tracks: [] },
     library: createDefaultLibrary(),
     settings: createDefaultSettings(),
@@ -108,6 +160,15 @@ export function reduce(state: AppState, action: AppAction): AppState {
         ...state,
         teachers: { ...state.teachers, status: "error", message: action.message }
       };
+    case "categories-started":
+      return { ...state, categories: { ...state.categories, status: "loading", message: "" } };
+    case "categories-loaded":
+      return { ...state, categories: { status: "ready", data: action.categories, message: "" } };
+    case "categories-failed":
+      return {
+        ...state,
+        categories: { ...state.categories, status: "error", message: action.message }
+      };
     case "set-query":
       return {
         ...state,
@@ -119,6 +180,17 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return { ...state, search: { ...resetOffset(state), format: action.format } };
     case "set-teacher":
       return { ...state, search: { ...resetOffset(state), teacherId: action.teacherId } };
+    case "set-category":
+      return { ...state, search: { ...state.search, categoryId: action.categoryId, offset: 0 } };
+    case "clear-category":
+      return { ...state, search: { ...state.search, categoryId: null, offset: 0 } };
+    case "set-collection":
+      return {
+        ...state,
+        search: { ...state.search, collectionId: action.collectionId, offset: 0 }
+      };
+    case "clear-collection":
+      return { ...state, search: { ...state.search, collectionId: null, offset: 0 } };
     case "set-teacher-query":
       return { ...state, teacherQuery: normalizeWhitespace(action.query) };
     case "teacher-results":
@@ -133,6 +205,98 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         catalogue: { ...state.catalogue, status: "error", message: action.message }
+      };
+    case "set-collection-query": {
+      const query = normalizeWhitespace(action.query);
+      return {
+        ...state,
+        collectionSearch: { ...state.collectionSearch, query, offset: 0 },
+        collections: { ...state.collections, query, offset: 0 }
+      };
+    }
+    case "set-collection-teacher":
+      return {
+        ...state,
+        collectionSearch: { ...state.collectionSearch, teacherId: action.teacherId, offset: 0 },
+        collections: { ...state.collections, teacherId: action.teacherId, offset: 0 }
+      };
+    case "set-collection-offset": {
+      const offset = Math.max(0, action.offset);
+      return {
+        ...state,
+        collectionSearch: { ...state.collectionSearch, offset },
+        collections: { ...state.collections, offset }
+      };
+    }
+    case "collections-started":
+      return { ...state, collections: { ...state.collections, status: "loading", message: "" } };
+    case "collections-loaded":
+      return {
+        ...state,
+        collections: { ...state.collections, status: "ready", page: action.page, message: "" }
+      };
+    case "collections-failed":
+      return {
+        ...state,
+        collections: { ...state.collections, status: "error", message: action.message }
+      };
+    case "open-collection":
+      return {
+        ...state,
+        route: "collection-detail",
+        selectedCollectionId: action.collectionId,
+        navigationContext: { returnRoute: action.returnRoute },
+        collectionDetail: { status: "idle", data: null, message: "" }
+      };
+    case "collection-detail-started":
+      return {
+        ...state,
+        collectionDetail: { ...state.collectionDetail, status: "loading", message: "" }
+      };
+    case "collection-detail-loaded":
+      return {
+        ...state,
+        collectionDetail: { status: "ready", data: action.detail, message: "" }
+      };
+    case "collection-detail-failed":
+      return {
+        ...state,
+        collectionDetail: { status: "error", data: null, message: action.message }
+      };
+    case "open-teacher":
+      return {
+        ...state,
+        route: "teacher-detail",
+        selectedTeacherId: action.teacherId,
+        navigationContext: { returnRoute: action.returnRoute },
+        teacherDetail: { status: "idle", data: null, message: "" }
+      };
+    case "teacher-detail-started":
+      return {
+        ...state,
+        teacherDetail: { ...state.teacherDetail, status: "loading", message: "" }
+      };
+    case "teacher-detail-loaded":
+      return { ...state, teacherDetail: { status: "ready", data: action.detail, message: "" } };
+    case "teacher-detail-failed":
+      return {
+        ...state,
+        teacherDetail: { status: "error", data: null, message: action.message }
+      };
+    case "teacher-talks-started":
+      return { ...state, teacherTalks: { ...state.teacherTalks, status: "loading", message: "" } };
+    case "teacher-talks-loaded":
+      return { ...state, teacherTalks: { status: "ready", page: action.page, message: "" } };
+    case "teacher-talks-failed":
+      return {
+        ...state,
+        teacherTalks: { ...state.teacherTalks, status: "error", message: action.message }
+      };
+    case "return-to-list":
+      return {
+        ...state,
+        route: state.navigationContext?.returnRoute ?? "home",
+        navigationContext: null
       };
     case "recent-started":
       return { ...state, homeRecent: { status: "loading", tracks: state.homeRecent.tracks } };

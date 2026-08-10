@@ -85,7 +85,10 @@ function renderHeader(state: AppState): string {
       eyebrow: `${state.summary.data.totalAudio.toLocaleString("en-US")} audio talks`,
       title: "Explore the Dhamma library"
     },
+    collections: { eyebrow: "Collections", title: "Browse listening collections" },
+    "collection-detail": { eyebrow: "Collection", title: "Collection details" },
     teachers: { eyebrow: "Teachers", title: "Learn from trusted voices" },
+    "teacher-detail": { eyebrow: "Teacher", title: "Teacher details" },
     library: { eyebrow: "Your space", title: "Continue listening" },
     settings: { eyebrow: "Preferences", title: "Make listening yours" }
   };
@@ -281,6 +284,10 @@ function renderMain(state: AppState): string {
       return renderHome(state);
     case "explore":
       return renderExplore(state);
+    case "collections":
+    case "collection-detail":
+    case "teacher-detail":
+      return renderLoading();
     case "teachers":
       return renderTeachers(state);
     case "library":

@@ -119,3 +119,46 @@ test("recent actions track loading, results, and failure", () => {
   assert.equal(state.homeRecent.status, "error");
   assert.deepEqual(state.homeRecent.tracks, []);
 });
+
+test("audio discovery filters and detail navigation are deterministic", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "set-category", categoryId: 4 });
+  assert.equal(state.search.categoryId, 4);
+  assert.equal(state.search.offset, 0);
+
+  state = reduce(state, { type: "set-collection", collectionId: 10 });
+  assert.equal(state.search.collectionId, 10);
+  state = reduce(state, { type: "clear-category" });
+  assert.equal(state.search.categoryId, null);
+  assert.equal(state.search.collectionId, 10);
+
+  state = reduce(state, {
+    type: "open-collection",
+    collectionId: 10,
+    returnRoute: "collections"
+  });
+  assert.equal(state.route, "collection-detail");
+  assert.equal(state.selectedCollectionId, 10);
+  assert.deepEqual(state.navigationContext, { returnRoute: "collections" });
+
+  state = reduce(state, { type: "open-teacher", teacherId: 3, returnRoute: "teachers" });
+  assert.equal(state.route, "teacher-detail");
+  assert.equal(state.selectedTeacherId, 3);
+  assert.deepEqual(state.navigationContext, { returnRoute: "teachers" });
+});
+
+test("audio discovery loadable states preserve independent pagination", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "categories-loaded", categories: [{ id: 1 }] });
+  assert.equal(state.categories.status, "ready");
+  state = reduce(state, { type: "set-collection-query", query: " disc  one " });
+  assert.equal(state.collectionSearch.query, "disc one");
+  state = reduce(state, { type: "set-collection-offset", offset: 24 });
+  assert.equal(state.collectionSearch.offset, 24);
+  assert.equal(state.search.offset, 0);
+  state = reduce(state, { type: "collection-detail-failed", message: "missing" });
+  assert.equal(state.collectionDetail.status, "error");
+  assert.equal(state.collectionDetail.message, "missing");
+  state = reduce(state, { type: "return-to-list" });
+  assert.equal(state.route, "home");
+});
