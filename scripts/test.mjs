@@ -5,7 +5,7 @@ const coverage = process.argv.includes("--coverage");
 await rm(".test-build", { recursive: true, force: true });
 if (coverage) await rm("coverage", { recursive: true, force: true });
 
-const compile = spawnSync("node", ["node_modules/typescript/bin/tsc", "-p", "tsconfig.json"], {
+const compile = spawnSync("node", ["node_modules/typescript/bin/tsc", "-p", "tsconfig.test.json"], {
   stdio: "inherit"
 });
 if (compile.status !== 0) process.exit(compile.status ?? 1);
@@ -23,7 +23,7 @@ if (coverage) {
     "--test-coverage-functions=100",
     "--test-coverage-branches=100",
     "--test-coverage-include=.test-build/src/**/*.js",
-    "--test-coverage-exclude=.test-build/src/main.js"
+    "--test-coverage-exclude=.test-build/src/types.js"
   );
 }
 args.push(...testFiles);
@@ -50,7 +50,7 @@ if (coverage) {
       {
         generatedAt: new Date().toISOString(),
         scope:
-          "Core TypeScript modules; browser bootstrap src/main.ts is excluded and smoke-tested separately.",
+          "Core TypeScript behavior modules. Svelte component correctness is checked by svelte-check/build/smoke separately.",
         command: `node ${args.join(" ")}`,
         exitCode: result.status,
         metrics,

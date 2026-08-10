@@ -1,91 +1,17 @@
+import { mount } from "svelte";
+import { writable } from "svelte/store";
+import App from "./App.svelte";
 import { CatalogueApi } from "./api.js";
 import { DhammaApp } from "./app.js";
-import { createMockInvoke } from "./mock-data.js";
-import type { AppAction } from "./store.js";
-import type { AppState, InvokeFn, Route } from "./types.js";
-import { formatDuration } from "./utils.js";
-import { renderApp, renderPlayer } from "./view.js";
+import "./index.css";
+import { selectInvoke } from "./runtime.js";
+import { createInitialState } from "./store.js";
+import type { InvokeFn } from "./types.js";
 
 declare global {
   interface Window {
     __TAURI__?: { core?: { invoke?: InvokeFn } };
   }
-}
-
-function parseId(value: string | undefined): number | null {
-  const id = Number(value);
-  return Number.isInteger(id) && id > 0 ? id : null;
-}
-
-function isRoute(value: string | undefined): value is Route {
-  return ["home", "explore", "collections", "teachers", "library", "settings"].includes(
-    value ?? ""
-  );
-}
-
-function focusSearchInput(formName: string): void {
-  requestAnimationFrame(() => {
-    document
-      .querySelector<HTMLInputElement>(`form[data-form="${formName}"] input[name="query"]`)
-      ?.focus();
-  });
-}
-
-export function selectInvoke(candidate: InvokeFn | undefined): InvokeFn {
-  return candidate ?? createMockInvoke();
-}
-
-export function renderPreservingScroll(
-  root: HTMLElement,
-  state: AppState,
-  preserveScroll = true
-): void {
-  const content = preserveScroll ? root.querySelector<HTMLElement>(".app-content") : null;
-  const horizontalScroll = preserveScroll
-    ? Array.from(root.querySelectorAll<HTMLElement>("[data-scroll-preserve]")).map((element) => ({
-        scrollLeft: element.scrollLeft,
-        scrollTop: element.scrollTop
-      }))
-    : [];
-  const scrollTop = content?.scrollTop ?? 0;
-  const scrollLeft = content?.scrollLeft ?? 0;
-  root.innerHTML = renderApp(state);
-  const nextContent = preserveScroll
-    ? root.querySelector<HTMLElement>(".app-content")
-    : null;
-  if (nextContent !== null) {
-    nextContent.scrollTop = scrollTop;
-    nextContent.scrollLeft = scrollLeft;
-  }
-  Array.from(root.querySelectorAll<HTMLElement>("[data-scroll-preserve]")).forEach(
-    (element, index) => {
-      const position = horizontalScroll[index];
-      if (position === undefined) return;
-      element.scrollLeft = position.scrollLeft;
-      element.scrollTop = position.scrollTop;
-    }
-  );
-}
-
-export function renderPlayerRegion(root: HTMLElement, state: AppState): boolean {
-  const playerRegion = root.querySelector<HTMLElement>("[data-player-region]");
-  if (playerRegion === null) return false;
-  playerRegion.innerHTML = renderPlayer(state);
-  return true;
-}
-
-export function renderPlayerProgress(root: HTMLElement, state: AppState): boolean {
-  const currentTime = root.querySelector<HTMLElement>("[data-player-current-time]");
-  const duration = root.querySelector<HTMLElement>("[data-player-duration]");
-  const seek = root.querySelector<HTMLInputElement>('input[data-action="seek"]');
-  if (currentTime === null || duration === null || seek === null) return false;
-
-  const max = state.player.duration > 0 ? state.player.duration : 1;
-  currentTime.textContent = formatDuration(state.player.currentTime);
-  duration.textContent = formatDuration(state.player.duration);
-  seek.max = String(max);
-  seek.value = String(Math.min(state.player.currentTime, max));
-  return true;
 }
 
 export async function bootstrap(): Promise<DhammaApp> {
@@ -94,194 +20,17 @@ export async function bootstrap(): Promise<DhammaApp> {
 
   const audio = new Audio();
   audio.preload = "metadata";
-  const invoke = selectInvoke(window.__TAURI__?.core?.invoke);
-  let previousRoute: Route | null = null;
-  const playerOnlyActions = new Set<AppAction["type"]>(["player-status", "set-player-error"]);
+  const stateStore = writable(createInitialState());
   const app = new DhammaApp({
-    api: new CatalogueApi(invoke),
+    api: new CatalogueApi(selectInvoke(window.__TAURI__?.core?.invoke)),
     storage: window.localStorage,
     audio,
     now: () => Date.now(),
-    render: (state, action) => {
-      if (action.type === "player-progress" && renderPlayerProgress(root, state)) return;
-      if (action.type === "save-resume") return;
-      if (playerOnlyActions.has(action.type) && renderPlayerRegion(root, state)) return;
-      renderPreservingScroll(root, state, previousRoute === state.route);
-      previousRoute = state.route;
-    }
+    render: (state) => stateStore.set(state)
   });
 
-  root.addEventListener("click", (event) => {
-    const target =
-      event.target instanceof Element ? event.target.closest<HTMLElement>("[data-action]") : null;
-    if (target === null) return;
-    const action = target.dataset.action;
-    const id = parseId(target.dataset.id);
-    const value = target.dataset.value;
-
-    if (action === "navigate" && isRoute(value)) {
-      app.dispatch({ type: "navigate", route: value });
-      if (value === "home") void app.loadRecent();
-      if (value === "collections") void app.searchCollections();
-    }
-    if (action === "select-teacher" && id !== null) {
-      const returnRoute = app.state.route === "home" ? "home" : "teachers";
-      void app.openTeacher(id, returnRoute);
-    }
-    if (action === "open-collection" && id !== null) {
-      const returnRoute = app.state.route === "teacher-detail" ? "teacher-detail" : "collections";
-      void app.openCollection(id, returnRoute);
-    }
-    if (action === "back-to-list") app.dispatch({ type: "return-to-list" });
-    if (action === "filter-teacher" && id !== null) {
-      app.dispatch({ type: "set-teacher", teacherId: id });
-      app.dispatch({ type: "navigate", route: "explore" });
-      void app.search();
-    }
-    if (action === "filter-category") {
-      app.dispatch({ type: "set-category", categoryId: id });
-      void app.search();
-    }
-    if (action === "clear-teacher") {
-      app.dispatch({ type: "set-teacher", teacherId: null });
-      void app.search();
-    }
-    if (action === "clear-category") {
-      app.dispatch({ type: "clear-category" });
-      void app.search();
-    }
-    if (action === "clear-collection") {
-      app.dispatch({ type: "clear-collection" });
-      void app.search();
-    }
-    if (action === "clear-search-query") {
-      app.dispatch({ type: "set-query", query: "" });
-      void app.search().finally(() => focusSearchInput("search"));
-    }
-    if (action === "clear-teacher-search") {
-      void app.searchTeachers("").finally(() => focusSearchInput("teacher-search"));
-    }
-    if (action === "clear-collection-search") {
-      app.dispatch({ type: "set-collection-query", query: "" });
-      void app.searchCollections().finally(() => focusSearchInput("collection-search"));
-    }
-    if (action === "play-track" && id !== null) {
-      if (app.state.player.current?.id === id) void app.togglePlayback();
-      else {
-        void app.resolveTrack(id).then((track) => {
-          if (track !== null) return app.playTrack(track);
-        });
-      }
-    }
-    if (action === "toggle-favorite" && id !== null) app.dispatch({ type: "toggle-favorite", id });
-    if (action === "enqueue" && id !== null) {
-      const track = app.findTrack(id);
-      if (track !== null) app.dispatch({ type: "enqueue", track });
-    }
-    if (action === "remove-queue" && id !== null) app.dispatch({ type: "remove-queue", id });
-    if (action === "clear-queue") app.dispatch({ type: "clear-queue" });
-    if (action === "toggle-queue") app.dispatch({ type: "toggle-queue" });
-    if (action === "toggle-play") void app.togglePlayback();
-    if (action === "seek-backward") app.seekBy(-15);
-    if (action === "seek-forward") app.seekBy(15);
-    if (action === "retry-playback") void app.retryPlayback();
-    if (action === "play-next") void app.playNext();
-    if (action === "retry-summary") void app.loadSummary();
-    if (action === "retry-teachers") void app.loadTeachers();
-    if (action === "retry-search") void app.search();
-    if (action === "retry-collections") void app.searchCollections();
-    if (action === "retry-collection" && app.state.selectedCollectionId !== null)
-      void app.openCollection(
-        app.state.selectedCollectionId,
-        app.state.navigationContext?.returnRoute ?? "collections"
-      );
-    if (action === "retry-teacher-detail" && app.state.selectedTeacherId !== null)
-      void app.openTeacher(
-        app.state.selectedTeacherId,
-        app.state.navigationContext?.returnRoute ?? "teachers"
-      );
-    if (action === "load-more-search") void app.loadMoreSearchResults();
-    if (action === "load-more-collections") void app.loadMoreCollections();
-    if (action === "load-more-teacher-talks") {
-      void app.loadMoreTeacherTalks();
-    }
-  });
-
-  root.addEventListener("submit", (event) => {
-    const form = event.target;
-    if (!(form instanceof HTMLFormElement)) return;
-    if (
-      form.dataset.form !== "search" &&
-      form.dataset.form !== "teacher-search" &&
-      form.dataset.form !== "collection-search"
-    )
-      return;
-    event.preventDefault();
-    const values = new FormData(form);
-    const text = (key: string, fallback: string): string => {
-      const value = values.get(key);
-      return typeof value === "string" ? value : fallback;
-    };
-    if (form.dataset.form === "teacher-search") {
-      void app.searchTeachers(text("query", ""));
-      return;
-    }
-    if (form.dataset.form === "collection-search") {
-      app.dispatch({ type: "set-collection-query", query: text("query", "") });
-      const teacherId = parseId(text("teacherId", ""));
-      app.dispatch({ type: "set-collection-teacher", teacherId });
-      void app.searchCollections();
-      return;
-    }
-    app.dispatch({ type: "set-query", query: text("query", "") });
-    app.dispatch({
-      type: "set-language",
-      language: text("language", "all") as "all" | "myanmar" | "english"
-    });
-    app.dispatch({
-      type: "set-format",
-      format: text("format", "all") as "all" | "mp3" | "wma"
-    });
-    void app.search();
-  });
-
-  root.addEventListener("input", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLInputElement)) return;
-    if (target.dataset.action === "seek") app.seek(Number(target.value));
-    if (target.dataset.setting === "volume") app.setVolume(Number(target.value));
-  });
-
-  root.addEventListener("change", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLSelectElement)) return;
-    if (target.dataset.setting === "rate") app.setRate(Number(target.value));
-  });
-
-  window.addEventListener("keydown", (event) => {
-    const target = event.target;
-    if (
-      target instanceof HTMLInputElement ||
-      target instanceof HTMLSelectElement ||
-      target instanceof HTMLTextAreaElement
-    )
-      return;
-    if (event.code === "Space") {
-      event.preventDefault();
-      void app.togglePlayback();
-    }
-    if (event.code === "ArrowLeft") app.seek(app.state.player.currentTime - 10);
-    if (event.code === "ArrowRight") app.seek(app.state.player.currentTime + 10);
-    if (event.key.toLowerCase() === "n") void app.playNext();
-  });
-
-  window.addEventListener(
-    "beforeunload",
-    () => {
-      app.destroy();
-    },
-    { once: true }
-  );
+  stateStore.set(app.state);
+  mount(App, { target: root, props: { app, stateStore } });
   await app.start();
   return app;
 }
