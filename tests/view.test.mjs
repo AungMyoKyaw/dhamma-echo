@@ -31,7 +31,7 @@ test("renderApp produces accessible navigation and home summary", () => {
   let state = createInitialState();
   state = reduce(state, {
     type: "summary-loaded",
-    summary: { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 }
+    summary: { totalAudio: 30563, totalTeachers: 257, myanmarAudio: 30098, englishAudio: 465 }
   });
   state = reduce(state, { type: "teachers-loaded", teachers });
   const html = renderApp(state);
@@ -45,7 +45,7 @@ test("renderApp uses the loaded catalogue size in the Explore header", () => {
   let state = createInitialState();
   state = reduce(state, {
     type: "summary-loaded",
-    summary: { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 }
+    summary: { totalAudio: 30563, totalTeachers: 257, myanmarAudio: 30098, englishAudio: 465 }
   });
   state = reduce(state, { type: "navigate", route: "explore" });
 
@@ -78,7 +78,7 @@ test("renderApp expands featured teachers when recent tracks are unavailable", (
   let state = createInitialState();
   state = reduce(state, {
     type: "summary-loaded",
-    summary: { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 }
+    summary: { totalAudio: 30563, totalTeachers: 257, myanmarAudio: 30098, englishAudio: 465 }
   });
   state = reduce(state, { type: "teachers-loaded", teachers: featuredTeachers });
   state = reduce(state, { type: "record-history", id: 999999, playedAt: 10 });

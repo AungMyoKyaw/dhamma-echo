@@ -48,6 +48,8 @@ test("product page communicates the four approved product themes", async () => {
   }
 
   assert.match(html, /30,563/);
+  assert.match(html, /257/);
+  assert.match(html, /collections/i);
   assert.match(html, /Tauri 2/);
   assert.match(html, /SQLite/);
   assert.match(html, /strict TypeScript/);

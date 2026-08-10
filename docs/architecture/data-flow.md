@@ -12,7 +12,7 @@ sequenceDiagram
     User->>UI: Submit query and filters
     UI->>UI: Reset offset and enter loading state
     UI->>IPC: search_audio(request)
-    IPC->>IPC: Validate limit, ID, language, format
+    IPC->>IPC: Validate limit, IDs, language, format
     IPC->>DB: Parameterized COUNT query
     DB-->>IPC: Total rows
     IPC->>DB: Parameterized page query
@@ -21,6 +21,28 @@ sequenceDiagram
     IPC-->>UI: AudioSearchPage
     UI-->>User: Escaped rows, paging controls, playable state
 ```
+
+## Collection sequence
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as TypeScript UI
+    participant IPC as Tauri command
+    participant DB as Read-only SQLite
+
+    User->>UI: Search or select a collection
+    UI->>IPC: search_collections(request) or get_collection(id)
+    IPC->>IPC: Validate IDs, limit, and offset
+    IPC->>DB: Query audio-only collection memberships
+    DB-->>IPC: Summaries or ordered audio tracks
+    IPC-->>UI: Typed collection response
+    UI-->>User: Collection context and reusable track controls
+```
+
+Collection tracks sort by explicit track number and then media ID. Missing titles and teachers use
+`Untitled talk` and `Unknown teacher`; incomplete optional metadata never hides a playable audio URL.
+Crawler and provenance tables are not exposed through application commands.
 
 ## Playback sequence
 

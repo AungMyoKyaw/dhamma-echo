@@ -769,6 +769,34 @@ mod tests {
             .expect("blank search");
         assert_eq!(page.total, 30563);
         assert_eq!(page.items.len(), 50);
+        let categories = database.audio_categories().expect("audio categories");
+        assert_eq!(categories.len(), 4);
+        let collections = database
+            .search_collections(&CollectionSearchRequest {
+                query: String::new(),
+                teacher_id: None,
+                limit: 1,
+                offset: 0,
+            })
+            .expect("audio collections");
+        assert_eq!(collections.total, 429);
+        let detail = database
+            .collection(collections.items[0].id)
+            .expect("collection detail");
+        assert!(!detail.tracks.is_empty());
+        let category_page = database
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: None,
+                teacher_id: None,
+                category_id: Some(categories[0].id),
+                collection_id: None,
+                limit: 50,
+                offset: 0,
+            })
+            .expect("category page");
+        assert!(category_page.total > 0);
     }
 
     #[test]

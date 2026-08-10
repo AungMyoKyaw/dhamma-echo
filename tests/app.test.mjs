@@ -47,7 +47,7 @@ class FakeAudio {
 function createApi(overrides = {}) {
   return {
     async getSummary() {
-      return { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 };
+      return { totalAudio: 30563, totalTeachers: 257, myanmarAudio: 30098, englishAudio: 465 };
     },
     async listFeaturedTeachers() {
       return teachers;
