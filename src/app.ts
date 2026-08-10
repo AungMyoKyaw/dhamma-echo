@@ -27,7 +27,7 @@ interface AppDependencies {
   api: CatalogueClient;
   storage: StorageLike;
   audio: AudioLike;
-  render: (state: AppState) => void;
+  render: (state: AppState, action: AppAction) => void;
   now: () => number;
 }
 
@@ -75,7 +75,7 @@ export class DhammaApp {
     if (libraryActions.has(action.type)) saveLibrary(this.dependencies.storage, this.state.library);
     if (settingsActions.has(action.type))
       saveSettings(this.dependencies.storage, this.state.settings);
-    this.dependencies.render(this.state);
+    this.dependencies.render(this.state, action);
   }
 
   async loadSummary(): Promise<void> {

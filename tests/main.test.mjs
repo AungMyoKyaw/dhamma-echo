@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { renderPreservingScroll } from "../.test-build/src/main.js";
+import { renderPlayerRegion, renderPreservingScroll } from "../.test-build/src/main.js";
 import { createInitialState } from "../.test-build/src/store.js";
 
 class FakeRoot {
@@ -34,4 +34,16 @@ test("renderPreservingScroll keeps the content position across playback renders"
   assert.equal(root.content.scrollLeft, 12);
   assert.equal(root.horizontal.scrollLeft, 360);
   assert.match(root.rendered, /class="app-content/);
+});
+
+test("renderPlayerRegion updates only the player region", () => {
+  const root = new FakeRoot();
+  const playerRegion = { innerHTML: "old player" };
+  root.querySelector = (selector) =>
+    selector === "[data-player-region]" ? playerRegion : selector === ".app-content" ? root.content : null;
+
+  renderPlayerRegion(root, createInitialState());
+
+  assert.notEqual(playerRegion.innerHTML, "old player");
+  assert.equal(root.rendered, "");
 });

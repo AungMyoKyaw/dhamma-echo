@@ -1,8 +1,9 @@
 import { CatalogueApi } from "./api.js";
 import { DhammaApp } from "./app.js";
 import { createMockInvoke } from "./mock-data.js";
+import type { AppAction } from "./store.js";
 import type { AppState, InvokeFn, Route } from "./types.js";
-import { renderApp } from "./view.js";
+import { renderApp, renderPlayer } from "./view.js";
 
 declare global {
   interface Window {
@@ -65,6 +66,13 @@ export function renderPreservingScroll(
   );
 }
 
+export function renderPlayerRegion(root: HTMLElement, state: AppState): boolean {
+  const playerRegion = root.querySelector<HTMLElement>("[data-player-region]");
+  if (playerRegion === null) return false;
+  playerRegion.innerHTML = renderPlayer(state);
+  return true;
+}
+
 export async function bootstrap(): Promise<DhammaApp> {
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app root element.");
@@ -73,12 +81,19 @@ export async function bootstrap(): Promise<DhammaApp> {
   audio.preload = "metadata";
   const invoke = selectInvoke(window.__TAURI__?.core?.invoke);
   let previousRoute: Route | null = null;
+  const playerOnlyActions = new Set<AppAction["type"]>([
+    "player-status",
+    "player-progress",
+    "set-player-error",
+    "save-resume"
+  ]);
   const app = new DhammaApp({
     api: new CatalogueApi(invoke),
     storage: window.localStorage,
     audio,
     now: () => Date.now(),
-    render: (state) => {
+    render: (state, action) => {
+      if (playerOnlyActions.has(action.type) && renderPlayerRegion(root, state)) return;
       renderPreservingScroll(root, state, previousRoute === state.route);
       previousRoute = state.route;
     }

@@ -503,7 +503,7 @@ function renderQueue(state: AppState): string {
   return `<aside class="fixed bottom-28 right-6 z-40 w-96 overflow-hidden rounded-card border border-app-border bg-app-surface shadow-2xl"><div class="flex items-center justify-between border-b border-app-border p-4"><div><p class="font-bold">Up next</p><p class="text-xs text-app-muted">${state.player.queue.length} talks</p></div><button class="text-xs font-bold text-app-primary" data-action="clear-queue">Clear</button></div><div class="scrollbar-thin max-h-80 overflow-y-auto">${rows}</div></aside>`;
 }
 
-function renderPlayer(state: AppState): string {
+export function renderPlayer(state: AppState): string {
   const track = state.player.current;
   if (track === null) return "";
   const playing = state.player.status === "playing";
@@ -536,5 +536,5 @@ function renderPlayer(state: AppState): string {
 
 export function renderApp(state: AppState): string {
   const contentPadding = state.player.current === null ? "pb-8" : "pb-40";
-  return `<div class="app-shell min-h-screen bg-app-bg text-app">${renderSidebar(state)}<div class="app-content ml-64 ${contentPadding}">${renderHeader(state)}<main class="px-10 py-4">${renderMain(state)}</main></div>${renderPlayer(state)}</div>`;
+  return `<div class="app-shell min-h-screen bg-app-bg text-app">${renderSidebar(state)}<div class="app-content ml-64 ${contentPadding}">${renderHeader(state)}<main class="px-10 py-4">${renderMain(state)}</main></div><div data-player-region>${renderPlayer(state)}</div></div>`;
 }
