@@ -153,6 +153,12 @@ export interface CatalogueState {
   message: string;
 }
 
+export interface TeacherTalksState extends CatalogueState {
+  loadingMore: boolean;
+  loadMoreMessage: string;
+  exhausted: boolean;
+}
+
 export interface PlayerState {
   current: AudioTrack | null;
   queue: AudioTrack[];
@@ -181,7 +187,7 @@ export interface AppState {
   collectionSearch: Pick<CollectionBrowseState, "query" | "teacherId" | "limit" | "offset">;
   collectionDetail: Loadable<CollectionDetail | null>;
   teacherDetail: Loadable<TeacherDetail | null>;
-  teacherTalks: CatalogueState;
+  teacherTalks: TeacherTalksState;
   selectedCollectionId: number | null;
   selectedTeacherId: number | null;
   navigationContext: { returnRoute: Route } | null;

@@ -485,9 +485,93 @@ test("DhammaApp loads collection and teacher detail flows", async () => {
   };
   assert.equal(app.findTrack(1).id, 1);
   assert.equal(app.findTrack(999), null);
-  app.dispatch({ type: "set-teacher-talk-offset", offset: 50 });
   await app.loadTeacherTalks();
-  assert.equal(app.state.teacherTalks.page.offset, 50);
+  assert.equal(app.state.teacherTalks.page.offset, 0);
+  app.destroy();
+});
+
+test("DhammaApp appends and retries teacher talk batches", async () => {
+  const allTracks = Array.from({ length: 60 }, (_, index) => ({
+    ...tracks[0],
+    id: index + 1,
+    title: `Talk ${index + 1}`
+  }));
+  const requests = [];
+  let failAppend = true;
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        requests.push(request);
+        if (request.teacherId !== null && request.offset > 0 && failAppend) {
+          failAppend = false;
+          throw new Error("temporary failure");
+        }
+        return {
+          items: allTracks.slice(request.offset, request.offset + request.limit),
+          total: allTracks.length,
+          limit: request.limit,
+          offset: request.offset
+        };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.openTeacher(3, "teachers");
+  assert.equal(app.state.teacherTalks.page.items.length, 50);
+  const firstCount = app.state.teacherTalks.page.items.length;
+  await app.loadMoreTeacherTalks();
+  assert.equal(requests.at(-1).offset, firstCount);
+  assert.equal(app.state.teacherTalks.page.items.length, 50);
+  assert.equal(app.state.teacherTalks.loadMoreMessage, "temporary failure");
+  await app.loadMoreTeacherTalks();
+  assert.equal(requests.at(-1).offset, firstCount);
+  assert.equal(app.state.teacherTalks.page.items.length, 60);
+  assert.equal(app.state.teacherTalks.exhausted, true);
+  app.destroy();
+});
+
+test("DhammaApp ignores teacher load-more requests that cannot make progress", async () => {
+  let requestCount = 0;
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        requestCount += 1;
+        return { items: tracks, total: 10, limit: request.limit, offset: request.offset };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+
+  await app.loadMoreTeacherTalks();
+  assert.equal(requestCount, 0);
+  app.state = {
+    ...app.state,
+    selectedTeacherId: 3,
+    teacherTalks: { ...app.state.teacherTalks, loadingMore: true }
+  };
+  await app.loadMoreTeacherTalks();
+  app.state = {
+    ...app.state,
+    teacherTalks: { ...app.state.teacherTalks, loadingMore: false, exhausted: true }
+  };
+  await app.loadMoreTeacherTalks();
+  app.state = {
+    ...app.state,
+    teacherTalks: {
+      ...app.state.teacherTalks,
+      exhausted: false,
+      page: { items: tracks, total: tracks.length, limit: 50, offset: 0 }
+    }
+  };
+  await app.loadMoreTeacherTalks();
+  assert.equal(requestCount, 0);
   app.destroy();
 });
 

@@ -558,14 +558,15 @@ test("renderApp renders collection and teacher details with playable incomplete 
   });
   state = reduce(state, {
     type: "teacher-talks-loaded",
+    mode: "initial",
     page: { items: tracks, total: 2, limit: 50, offset: 0 }
   });
   html = renderApp(state);
   assert.match(html, /2 talks/);
   assert.match(html, /Dhamma Disc/);
   assert.match(html, /data-action="filter-teacher"/);
-  assert.match(html, /data-action="previous-teacher-talks"/);
-  assert.match(html, /data-action="next-teacher-talks"/);
+  assert.match(html, /Showing 2 of 2 talks/);
+  assert.doesNotMatch(html, /previous-teacher-talks|next-teacher-talks/);
 });
 
 test("renderApp covers discovery loading, empty, and error states", () => {
@@ -620,10 +621,15 @@ test("renderApp covers discovery loading, empty, and error states", () => {
       collections: []
     }
   });
-  state = reduce(state, { type: "teacher-talks-failed", message: "Talk failure" });
+  state = reduce(state, {
+    type: "teacher-talks-failed",
+    mode: "initial",
+    message: "Talk failure"
+  });
   assert.match(renderApp(state), /Talk failure/);
   state = reduce(state, {
     type: "teacher-talks-loaded",
+    mode: "initial",
     page: { items: [], total: 0, limit: 50, offset: 0 }
   });
   assert.match(renderApp(state), /No talks found/);
@@ -679,9 +685,49 @@ test("renderApp covers discovery selection and pagination alternatives", () => {
   });
   state = reduce(state, {
     type: "teacher-talks-loaded",
+    mode: "initial",
     page: { items: tracks, total: 120, limit: 50, offset: 50 }
   });
   html = renderApp(state);
-  assert.doesNotMatch(html, /data-action="previous-teacher-talks" disabled/);
-  assert.doesNotMatch(html, /data-action="next-teacher-talks" disabled/);
+  assert.match(html, /Showing 2 of 120 talks/);
+  assert.match(html, /Load 50 more talks/);
+  assert.match(html, /data-action="load-more-teacher-talks"/);
+  assert.doesNotMatch(html, /previous-teacher-talks|next-teacher-talks/);
+});
+
+test("renderApp keeps teacher talks visible through load-more progress and retry", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "open-teacher", teacherId: 3, returnRoute: "teachers" });
+  state = reduce(state, {
+    type: "teacher-detail-loaded",
+    detail: {
+      id: 3,
+      name: "Teacher",
+      nameMyanmar: null,
+      title: null,
+      description: null,
+      audioCount: 96,
+      collections: []
+    }
+  });
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    mode: "initial",
+    page: { items: tracks, total: 96, limit: 50, offset: 0 }
+  });
+  state = reduce(state, { type: "teacher-talks-started", mode: "append" });
+  let html = renderApp(state);
+  assert.match(html, /Praise and Blame/);
+  assert.match(html, /Loading more…/);
+  assert.match(html, /data-action="load-more-teacher-talks" disabled/);
+
+  state = reduce(state, {
+    type: "teacher-talks-failed",
+    mode: "append",
+    message: "Temporary failure"
+  });
+  html = renderApp(state);
+  assert.match(html, /Temporary failure/);
+  assert.match(html, /role="status"/);
+  assert.match(html, />Retry</);
 });

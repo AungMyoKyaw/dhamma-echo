@@ -151,7 +151,7 @@ export class DhammaApp {
   async loadTeacherTalks(): Promise<void> {
     const id = this.state.selectedTeacherId;
     if (id === null) return;
-    this.dispatch({ type: "teacher-talks-started" });
+    this.dispatch({ type: "teacher-talks-started", mode: "initial" });
     await this.dependencies.api
       .searchAudio({
         query: "",
@@ -160,12 +160,50 @@ export class DhammaApp {
         teacherId: id,
         categoryId: null,
         collectionId: null,
-        limit: this.state.teacherTalks.page.limit,
-        offset: this.state.teacherTalks.page.offset
+        limit: 50,
+        offset: 0
       })
-      .then((page) => this.dispatch({ type: "teacher-talks-loaded", page }))
+      .then((page) => this.dispatch({ type: "teacher-talks-loaded", mode: "initial", page }))
       .catch((error: unknown) =>
-        this.dispatch({ type: "teacher-talks-failed", message: messageFrom(error) })
+        this.dispatch({
+          type: "teacher-talks-failed",
+          mode: "initial",
+          message: messageFrom(error)
+        })
+      );
+  }
+
+  async loadMoreTeacherTalks(): Promise<void> {
+    const teacherId = this.state.selectedTeacherId;
+    const teacherTalks = this.state.teacherTalks;
+    if (
+      teacherId === null ||
+      teacherTalks.loadingMore ||
+      teacherTalks.exhausted ||
+      teacherTalks.page.items.length >= teacherTalks.page.total
+    )
+      return;
+
+    const offset = teacherTalks.page.items.length;
+    this.dispatch({ type: "teacher-talks-started", mode: "append" });
+    await this.dependencies.api
+      .searchAudio({
+        query: "",
+        language: null,
+        format: null,
+        teacherId,
+        categoryId: null,
+        collectionId: null,
+        limit: teacherTalks.page.limit,
+        offset
+      })
+      .then((page) => this.dispatch({ type: "teacher-talks-loaded", mode: "append", page }))
+      .catch((error: unknown) =>
+        this.dispatch({
+          type: "teacher-talks-failed",
+          mode: "append",
+          message: messageFrom(error)
+        })
       );
   }
 

@@ -148,19 +148,8 @@ export async function bootstrap(): Promise<DhammaApp> {
       });
       void app.searchCollections();
     }
-    if (action === "previous-teacher-talks") {
-      app.dispatch({
-        type: "set-teacher-talk-offset",
-        offset: app.state.teacherTalks.page.offset - app.state.teacherTalks.page.limit
-      });
-      void app.loadTeacherTalks();
-    }
-    if (action === "next-teacher-talks") {
-      app.dispatch({
-        type: "set-teacher-talk-offset",
-        offset: app.state.teacherTalks.page.offset + app.state.teacherTalks.page.limit
-      });
-      void app.loadTeacherTalks();
+    if (action === "load-more-teacher-talks") {
+      void app.loadMoreTeacherTalks();
     }
   });
 

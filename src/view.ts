@@ -329,7 +329,23 @@ function renderTeacherDetail(state: AppState): string {
   }
   const collectionCards = detail.collections.map(renderCollectionCard).join("");
   const page = state.teacherTalks.page;
-  return `<section class="space-y-6">${renderBackButton()}<div class="rounded-card border border-app-border bg-app-surface p-6"><p class="text-xs font-bold uppercase tracking-wider text-app-primary">${detail.audioCount.toLocaleString("en-US")} talks</p><h2 class="mt-2 text-2xl font-bold">${escapeHtml(detail.name)}</h2><button class="mt-4 rounded-full bg-app-primary px-4 py-2 text-xs font-bold text-white" data-action="filter-teacher" data-id="${detail.id}">Explore this teacher</button></div>${collectionCards.length === 0 ? "" : `<div><h3 class="mb-3 text-lg font-bold">Collections</h3><div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">${collectionCards}</div></div>`}<div><div class="mb-3 flex items-center justify-between"><h3 class="text-lg font-bold">Talks</h3><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-teacher-talks" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-teacher-talks" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${talks}</div></section>`;
+  const shown = page.items.length;
+  const remaining = Math.max(0, page.total - shown);
+  const nextCount = Math.min(page.limit, remaining);
+  const canLoadMore = remaining > 0 && !state.teacherTalks.exhausted;
+  const buttonLabel = state.teacherTalks.loadingMore
+    ? "Loading more…"
+    : state.teacherTalks.loadMoreMessage
+      ? "Retry"
+      : `Load ${nextCount.toLocaleString("en-US")} more talks`;
+  const loadMore = canLoadMore
+    ? `<button class="rounded-full border border-app-border px-5 py-2 text-sm font-bold text-app-primary disabled:opacity-50" data-action="load-more-teacher-talks" ${state.teacherTalks.loadingMore ? "disabled" : ""}>${buttonLabel}</button>`
+    : "";
+  const progress =
+    state.teacherTalks.status === "ready"
+      ? `<div class="mt-4 flex flex-col items-center gap-2" role="status"><p class="text-sm text-app-muted">Showing ${shown.toLocaleString("en-US")} of ${page.total.toLocaleString("en-US")} talks</p>${state.teacherTalks.loadMoreMessage ? `<p class="text-sm text-red-700">${escapeHtml(state.teacherTalks.loadMoreMessage)}</p>` : ""}${loadMore}</div>`
+      : "";
+  return `<section class="space-y-6">${renderBackButton()}<div class="rounded-card border border-app-border bg-app-surface p-6"><p class="text-xs font-bold uppercase tracking-wider text-app-primary">${detail.audioCount.toLocaleString("en-US")} talks</p><h2 class="mt-2 text-2xl font-bold">${escapeHtml(detail.name)}</h2><button class="mt-4 rounded-full bg-app-primary px-4 py-2 text-xs font-bold text-white" data-action="filter-teacher" data-id="${detail.id}">Explore this teacher</button></div>${collectionCards.length === 0 ? "" : `<div><h3 class="mb-3 text-lg font-bold">Collections</h3><div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">${collectionCards}</div></div>`}<div><h3 class="mb-3 text-lg font-bold">Talks</h3>${talks}${progress}</div></section>`;
 }
 
 function renderLibrary(state: AppState): string {

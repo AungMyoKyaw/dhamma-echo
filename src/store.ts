@@ -52,10 +52,9 @@ export type AppAction =
   | { type: "teacher-detail-started" }
   | { type: "teacher-detail-loaded"; detail: NonNullable<AppState["teacherDetail"]["data"]> }
   | { type: "teacher-detail-failed"; message: string }
-  | { type: "teacher-talks-started" }
-  | { type: "set-teacher-talk-offset"; offset: number }
-  | { type: "teacher-talks-loaded"; page: AudioSearchPage }
-  | { type: "teacher-talks-failed"; message: string }
+  | { type: "teacher-talks-started"; mode: "initial" | "append" }
+  | { type: "teacher-talks-loaded"; mode: "initial" | "append"; page: AudioSearchPage }
+  | { type: "teacher-talks-failed"; mode: "initial" | "append"; message: string }
   | { type: "return-to-list" }
   | { type: "recent-started" }
   | { type: "recent-loaded"; tracks: AudioTrack[] }
@@ -115,7 +114,14 @@ export function createInitialState(): AppState {
     collectionSearch: { query: "", teacherId: null, limit: 24, offset: 0 },
     collectionDetail: { status: "idle", data: null, message: "" },
     teacherDetail: { status: "idle", data: null, message: "" },
-    teacherTalks: { status: "idle", page: emptyPage, message: "" },
+    teacherTalks: {
+      status: "idle",
+      page: emptyPage,
+      message: "",
+      loadingMore: false,
+      loadMoreMessage: "",
+      exhausted: false
+    },
     selectedCollectionId: null,
     selectedTeacherId: null,
     navigationContext: null,
@@ -270,7 +276,15 @@ export function reduce(state: AppState, action: AppAction): AppState {
         route: "teacher-detail",
         selectedTeacherId: action.teacherId,
         navigationContext: { returnRoute: action.returnRoute },
-        teacherDetail: { status: "idle", data: null, message: "" }
+        teacherDetail: { status: "idle", data: null, message: "" },
+        teacherTalks: {
+          status: "idle",
+          page: emptyPage,
+          message: "",
+          loadingMore: false,
+          loadMoreMessage: "",
+          exhausted: false
+        }
       };
     case "teacher-detail-started":
       return {
@@ -285,22 +299,75 @@ export function reduce(state: AppState, action: AppAction): AppState {
         teacherDetail: { status: "error", data: null, message: action.message }
       };
     case "teacher-talks-started":
-      return { ...state, teacherTalks: { ...state.teacherTalks, status: "loading", message: "" } };
-    case "set-teacher-talk-offset":
-      return {
-        ...state,
-        teacherTalks: {
-          ...state.teacherTalks,
-          page: { ...state.teacherTalks.page, offset: Math.max(0, action.offset) }
-        }
-      };
+      return action.mode === "initial"
+        ? {
+            ...state,
+            teacherTalks: {
+              ...state.teacherTalks,
+              status: "loading",
+              page: emptyPage,
+              message: "",
+              loadingMore: false,
+              loadMoreMessage: "",
+              exhausted: false
+            }
+          }
+        : {
+            ...state,
+            teacherTalks: {
+              ...state.teacherTalks,
+              loadingMore: true,
+              loadMoreMessage: ""
+            }
+          };
     case "teacher-talks-loaded":
-      return { ...state, teacherTalks: { status: "ready", page: action.page, message: "" } };
+      if (action.mode === "initial")
+        return {
+          ...state,
+          teacherTalks: {
+            status: "ready",
+            page: { ...action.page, offset: 0 },
+            message: "",
+            loadingMore: false,
+            loadMoreMessage: "",
+            exhausted: action.page.items.length >= action.page.total
+          }
+        };
+      {
+        const knownIds = new Set(state.teacherTalks.page.items.map((track) => track.id));
+        const appended = action.page.items.filter((track) => !knownIds.has(track.id));
+        const items = [...state.teacherTalks.page.items, ...appended];
+        return {
+          ...state,
+          teacherTalks: {
+            status: "ready",
+            page: { ...action.page, items, offset: 0 },
+            message: "",
+            loadingMore: false,
+            loadMoreMessage: "",
+            exhausted: appended.length === 0 || items.length >= action.page.total
+          }
+        };
+      }
     case "teacher-talks-failed":
-      return {
-        ...state,
-        teacherTalks: { ...state.teacherTalks, status: "error", message: action.message }
-      };
+      return action.mode === "initial"
+        ? {
+            ...state,
+            teacherTalks: {
+              ...state.teacherTalks,
+              status: "error",
+              message: action.message,
+              loadingMore: false
+            }
+          }
+        : {
+            ...state,
+            teacherTalks: {
+              ...state.teacherTalks,
+              loadingMore: false,
+              loadMoreMessage: action.message
+            }
+          };
     case "return-to-list":
       return {
         ...state,

@@ -156,9 +156,7 @@ test("audio discovery loadable states preserve independent pagination", () => {
   state = reduce(state, { type: "set-collection-offset", offset: 24 });
   assert.equal(state.collectionSearch.offset, 24);
   assert.equal(state.search.offset, 0);
-  state = reduce(state, { type: "set-teacher-talk-offset", offset: 50 });
-  assert.equal(state.teacherTalks.page.offset, 50);
-  assert.equal(state.collectionSearch.offset, 24);
+  assert.equal(state.teacherTalks.page.offset, 0);
   state = reduce(state, { type: "collection-detail-failed", message: "missing" });
   assert.equal(state.collectionDetail.status, "error");
   assert.equal(state.collectionDetail.message, "missing");
@@ -183,8 +181,72 @@ test("audio discovery failures and remaining transitions stay isolated", () => {
   assert.equal(state.collections.message, "collections offline");
   state = reduce(state, { type: "teacher-detail-failed", message: "teacher missing" });
   assert.equal(state.teacherDetail.message, "teacher missing");
-  state = reduce(state, { type: "teacher-talks-started" });
+  state = reduce(state, { type: "teacher-talks-started", mode: "initial" });
   assert.equal(state.teacherTalks.status, "loading");
-  state = reduce(state, { type: "teacher-talks-failed", message: "talks offline" });
+  state = reduce(state, {
+    type: "teacher-talks-failed",
+    mode: "initial",
+    message: "talks offline"
+  });
   assert.equal(state.teacherTalks.message, "talks offline");
+});
+
+test("teacher talks append unique records and expose completion", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "teacher-talks-started", mode: "initial" });
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    mode: "initial",
+    page: { items: tracks, total: 3, limit: 50, offset: 0 }
+  });
+  state = reduce(state, { type: "teacher-talks-started", mode: "append" });
+  assert.equal(state.teacherTalks.loadingMore, true);
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    mode: "append",
+    page: {
+      items: [tracks[1], { ...tracks[0], id: 3, title: "Third talk" }],
+      total: 3,
+      limit: 50,
+      offset: 2
+    }
+  });
+  assert.deepEqual(
+    state.teacherTalks.page.items.map((track) => track.id),
+    [1, 2, 3]
+  );
+  assert.equal(state.teacherTalks.page.offset, 0);
+  assert.equal(state.teacherTalks.loadingMore, false);
+  assert.equal(state.teacherTalks.exhausted, true);
+});
+
+test("teacher talk append failures preserve records and empty appends exhaust loading", () => {
+  let state = createInitialState();
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    mode: "initial",
+    page: { items: tracks, total: 5, limit: 50, offset: 0 }
+  });
+  state = reduce(state, { type: "teacher-talks-started", mode: "append" });
+  state = reduce(state, {
+    type: "teacher-talks-failed",
+    mode: "append",
+    message: "temporary failure"
+  });
+  assert.deepEqual(state.teacherTalks.page.items, tracks);
+  assert.equal(state.teacherTalks.status, "ready");
+  assert.equal(state.teacherTalks.loadMoreMessage, "temporary failure");
+
+  state = reduce(state, { type: "teacher-talks-started", mode: "append" });
+  state = reduce(state, {
+    type: "teacher-talks-loaded",
+    mode: "append",
+    page: { items: [], total: 5, limit: 50, offset: 2 }
+  });
+  assert.equal(state.teacherTalks.exhausted, true);
+
+  state = reduce(state, { type: "open-teacher", teacherId: 4, returnRoute: "teachers" });
+  assert.deepEqual(state.teacherTalks.page.items, []);
+  assert.equal(state.teacherTalks.exhausted, false);
+  assert.equal(state.teacherTalks.loadMoreMessage, "");
 });
