@@ -67,7 +67,7 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 ## Requirements
 
 - Node.js 22.13 or newer
-- Bun 1.4.0 or newer
+- Bun 1.4 canary or newer
 - Rust 1.85 or newer with Cargo and rustfmt
 - Platform prerequisites required by Tauri 2
 
@@ -97,7 +97,7 @@ cd dhamma-echo
 bun install
 ```
 
-This Svelte migration changes the frontend build dependencies. The lockfile uses Bun lockfile version 2, so use Bun 1.4.0 or newer for installs and CI. Run `bun install` once on a networked development machine if dependencies change, review and commit the resulting lockfile diff, then use `bun install --frozen-lockfile --ignore-scripts` for deterministic CI/release installs. `src-tauri/Cargo.lock` remains unchanged.
+This Svelte migration changes the frontend build dependencies. The lockfile uses Bun lockfile version 2, so use the Bun 1.4 canary or newer for installs and CI; Bun 1.4 is not yet published as a stable release. Run `bun install` once on a networked development machine if dependencies change, review and commit the resulting lockfile diff, then use `bun install --frozen-lockfile --ignore-scripts` for deterministic CI/release installs. `src-tauri/Cargo.lock` remains unchanged.
 
 ## Run
 
