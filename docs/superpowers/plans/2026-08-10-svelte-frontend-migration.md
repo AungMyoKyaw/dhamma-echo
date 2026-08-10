@@ -18,4 +18,4 @@
 - [x] Update architecture, README, changelog, smoke checks, and Ralph Loop.
 - [ ] Regenerate `bun.lock`, run Svelte compiler/lint/format/build/audit gates, and visually verify the built UI in an environment with the required package toolchain.
 - [ ] Run Rust gates in an environment with Cargo.
-- [ ] Create, verify, and clone-test the final Git bundle.
+- [x] Create, verify, and clone-test the Git bundle deliverable.
