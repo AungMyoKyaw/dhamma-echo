@@ -69,6 +69,8 @@ button:disabled {
 }
 
 .search-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px 140px auto;
   align-items: center;
 }
 
@@ -384,13 +386,6 @@ button:disabled {
 }
 
 @media (max-width: 980px) {
-  .search-form {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  }
-
-  .search-form > label:first-child {
-    grid-column: 1 / -1;
-  }
   .player-shell {
     padding-right: 0.85rem;
     padding-left: 0.85rem;
@@ -434,5 +429,15 @@ button:disabled {
 
   .player-volume {
     width: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .search-form {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .search-form > label:first-child {
+    grid-column: 1 / -1;
   }
 }

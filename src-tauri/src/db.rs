@@ -130,19 +130,6 @@ impl Database {
         }
         let pattern = format!("%{}%", normalize_text(&request.query).to_lowercase());
         self.with_connection(|connection| {
-            let total = connection.query_row(
-                "SELECT COUNT(*) FROM (
-                    SELECT c.id
-                    FROM collections c
-                    JOIN media_collections mc ON mc.collection_id = c.id
-                    JOIN media m ON m.id = mc.media_id AND m.type = 'audio'
-                    WHERE LOWER(c.name) LIKE ?1
-                      AND (?2 IS NULL OR c.teacher_id = ?2)
-                    GROUP BY c.id
-                 )",
-                params![pattern, request.teacher_id],
-                |row| row.get(0),
-            )?;
             let mut statement = connection.prepare(
                 "SELECT c.id, c.name, c.teacher_id, t.name, COUNT(DISTINCT m.id)
                  FROM collections c
@@ -151,15 +138,16 @@ impl Database {
                  LEFT JOIN teachers t ON t.id = c.teacher_id
                  WHERE LOWER(c.name) LIKE ?1
                    AND (?2 IS NULL OR c.teacher_id = ?2)
-                 GROUP BY c.id, c.name, c.teacher_id, t.name
-                 ORDER BY LOWER(c.name), LOWER(COALESCE(t.name, '')), c.id
-                 LIMIT ?3 OFFSET ?4",
+                 GROUP BY c.id, c.name, c.teacher_id, t.name",
             )?;
-            let items = statement
-                .query_map(params![pattern, request.teacher_id, limit, offset], |row| {
-                    map_collection_summary(row)
-                })?
+            let mut summaries = statement
+                .query_map(params![pattern, request.teacher_id], map_collection_summary)?
                 .collect::<rusqlite::Result<Vec<_>>>()?;
+            sort_collection_summaries(&mut summaries);
+            let total = i64::try_from(summaries.len()).unwrap_or(i64::MAX);
+            let start = usize::try_from(offset).unwrap_or(usize::MAX);
+            let take = usize::try_from(limit).unwrap_or(usize::MAX);
+            let items = summaries.into_iter().skip(start).take(take).collect();
             Ok(CollectionSearchPage {
                 items,
                 total,
@@ -399,6 +387,16 @@ fn natural_name_cmp(left: &CollectionSummary, right: &CollectionSummary) -> Orde
     natural_text_cmp(&left.name, &right.name).then_with(|| left.id.cmp(&right.id))
 }
 
+fn sort_collection_summaries(collections: &mut [CollectionSummary]) {
+    collections.sort_by(|left, right| match (left.teacher_id, right.teacher_id) {
+        (None, None) => natural_name_cmp(left, right),
+        (None, Some(_)) => Ordering::Greater,
+        (Some(_), None) => Ordering::Less,
+        (Some(_), Some(_)) => natural_text_cmp(&left.teacher_name, &right.teacher_name)
+            .then_with(|| natural_name_cmp(left, right)),
+    });
+}
+
 fn natural_text_cmp(left: &str, right: &str) -> Ordering {
     let comparison_key = |value: &str| {
         value
@@ -551,10 +549,10 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
 mod tests {
     use rusqlite::Connection;
 
-    use super::{Database, is_webview_playable, natural_text_cmp};
+    use super::{Database, is_webview_playable, natural_text_cmp, sort_collection_summaries};
     use crate::{
         error::AppError,
-        models::{AudioSearchRequest, CollectionSearchRequest},
+        models::{AudioSearchRequest, CollectionSearchRequest, CollectionSummary},
     };
 
     fn fixture() -> Database {
@@ -846,7 +844,14 @@ mod tests {
                 offset: 0,
             })
             .expect("collection search");
-        assert_eq!(collections.items[0].id, 11);
+        assert_eq!(
+            collections
+                .items
+                .iter()
+                .map(|collection| collection.id)
+                .collect::<Vec<_>>(),
+            vec![13, 12, 14, 11, 15]
+        );
     }
 
     #[test]
@@ -871,6 +876,55 @@ mod tests {
                 "MP3 Disc 06",
             ]
         );
+    }
+
+    #[test]
+    fn collection_summaries_group_named_teachers_and_put_unknown_last() {
+        let summary = |id, name: &str, teacher_id, teacher_name: &str| CollectionSummary {
+            id,
+            name: name.into(),
+            teacher_id,
+            teacher_name: teacher_name.into(),
+            audio_count: 1,
+        };
+        let mut collections = vec![
+            summary(1, "Disc 10", Some(2), "Teacher B"),
+            summary(2, "Disc 2", None, "Unknown teacher"),
+            summary(3, "Disc 10", Some(1), "Teacher A"),
+            summary(4, "Disc 2", Some(1), "Teacher A"),
+            summary(5, "Disc 1", Some(2), "Teacher B"),
+        ];
+        sort_collection_summaries(&mut collections);
+        assert_eq!(
+            collections.iter().map(|item| item.id).collect::<Vec<_>>(),
+            vec![4, 3, 5, 1, 2]
+        );
+    }
+
+    #[test]
+    fn collection_search_slices_after_natural_sorting() {
+        let database = teacher_collection_sort_fixture();
+        let page = |limit, offset| {
+            database
+                .search_collections(&CollectionSearchRequest {
+                    query: String::new(),
+                    teacher_id: Some(1),
+                    limit,
+                    offset,
+                })
+                .expect("collection page")
+        };
+        let first = page(2, 0);
+        let second = page(2, 2);
+        let ids = first
+            .items
+            .into_iter()
+            .chain(second.items)
+            .map(|item| item.id)
+            .collect::<Vec<_>>();
+        assert_eq!(ids, vec![13, 12, 14, 11]);
+        assert_eq!(first.total, 5);
+        assert_eq!(second.offset, 2);
     }
 
     #[test]
