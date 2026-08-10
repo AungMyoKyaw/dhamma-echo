@@ -3,17 +3,22 @@
 ```mermaid
 flowchart TB
     subgraph webview[Webview — untrusted UI boundary]
-      main[src/main.ts\nDOM and event bootstrap]
+      entry[src/entry.ts\nVite browser entry]
+      main[src/main.ts\nSvelte bootstrap]
+      svelte[src/App.svelte + components/views\nSvelte 5 presentation]
       app[src/app.ts\napplication controller]
       store[src/store.ts\ndeterministic state]
-      view[src/view.ts\nescaped HTML renderer]
+      ui[src/ui.ts\npure presentation helpers]
       player[src/player.ts\nHTML audio adapter]
       urls[src/utils.ts\nmedia URL allowlist and normalization]
       persistence[src/persistence.ts\nvalidated local state]
       api[src/api.ts\ntyped IPC client]
+      entry --> main
+      main --> svelte
       main --> app
       app --> store
-      app --> view
+      svelte --> app
+      svelte --> ui
       app --> player
       player --> urls
       app --> persistence
@@ -35,10 +40,10 @@ flowchart TB
 
 ## Boundaries
 
+- Svelte renders catalogue strings as text nodes; the application does not use `{@html}` for catalogue content.
 - The webview never receives a generic SQL command, filesystem path, or shell interface.
 - Rust validates identifiers, page limits, language, format, and teacher filters.
 - Rust marks only MP3 records on the approved Dhamma Download hostnames as playable.
-- The renderer escapes catalogue strings before inserting them into HTML.
 - The audio adapter reparses every URL, rejects credentials and custom ports, upgrades approved HTTP records to HTTPS, removes fragments, encodes paths, and exposes only two approved HTTPS candidates.
 - The Tauri CSP permits media from those two HTTPS origins only.
 - Local storage data is treated as untrusted and schema-checked on every load.

@@ -5,7 +5,7 @@
 ```mermaid
 sequenceDiagram
     actor User
-    participant UI as TypeScript UI
+    participant UI as Svelte UI
     participant IPC as Tauri command
     participant DB as Read-only SQLite
 
@@ -19,7 +19,7 @@ sequenceDiagram
     DB-->>IPC: Normalized tracks
     IPC->>IPC: Mark only approved MP3 host records playable
     IPC-->>UI: AudioSearchPage
-    UI-->>User: Escaped rows, paging controls, playable state
+    UI-->>User: Text-safe rows, paging controls, playable state
 ```
 
 ## Collection sequence
@@ -27,7 +27,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor User
-    participant UI as TypeScript UI
+    participant UI as Svelte UI
     participant IPC as Tauri command
     participant DB as Read-only SQLite
 

@@ -1,62 +1,69 @@
-# Ralph Loop — GitHub Pages Product Website
+# Ralph Loop — Svelte Frontend Migration
 
 ## Goal
 
-Create a polished, lightweight Dhamma Echo product website inside the repository, include the supplied `docs/images/dhamma-echo-demo.png` screenshot, and deploy the validated `docs/` directory through GitHub Pages.
+Replace Dhamma Echo's HTML-string/DOM-delegation frontend with Svelte 5 + Vite while preserving Tauri, catalogue behavior, playback behavior, local data, public website, and the existing light visual identity.
 
-## Current state
+## Baseline state
 
-- The repository documents the product but has no product website entry point under `docs/`.
-- The supplied application screenshot already exists at the required path.
-- The repository owner and final GitHub URL are absent from the Git bundle, so links must not be invented.
-- Existing CI validates the desktop app but does not publish GitHub Pages.
-- The execution environment has Node.js but does not provide Bun, Rust, Cargo, Prettier, or ESLint.
+- Tauri 2 loaded a custom TypeScript renderer from `dist/` on `127.0.0.1:1420` in development.
+- `src/view.ts` rendered complete HTML strings and `src/main.ts` delegated DOM events from `#app`.
+- `DhammaApp`, reducer/state, API, persistence, and player modules already isolated product behavior from rendering and remain intact.
+- Tailwind CSS v4 and the warm light design tokens already existed.
 
 ## Acceptance criteria
 
-- `docs/index.html` presents the product goal, screenshot, core features, privacy model, architecture, and open-source path.
-- The supplied screenshot is referenced directly and retains its native 3248×2122 aspect ratio.
-- HTML, CSS, logo, and browser JavaScript are local, dependency-free, responsive, and individually below 100 KiB.
-- The page has semantic landmarks, one `h1`, logical headings, skip navigation, visible focus, 44px primary targets, meaningful image text, and reduced-motion handling.
-- No analytics, trackers, external fonts, remote runtime scripts/styles/images, local machine paths, unresolved templates, duplicate IDs, or path traversal exist.
-- GitHub repository and release links are derived only on standard project Pages URLs and fail safely elsewhere.
-- Node site tests, 100% site JavaScript coverage, and smoke checks pass.
-- GitHub Pages workflow validates first, uploads only `docs/`, uses least-privilege permissions, and deploys through the `github-pages` environment.
-- Existing desktop source, database, and Tauri build inputs remain unchanged.
-- The final Git bundle verifies, clones, and repeats site verification from the clean clone.
+- Svelte 5 components render every desktop route and player/queue surface.
+- No catalogue content is rendered through HTML strings or `{@html}`.
+- Direct Svelte handlers replace `data-action` event delegation.
+- Navigation, searches/filters, progressive loading, favorites, queue, player controls, retries, keyboard shortcuts, and local settings remain wired to `DhammaApp`.
+- Vite serves `127.0.0.1:1420` and emits production assets to `dist/` for Tauri.
+- Tailwind v4 runs through `@tailwindcss/vite`.
+- Prettier, ESLint, `svelte-check`, tests/coverage, build, smoke, icons, audit, and Rust gates are run when the environment supports them.
+- Architecture docs and README describe the Svelte frontend.
+- The final Git bundle verifies and clone-tests successfully.
 
-## Validation commands
+## Fast inner loop
 
 ```bash
-node --test tests/site.test.mjs tests/site-links.test.mjs
-node scripts/site-smoke.mjs
-npm run site:coverage
-npm run site:verify
 git diff --check
-python3 -m http.server 4173 --directory docs
-chromium --headless --screenshot # desktop and mobile visual inspection
-bun run format:check
+node scripts/lint-offline.mjs
+tsc -p tsconfig.test.json
+node --test tests/runtime.test.mjs tests/ui.test.mjs
+bun run typecheck
+bun run lint
+bun run build:web
+bun run smoke:web
+```
+
+## Full release loop
+
+```bash
+bun install --frozen-lockfile --ignore-scripts
+bun run format:web:check
 bun run lint
 bun run typecheck
 bun run test:coverage
 bun run build:web
 bun run smoke:web
 bun run icons:check
+bun audit --audit-level=high
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features -- -D warnings
 cargo test --manifest-path src-tauri/Cargo.toml --all-features
-git bundle create /mnt/data/dhamma-echo-product-site.bundle --all
-git bundle verify /mnt/data/dhamma-echo-product-site.bundle
-git clone /mnt/data/dhamma-echo-product-site.bundle /mnt/data/dhamma-echo-product-site-clone
+git diff --check
+git bundle create /mnt/data/dhamma-echo-svelte.bundle --all
+git bundle verify /mnt/data/dhamma-echo-svelte.bundle
+git clone /mnt/data/dhamma-echo-svelte.bundle /mnt/data/dhamma-echo-svelte-clone
 ```
 
 ## Known risks
 
-- GitHub Pages cannot be published from the local sandbox; workflow structure and artifact contents can be validated, while the live deployment requires repository Actions to run.
-- A custom domain cannot be mapped safely to a repository URL without configuration, so source/release buttons retain in-page fallbacks there.
-- The screenshot is intentionally large because the user required the existing asset; duplicating or replacing it is outside scope.
-- Bun, Rust/Cargo, Prettier, ESLint, dependency audit, and native packaging may remain unavailable and must not be claimed as passed.
+- The execution sandbox has Node.js but not Bun or Cargo, and its configured npm mirror does not contain Svelte. Dependency-backed Svelte and native gates may therefore be blocked locally.
+- Svelte must remain a presentation layer; business state stays canonical in `DhammaApp` and `src/store.ts`.
+- Vite emits hashed asset filenames, so smoke checks discover built JS/CSS from `dist/assets/`.
+- Existing Tauri CSP must remain compatible with Vite production output; no remote runtime frontend dependencies are introduced.
 
 ## Exit conditions
 
-All locally achievable site tests, smoke checks, workflow/documentation validation, browser visual checks, security review, and clean-clone verification pass. Toolchain and live-deployment blockers are recorded explicitly. The final Git bundle contains complete history and the feature branch.
+The source migration is complete, no old renderer/delegated-action implementation remains, all locally runnable gates have evidence, external blockers are recorded, documentation/CI reflect the Svelte pipeline, and the final Git bundle verifies and clones.

@@ -3,9 +3,10 @@
 ```mermaid
 flowchart LR
     commit[Commit or pull request] --> install[Install Node and Rust dependencies]
-    install --> format[Prettier + rustfmt]
+    install --> format[Prettier/Svelte + rustfmt]
     format --> lint[ESLint + clippy]
-    lint --> test[TypeScript + Rust tests]
+    lint --> typecheck[svelte-check + TypeScript]
+    typecheck --> test[TypeScript + Rust tests]
     test --> coverage[Core TypeScript coverage gate]
     coverage --> build[Web production build]
     build --> smoke[Static asset smoke checks]

@@ -36,7 +36,7 @@ The site architecture and deployment boundary are documented in [Product website
 - Store favorites, history, queue, settings, and resume positions locally.
 - Upgrade approved same-host HTTP MP3 records to HTTPS before playback; WMA records remain searchable but unavailable in the macOS webview.
 - Use the supplied SQLite database as an immutable bundled resource.
-- Run a dependency-free TypeScript web UI inside a small Tauri shell.
+- Run a compiled Svelte 5 + TypeScript web UI inside a small Tauri shell.
 - Render Myanmar text through system fonts; no font files are bundled.
 - Use a regenerated macOS app icon with an optical safe area so it no longer dominates the Dock.
 
@@ -51,6 +51,7 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 - [Product website architecture](docs/architecture/product-site.md)
 - [Product website design](docs/superpowers/specs/2026-08-05-github-pages-product-site-design.md)
 - [Product and technical design](docs/superpowers/specs/2026-08-04-dhamma-echo-design.md)
+- [Svelte migration design](docs/superpowers/specs/2026-08-10-svelte-frontend-migration-design.md)
 - [Ralph Loop](docs/ralph-loop.md)
 
 ## Technology stack
@@ -58,15 +59,15 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 - Tauri 2 desktop shell
 - Rust 2024 edition
 - `rusqlite` with bundled SQLite
-- Framework-free strict TypeScript
-- Tailwind CSS v4 with CSS-first design tokens
+- Svelte 5 with strict TypeScript and Vite
+- Tailwind CSS v4 through the official Vite plugin with CSS-first design tokens
 - Native HTML audio element
 - Node's built-in test runner and V8 coverage
 
 ## Requirements
 
 - Node.js 22.13 or newer
-- Bun 1.4 or newer
+- Bun 1.3.14 or newer
 - Rust 1.85 or newer with Cargo and rustfmt
 - Platform prerequisites required by Tauri 2
 
@@ -118,14 +119,14 @@ Then open `http://127.0.0.1:1420`.
 
 | Command                  | Purpose                                                               |
 | ------------------------ | --------------------------------------------------------------------- |
-| `bun run dev:web`        | Build and serve the browser preview                                   |
+| `bun run dev:web`        | Start the Vite browser preview with HMR                              |
 | `bun run tauri:dev`      | Run the Tauri desktop application                                     |
 | `bun run format`         | Format web and Rust sources                                           |
 | `bun run format:check`   | Verify formatting                                                     |
 | `bun run lint`           | Run strict ESLint with zero warnings                                  |
 | `bun run lint:offline`   | Run dependency-free whitespace checks                                 |
-| `bun run typecheck`      | Run strict TypeScript checking                                        |
-| `bun run test`           | Run 50 core TypeScript tests                                          |
+| `bun run typecheck`      | Run `svelte-check` and strict TypeScript checking                    |
+| `bun run test`           | Run the core TypeScript behavior tests                               |
 | `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
 | `npm run site:test`      | Run product website behavior and link tests                           |
 | `npm run site:smoke`     | Validate static assets, paths, budgets, and runtime isolation         |
@@ -141,7 +142,7 @@ Then open `http://127.0.0.1:1420`.
 
 ## Testing and coverage
 
-The core TypeScript modules are covered by 50 behavior-focused tests. The coverage command enforces 100% lines, branches, and functions. Node's built-in coverage reporter does not expose a separate statement metric. `src/main.ts` is a browser/Tauri bootstrap boundary and is explicitly excluded from the core metric; the production build and artifact smoke checks verify that boundary.
+The core TypeScript behavior modules are covered by behavior-focused tests. The local Node coverage command enforces 100% lines, branches, and functions for those modules. Node's built-in coverage reporter does not expose a separate statement metric, and Svelte component executable code is validated separately by `svelte-check`, the Vite production build, and web smoke checks. The release report must not call the project-wide 100% statement/component coverage requirement complete unless a tool actually measures it.
 
 Rust tests cover normalization, request validation, query filtering, pagination, error paths, secure URL classification, and in-memory SQLite integration. Run them with:
 
