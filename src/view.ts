@@ -106,12 +106,16 @@ function stat(label: string, value: number, detail: string): string {
   return `<article class="rounded-card border border-app-border bg-app-surface p-5"><p class="text-xs font-bold uppercase tracking-wider text-app-muted">${label}</p><p class="mt-2 text-3xl font-bold tracking-tight">${value.toLocaleString("en-US")}</p><p class="mt-1 text-xs text-app-muted">${detail}</p></article>`;
 }
 
+function languageAttrs(value: string): string {
+  return /[\u1000-\u109F]/u.test(value) ? ' lang="my" class="myanmar-text"' : "";
+}
+
 function renderTeacherCard(teacher: TeacherSummary, carousel = false): string {
   const featured = isCuratedFeaturedTeacher(teacher.id);
   return `<button class="group flex h-full w-full ${carousel ? "min-w-72" : "min-w-0"} flex-col rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="select-teacher" data-id="${teacher.id}">
     <div class="flex size-12 items-center justify-center rounded-full bg-app-secondary/15 text-lg font-bold text-app-secondary">${escapeHtml(teacher.name.charAt(0))}</div>
     ${featured ? '<span class="mt-4 w-fit rounded-full bg-app-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-app-primary">Featured</span>' : ""}
-    <p class="${featured ? "mt-3" : "mt-4"} font-bold leading-7">${escapeHtml(teacher.name)}</p>
+    <p class="${featured ? "mt-3" : "mt-4"} font-bold leading-7${languageAttrs(teacher.name).includes("myanmar-text") ? " myanmar-text" : ""}"${languageAttrs(teacher.name).includes('lang="my"') ? ' lang="my"' : ""}>${escapeHtml(teacher.name)}</p>
     <p class="mt-2 text-sm text-app-muted">${teacher.audioCount.toLocaleString("en-US")} talks</p>
     <span class="mt-auto inline-flex items-center gap-1 pt-5 text-xs font-bold text-app-primary">Browse talks <span class="size-4">${icon("chevron")}</span></span>
   </button>`;
@@ -175,11 +179,24 @@ function renderFilters(state: AppState): string {
       ? `<div class="col-span-full flex flex-wrap gap-2" aria-label="Audio categories"><button class="rounded-full px-3 py-2 text-xs font-bold ${state.search.categoryId === null ? "bg-app-primary text-white" : "bg-app-soft text-app-muted"}" data-action="filter-category" data-id="0" type="button">All audio</button>${state.categories.data.map((category) => `<button class="rounded-full px-3 py-2 text-xs font-bold ${state.search.categoryId === category.id ? "bg-app-primary text-white" : "bg-app-soft text-app-muted"}" data-action="filter-category" data-id="${category.id}" type="button">${escapeHtml(category.name)} · ${category.audioCount.toLocaleString("en-US")}</button>`).join("")}</div>`
       : "";
   return `<form class="search-form gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="search">
-    <label class="relative"><span class="sr-only">Search talks</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.search.query)}" placeholder="Search title or teacher" /></label>
+    ${renderTextSearchField("Search talks", "Search title or teacher", state.search.query, "clear-search-query", "")}
     <label><span class="sr-only">Language</span><select class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="language"><option value="all"${state.search.language === "all" ? " selected" : ""}>All languages</option><option value="myanmar"${state.search.language === "myanmar" ? " selected" : ""}>Myanmar</option><option value="english"${state.search.language === "english" ? " selected" : ""}>English</option></select></label>
     <label><span class="sr-only">Format</span><select class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="format"><option value="all"${state.search.format === "all" ? " selected" : ""}>All formats</option><option value="mp3"${state.search.format === "mp3" ? " selected" : ""}>MP3</option><option value="wma"${state.search.format === "wma" ? " selected" : ""}>WMA</option></select></label>
     <button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button>${categories}
   </form>`;
+}
+
+function renderTextSearchField(
+  label: string,
+  placeholder: string,
+  value: string,
+  clearAction: string,
+  className: string
+): string {
+  const clearButton = value
+    ? `<button class="absolute right-3 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app" type="button" data-action="${clearAction}" aria-label="Clear ${label.toLowerCase()}"><span class="size-4">${icon("close")}</span></button>`
+    : "";
+  return `<label class="relative ${className}"><span class="sr-only">${label}</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 ${value ? "pr-12" : "pr-4"} text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(value)}" placeholder="${placeholder}" />${clearButton}</label>`;
 }
 
 function renderTrack(track: AudioTrack, state: AppState): string {
@@ -272,14 +289,15 @@ function renderTeachers(state: AppState): string {
   const results = searching
     ? state.teacherResults
     : orderTeachersFeaturedFirst(state.teachers.data);
-  return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search"><label class="relative flex-1"><span class="sr-only">Search teachers</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.teacherQuery)}" placeholder="Search teacher name" /></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map((teacher) => renderTeacherCard(teacher)).join("")}</div>`}</section>`;
+  return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search">${renderTextSearchField("Search teachers", "Search teacher name", state.teacherQuery, "clear-teacher-search", "flex-1")}<button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map((teacher) => renderTeacherCard(teacher)).join("")}</div>`}</section>`;
 }
 
 function renderCollectionCard(
   collection: AppState["collections"]["page"]["items"][number],
   showTeacher = true
 ): string {
-  return `<button class="group flex min-w-0 flex-col rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="open-collection" data-id="${collection.id}"><p class="font-bold leading-7">${escapeHtml(collection.name)}</p>${showTeacher ? `<p class="mt-2 text-sm text-app-muted">${escapeHtml(collection.teacherName || "Unknown teacher")}</p>` : ""}<p class="mt-4 text-xs font-bold text-app-primary">${collection.audioCount.toLocaleString("en-US")} talks</p></button>`;
+  const nameLanguage = languageAttrs(collection.name);
+  return `<button class="group flex min-w-0 flex-col rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="open-collection" data-id="${collection.id}"><p class="font-bold leading-7${nameLanguage.includes("myanmar-text") ? " myanmar-text" : ""}"${nameLanguage.includes('lang="my"') ? ' lang="my"' : ""}>${escapeHtml(collection.name)}</p>${showTeacher ? `<p class="mt-2 text-sm text-app-muted">${escapeHtml(collection.teacherName || "Unknown teacher")}</p>` : ""}<p class="mt-4 text-xs font-bold text-app-primary">${collection.audioCount.toLocaleString("en-US")} talks</p></button>`;
 }
 
 function renderCollectionGroups(state: AppState): string {
@@ -336,7 +354,7 @@ function renderCollections(state: AppState): string {
           "collections"
         )
       : "";
-  return `<section class="space-y-5"><form class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="collection-search"><label class="relative min-w-64 flex-1"><span class="sr-only">Search collections</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm" name="query" value="${escapeHtml(state.collectionSearch.query)}" placeholder="Search collection name" /></label><label><span class="sr-only">Collection teacher</span><select class="h-12 max-w-64 rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="teacherId"><option value="">All teachers</option>${teacherOptions}</select></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${content}${progress}</section>`;
+  return `<section class="space-y-5"><form class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="collection-search">${renderTextSearchField("Search collections", "Search collection name", state.collectionSearch.query, "clear-collection-search", "min-w-64 flex-1")}<label><span class="sr-only">Collection teacher</span><select class="h-12 max-w-64 rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="teacherId"><option value="">All teachers</option>${teacherOptions}</select></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${content}${progress}</section>`;
 }
 
 function renderProgressiveControls(

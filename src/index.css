@@ -27,6 +27,12 @@
   box-sizing: border-box;
 }
 
+.myanmar-text {
+  line-break: strict;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
 html,
 body {
   min-width: 860px;

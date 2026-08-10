@@ -21,6 +21,14 @@ function isRoute(value: string | undefined): value is Route {
   );
 }
 
+function focusSearchInput(formName: string): void {
+  requestAnimationFrame(() => {
+    document
+      .querySelector<HTMLInputElement>(`form[data-form="${formName}"] input[name="query"]`)
+      ?.focus();
+  });
+}
+
 export function selectInvoke(candidate: InvokeFn | undefined): InvokeFn {
   return candidate ?? createMockInvoke();
 }
@@ -84,6 +92,17 @@ export async function bootstrap(): Promise<DhammaApp> {
     if (action === "clear-collection") {
       app.dispatch({ type: "clear-collection" });
       void app.search();
+    }
+    if (action === "clear-search-query") {
+      app.dispatch({ type: "set-query", query: "" });
+      void app.search().finally(() => focusSearchInput("search"));
+    }
+    if (action === "clear-teacher-search") {
+      void app.searchTeachers("").finally(() => focusSearchInput("teacher-search"));
+    }
+    if (action === "clear-collection-search") {
+      app.dispatch({ type: "set-collection-query", query: "" });
+      void app.searchCollections().finally(() => focusSearchInput("collection-search"));
     }
     if (action === "play-track" && id !== null) {
       if (app.state.player.current?.id === id) void app.togglePlayback();

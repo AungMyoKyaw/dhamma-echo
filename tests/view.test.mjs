@@ -90,6 +90,7 @@ test("renderApp expands featured teachers when recent tracks are unavailable", (
   assert.match(html, /30,563/);
   assert.doesNotMatch(html, /line-clamp-2/);
   assert.match(html, />Featured<[^]*ဖားအောက်တောရဆရာတော်ကြီး ဘဒ္ဒန္တအာစိဏ္ဏ/u);
+  assert.match(html, /class="[^"]*myanmar-text[^"]*" lang="my"/u);
 });
 
 test("renderApp keeps featured teachers compact with recent content", () => {
@@ -362,10 +363,38 @@ test("renderApp renders the teacher search bar and results", () => {
   state = reduce(state, { type: "teacher-results", teachers: [teachers[2]] });
   html = renderApp(state);
   assert.match(html, /value="dhammasami"/);
+  assert.match(html, /data-action="clear-teacher-search"/);
   assert.match(html, /Dr\. K\. Dhammasami/);
   assert.doesNotMatch(html, /U Jotika/);
   state = reduce(state, { type: "teacher-results", teachers: [] });
   assert.match(renderApp(state), /No teachers match/);
+});
+
+test("renderApp exposes clear actions for every populated text search", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, { type: "set-query", query: "metta" });
+  assert.match(renderApp(state), /data-action="clear-search-query"/);
+
+  state = reduce(state, { type: "navigate", route: "collections" });
+  state = reduce(state, { type: "set-collection-query", query: "disc" });
+  assert.match(renderApp(state), /data-action="clear-collection-search"/);
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "initial",
+    page: {
+      items: [{ ...collections[0], name: "မေတ္တာသုတ်" }],
+      total: 1,
+      limit: 24,
+      offset: 0
+    }
+  });
+  assert.match(renderApp(state), /myanmar-text/);
+
+  state = reduce(state, { type: "navigate", route: "teachers" });
+  state = reduce(state, { type: "teachers-loaded", teachers });
+  state = reduce(state, { type: "set-teacher-query", query: "sayadaw" });
+  assert.match(renderApp(state), /data-action="clear-teacher-search"/);
 });
 
 test("renderApp covers empty teacher highlights and every filter selection", () => {
