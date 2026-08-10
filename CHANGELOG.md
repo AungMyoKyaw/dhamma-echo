@@ -4,6 +4,16 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-08-10
+
+### Changed
+
+- Removed dead frontend helpers and obsolete TypeScript tooling after the Svelte migration.
+- Narrowed internal module exports and standardized the project quality commands.
+- Made CI deterministic around the committed Rust lockfile and Bun lockfile v2.
+- Updated CI and release workflows to use the Bun 1.4 canary required by the lockfile.
+- Expanded release verification documentation and refreshed project architecture guidance.
+
 ## [0.4.0] - 2026-08-10
 
 ### Added
