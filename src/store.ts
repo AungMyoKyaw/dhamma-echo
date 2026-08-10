@@ -34,16 +34,18 @@ export type AppAction =
   | { type: "clear-collection" }
   | { type: "set-teacher-query"; query: string }
   | { type: "teacher-results"; teachers: TeacherSummary[] }
-  | { type: "set-offset"; offset: number }
-  | { type: "search-started" }
-  | { type: "search-loaded"; page: AudioSearchPage }
-  | { type: "search-failed"; message: string }
+  | { type: "search-started"; mode: "initial" | "append" }
+  | { type: "search-loaded"; mode: "initial" | "append"; page: AudioSearchPage }
+  | { type: "search-failed"; mode: "initial" | "append"; message: string }
   | { type: "set-collection-query"; query: string }
   | { type: "set-collection-teacher"; teacherId: number | null }
-  | { type: "set-collection-offset"; offset: number }
-  | { type: "collections-started" }
-  | { type: "collections-loaded"; page: AppState["collections"]["page"] }
-  | { type: "collections-failed"; message: string }
+  | { type: "collections-started"; mode: "initial" | "append" }
+  | {
+      type: "collections-loaded";
+      mode: "initial" | "append";
+      page: AppState["collections"]["page"];
+    }
+  | { type: "collections-failed"; mode: "initial" | "append"; message: string }
   | { type: "open-collection"; collectionId: number; returnRoute: Route }
   | { type: "collection-detail-started" }
   | { type: "collection-detail-loaded"; detail: NonNullable<AppState["collectionDetail"]["data"]> }
@@ -101,7 +103,14 @@ export function createInitialState(): AppState {
       limit: 50,
       offset: 0
     },
-    catalogue: { status: "idle", page: emptyPage, message: "" },
+    catalogue: {
+      status: "idle",
+      page: emptyPage,
+      message: "",
+      loadingMore: false,
+      loadMoreMessage: "",
+      exhausted: false
+    },
     collections: {
       status: "idle",
       page: emptyCollectionPage,
@@ -109,7 +118,10 @@ export function createInitialState(): AppState {
       query: "",
       teacherId: null,
       limit: 24,
-      offset: 0
+      offset: 0,
+      loadingMore: false,
+      loadMoreMessage: "",
+      exhausted: false
     },
     collectionSearch: { query: "", teacherId: null, limit: 24, offset: 0 },
     collectionDetail: { status: "idle", data: null, message: "" },
@@ -202,17 +214,67 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return { ...state, teacherQuery: normalizeWhitespace(action.query) };
     case "teacher-results":
       return { ...state, teacherResults: action.teachers };
-    case "set-offset":
-      return { ...state, search: { ...state.search, offset: Math.max(0, action.offset) } };
     case "search-started":
-      return { ...state, catalogue: { ...state.catalogue, status: "loading", message: "" } };
+      return action.mode === "append"
+        ? {
+            ...state,
+            catalogue: { ...state.catalogue, loadingMore: true, loadMoreMessage: "" }
+          }
+        : {
+            ...state,
+            catalogue: {
+              ...state.catalogue,
+              status: "loading",
+              page: emptyPage,
+              message: "",
+              loadingMore: false,
+              loadMoreMessage: "",
+              exhausted: false
+            }
+          };
     case "search-loaded":
-      return { ...state, catalogue: { status: "ready", page: action.page, message: "" } };
+      if (action.mode !== "append")
+        return {
+          ...state,
+          catalogue: {
+            status: "ready",
+            page: { ...action.page, offset: 0 },
+            message: "",
+            loadingMore: false,
+            loadMoreMessage: "",
+            exhausted: action.page.items.length >= action.page.total
+          }
+        };
+      {
+        const ids = new Set(state.catalogue.page.items.map((item) => item.id));
+        const appended = action.page.items.filter((item) => !ids.has(item.id));
+        const items = [...state.catalogue.page.items, ...appended];
+        return {
+          ...state,
+          catalogue: {
+            status: "ready",
+            page: { ...action.page, items, offset: 0 },
+            message: "",
+            loadingMore: false,
+            loadMoreMessage: "",
+            exhausted: appended.length === 0 || items.length >= action.page.total
+          }
+        };
+      }
     case "search-failed":
-      return {
-        ...state,
-        catalogue: { ...state.catalogue, status: "error", message: action.message }
-      };
+      return action.mode === "append"
+        ? {
+            ...state,
+            catalogue: {
+              ...state.catalogue,
+              loadingMore: false,
+              loadMoreMessage: action.message
+            }
+          }
+        : {
+            ...state,
+            catalogue: { ...state.catalogue, status: "error", message: action.message }
+          };
     case "set-collection-query": {
       const query = normalizeWhitespace(action.query);
       return {
@@ -227,26 +289,69 @@ export function reduce(state: AppState, action: AppAction): AppState {
         collectionSearch: { ...state.collectionSearch, teacherId: action.teacherId, offset: 0 },
         collections: { ...state.collections, teacherId: action.teacherId, offset: 0 }
       };
-    case "set-collection-offset": {
-      const offset = Math.max(0, action.offset);
-      return {
-        ...state,
-        collectionSearch: { ...state.collectionSearch, offset },
-        collections: { ...state.collections, offset }
-      };
-    }
     case "collections-started":
-      return { ...state, collections: { ...state.collections, status: "loading", message: "" } };
+      return action.mode === "append"
+        ? {
+            ...state,
+            collections: { ...state.collections, loadingMore: true, loadMoreMessage: "" }
+          }
+        : {
+            ...state,
+            collections: {
+              ...state.collections,
+              status: "loading",
+              page: emptyCollectionPage,
+              message: "",
+              loadingMore: false,
+              loadMoreMessage: "",
+              exhausted: false
+            }
+          };
     case "collections-loaded":
-      return {
-        ...state,
-        collections: { ...state.collections, status: "ready", page: action.page, message: "" }
-      };
+      if (action.mode !== "append")
+        return {
+          ...state,
+          collections: {
+            ...state.collections,
+            status: "ready",
+            page: { ...action.page, offset: 0 },
+            message: "",
+            loadingMore: false,
+            loadMoreMessage: "",
+            exhausted: action.page.items.length >= action.page.total
+          }
+        };
+      {
+        const ids = new Set(state.collections.page.items.map((item) => item.id));
+        const appended = action.page.items.filter((item) => !ids.has(item.id));
+        const items = [...state.collections.page.items, ...appended];
+        return {
+          ...state,
+          collections: {
+            ...state.collections,
+            status: "ready",
+            page: { ...action.page, items, offset: 0 },
+            message: "",
+            loadingMore: false,
+            loadMoreMessage: "",
+            exhausted: appended.length === 0 || items.length >= action.page.total
+          }
+        };
+      }
     case "collections-failed":
-      return {
-        ...state,
-        collections: { ...state.collections, status: "error", message: action.message }
-      };
+      return action.mode === "append"
+        ? {
+            ...state,
+            collections: {
+              ...state.collections,
+              loadingMore: false,
+              loadMoreMessage: action.message
+            }
+          }
+        : {
+            ...state,
+            collections: { ...state.collections, status: "error", message: action.message }
+          };
     case "open-collection":
       return {
         ...state,

@@ -120,34 +120,8 @@ export async function bootstrap(): Promise<DhammaApp> {
         app.state.selectedTeacherId,
         app.state.navigationContext?.returnRoute ?? "teachers"
       );
-    if (action === "previous-page") {
-      app.dispatch({
-        type: "set-offset",
-        offset: app.state.search.offset - app.state.search.limit
-      });
-      void app.search();
-    }
-    if (action === "next-page") {
-      app.dispatch({
-        type: "set-offset",
-        offset: app.state.search.offset + app.state.search.limit
-      });
-      void app.search();
-    }
-    if (action === "previous-collections") {
-      app.dispatch({
-        type: "set-collection-offset",
-        offset: app.state.collectionSearch.offset - app.state.collectionSearch.limit
-      });
-      void app.searchCollections();
-    }
-    if (action === "next-collections") {
-      app.dispatch({
-        type: "set-collection-offset",
-        offset: app.state.collectionSearch.offset + app.state.collectionSearch.limit
-      });
-      void app.searchCollections();
-    }
+    if (action === "load-more-search") void app.loadMoreSearchResults();
+    if (action === "load-more-collections") void app.loadMoreCollections();
     if (action === "load-more-teacher-talks") {
       void app.loadMoreTeacherTalks();
     }

@@ -400,8 +400,15 @@ fn natural_name_cmp(left: &CollectionSummary, right: &CollectionSummary) -> Orde
 }
 
 fn natural_text_cmp(left: &str, right: &str) -> Ordering {
-    let left = left.trim().to_lowercase();
-    let right = right.trim().to_lowercase();
+    let comparison_key = |value: &str| {
+        value
+            .chars()
+            .filter(|character| !character.is_whitespace())
+            .flat_map(char::to_lowercase)
+            .collect::<String>()
+    };
+    let left = comparison_key(left);
+    let right = comparison_key(right);
     let (left, right) = (left.as_bytes(), right.as_bytes());
     let (mut left_index, mut right_index) = (0, 0);
 
@@ -544,7 +551,7 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
 mod tests {
     use rusqlite::Connection;
 
-    use super::{Database, is_webview_playable};
+    use super::{Database, is_webview_playable, natural_text_cmp};
     use crate::{
         error::AppError,
         models::{AudioSearchRequest, CollectionSearchRequest},
@@ -840,6 +847,30 @@ mod tests {
             })
             .expect("collection search");
         assert_eq!(collections.items[0].id, 11);
+    }
+
+    #[test]
+    fn natural_collection_order_ignores_spacing_before_disc_numbers() {
+        let mut names = vec![
+            "MP3 Disc 03",
+            "MP3 Disc 06",
+            "MP3 Disc01",
+            "MP3 Disc02",
+            "MP3 Disc04",
+            "MP3 Disc05",
+        ];
+        names.sort_by(|left, right| natural_text_cmp(left, right));
+        assert_eq!(
+            names,
+            vec![
+                "MP3 Disc01",
+                "MP3 Disc02",
+                "MP3 Disc 03",
+                "MP3 Disc04",
+                "MP3 Disc05",
+                "MP3 Disc 06",
+            ]
+        );
     }
 
     #[test]

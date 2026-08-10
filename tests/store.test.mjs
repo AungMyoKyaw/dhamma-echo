@@ -8,11 +8,10 @@ test("navigation and search actions update deterministic state", () => {
   state = reduce(state, { type: "navigate", route: "explore" });
   state = reduce(state, { type: "set-query", query: "  mettā  " });
   state = reduce(state, { type: "set-language", language: "myanmar" });
-  state = reduce(state, { type: "set-offset", offset: 50 });
   assert.equal(state.route, "explore");
   assert.equal(state.search.query, "mettā");
   assert.equal(state.search.language, "myanmar");
-  assert.equal(state.search.offset, 50);
+  assert.equal(state.search.offset, 0);
   state = reduce(state, { type: "set-format", format: "mp3" });
   assert.equal(state.search.offset, 0);
 });
@@ -30,6 +29,98 @@ test("catalogue requests expose loading, success, and error states", () => {
   state = reduce(state, { type: "search-failed", message: "offline" });
   assert.equal(state.catalogue.status, "error");
   assert.equal(state.catalogue.message, "offline");
+});
+
+test("catalogue and collection appends preserve and deduplicate visible results", () => {
+  let state = createInitialState();
+  state = reduce(state, {
+    type: "search-loaded",
+    mode: "initial",
+    page: { items: tracks, total: 3, limit: 50, offset: 0 }
+  });
+  state = reduce(state, { type: "search-started", mode: "append" });
+  state = reduce(state, {
+    type: "search-loaded",
+    mode: "append",
+    page: {
+      items: [tracks[1], { ...tracks[0], id: 3 }],
+      total: 3,
+      limit: 50,
+      offset: 2
+    }
+  });
+  assert.deepEqual(
+    state.catalogue.page.items.map(({ id }) => id),
+    [1, 2, 3]
+  );
+  assert.equal(state.catalogue.exhausted, true);
+
+  const firstCollection = {
+    id: 10,
+    name: "One",
+    teacherId: 3,
+    teacherName: "Teacher",
+    audioCount: 1
+  };
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "initial",
+    page: { items: [firstCollection], total: 2, limit: 24, offset: 0 }
+  });
+  state = reduce(state, { type: "collections-started", mode: "append" });
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "append",
+    page: {
+      items: [firstCollection, { ...firstCollection, id: 11, name: "Two" }],
+      total: 2,
+      limit: 24,
+      offset: 1
+    }
+  });
+  assert.deepEqual(
+    state.collections.page.items.map(({ id }) => id),
+    [10, 11]
+  );
+  assert.equal(state.collections.exhausted, true);
+});
+
+test("append failures and no-progress responses preserve progressive lists", () => {
+  let state = createInitialState();
+  state = reduce(state, {
+    type: "search-loaded",
+    mode: "initial",
+    page: { items: tracks, total: 4, limit: 50, offset: 0 }
+  });
+  state = reduce(state, { type: "search-started", mode: "append" });
+  state = reduce(state, {
+    type: "search-failed",
+    mode: "append",
+    message: "audio retry"
+  });
+  assert.equal(state.catalogue.status, "ready");
+  assert.equal(state.catalogue.loadMoreMessage, "audio retry");
+  state = reduce(state, { type: "search-started", mode: "append" });
+  state = reduce(state, {
+    type: "search-loaded",
+    mode: "append",
+    page: { items: [], total: 4, limit: 50, offset: 2 }
+  });
+  assert.equal(state.catalogue.exhausted, true);
+
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "initial",
+    page: { items: [], total: 2, limit: 24, offset: 0 }
+  });
+  state = reduce(state, { type: "collections-started", mode: "append" });
+  state = reduce(state, {
+    type: "collections-failed",
+    mode: "append",
+    message: "collection retry"
+  });
+  assert.equal(state.collections.status, "ready");
+  assert.equal(state.collections.loadMoreMessage, "collection retry");
 });
 
 test("favorites, history, and queue remain unique and bounded", () => {
@@ -153,8 +244,7 @@ test("audio discovery loadable states preserve independent pagination", () => {
   assert.equal(state.categories.status, "ready");
   state = reduce(state, { type: "set-collection-query", query: " disc  one " });
   assert.equal(state.collectionSearch.query, "disc one");
-  state = reduce(state, { type: "set-collection-offset", offset: 24 });
-  assert.equal(state.collectionSearch.offset, 24);
+  assert.equal(state.collectionSearch.offset, 0);
   assert.equal(state.search.offset, 0);
   assert.equal(state.teacherTalks.page.offset, 0);
   state = reduce(state, { type: "collection-detail-failed", message: "missing" });

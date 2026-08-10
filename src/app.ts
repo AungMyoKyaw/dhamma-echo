@@ -112,14 +112,46 @@ export class DhammaApp {
   }
 
   async searchCollections(): Promise<void> {
-    this.dispatch({ type: "collections-started" });
+    this.dispatch({ type: "collections-started", mode: "initial" });
     try {
       this.dispatch({
         type: "collections-loaded",
-        page: await this.dependencies.api.searchCollections(this.state.collectionSearch)
+        mode: "initial",
+        page: await this.dependencies.api.searchCollections({
+          ...this.state.collectionSearch,
+          offset: 0
+        })
       });
     } catch (error) {
-      this.dispatch({ type: "collections-failed", message: messageFrom(error) });
+      this.dispatch({ type: "collections-failed", mode: "initial", message: messageFrom(error) });
+    }
+  }
+
+  async loadMoreCollections(): Promise<void> {
+    const collections = this.state.collections;
+    if (
+      collections.loadingMore ||
+      collections.exhausted ||
+      collections.page.items.length >= collections.page.total
+    )
+      return;
+    const offset = collections.page.items.length;
+    this.dispatch({ type: "collections-started", mode: "append" });
+    try {
+      this.dispatch({
+        type: "collections-loaded",
+        mode: "append",
+        page: await this.dependencies.api.searchCollections({
+          ...this.state.collectionSearch,
+          offset
+        })
+      });
+    } catch (error) {
+      this.dispatch({
+        type: "collections-failed",
+        mode: "append",
+        message: messageFrom(error)
+      });
     }
   }
 
@@ -248,7 +280,7 @@ export class DhammaApp {
   }
 
   async search(): Promise<void> {
-    this.dispatch({ type: "search-started" });
+    this.dispatch({ type: "search-started", mode: "initial" });
     const request: AudioSearchRequest = {
       query: this.state.search.query,
       language: this.state.search.language === "all" ? null : this.state.search.language,
@@ -257,15 +289,47 @@ export class DhammaApp {
       categoryId: this.state.search.categoryId,
       collectionId: this.state.search.collectionId,
       limit: this.state.search.limit,
-      offset: this.state.search.offset
+      offset: 0
     };
     try {
       this.dispatch({
         type: "search-loaded",
+        mode: "initial",
         page: await this.dependencies.api.searchAudio(request)
       });
     } catch (error) {
-      this.dispatch({ type: "search-failed", message: messageFrom(error) });
+      this.dispatch({ type: "search-failed", mode: "initial", message: messageFrom(error) });
+    }
+  }
+
+  async loadMoreSearchResults(): Promise<void> {
+    const catalogue = this.state.catalogue;
+    if (
+      catalogue.loadingMore ||
+      catalogue.exhausted ||
+      catalogue.page.items.length >= catalogue.page.total
+    )
+      return;
+    const offset = catalogue.page.items.length;
+    this.dispatch({ type: "search-started", mode: "append" });
+    const request: AudioSearchRequest = {
+      query: this.state.search.query,
+      language: this.state.search.language === "all" ? null : this.state.search.language,
+      format: this.state.search.format === "all" ? null : this.state.search.format,
+      teacherId: this.state.search.teacherId,
+      categoryId: this.state.search.categoryId,
+      collectionId: this.state.search.collectionId,
+      limit: this.state.search.limit,
+      offset
+    };
+    try {
+      this.dispatch({
+        type: "search-loaded",
+        mode: "append",
+        page: await this.dependencies.api.searchAudio(request)
+      });
+    } catch (error) {
+      this.dispatch({ type: "search-failed", mode: "append", message: messageFrom(error) });
     }
   }
 

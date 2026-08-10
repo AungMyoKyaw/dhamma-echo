@@ -139,6 +139,9 @@ export interface CollectionBrowseState {
   teacherId: number | null;
   limit: number;
   offset: number;
+  loadingMore: boolean;
+  loadMoreMessage: string;
+  exhausted: boolean;
 }
 
 export interface Loadable<T> {
@@ -151,13 +154,12 @@ export interface CatalogueState {
   status: "idle" | "loading" | "ready" | "error";
   page: AudioSearchPage;
   message: string;
-}
-
-export interface TeacherTalksState extends CatalogueState {
   loadingMore: boolean;
   loadMoreMessage: string;
   exhausted: boolean;
 }
+
+export type TeacherTalksState = CatalogueState;
 
 export interface PlayerState {
   current: AudioTrack | null;

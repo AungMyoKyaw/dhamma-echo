@@ -239,9 +239,10 @@ test("renderApp covers every route and catalogue state", () => {
     page: { items: tracks, total: 120, limit: 50, offset: 50 }
   });
   let html = renderApp(state);
-  assert.match(html, /51–100 of 120 talks/);
-  assert.doesNotMatch(html, /data-action="next-page" disabled/);
-  assert.doesNotMatch(html, /data-action="previous-page" disabled/);
+  assert.match(html, /Showing 2 of 120 talks/);
+  assert.match(html, /Load 50 more talks/);
+  assert.match(html, /data-action="load-more-search"/);
+  assert.doesNotMatch(html, /previous-page|next-page/);
 
   state = reduce(state, { type: "navigate", route: "teachers" });
   assert.match(renderApp(state), /Loading talks/);
@@ -653,8 +654,10 @@ test("renderApp covers discovery selection and pagination alternatives", () => {
     }
   });
   html = renderApp(state);
-  assert.doesNotMatch(html, /data-action="previous-collections" disabled/);
-  assert.doesNotMatch(html, /data-action="next-collections" disabled/);
+  assert.match(html, /Showing 2 of 50 collections/);
+  assert.match(html, /Load 24 more collections/);
+  assert.match(html, /data-action="load-more-collections"/);
+  assert.doesNotMatch(html, /previous-collections|next-collections/);
   assert.match(html, /Unknown teacher/);
 
   state = {
@@ -730,4 +733,40 @@ test("renderApp keeps teacher talks visible through load-more progress and retry
   assert.match(html, /Temporary failure/);
   assert.match(html, /role="status"/);
   assert.match(html, />Retry</);
+});
+
+test("renderApp exposes progressive loading and retry for Explore and Collections", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "navigate", route: "explore" });
+  state = reduce(state, {
+    type: "search-loaded",
+    mode: "initial",
+    page: { items: tracks, total: 10, limit: 50, offset: 0 }
+  });
+  state = reduce(state, { type: "search-started", mode: "append" });
+  let html = renderApp(state);
+  assert.match(html, /Loading more…/);
+  assert.match(html, /data-action="load-more-search" disabled/);
+  state = reduce(state, { type: "search-failed", mode: "append", message: "Audio retry" });
+  html = renderApp(state);
+  assert.match(html, /Audio retry/);
+  assert.match(html, />Retry</);
+
+  state = reduce(state, { type: "navigate", route: "collections" });
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "initial",
+    page: { items: collections, total: 10, limit: 24, offset: 0 }
+  });
+  state = reduce(state, { type: "collections-started", mode: "append" });
+  html = renderApp(state);
+  assert.match(html, /Loading more…/);
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "append",
+    page: { items: [], total: 10, limit: 24, offset: 2 }
+  });
+  html = renderApp(state);
+  assert.match(html, /Showing 2 of 10 collections/);
+  assert.doesNotMatch(html, /data-action="load-more-collections"/);
 });

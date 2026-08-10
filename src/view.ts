@@ -222,8 +222,6 @@ function renderExplore(state: AppState): string {
           );
   }
   const page = state.catalogue.page;
-  const from = page.total === 0 ? 0 : page.offset + 1;
-  const to = Math.min(page.offset + page.limit, page.total);
   const teacherChip =
     state.search.teacherId !== null
       ? `<div class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary">Teacher: ${escapeHtml(teacherName(state))}<button class="flex size-5 items-center justify-center rounded-full hover:bg-app-primary/20" data-action="clear-teacher" aria-label="Clear teacher filter"><span class="size-3">${icon("close")}</span></button></div>`
@@ -237,7 +235,20 @@ function renderExplore(state: AppState): string {
     state.search.collectionId === null
       ? ""
       : `<div class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary">Collection filter<button data-action="clear-collection" aria-label="Clear collection filter"><span class="size-3">${icon("close")}</span></button></div>`;
-  return `<section class="space-y-5">${renderFilters(state)}<div class="flex flex-wrap gap-2">${teacherChip}${categoryChip}${collectionChip}</div><div class="flex items-center justify-between"><p class="text-sm text-app-muted">${page.total > 0 ? `${from.toLocaleString("en-US")}–${to.toLocaleString("en-US")} of ${page.total.toLocaleString("en-US")} talks` : "Search the complete audio catalogue"}</p><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-page" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-page" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${content}</section>`;
+  const progress =
+    state.catalogue.status === "ready" && page.total > 0
+      ? renderProgressiveControls(
+          page.items.length,
+          page.total,
+          page.limit,
+          state.catalogue.loadingMore,
+          state.catalogue.loadMoreMessage,
+          state.catalogue.exhausted,
+          "load-more-search",
+          "talks"
+        )
+      : `<p class="text-sm text-app-muted">Search the complete audio catalogue</p>`;
+  return `<section class="space-y-5">${renderFilters(state)}<div class="flex flex-wrap gap-2">${teacherChip}${categoryChip}${collectionChip}</div>${content}${progress}</section>`;
 }
 
 function teacherName(state: AppState): string {
@@ -291,7 +302,44 @@ function renderCollections(state: AppState): string {
         `<option value="${teacher.id}"${state.collectionSearch.teacherId === teacher.id ? " selected" : ""}>${escapeHtml(teacher.name)}</option>`
     )
     .join("");
-  return `<section class="space-y-5"><form class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="collection-search"><label class="relative min-w-64 flex-1"><span class="sr-only">Search collections</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm" name="query" value="${escapeHtml(state.collectionSearch.query)}" placeholder="Search collection name" /></label><label><span class="sr-only">Collection teacher</span><select class="h-12 max-w-64 rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="teacherId"><option value="">All teachers</option>${teacherOptions}</select></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form><div class="flex items-center justify-between"><p class="text-sm text-app-muted">${page.total.toLocaleString("en-US")} audio collections</p><div class="flex gap-2"><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="previous-collections" ${page.offset === 0 ? "disabled" : ""}>Previous</button><button class="rounded-full border border-app-border px-4 py-2 text-xs font-bold" data-action="next-collections" ${page.offset + page.limit >= page.total ? "disabled" : ""}>Next</button></div></div>${content}</section>`;
+  const progress =
+    collectionState.status === "ready"
+      ? renderProgressiveControls(
+          page.items.length,
+          page.total,
+          page.limit,
+          collectionState.loadingMore,
+          collectionState.loadMoreMessage,
+          collectionState.exhausted,
+          "load-more-collections",
+          "collections"
+        )
+      : "";
+  return `<section class="space-y-5"><form class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="collection-search"><label class="relative min-w-64 flex-1"><span class="sr-only">Search collections</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm" name="query" value="${escapeHtml(state.collectionSearch.query)}" placeholder="Search collection name" /></label><label><span class="sr-only">Collection teacher</span><select class="h-12 max-w-64 rounded-2xl border border-app-border bg-app-bg px-4 text-sm" name="teacherId"><option value="">All teachers</option>${teacherOptions}</select></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${content}${progress}</section>`;
+}
+
+function renderProgressiveControls(
+  shown: number,
+  total: number,
+  limit: number,
+  loading: boolean,
+  message: string,
+  exhausted: boolean,
+  action: string,
+  noun: string
+): string {
+  const remaining = Math.max(0, total - shown);
+  const nextCount = Math.min(limit, remaining);
+  const label = loading
+    ? "Loading more…"
+    : message
+      ? "Retry"
+      : `Load ${nextCount.toLocaleString("en-US")} more ${noun}`;
+  const button =
+    remaining > 0 && !exhausted
+      ? `<button class="rounded-full border border-app-border px-5 py-2 text-sm font-bold text-app-primary disabled:opacity-50" data-action="${action}" ${loading ? "disabled" : ""}>${label}</button>`
+      : "";
+  return `<div class="flex flex-col items-center gap-2" role="status"><p class="text-sm text-app-muted">Showing ${shown.toLocaleString("en-US")} of ${total.toLocaleString("en-US")} ${noun}</p>${message ? `<p class="text-sm text-red-700">${escapeHtml(message)}</p>` : ""}${button}</div>`;
 }
 
 function renderBackButton(): string {

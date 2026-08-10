@@ -575,6 +575,113 @@ test("DhammaApp ignores teacher load-more requests that cannot make progress", a
   app.destroy();
 });
 
+test("DhammaApp appends and retries Explore and Collection batches", async () => {
+  const audioItems = Array.from({ length: 60 }, (_, index) => ({
+    ...tracks[0],
+    id: index + 1,
+    title: `Talk ${index + 1}`
+  }));
+  const collectionItems = Array.from({ length: 30 }, (_, index) => ({
+    id: index + 1,
+    name: `Collection ${index + 1}`,
+    teacherId: 3,
+    teacherName: "Teacher",
+    audioCount: 1
+  }));
+  const audioRequests = [];
+  const collectionRequests = [];
+  let failAudioAppend = true;
+  let failCollectionAppend = true;
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        audioRequests.push(request);
+        if (request.offset > 0 && failAudioAppend) {
+          failAudioAppend = false;
+          throw new Error("audio retry");
+        }
+        return {
+          items: audioItems.slice(request.offset, request.offset + request.limit),
+          total: audioItems.length,
+          limit: request.limit,
+          offset: request.offset
+        };
+      },
+      async searchCollections(request) {
+        collectionRequests.push(request);
+        if (request.offset > 0 && failCollectionAppend) {
+          failCollectionAppend = false;
+          throw new Error("collection retry");
+        }
+        return {
+          items: collectionItems.slice(request.offset, request.offset + request.limit),
+          total: collectionItems.length,
+          limit: request.limit,
+          offset: request.offset
+        };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  assert.equal(app.state.catalogue.page.items.length, 50);
+  await app.loadMoreSearchResults();
+  assert.equal(audioRequests.at(-1).offset, 50);
+  assert.equal(app.state.catalogue.loadMoreMessage, "audio retry");
+  app.state.search.language = "myanmar";
+  app.state.search.format = "mp3";
+  await app.loadMoreSearchResults();
+  assert.equal(app.state.catalogue.page.items.length, 60);
+
+  await app.searchCollections();
+  assert.equal(app.state.collections.page.items.length, 24);
+  await app.loadMoreCollections();
+  assert.equal(collectionRequests.at(-1).offset, 24);
+  assert.equal(app.state.collections.loadMoreMessage, "collection retry");
+  await app.loadMoreCollections();
+  assert.equal(app.state.collections.page.items.length, 30);
+  app.destroy();
+});
+
+test("DhammaApp guards completed catalogue append requests", async () => {
+  let requests = 0;
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        requests += 1;
+        return { items: [], total: 0, limit: request.limit, offset: request.offset };
+      },
+      async searchCollections(request) {
+        requests += 1;
+        return { items: [], total: 0, limit: request.limit, offset: request.offset };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  app.state.catalogue.loadingMore = true;
+  await app.loadMoreSearchResults();
+  app.state.catalogue.loadingMore = false;
+  app.state.catalogue.exhausted = true;
+  await app.loadMoreSearchResults();
+  app.state.catalogue.exhausted = false;
+  await app.loadMoreSearchResults();
+  app.state.collections.loadingMore = true;
+  await app.loadMoreCollections();
+  app.state.collections.loadingMore = false;
+  app.state.collections.exhausted = true;
+  await app.loadMoreCollections();
+  app.state.collections.exhausted = false;
+  await app.loadMoreCollections();
+  assert.equal(requests, 0);
+  app.destroy();
+});
+
 test("DhammaApp reports category, collection, and detail failures", async () => {
   const failure = new Error("discovery offline");
   const app = new DhammaApp({
