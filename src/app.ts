@@ -135,6 +135,8 @@ export class DhammaApp {
       language: this.state.search.language === "all" ? null : this.state.search.language,
       format: this.state.search.format === "all" ? null : this.state.search.format,
       teacherId: this.state.search.teacherId,
+      categoryId: null,
+      collectionId: null,
       limit: this.state.search.limit,
       offset: this.state.search.offset
     };

@@ -1,9 +1,14 @@
 import type {
+  AudioCategory,
   AudioSearchPage,
   AudioSearchRequest,
   AudioTrack,
   CatalogueSummary,
+  CollectionDetail,
+  CollectionSearchPage,
+  CollectionSearchRequest,
   InvokeFn,
+  TeacherDetail,
   TeacherSummary
 } from "./types.js";
 
@@ -44,6 +49,22 @@ export class CatalogueApi {
 
   listFeaturedTeachers(limit = 12): Promise<TeacherSummary[]> {
     return this.call("list_featured_teachers", { limit });
+  }
+
+  listAudioCategories(): Promise<AudioCategory[]> {
+    return this.call("list_audio_categories");
+  }
+
+  searchCollections(request: CollectionSearchRequest): Promise<CollectionSearchPage> {
+    return this.call("search_collections", { request });
+  }
+
+  getCollection(id: number): Promise<CollectionDetail> {
+    return this.call("get_collection", { id });
+  }
+
+  getTeacher(id: number): Promise<TeacherDetail> {
+    return this.call("get_teacher", { id });
   }
 
   getAudioTrack(id: number): Promise<AudioTrack> {

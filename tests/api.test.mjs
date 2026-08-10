@@ -93,3 +93,26 @@ test("CatalogueApi fetches a single audio track by id", async () => {
   assert.deepEqual(await api.getAudioTrack(7), track);
   assert.deepEqual(calls, [{ command: "get_audio_track", args: { id: 7 } }]);
 });
+
+test("CatalogueApi exposes audio category, collection, and teacher detail commands", async () => {
+  const calls = [];
+  const api = new CatalogueApi(async (command, args) => {
+    calls.push({ command, args });
+    return command === "list_audio_categories" ? [] : {};
+  });
+
+  await api.listAudioCategories();
+  await api.searchCollections({ query: "disc", teacherId: 3, limit: 24, offset: 0 });
+  await api.getCollection(10);
+  await api.getTeacher(3);
+
+  assert.deepEqual(calls, [
+    { command: "list_audio_categories", args: undefined },
+    {
+      command: "search_collections",
+      args: { request: { query: "disc", teacherId: 3, limit: 24, offset: 0 } }
+    },
+    { command: "get_collection", args: { id: 10 } },
+    { command: "get_teacher", args: { id: 3 } }
+  ]);
+});

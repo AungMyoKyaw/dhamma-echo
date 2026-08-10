@@ -16,6 +16,55 @@ export interface TeacherSummary {
   audioCount: number;
 }
 
+export interface AudioCategory {
+  id: number;
+  name: string;
+  language: string;
+  audioCount: number;
+}
+
+export interface CollectionSearchRequest {
+  query: string;
+  teacherId: number | null;
+  limit: number;
+  offset: number;
+}
+
+export interface CollectionSummary {
+  id: number;
+  name: string;
+  teacherId: number | null;
+  teacherName: string;
+  audioCount: number;
+}
+
+export interface CollectionSearchPage {
+  items: CollectionSummary[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface CollectionDetail {
+  id: number;
+  name: string;
+  description: string | null;
+  teacherId: number | null;
+  teacherName: string;
+  audioCount: number;
+  tracks: AudioTrack[];
+}
+
+export interface TeacherDetail {
+  id: number;
+  name: string;
+  nameMyanmar: string | null;
+  title: string | null;
+  description: string | null;
+  audioCount: number;
+  collections: CollectionSummary[];
+}
+
 export interface AudioTrack {
   id: number;
   title: string;
@@ -34,6 +83,8 @@ export interface AudioSearchRequest {
   language: string | null;
   format: string | null;
   teacherId: number | null;
+  categoryId: number | null;
+  collectionId: number | null;
   limit: number;
   offset: number;
 }
