@@ -14,6 +14,19 @@ function teacherCards(html) {
   );
 }
 
+const featuredTeachers = [
+  { id: 273, name: "Rector Sayadaw", audioCount: 3389 },
+  { id: 41979, name: "Maha Bodhi Myaing Sayadaw", audioCount: 229 },
+  { id: 283, name: "Mogok Sayadaw", audioCount: 942 },
+  { id: 2972, name: "U Jotika", audioCount: 73 },
+  {
+    id: 2960,
+    name: "ဖားအောက်တောရဆရာတော်ကြီး ဘဒ္ဒန္တအာစိဏ္ဏ",
+    audioCount: 1321
+  },
+  { id: 2872, name: "The-Inn-Gu Sayadaw", audioCount: 96 }
+];
+
 test("renderApp produces accessible navigation and home summary", () => {
   let state = createInitialState();
   state = reduce(state, {
@@ -41,32 +54,53 @@ test("renderApp uses the loaded catalogue size in the Explore header", () => {
 
 test("renderApp uses the mobile featured teacher list and exact order", () => {
   let state = createInitialState();
-  const loaded = [
-    { id: 26, name: "Teacher 26", audioCount: 3116 },
-    { id: 999, name: "Unrelated", audioCount: 9999 },
-    { id: 67, name: "Teacher 67", audioCount: 229 },
-    { id: 30, name: "Teacher 30", audioCount: 942 },
-    { id: 75, name: "Teacher 75", audioCount: 73 },
-    { id: 53, name: "Teacher 53", audioCount: 670 },
-    { id: 58, name: "Teacher 58", audioCount: 96 }
-  ];
+  const loaded = [...featuredTeachers, { id: 999, name: "Unrelated", audioCount: 9999 }];
   state = reduce(state, { type: "teachers-loaded", teachers: loaded });
 
   const html = renderApp(state);
   const ids = [...html.matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)].map(([, id]) =>
     Number(id)
   );
-  assert.deepEqual(ids, [30, 58, 53, 67, 75, 26]);
+  assert.deepEqual(ids, [283, 2872, 2960, 41979, 2972, 273]);
   assert.doesNotMatch(html, /Unrelated/);
 
   state = reduce(state, {
     type: "teachers-loaded",
-    teachers: loaded.filter(({ id }) => id !== 53)
+    teachers: loaded.filter(({ id }) => id !== 2960)
   });
   const missingIds = [
     ...renderApp(state).matchAll(/data-action="select-teacher" data-id="(\d+)"/gu)
   ].map(([, id]) => Number(id));
-  assert.deepEqual(missingIds, [30, 58, 67, 75, 26]);
+  assert.deepEqual(missingIds, [283, 2872, 41979, 2972, 273]);
+});
+
+test("renderApp expands featured teachers when recent tracks are unavailable", () => {
+  let state = createInitialState();
+  state = reduce(state, {
+    type: "summary-loaded",
+    summary: { totalAudio: 30563, totalTeachers: 267, myanmarAudio: 30098, englishAudio: 465 }
+  });
+  state = reduce(state, { type: "teachers-loaded", teachers: featuredTeachers });
+  state = reduce(state, { type: "record-history", id: 999999, playedAt: 10 });
+  state = reduce(state, { type: "recent-loaded", tracks: [] });
+
+  const html = renderApp(state);
+  assert.match(html, /data-featured-layout="grid"/);
+  assert.match(html, /grid grid-cols-3 gap-4/);
+  assert.match(html, /30,563/);
+  assert.doesNotMatch(html, /line-clamp-2/);
+  assert.match(html, />Featured<[^]*ဖားအောက်တောရဆရာတော်ကြီး ဘဒ္ဒန္တအာစိဏ္ဏ/u);
+});
+
+test("renderApp keeps featured teachers compact with recent content", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "teachers-loaded", teachers: featuredTeachers });
+  state = reduce(state, { type: "recent-loaded", tracks: [tracks[0]] });
+
+  const html = renderApp(state);
+  assert.match(html, /Continue listening/);
+  assert.match(html, /data-featured-layout="carousel"/);
+  assert.match(html, /scrollbar-thin flex gap-4 overflow-x-auto/);
 });
 
 test("renderApp pins featured teachers and labels their cards on the Teachers page", () => {
@@ -76,14 +110,14 @@ test("renderApp pins featured teachers and labels their cards on the Teachers pa
     type: "teachers-loaded",
     teachers: [
       { id: 900, name: "First regular", audioCount: 900 },
-      { id: 58, name: "Teacher 58", audioCount: 58 },
+      { id: 2872, name: "Teacher 2872", audioCount: 96 },
       { id: 901, name: "Second regular", audioCount: 901 },
-      { id: 26, name: "Teacher 26", audioCount: 26 },
+      { id: 273, name: "Teacher 273", audioCount: 3389 },
       { id: 902, name: "Third regular", audioCount: 902 },
-      { id: 30, name: "Teacher 30", audioCount: 30 },
-      { id: 67, name: "Teacher 67", audioCount: 67 },
-      { id: 53, name: "Teacher 53", audioCount: 53 },
-      { id: 75, name: "Teacher 75", audioCount: 75 }
+      { id: 283, name: "Teacher 283", audioCount: 942 },
+      { id: 41979, name: "Teacher 41979", audioCount: 229 },
+      { id: 2960, name: "Teacher 2960", audioCount: 1321 },
+      { id: 2972, name: "Teacher 2972", audioCount: 73 }
     ]
   });
 
@@ -92,8 +126,8 @@ test("renderApp pins featured teachers and labels their cards on the Teachers pa
     Number(id)
   );
   const cards = teacherCards(html);
-  assert.deepEqual(ids, [30, 58, 53, 67, 75, 26, 900, 901, 902]);
-  for (const id of [30, 58, 53, 67, 75, 26]) {
+  assert.deepEqual(ids, [283, 2872, 2960, 41979, 2972, 273, 900, 901, 902]);
+  for (const id of [283, 2872, 2960, 41979, 2972, 273]) {
     const card = cards.get(id);
     assert.ok(card, `Missing featured teacher card ${id}`);
     assert.equal((card.match(/>Featured</gu) ?? []).length, 1);
@@ -112,9 +146,9 @@ test("renderApp skips missing curated teachers while preserving default ordering
     type: "teachers-loaded",
     teachers: [
       { id: 900, name: "First regular", audioCount: 900 },
-      { id: 53, name: "Teacher 53", audioCount: 53 },
+      { id: 2960, name: "Teacher 2960", audioCount: 1321 },
       { id: 901, name: "Second regular", audioCount: 901 },
-      { id: 30, name: "Teacher 30", audioCount: 30 }
+      { id: 283, name: "Teacher 283", audioCount: 942 }
     ]
   });
 
@@ -123,8 +157,8 @@ test("renderApp skips missing curated teachers while preserving default ordering
     Number(id)
   );
   const cards = teacherCards(html);
-  assert.deepEqual(ids, [30, 53, 900, 901]);
-  for (const id of [30, 53]) {
+  assert.deepEqual(ids, [283, 2960, 900, 901]);
+  for (const id of [283, 2960]) {
     const card = cards.get(id);
     assert.ok(card, `Missing featured teacher card ${id}`);
     assert.equal((card.match(/>Featured</gu) ?? []).length, 1);
@@ -148,7 +182,7 @@ test("renderApp preserves teacher search order while labeling featured matches",
     type: "teacher-results",
     teachers: [
       { id: 900, name: "First regular", audioCount: 900 },
-      { id: 26, name: "Featured match", audioCount: 26 },
+      { id: 273, name: "Featured match", audioCount: 3389 },
       { id: 901, name: "Second regular", audioCount: 901 }
     ]
   });
@@ -158,9 +192,9 @@ test("renderApp preserves teacher search order while labeling featured matches",
     Number(id)
   );
   const cards = teacherCards(html);
-  assert.deepEqual(ids, [900, 26, 901]);
+  assert.deepEqual(ids, [900, 273, 901]);
   assert.equal((html.match(/>Featured</gu) ?? []).length, 1);
-  assert.match(cards.get(26) ?? "", />Featured</u);
+  assert.match(cards.get(273) ?? "", />Featured</u);
   assert.doesNotMatch(cards.get(900) ?? "", />Featured</u);
   assert.doesNotMatch(cards.get(901) ?? "", />Featured</u);
 });

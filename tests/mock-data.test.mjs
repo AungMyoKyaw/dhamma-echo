@@ -8,6 +8,11 @@ test("mock invoke supports summary, teachers, and filtered paginated audio", asy
   assert.equal(summary.totalAudio, 30563);
   const teachers = await invoke("list_featured_teachers", { limit: 1 });
   assert.equal(teachers.length, 1);
+  const featured = await invoke("list_featured_teachers", { limit: 6 });
+  assert.deepEqual(
+    featured.map(({ id }) => id),
+    [283, 2872, 2960, 41979, 2972, 273]
+  );
   const searchedTeachers = await invoke("search_teachers", { query: "jotika", limit: 10 });
   assert.equal(searchedTeachers.length, 1);
   const page = await invoke("search_audio", {
@@ -39,9 +44,9 @@ test("mock invoke rejects unknown commands", async () => {
 test("mock invoke applies defaults and every optional filter branch", async () => {
   const invoke = createMockInvoke();
   const defaultTeachers = await invoke("list_featured_teachers", { limit: "bad" });
-  assert.equal(defaultTeachers.length, 6);
+  assert.equal(defaultTeachers.length, 12);
   const allTeachers = await invoke("search_teachers");
-  assert.equal(allTeachers.length, 6);
+  assert.equal(allTeachers.length, 12);
   const all = await invoke("search_audio");
   assert.equal(all.items.length, 6);
   const byTeacherName = await invoke("search_audio", {

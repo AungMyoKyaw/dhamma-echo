@@ -1,7 +1,7 @@
 import type { AppState, AudioTrack, Route, TeacherSummary } from "./types.js";
 import { escapeHtml, formatDuration } from "./utils.js";
 
-const CURATED_FEATURED_TEACHER_IDS = [30, 58, 53, 67, 75, 26] as const;
+const CURATED_FEATURED_TEACHER_IDS = [283, 2872, 2960, 41979, 2972, 273] as const;
 const CURATED_FEATURED_TEACHER_ID_SET = new Set<number>(CURATED_FEATURED_TEACHER_IDS);
 
 function isCuratedFeaturedTeacher(id: number): boolean {
@@ -102,11 +102,14 @@ function stat(label: string, value: number, detail: string): string {
   return `<article class="rounded-card border border-app-border bg-app-surface p-5"><p class="text-xs font-bold uppercase tracking-wider text-app-muted">${label}</p><p class="mt-2 text-3xl font-bold tracking-tight">${value.toLocaleString("en-US")}</p><p class="mt-1 text-xs text-app-muted">${detail}</p></article>`;
 }
 
-function renderTeacherCard(teacher: TeacherSummary): string {
-  return `<button class="group min-w-60 rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="select-teacher" data-id="${teacher.id}">
+function renderTeacherCard(teacher: TeacherSummary, carousel = false): string {
+  const featured = isCuratedFeaturedTeacher(teacher.id);
+  return `<button class="group flex h-full w-full ${carousel ? "min-w-72" : "min-w-0"} flex-col rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg" data-action="select-teacher" data-id="${teacher.id}">
     <div class="flex size-12 items-center justify-center rounded-full bg-app-secondary/15 text-lg font-bold text-app-secondary">${escapeHtml(teacher.name.charAt(0))}</div>
-    <div class="mt-4 flex items-start gap-2"><p class="line-clamp-2 font-bold">${escapeHtml(teacher.name)}</p>${isCuratedFeaturedTeacher(teacher.id) ? '<span class="shrink-0 rounded-full bg-app-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-app-primary">Featured</span>' : ""}</div><p class="mt-1 text-sm text-app-muted">${teacher.audioCount.toLocaleString("en-US")} talks</p>
-    <span class="mt-5 inline-flex items-center gap-1 text-xs font-bold text-app-primary">Browse talks <span class="size-4">${icon("chevron")}</span></span>
+    ${featured ? '<span class="mt-4 w-fit rounded-full bg-app-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-app-primary">Featured</span>' : ""}
+    <p class="${featured ? "mt-3" : "mt-4"} font-bold leading-7">${escapeHtml(teacher.name)}</p>
+    <p class="mt-2 text-sm text-app-muted">${teacher.audioCount.toLocaleString("en-US")} talks</p>
+    <span class="mt-auto inline-flex items-center gap-1 pt-5 text-xs font-bold text-app-primary">Browse talks <span class="size-4">${icon("chevron")}</span></span>
   </button>`;
 }
 
@@ -145,15 +148,20 @@ function renderHome(state: AppState): string {
     const teacher = teachersById.get(id);
     return teacher === undefined ? [] : [teacher];
   });
+  const hasRecentContent =
+    state.homeRecent.status === "loading" ||
+    (state.homeRecent.status === "ready" && state.homeRecent.tracks.length > 0);
   const teacherCards =
     state.teachers.status === "ready" && featured.length > 0
-      ? featured.map(renderTeacherCard).join("")
+      ? featured.map((teacher) => renderTeacherCard(teacher, hasRecentContent)).join("")
       : `<div class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted">Teacher highlights will appear here when the catalogue is ready.</div>`;
-  const hasHistory = state.library.history.length > 0;
+  const featuredLayout = hasRecentContent
+    ? "scrollbar-thin flex gap-4 overflow-x-auto pb-3"
+    : "grid grid-cols-3 gap-4";
   return `<section class="space-y-8">
     ${renderRecent(state)}
-    ${hasHistory ? "" : `<div class="grid grid-cols-4 gap-4">${stat("Audio talks", summary.totalAudio, "Ready to stream")}${stat("Teachers", summary.totalTeachers, "Across traditions")}${stat("Myanmar", summary.myanmarAudio, "Myanmar language")}${stat("English", summary.englishAudio, "English language")}</div>`}
-    <div><div class="mb-4 flex items-end justify-between"><div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Browse by voice</p><h2 class="mt-1 text-2xl font-bold">Featured teachers</h2></div><button class="text-sm font-bold text-app-primary" data-action="navigate" data-value="teachers">View all</button></div><div class="scrollbar-thin flex gap-4 overflow-x-auto pb-3">${teacherCards}</div></div>
+    ${hasRecentContent ? "" : `<div class="grid grid-cols-4 gap-4">${stat("Audio talks", summary.totalAudio, "Ready to stream")}${stat("Teachers", summary.totalTeachers, "Across traditions")}${stat("Myanmar", summary.myanmarAudio, "Myanmar language")}${stat("English", summary.englishAudio, "English language")}</div>`}
+    <div><div class="mb-4 flex items-end justify-between"><div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Browse by voice</p><h2 class="mt-1 text-2xl font-bold">Featured teachers</h2></div><button class="text-sm font-bold text-app-primary" data-action="navigate" data-value="teachers">View all</button></div><div class="${featuredLayout}" data-featured-layout="${hasRecentContent ? "carousel" : "grid"}">${teacherCards}</div></div>
   </section>`;
 }
 
@@ -236,7 +244,7 @@ function renderTeachers(state: AppState): string {
   const results = searching
     ? state.teacherResults
     : orderTeachersFeaturedFirst(state.teachers.data);
-  return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search"><label class="relative flex-1"><span class="sr-only">Search teachers</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.teacherQuery)}" placeholder="Search teacher name" /></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map(renderTeacherCard).join("")}</div>`}</section>`;
+  return `<section class="space-y-5"><form class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4" data-form="teacher-search"><label class="relative flex-1"><span class="sr-only">Search teachers</span><span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted">${icon("search")}</span><input class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 pr-4 text-sm outline-none transition focus:border-app-primary" name="query" value="${escapeHtml(state.teacherQuery)}" placeholder="Search teacher name" /></label><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit">Search</button></form>${searching && results.length === 0 ? renderEmpty("No teachers match", "Try a different spelling or a shorter name.") : `<div class="grid grid-cols-3 gap-4">${results.map((teacher) => renderTeacherCard(teacher)).join("")}</div>`}</section>`;
 }
 
 function renderLibrary(state: AppState): string {
