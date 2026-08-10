@@ -3,6 +3,7 @@ import { DhammaApp } from "./app.js";
 import { createMockInvoke } from "./mock-data.js";
 import type { AppAction } from "./store.js";
 import type { AppState, InvokeFn, Route } from "./types.js";
+import { formatDuration } from "./utils.js";
 import { renderApp, renderPlayer } from "./view.js";
 
 declare global {
@@ -73,6 +74,20 @@ export function renderPlayerRegion(root: HTMLElement, state: AppState): boolean 
   return true;
 }
 
+export function renderPlayerProgress(root: HTMLElement, state: AppState): boolean {
+  const currentTime = root.querySelector<HTMLElement>("[data-player-current-time]");
+  const duration = root.querySelector<HTMLElement>("[data-player-duration]");
+  const seek = root.querySelector<HTMLInputElement>('input[data-action="seek"]');
+  if (currentTime === null || duration === null || seek === null) return false;
+
+  const max = state.player.duration > 0 ? state.player.duration : 1;
+  currentTime.textContent = formatDuration(state.player.currentTime);
+  duration.textContent = formatDuration(state.player.duration);
+  seek.max = String(max);
+  seek.value = String(Math.min(state.player.currentTime, max));
+  return true;
+}
+
 export async function bootstrap(): Promise<DhammaApp> {
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app root element.");
@@ -81,18 +96,15 @@ export async function bootstrap(): Promise<DhammaApp> {
   audio.preload = "metadata";
   const invoke = selectInvoke(window.__TAURI__?.core?.invoke);
   let previousRoute: Route | null = null;
-  const playerOnlyActions = new Set<AppAction["type"]>([
-    "player-status",
-    "player-progress",
-    "set-player-error",
-    "save-resume"
-  ]);
+  const playerOnlyActions = new Set<AppAction["type"]>(["player-status", "set-player-error"]);
   const app = new DhammaApp({
     api: new CatalogueApi(invoke),
     storage: window.localStorage,
     audio,
     now: () => Date.now(),
     render: (state, action) => {
+      if (action.type === "player-progress" && renderPlayerProgress(root, state)) return;
+      if (action.type === "save-resume") return;
       if (playerOnlyActions.has(action.type) && renderPlayerRegion(root, state)) return;
       renderPreservingScroll(root, state, previousRoute === state.route);
       previousRoute = state.route;

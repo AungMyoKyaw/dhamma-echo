@@ -523,7 +523,7 @@ export function renderPlayer(state: AppState): string {
           <button class="transport-button transport-button-primary" data-action="toggle-play" aria-label="${loading ? "Connecting to audio" : playing ? "Pause" : "Play"}" title="${loading ? "Connecting to audio" : playing ? "Pause" : "Play"}" aria-pressed="${playing}" ${loading ? "disabled" : ""}><span class="transport-primary-icon ${playing ? "" : "is-play"}">${icon(playing ? "pause" : "play")}</span></button>
           <button class="transport-button" data-action="seek-forward" aria-label="Jump forward 15 seconds" title="Jump forward 15 seconds"><span>${icon("forward15")}</span></button>
         </div>
-        <div class="player-timeline"><span>${formatDuration(state.player.currentTime)}</span><input class="range-accent" type="range" min="0" max="${max}" step="1" value="${Math.min(state.player.currentTime, max)}" data-action="seek" aria-label="Playback position" /><span>${formatDuration(state.player.duration)}</span></div>
+        <div class="player-timeline"><span data-player-current-time>${formatDuration(state.player.currentTime)}</span><input class="range-accent" type="range" min="0" max="${max}" step="1" value="${Math.min(state.player.currentTime, max)}" data-action="seek" aria-label="Playback position" /><span data-player-duration>${formatDuration(state.player.duration)}</span></div>
       </div>
       <div class="player-session-controls">
         <label class="player-rate-control" title="Playback speed"><span class="sr-only">Playback speed</span><select data-setting="rate" aria-label="Playback speed">${[0.75, 1, 1.25, 1.5, 1.75, 2].map((rate) => option(String(rate), `${rate}×`, String(state.settings.playbackRate))).join("")}</select></label>

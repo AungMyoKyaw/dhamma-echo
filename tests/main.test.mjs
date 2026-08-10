@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { renderPlayerRegion, renderPreservingScroll } from "../.test-build/src/main.js";
+import {
+  renderPlayerRegion,
+  renderPlayerProgress,
+  renderPreservingScroll
+} from "../.test-build/src/main.js";
 import { createInitialState } from "../.test-build/src/store.js";
 
 class FakeRoot {
@@ -45,5 +49,27 @@ test("renderPlayerRegion updates only the player region", () => {
   renderPlayerRegion(root, createInitialState());
 
   assert.notEqual(playerRegion.innerHTML, "old player");
+  assert.equal(root.rendered, "");
+});
+
+test("renderPlayerProgress updates playback controls without replacing the player DOM", () => {
+  const root = new FakeRoot();
+  const currentTime = { textContent: "0:00" };
+  const duration = { textContent: "0:00" };
+  const seek = { value: "0" };
+  root.querySelector = (selector) =>
+    ({
+      "[data-player-current-time]": currentTime,
+      "[data-player-duration]": duration,
+      'input[data-action="seek"]': seek
+    })[selector] ?? null;
+  const state = createInitialState();
+  state.player.currentTime = 42;
+  state.player.duration = 120;
+
+  assert.equal(renderPlayerProgress(root, state), true);
+  assert.equal(currentTime.textContent, "0:42");
+  assert.equal(duration.textContent, "2:00");
+  assert.equal(seek.value, "42");
   assert.equal(root.rendered, "");
 });
