@@ -169,7 +169,7 @@ function renderHome(state: AppState): string {
   return `<section class="space-y-8">
     ${renderRecent(state)}
     ${hasRecentContent ? "" : `<div class="grid grid-cols-4 gap-4">${stat("Audio talks", summary.totalAudio, "Ready to stream")}${stat("Teachers", summary.totalTeachers, "Across traditions")}${stat("Myanmar", summary.myanmarAudio, "Myanmar language")}${stat("English", summary.englishAudio, "English language")}</div>`}
-    <div><div class="mb-4 flex items-end justify-between"><div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Browse by voice</p><h2 class="mt-1 text-2xl font-bold">Featured teachers</h2></div><button class="text-sm font-bold text-app-primary" data-action="navigate" data-value="teachers">View all</button></div><div class="${featuredLayout}" data-featured-layout="${hasRecentContent ? "carousel" : "grid"}">${teacherCards}</div></div>
+    <div><div class="mb-4 flex items-end justify-between"><div><p class="text-xs font-bold uppercase tracking-wider text-app-primary">Browse by voice</p><h2 class="mt-1 text-2xl font-bold">Featured teachers</h2></div><button class="text-sm font-bold text-app-primary" data-action="navigate" data-value="teachers">View all</button></div><div class="${featuredLayout}" data-featured-layout="${hasRecentContent ? "carousel" : "grid"}"${hasRecentContent ? ' data-scroll-preserve="featured-teachers"' : ""}>${teacherCards}</div></div>
   </section>`;
 }
 
@@ -536,5 +536,5 @@ function renderPlayer(state: AppState): string {
 
 export function renderApp(state: AppState): string {
   const contentPadding = state.player.current === null ? "pb-8" : "pb-40";
-  return `<div class="min-h-screen bg-app-bg text-app">${renderSidebar(state)}<div class="ml-64 ${contentPadding}">${renderHeader(state)}<main class="px-10 py-4">${renderMain(state)}</main></div>${renderPlayer(state)}</div>`;
+  return `<div class="app-shell min-h-screen bg-app-bg text-app">${renderSidebar(state)}<div class="app-content ml-64 ${contentPadding}">${renderHeader(state)}<main class="px-10 py-4">${renderMain(state)}</main></div>${renderPlayer(state)}</div>`;
 }

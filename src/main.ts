@@ -1,7 +1,7 @@
 import { CatalogueApi } from "./api.js";
 import { DhammaApp } from "./app.js";
 import { createMockInvoke } from "./mock-data.js";
-import type { InvokeFn, Route } from "./types.js";
+import type { AppState, InvokeFn, Route } from "./types.js";
 import { renderApp } from "./view.js";
 
 declare global {
@@ -33,6 +33,38 @@ export function selectInvoke(candidate: InvokeFn | undefined): InvokeFn {
   return candidate ?? createMockInvoke();
 }
 
+export function renderPreservingScroll(
+  root: HTMLElement,
+  state: AppState,
+  preserveScroll = true
+): void {
+  const content = preserveScroll ? root.querySelector<HTMLElement>(".app-content") : null;
+  const horizontalScroll = preserveScroll
+    ? Array.from(root.querySelectorAll<HTMLElement>("[data-scroll-preserve]")).map((element) => ({
+        scrollLeft: element.scrollLeft,
+        scrollTop: element.scrollTop
+      }))
+    : [];
+  const scrollTop = content?.scrollTop ?? 0;
+  const scrollLeft = content?.scrollLeft ?? 0;
+  root.innerHTML = renderApp(state);
+  const nextContent = preserveScroll
+    ? root.querySelector<HTMLElement>(".app-content")
+    : null;
+  if (nextContent !== null) {
+    nextContent.scrollTop = scrollTop;
+    nextContent.scrollLeft = scrollLeft;
+  }
+  Array.from(root.querySelectorAll<HTMLElement>("[data-scroll-preserve]")).forEach(
+    (element, index) => {
+      const position = horizontalScroll[index];
+      if (position === undefined) return;
+      element.scrollLeft = position.scrollLeft;
+      element.scrollTop = position.scrollTop;
+    }
+  );
+}
+
 export async function bootstrap(): Promise<DhammaApp> {
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app root element.");
@@ -40,13 +72,15 @@ export async function bootstrap(): Promise<DhammaApp> {
   const audio = new Audio();
   audio.preload = "metadata";
   const invoke = selectInvoke(window.__TAURI__?.core?.invoke);
+  let previousRoute: Route | null = null;
   const app = new DhammaApp({
     api: new CatalogueApi(invoke),
     storage: window.localStorage,
     audio,
     now: () => Date.now(),
     render: (state) => {
-      root.innerHTML = renderApp(state);
+      renderPreservingScroll(root, state, previousRoute === state.route);
+      previousRoute = state.route;
     }
   });
 

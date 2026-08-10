@@ -39,6 +39,23 @@ body {
   min-height: 620px;
   margin: 0;
   background: var(--color-app-bg);
+  overflow: hidden;
+}
+
+#app,
+.app-shell {
+  height: 100vh;
+}
+
+.app-shell {
+  overflow: hidden;
+}
+
+.app-content {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  scrollbar-gutter: stable;
 }
 
 button:focus-visible,

@@ -41,6 +41,13 @@ test("renderApp produces accessible navigation and home summary", () => {
   assert.match(html, /data-action="navigate" data-value="explore"/);
 });
 
+test("renderApp keeps page scrolling inside the app content region", () => {
+  const html = renderApp(createInitialState());
+
+  assert.match(html, /class="app-shell min-h-screen bg-app-bg text-app"/);
+  assert.match(html, /class="app-content ml-64 pb-8"/);
+});
+
 test("renderApp uses the loaded catalogue size in the Explore header", () => {
   let state = createInitialState();
   state = reduce(state, {
