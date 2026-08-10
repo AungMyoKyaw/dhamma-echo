@@ -26,6 +26,57 @@ pub struct TeacherDetail {
     pub title: Option<String>,
     pub description: Option<String>,
     pub audio_count: i64,
+    pub collections: Vec<CollectionSummary>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct AudioCategory {
+    pub id: i64,
+    pub name: String,
+    pub language: String,
+    pub audio_count: i64,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct CollectionSearchRequest {
+    #[serde(default)]
+    pub query: String,
+    pub teacher_id: Option<i64>,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct CollectionSummary {
+    pub id: i64,
+    pub name: String,
+    pub teacher_id: Option<i64>,
+    pub teacher_name: String,
+    pub audio_count: i64,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct CollectionSearchPage {
+    pub items: Vec<CollectionSummary>,
+    pub total: i64,
+    pub limit: i64,
+    pub offset: i64,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct CollectionDetail {
+    pub id: i64,
+    pub name: String,
+    pub description: Option<String>,
+    pub teacher_id: Option<i64>,
+    pub teacher_name: String,
+    pub audio_count: i64,
+    pub tracks: Vec<AudioTrack>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -51,6 +102,8 @@ pub struct AudioSearchRequest {
     pub language: Option<String>,
     pub format: Option<String>,
     pub teacher_id: Option<i64>,
+    pub category_id: Option<i64>,
+    pub collection_id: Option<i64>,
     pub limit: i64,
     pub offset: i64,
 }

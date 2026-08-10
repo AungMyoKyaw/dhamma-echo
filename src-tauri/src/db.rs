@@ -5,8 +5,9 @@ use rusqlite::{Connection, OpenFlags, Row, params, params_from_iter, types::Valu
 use crate::{
     error::AppError,
     models::{
-        AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary, TeacherDetail,
-        TeacherSummary,
+        AudioCategory, AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary,
+        CollectionDetail, CollectionSearchPage, CollectionSearchRequest, CollectionSummary,
+        TeacherDetail, TeacherSummary,
     },
     normalize::normalize_text,
 };
@@ -93,6 +94,128 @@ impl Database {
         })
     }
 
+    pub fn audio_categories(&self) -> Result<Vec<AudioCategory>, AppError> {
+        self.with_connection(|connection| {
+            let mut statement = connection.prepare(
+                "SELECT c.id, c.name, c.language, COUNT(m.id)
+                 FROM categories c
+                 JOIN media m ON m.category_id = c.id AND m.type = 'audio'
+                 WHERE c.type IN ('audio', 'abhidhamma')
+                 GROUP BY c.id, c.name, c.language
+                 HAVING COUNT(m.id) > 0
+                 ORDER BY c.id",
+            )?;
+            statement
+                .query_map([], |row| {
+                    Ok(AudioCategory {
+                        id: row.get(0)?,
+                        name: normalized_or(row.get(1)?, "Uncategorized audio"),
+                        language: normalize_text(&row.get::<_, String>(2)?).to_lowercase(),
+                        audio_count: row.get(3)?,
+                    })
+                })?
+                .collect::<rusqlite::Result<Vec<_>>>()
+                .map_err(AppError::from)
+        })
+    }
+
+    pub fn search_collections(
+        &self,
+        request: &CollectionSearchRequest,
+    ) -> Result<CollectionSearchPage, AppError> {
+        let limit = validate_limit(request.limit)?;
+        let offset = request.offset.max(0);
+        if let Some(teacher_id) = request.teacher_id {
+            validate_id(teacher_id)?;
+        }
+        let pattern = format!("%{}%", normalize_text(&request.query).to_lowercase());
+        self.with_connection(|connection| {
+            let total = connection.query_row(
+                "SELECT COUNT(*) FROM (
+                    SELECT c.id
+                    FROM collections c
+                    JOIN media_collections mc ON mc.collection_id = c.id
+                    JOIN media m ON m.id = mc.media_id AND m.type = 'audio'
+                    WHERE LOWER(c.name) LIKE ?1
+                      AND (?2 IS NULL OR c.teacher_id = ?2)
+                    GROUP BY c.id
+                 )",
+                params![pattern, request.teacher_id],
+                |row| row.get(0),
+            )?;
+            let mut statement = connection.prepare(
+                "SELECT c.id, c.name, c.teacher_id, t.name, COUNT(DISTINCT m.id)
+                 FROM collections c
+                 JOIN media_collections mc ON mc.collection_id = c.id
+                 JOIN media m ON m.id = mc.media_id AND m.type = 'audio'
+                 LEFT JOIN teachers t ON t.id = c.teacher_id
+                 WHERE LOWER(c.name) LIKE ?1
+                   AND (?2 IS NULL OR c.teacher_id = ?2)
+                 GROUP BY c.id, c.name, c.teacher_id, t.name
+                 ORDER BY LOWER(c.name), LOWER(COALESCE(t.name, '')), c.id
+                 LIMIT ?3 OFFSET ?4",
+            )?;
+            let items = statement
+                .query_map(params![pattern, request.teacher_id, limit, offset], |row| {
+                    map_collection_summary(row)
+                })?
+                .collect::<rusqlite::Result<Vec<_>>>()?;
+            Ok(CollectionSearchPage {
+                items,
+                total,
+                limit,
+                offset,
+            })
+        })
+    }
+
+    pub fn collection(&self, id: i64) -> Result<CollectionDetail, AppError> {
+        validate_id(id)?;
+        self.with_connection(|connection| {
+            let (name, description, teacher_id, teacher_name) = connection
+                .query_row(
+                    "SELECT c.name, c.description, c.teacher_id, t.name
+                     FROM collections c
+                     LEFT JOIN teachers t ON t.id = c.teacher_id
+                     WHERE c.id = ?1",
+                    [id],
+                    |row| {
+                        Ok((
+                            normalized_or(row.get(0)?, "Untitled collection"),
+                            optional_normalized(row.get(1)?),
+                            row.get(2)?,
+                            normalized_or(row.get(3)?, "Unknown teacher"),
+                        ))
+                    },
+                )
+                .map_err(|error| match error {
+                    rusqlite::Error::QueryReturnedNoRows => AppError::NotFound,
+                    other => AppError::from(other),
+                })?;
+            let mut statement = connection.prepare(
+                "SELECT m.id, m.title, COALESCE(m.format, ''), m.language, m.url,
+                        m.date_recorded, m.location, m.teacher_id, t.name
+                 FROM media_collections mc
+                 JOIN media m ON m.id = mc.media_id AND m.type = 'audio'
+                 LEFT JOIN teachers t ON t.id = m.teacher_id
+                 WHERE mc.collection_id = ?1
+                 ORDER BY mc.track_number IS NULL, mc.track_number, m.id",
+            )?;
+            let tracks = statement
+                .query_map([id], map_audio_track)?
+                .collect::<rusqlite::Result<Vec<_>>>()?;
+            Ok(CollectionDetail {
+                id,
+                name,
+                description,
+                teacher_id,
+                teacher_name,
+                audio_count: tracks.len() as i64,
+                tracks,
+            })
+        })
+    }
+
     pub fn search_teachers(
         &self,
         query: &str,
@@ -120,7 +243,7 @@ impl Database {
     pub fn teacher(&self, id: i64) -> Result<TeacherDetail, AppError> {
         validate_id(id)?;
         self.with_connection(|connection| {
-            connection
+            let mut detail = connection
                 .query_row(
                     "SELECT t.id, t.name, t.name_myanmar, t.title, t.description,
                             COUNT(m.id) AS audio_count
@@ -137,13 +260,28 @@ impl Database {
                             title: optional_normalized(row.get(3)?),
                             description: optional_normalized(row.get(4)?),
                             audio_count: row.get(5)?,
+                            collections: Vec::new(),
                         })
                     },
                 )
                 .map_err(|error| match error {
                     rusqlite::Error::QueryReturnedNoRows => AppError::NotFound,
                     other => AppError::from(other),
-                })
+                })?;
+            let mut statement = connection.prepare(
+                "SELECT c.id, c.name, c.teacher_id, t.name, COUNT(DISTINCT m.id)
+                 FROM collections c
+                 JOIN media_collections mc ON mc.collection_id = c.id
+                 JOIN media m ON m.id = mc.media_id AND m.type = 'audio'
+                 LEFT JOIN teachers t ON t.id = c.teacher_id
+                 WHERE c.teacher_id = ?1
+                 GROUP BY c.id, c.name, c.teacher_id, t.name
+                 ORDER BY LOWER(c.name), c.id",
+            )?;
+            detail.collections = statement
+                .query_map([id], map_collection_summary)?
+                .collect::<rusqlite::Result<Vec<_>>>()?;
+            Ok(detail)
         })
     }
 
@@ -153,7 +291,7 @@ impl Database {
             connection
                 .query_row(
                     "SELECT m.id, m.title, COALESCE(m.format, ''), m.language, m.url,
-                            m.date_recorded, m.location, m.teacher_id, COALESCE(t.name, '')
+                            m.date_recorded, m.location, m.teacher_id, t.name
                      FROM media m
                      LEFT JOIN teachers t ON t.id = m.teacher_id
                      WHERE m.id = ?1 AND m.type = 'audio'",
@@ -179,6 +317,12 @@ impl Database {
         if let Some(teacher_id) = request.teacher_id {
             validate_id(teacher_id)?;
         }
+        if let Some(category_id) = request.category_id {
+            validate_id(category_id)?;
+        }
+        if let Some(collection_id) = request.collection_id {
+            validate_id(collection_id)?;
+        }
 
         let mut clauses = vec!["m.type = 'audio'".to_string()];
         let mut values = Vec::<Value>::new();
@@ -201,6 +345,16 @@ impl Database {
             clauses.push("m.teacher_id = ?".into());
             values.push(Value::Integer(teacher_id));
         }
+        if let Some(category_id) = request.category_id {
+            clauses.push("m.category_id = ?".into());
+            values.push(Value::Integer(category_id));
+        }
+        if let Some(collection_id) = request.collection_id {
+            clauses.push(
+                "EXISTS (SELECT 1 FROM media_collections filter_mc WHERE filter_mc.media_id = m.id AND filter_mc.collection_id = ?)".into(),
+            );
+            values.push(Value::Integer(collection_id));
+        }
         let where_clause = clauses.join(" AND ");
 
         self.with_connection(|connection| {
@@ -215,7 +369,7 @@ impl Database {
 
             let page_sql = format!(
                 "SELECT m.id, m.title, COALESCE(m.format, ''), m.language, m.url,
-                        m.date_recorded, m.location, m.teacher_id, COALESCE(t.name, '')
+                        m.date_recorded, m.location, m.teacher_id, t.name
                  FROM media m
                  LEFT JOIN teachers t ON t.id = m.teacher_id
                  WHERE {where_clause}
@@ -274,11 +428,25 @@ fn optional_normalized(value: Option<String>) -> Option<String> {
         .filter(|text| !text.is_empty())
 }
 
+fn normalized_or(value: Option<String>, fallback: &str) -> String {
+    optional_normalized(value).unwrap_or_else(|| fallback.to_string())
+}
+
 fn map_teacher_summary(row: &Row<'_>) -> rusqlite::Result<TeacherSummary> {
     Ok(TeacherSummary {
         id: row.get(0)?,
         name: normalize_text(&row.get::<_, String>(1)?),
         audio_count: row.get(2)?,
+    })
+}
+
+fn map_collection_summary(row: &Row<'_>) -> rusqlite::Result<CollectionSummary> {
+    Ok(CollectionSummary {
+        id: row.get(0)?,
+        name: normalized_or(row.get(1)?, "Untitled collection"),
+        teacher_id: row.get(2)?,
+        teacher_name: normalized_or(row.get(3)?, "Unknown teacher"),
+        audio_count: row.get(4)?,
     })
 }
 
@@ -303,7 +471,7 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
     let playable = is_webview_playable(&format, &url);
     Ok(AudioTrack {
         id: row.get(0)?,
-        title: normalize_text(&row.get::<_, String>(1)?),
+        title: normalized_or(row.get(1)?, "Untitled talk"),
         format,
         language: normalize_text(&row.get::<_, String>(3)?).to_lowercase(),
         playable,
@@ -311,7 +479,7 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
         date_recorded: optional_normalized(row.get(5)?),
         location: optional_normalized(row.get(6)?),
         teacher_id: row.get(7)?,
-        teacher_name: normalize_text(&row.get::<_, String>(8)?),
+        teacher_name: normalized_or(row.get(8)?, "Unknown teacher"),
     })
 }
 
@@ -320,7 +488,10 @@ mod tests {
     use rusqlite::Connection;
 
     use super::{Database, is_webview_playable};
-    use crate::{error::AppError, models::AudioSearchRequest};
+    use crate::{
+        error::AppError,
+        models::{AudioSearchRequest, CollectionSearchRequest},
+    };
 
     fn fixture() -> Database {
         let connection = Connection::open_in_memory().expect("open fixture");
@@ -335,20 +506,52 @@ mod tests {
                  );
                  CREATE TABLE media (
                     id INTEGER PRIMARY KEY,
-                    title TEXT NOT NULL,
+                    title TEXT,
                     type TEXT NOT NULL,
                     format TEXT,
                     language TEXT NOT NULL,
                     url TEXT NOT NULL,
                     date_recorded TEXT,
                     location TEXT,
-                    teacher_id INTEGER
+                    teacher_id INTEGER,
+                    category_id INTEGER
+                 );
+                 CREATE TABLE categories (
+                    id INTEGER PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    type TEXT NOT NULL,
+                    language TEXT NOT NULL
+                 );
+                 CREATE TABLE collections (
+                    id INTEGER PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    description TEXT,
+                    teacher_id INTEGER,
+                    type TEXT,
+                    source_page TEXT
+                 );
+                 CREATE TABLE media_collections (
+                    media_id INTEGER NOT NULL,
+                    collection_id INTEGER NOT NULL,
+                    track_number INTEGER,
+                    PRIMARY KEY (media_id, collection_id)
                  );
                  INSERT INTO teachers VALUES (1, '  Teacher  One ', NULL, NULL, NULL);
                  INSERT INTO teachers VALUES (2, 'Teacher Two', NULL, NULL, NULL);
-                 INSERT INTO media VALUES (1, ' Talk One ', 'audio', 'mp3', 'english', 'https://dhammadownload.com/one.mp3', NULL, NULL, 1);
-                 INSERT INTO media VALUES (2, 'Talk Two', 'audio', 'wma', 'myanmar', 'http://dhammadownload.com/two.wma', NULL, NULL, 2);
-                 INSERT INTO media VALUES (3, 'Video', 'video', 'mp4', 'myanmar', 'https://dhammadownload.com/video.mp4', NULL, NULL, 2);",
+                 INSERT INTO categories VALUES (1, 'Audio in Myanmar', 'audio', 'myanmar');
+                 INSERT INTO categories VALUES (4, 'Abhidhamma in Myanmar', 'abhidhamma', 'myanmar');
+                 INSERT INTO categories VALUES (5, 'Abhidhamma in English', 'abhidhamma', 'english');
+                 INSERT INTO categories VALUES (7, 'Audio in English', 'audio', 'english');
+                 INSERT INTO categories VALUES (8, 'Video in Myanmar', 'video', 'myanmar');
+                 INSERT INTO media VALUES (1, ' Talk One ', 'audio', 'mp3', 'english', 'https://dhammadownload.com/one.mp3', NULL, NULL, 1, 7);
+                 INSERT INTO media VALUES (2, 'Talk Two', 'audio', 'wma', 'myanmar', 'http://dhammadownload.com/two.wma', NULL, NULL, 2, 1);
+                 INSERT INTO media VALUES (3, 'Video', 'video', 'mp4', 'myanmar', 'https://dhammadownload.com/video.mp4', NULL, NULL, 2, 8);
+                 INSERT INTO media VALUES (4, '   ', 'audio', 'mp3', 'myanmar', 'https://dhammadownload.com/four.mp3', NULL, NULL, NULL, 4);
+                 INSERT INTO media VALUES (5, 'Abhidhamma English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/five.mp3', NULL, NULL, 1, 5);
+                 INSERT INTO collections VALUES (10, 'Course One', 'A course', 1, 'audio', 'https://example.test/course');
+                 INSERT INTO media_collections VALUES (1, 10, 2);
+                 INSERT INTO media_collections VALUES (2, 10, 1);
+                 INSERT INTO media_collections VALUES (4, 10, NULL);",
             )
             .expect("seed fixture");
         Database::from_connection(connection)
@@ -393,7 +596,7 @@ mod tests {
     #[test]
     fn returns_summary_and_featured_teachers() {
         let database = fixture();
-        assert_eq!(database.summary().expect("summary").total_audio, 2);
+        assert_eq!(database.summary().expect("summary").total_audio, 4);
         let teachers = database.featured_teachers(10).expect("teachers");
         assert_eq!(teachers.len(), 2);
         assert_eq!(teachers[0].name, "Teacher One");
@@ -408,6 +611,8 @@ mod tests {
                 language: None,
                 format: None,
                 teacher_id: Some(1),
+                category_id: None,
+                collection_id: None,
                 limit: 4,
                 offset: 0,
             })
@@ -418,6 +623,8 @@ mod tests {
                 language: None,
                 format: None,
                 teacher_id: Some(1),
+                category_id: None,
+                collection_id: None,
                 limit: 4,
                 offset: 4,
             })
@@ -465,12 +672,74 @@ mod tests {
                 language: Some("myanmar".into()),
                 format: Some("wma".into()),
                 teacher_id: Some(2),
+                category_id: None,
+                collection_id: None,
                 limit: 50,
                 offset: 0,
             })
             .expect("audio page");
         assert_eq!(page.total, 1);
         assert!(!page.items[0].playable);
+    }
+
+    #[test]
+    fn lists_only_meaningful_audio_categories() {
+        let categories = fixture().audio_categories().expect("categories");
+        assert_eq!(
+            categories.iter().map(|item| item.id).collect::<Vec<_>>(),
+            vec![1, 4, 5, 7]
+        );
+    }
+
+    #[test]
+    fn collection_tracks_use_track_number_then_media_id() {
+        let detail = fixture().collection(10).expect("collection");
+        assert_eq!(
+            detail
+                .tracks
+                .iter()
+                .map(|track| track.id)
+                .collect::<Vec<_>>(),
+            vec![2, 1, 4]
+        );
+    }
+
+    #[test]
+    fn playable_rows_survive_incomplete_metadata() {
+        let track = fixture().audio_track(4).expect("incomplete playable track");
+        assert_eq!(track.title, "Untitled talk");
+        assert_eq!(track.teacher_name, "Unknown teacher");
+        assert!(track.playable);
+    }
+
+    #[test]
+    fn searches_collections_and_filters_audio_by_category_and_collection() {
+        let database = fixture();
+        let collections = database
+            .search_collections(&CollectionSearchRequest {
+                query: "course".into(),
+                teacher_id: Some(1),
+                limit: 20,
+                offset: 0,
+            })
+            .expect("collection page");
+        assert_eq!(collections.total, 1);
+        assert_eq!(collections.items[0].audio_count, 3);
+
+        let page = database
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: None,
+                teacher_id: None,
+                category_id: Some(7),
+                collection_id: Some(10),
+                limit: 50,
+                offset: 0,
+            })
+            .expect("filtered audio");
+        assert_eq!(page.total, 1);
+        assert_eq!(page.items[0].id, 1);
     }
 
     #[test]
@@ -481,7 +750,7 @@ mod tests {
             database.summary().expect("summary"),
             crate::models::CatalogueSummary {
                 total_audio: 30563,
-                total_teachers: 267,
+                total_teachers: 257,
                 myanmar_audio: 30098,
                 english_audio: 465,
             }
@@ -492,6 +761,8 @@ mod tests {
                 language: None,
                 format: None,
                 teacher_id: None,
+                category_id: None,
+                collection_id: None,
                 limit: 50,
                 offset: 0,
             })
@@ -518,6 +789,8 @@ mod tests {
                 language: Some("pali".into()),
                 format: None,
                 teacher_id: None,
+                category_id: None,
+                collection_id: None,
                 limit: 50,
                 offset: 0,
             }),
