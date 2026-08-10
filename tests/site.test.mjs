@@ -74,6 +74,12 @@ test("product styles preserve keyboard focus and reduced motion", async () => {
   assert.match(css, /overflow-x:\s*hidden/);
 });
 
+test("app Myanmar text preserves script clusters while wrapping", async () => {
+  const css = await readFile(new URL("../src/index.css", import.meta.url), "utf8");
+
+  assert.match(css, /\.myanmar-text[\s\S]*word-break:\s*keep-all/);
+});
+
 test("privacy policy publishes the required user-data disclosures", async () => {
   const [privacy, landing] = await Promise.all([
     readFile(privacyPath, "utf8"),

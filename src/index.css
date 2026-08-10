@@ -30,7 +30,7 @@
 .myanmar-text {
   line-break: strict;
   overflow-wrap: break-word;
-  word-break: normal;
+  word-break: keep-all;
 }
 
 html,
