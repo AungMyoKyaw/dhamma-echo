@@ -18,7 +18,7 @@
 
 - [ ] **Step 1: Extend the database fixture and write a failing ordering test**
 
-Create a focused in-memory `teacher_collection_sort_fixture()` with one teacher, five audio rows, five linked collections named `alpha 1`, `Alpha 2`, `alpha 02`, ` alpha 10 `, and `alpha 10`. Then assert the IDs returned by `teacher(1)`:
+Create a focused in-memory `teacher_collection_sort_fixture()` with one teacher, five audio rows, five linked collections named `alpha 1`, `Alpha 2`, `alpha 02`, `alpha 10`, and `alpha 10`. Then assert the IDs returned by `teacher(1)`:
 
 ```rust
 #[test]
@@ -150,7 +150,10 @@ state = reduce(state, {
   mode: "append",
   page: { items: [firstPage.items[1], nextTrack], total: 3, limit: 50, offset: 2 }
 });
-assert.deepEqual(state.teacherTalks.page.items.map(({ id }) => id), [1, 2, 3]);
+assert.deepEqual(
+  state.teacherTalks.page.items.map(({ id }) => id),
+  [1, 2, 3]
+);
 assert.equal(state.teacherTalks.loadingMore, false);
 ```
 
