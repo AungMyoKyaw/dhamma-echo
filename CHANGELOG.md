@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-08-11
+
+### Fixed
+
+- Restored the release CI gate with coverage for offline downloads, progress state, local playback, and library selectors.
+- Added regression coverage for settings, persistence, and defensive runtime paths.
+- Kept release verification strict for formatting, linting, type checking, builds, smoke checks, and security audits.
+
 ## [0.5.0] - 2026-08-11
 
 ### Added

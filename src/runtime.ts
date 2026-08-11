@@ -1,6 +1,7 @@
 import { createMockInvoke } from "./mock-data.js";
 import type { InvokeFn } from "./types.js";
 
+/* c8 ignore start -- this block only augments browser/Tauri global types. */
 declare global {
   interface Window {
     __TAURI__?: {
@@ -11,6 +12,7 @@ declare global {
     };
   }
 }
+/* c8 ignore stop */
 
 export function selectInvoke(candidate: InvokeFn | undefined): InvokeFn {
   return candidate ?? createMockInvoke();

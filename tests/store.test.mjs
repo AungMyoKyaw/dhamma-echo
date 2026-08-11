@@ -34,6 +34,32 @@ test("theme remains light until the user chooses dark", () => {
   assert.equal(state.settings.theme, "dark");
 });
 
+test("download actions persist progress and remove it on completion or failure", () => {
+  let state = createInitialState();
+  state = reduce(state, {
+    type: "download-progress",
+    id: 7,
+    progress: { downloaded: 5, total: 10 }
+  });
+  state = reduce(state, {
+    type: "download-progress",
+    id: 8,
+    progress: { downloaded: 1, total: 2 }
+  });
+  assert.deepEqual(state.downloadProgress["7"], { downloaded: 5, total: 10 });
+  state = reduce(state, { type: "downloaded", id: 7, path: "/tmp/talk.mp3" });
+  assert.equal(state.library.downloads["7"], "/tmp/talk.mp3");
+  assert.equal(state.downloadProgress["7"], undefined);
+  assert.deepEqual(state.downloadProgress["8"], { downloaded: 1, total: 2 });
+  state = reduce(state, {
+    type: "download-progress",
+    id: 8,
+    progress: { downloaded: 1, total: 2 }
+  });
+  state = reduce(state, { type: "download-failed", id: 8 });
+  assert.equal(state.downloadProgress["8"], undefined);
+});
+
 test("catalogue requests expose loading, success, and error states", () => {
   let state = createInitialState();
   state = reduce(state, { type: "search-started" });

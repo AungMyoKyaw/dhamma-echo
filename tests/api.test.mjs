@@ -95,6 +95,21 @@ test("CatalogueApi fetches a single audio track by id", async () => {
   assert.deepEqual(calls, [{ command: "get_audio_track", args: { id: 7 } }]);
 });
 
+test("CatalogueApi exposes offline download command", async () => {
+  const calls = [];
+  const api = new CatalogueApi(async (command, args) => {
+    calls.push({ command, args });
+    return "/tmp/dhamma-echo/talk.mp3";
+  });
+  assert.equal(
+    await api.downloadAudio(7, "https://example.com/talk.mp3"),
+    "/tmp/dhamma-echo/talk.mp3"
+  );
+  assert.deepEqual(calls, [
+    { command: "download_audio", args: { id: 7, url: "https://example.com/talk.mp3" } }
+  ]);
+});
+
 test("CatalogueApi exposes audio category, collection, and teacher detail commands", async () => {
   const calls = [];
   const api = new CatalogueApi(async (command, args) => {

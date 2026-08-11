@@ -123,10 +123,6 @@ export class DhammaApp {
   }
 
   async searchCollections(): Promise<void> {
-    await this.searchCollectionsPage(0);
-  }
-
-  async searchCollectionsPage(offset: number): Promise<void> {
     this.dispatch({ type: "collections-started", mode: "initial" });
     try {
       this.dispatch({
@@ -134,7 +130,7 @@ export class DhammaApp {
         mode: "initial",
         page: await this.dependencies.api.searchCollections({
           ...this.state.collectionSearch,
-          offset
+          offset: 0
         })
       });
     } catch (error) {
@@ -196,10 +192,6 @@ export class DhammaApp {
   }
 
   async loadTeacherTalks(): Promise<void> {
-    await this.loadTeacherTalksPage(0);
-  }
-
-  async loadTeacherTalksPage(offset: number): Promise<void> {
     const id = this.state.selectedTeacherId;
     if (id === null) return;
     this.dispatch({ type: "teacher-talks-started", mode: "initial" });
@@ -212,7 +204,7 @@ export class DhammaApp {
         categoryId: null,
         collectionId: null,
         limit: this.state.settings.browseLimit,
-        offset
+        offset: 0
       })
       .then((page) => this.dispatch({ type: "teacher-talks-loaded", mode: "initial", page }))
       .catch((error: unknown) =>
@@ -332,10 +324,6 @@ export class DhammaApp {
   }
 
   async search(): Promise<void> {
-    await this.searchPage(0);
-  }
-
-  async searchPage(offset: number): Promise<void> {
     this.dispatch({ type: "search-started", mode: "initial" });
     const request: AudioSearchRequest = {
       query: this.state.search.query,
@@ -345,7 +333,7 @@ export class DhammaApp {
       categoryId: this.state.search.categoryId,
       collectionId: this.state.search.collectionId,
       limit: this.state.search.limit,
-      offset
+      offset: 0
     };
     try {
       this.dispatch({

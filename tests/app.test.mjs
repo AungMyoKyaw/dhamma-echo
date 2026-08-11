@@ -165,6 +165,48 @@ test("DhammaApp controls playback, queue advancement, and resume progress", asyn
   app.destroy();
 });
 
+test("DhammaApp handles settings, track lookup failures, and offline downloads", async () => {
+  let downloadAttempts = 0;
+  const app = new DhammaApp({
+    api: createApi({
+      async getAudioTrack(id) {
+        if (id === 999) throw new Error("missing");
+        return tracks.find((track) => track.id === id);
+      },
+      async downloadAudio() {
+        downloadAttempts += 1;
+        if (downloadAttempts === 1) throw new Error("download failed");
+        return "/tmp/talk.mp3";
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  app.setBrowseLimit(25);
+  app.setTheme("dark");
+  assert.equal(app.state.settings.browseLimit, 25);
+  assert.equal(app.state.settings.theme, "dark");
+  app.state.library.favorites = [tracks[0].id, 999];
+  await app.loadFavoriteTracks();
+  assert.deepEqual(
+    app.state.favoriteTracks.map((track) => track.id),
+    [tracks[0].id]
+  );
+  app.state.library.downloads = { 999: "/tmp/missing.mp3" };
+  await app.loadDownloadedTracks();
+  assert.deepEqual(app.state.downloadedTracks, []);
+  await app.downloadTrack({ ...tracks[0], playable: false });
+  assert.equal(downloadAttempts, 0);
+  await assert.rejects(app.downloadTrack(tracks[0]), /download failed/);
+  await app.downloadTrack(tracks[0]);
+  assert.equal(app.state.library.downloads[String(tracks[0].id)], "/tmp/talk.mp3");
+  app.setDownloadProgress(tracks[0].id, 3, 10);
+  assert.deepEqual(app.state.downloadProgress[String(tracks[0].id)], { downloaded: 3, total: 10 });
+  app.destroy();
+});
+
 test("DhammaApp exposes stable load failures and missing tracks", async () => {
   const failure = new Error("offline");
   const app = new DhammaApp({

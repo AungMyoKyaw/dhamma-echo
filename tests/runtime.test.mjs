@@ -19,3 +19,17 @@ test("isEditableTarget handles form fields, contenteditable and other targets", 
   assert.equal(isEditableTarget({ tagName: "button" }), false);
   assert.equal(isEditableTarget({ tagName: "div", isContentEditable: true }), true);
 });
+test("localFileUrl uses Tauri conversion when available", async () => {
+  const previous = globalThis.window;
+  globalThis.window = { __TAURI__: { core: { convertFileSrc: (path) => `asset://${path}` } } };
+  const { localFileUrl } = await import("../.test-build/src/runtime.js");
+  assert.equal(localFileUrl("/tmp/talk.mp3"), "asset:///tmp/talk.mp3");
+  globalThis.window = previous;
+});
+test("localFileUrl falls back to the original path", async () => {
+  const previous = globalThis.window;
+  globalThis.window = {};
+  const { localFileUrl } = await import("../.test-build/src/runtime.js");
+  assert.equal(localFileUrl("/tmp/talk.mp3"), "/tmp/talk.mp3");
+  globalThis.window = previous;
+});

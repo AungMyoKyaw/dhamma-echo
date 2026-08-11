@@ -7,6 +7,8 @@ import {
   isCuratedFeaturedTeacher,
   isMyanmarText,
   knownFavoriteTracks,
+  favoriteTracks,
+  downloadedTracks,
   orderTeachersFeaturedFirst,
   routeLabel,
   teacherFilterName
@@ -110,4 +112,33 @@ test("knownFavoriteTracks returns unique loaded favorites", () => {
   );
   state.library.favorites = [];
   assert.deepEqual(knownFavoriteTracks(state), []);
+});
+
+test("favorite and downloaded track selectors merge known records uniquely", () => {
+  const state = createInitialState();
+  const track = {
+    id: 1,
+    title: "A",
+    format: "mp3",
+    language: "english",
+    url: "https://x",
+    dateRecorded: null,
+    location: null,
+    teacherId: null,
+    teacherName: "T",
+    playable: true
+  };
+  state.library.favorites = [1];
+  state.library.downloads = { 1: "/tmp/a.mp3", 2: "/tmp/b.mp3" };
+  state.favoriteTracks = [track];
+  state.downloadedTracks = [track];
+  state.catalogue.page.items = [track];
+  assert.deepEqual(
+    favoriteTracks(state).map((item) => item.id),
+    [1]
+  );
+  assert.deepEqual(
+    downloadedTracks(state).map((item) => item.id),
+    [1]
+  );
 });

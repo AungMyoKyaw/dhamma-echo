@@ -35,12 +35,14 @@ test("library storage validates, deduplicates, and bounds data", () => {
     history: Array.from({ length: 120 }, (_, index) => ({ id: index + 1, playedAt: index })),
     resume: Object.fromEntries(
       Array.from({ length: 510 }, (_, index) => [String(index + 1), index + 0.5])
-    )
+    ),
+    downloads: { 3: "/tmp/three.mp3", 0: "bad", 4: "" }
   });
   const loaded = loadLibrary(storage);
   assert.deepEqual(loaded.favorites, [3, 2]);
   assert.equal(loaded.history.length, 100);
   assert.equal(Object.keys(loaded.resume).length, 500);
+  assert.deepEqual(loaded.downloads, { 3: "/tmp/three.mp3" });
 });
 
 test("settings storage uses safe defaults and accepted values", () => {
@@ -53,12 +55,12 @@ test("settings storage uses safe defaults and accepted values", () => {
   });
   storage.setItem(
     "dhamma-echo:settings",
-    JSON.stringify({ version: 1, theme: "dark", playbackRate: 1.5, volume: 0.7 })
+    JSON.stringify({ version: 1, theme: "dark", playbackRate: 1.5, volume: 0.7, browseLimit: 25 })
   );
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1.5,
     volume: 0.7,
-    browseLimit: 50,
+    browseLimit: 25,
     theme: "dark"
   });
   storage.setItem(

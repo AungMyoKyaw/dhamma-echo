@@ -202,3 +202,10 @@ test("AudioEngine rejects unsupported formats before changing the media source",
     message: "This audio format is not supported by the macOS player."
   });
 });
+
+test("AudioEngine prefers a downloaded local URL when provided", async () => {
+  const audio = new FakeAudio();
+  const engine = new AudioEngine(audio, () => {});
+  assert.equal(await engine.setTrack(tracks[0], 0, "asset:///tmp/talk.mp3"), true);
+  assert.equal(audio.src, "asset:///tmp/talk.mp3");
+});
