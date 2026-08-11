@@ -113,7 +113,7 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
   app.setRate(1.5);
   assert.match(storage.getItem("dhamma-echo:library"), /"favorites":\[1\]/);
   assert.match(storage.getItem("dhamma-echo:settings"), /"playbackRate":1.5/);
-  assert.doesNotMatch(storage.getItem("dhamma-echo:settings"), /theme/);
+  assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"light"/);
   app.destroy();
 });
 
@@ -471,7 +471,7 @@ test("DhammaApp loads collection and teacher detail flows", async () => {
   });
   await app.start();
   await app.searchCollections();
-  assert.equal(collectionRequests.at(-1).limit, 24);
+  assert.equal(collectionRequests.at(-1).limit, 50);
   await app.openCollection(10, "collections");
   assert.equal(app.state.collectionDetail.data.id, 10);
   app.dispatch({ type: "search-loaded", page: { items: [], total: 0, limit: 50, offset: 0 } });
@@ -581,7 +581,7 @@ test("DhammaApp appends and retries Explore and Collection batches", async () =>
     id: index + 1,
     title: `Talk ${index + 1}`
   }));
-  const collectionItems = Array.from({ length: 30 }, (_, index) => ({
+  const collectionItems = Array.from({ length: 60 }, (_, index) => ({
     id: index + 1,
     name: `Collection ${index + 1}`,
     teacherId: 3,
@@ -637,12 +637,12 @@ test("DhammaApp appends and retries Explore and Collection batches", async () =>
   assert.equal(app.state.catalogue.page.items.length, 60);
 
   await app.searchCollections();
-  assert.equal(app.state.collections.page.items.length, 24);
+  assert.equal(app.state.collections.page.items.length, 50);
   await app.loadMoreCollections();
-  assert.equal(collectionRequests.at(-1).offset, 24);
+  assert.equal(collectionRequests.at(-1).offset, 50);
   assert.equal(app.state.collections.loadMoreMessage, "collection retry");
   await app.loadMoreCollections();
-  assert.equal(app.state.collections.page.items.length, 30);
+  assert.equal(app.state.collections.page.items.length, 60);
   app.destroy();
 });
 

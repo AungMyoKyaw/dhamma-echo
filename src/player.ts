@@ -66,8 +66,9 @@ export class AudioEngine {
     audio.addEventListener("error", this.onError);
   }
 
-  async setTrack(track: AudioTrack, resumeAt = 0): Promise<boolean> {
-    this.candidates = mediaUrlCandidates(track.url, track.format);
+  async setTrack(track: AudioTrack, resumeAt = 0, localUrl?: string): Promise<boolean> {
+    this.candidates =
+      localUrl === undefined ? mediaUrlCandidates(track.url, track.format) : [localUrl];
     this.candidateIndex = -1;
     this.resumeAt = Math.max(0, Number.isFinite(resumeAt) ? resumeAt : 0);
     this.finalErrorEmitted = false;

@@ -61,6 +61,11 @@ export type AppAction =
   | { type: "recent-started" }
   | { type: "recent-loaded"; tracks: AudioTrack[] }
   | { type: "recent-failed" }
+  | { type: "favorite-tracks-loaded"; tracks: AudioTrack[] }
+  | { type: "downloaded-tracks-loaded"; tracks: AudioTrack[] }
+  | { type: "downloaded"; id: number; path: string }
+  | { type: "download-progress"; id: number; progress: AppState["downloadProgress"][string] }
+  | { type: "download-failed"; id: number }
   | { type: "toggle-favorite"; id: number }
   | { type: "record-history"; id: number; playedAt: number }
   | { type: "save-resume"; id: number; currentTime: number }
@@ -74,7 +79,9 @@ export type AppAction =
   | { type: "set-player-error"; message: string }
   | { type: "toggle-queue" }
   | { type: "set-volume"; volume: number }
-  | { type: "set-rate"; rate: number };
+  | { type: "set-rate"; rate: number }
+  | { type: "set-browse-limit"; limit: 25 | 50 | 100 }
+  | { type: "set-theme"; theme: "light" | "dark" };
 
 const emptyPage: AudioSearchPage = { items: [], total: 0, limit: 50, offset: 0 };
 const emptySummary: CatalogueSummary = {
@@ -139,6 +146,9 @@ export function createInitialState(): AppState {
     navigationContext: null,
     homeRecent: { status: "idle", tracks: [] },
     library: createDefaultLibrary(),
+    favoriteTracks: [],
+    downloadedTracks: [],
+    downloadProgress: {},
     settings: createDefaultSettings(),
     player: {
       current: null,
@@ -161,7 +171,17 @@ function resetOffset(state: AppState): AppState["search"] {
 export function reduce(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case "hydrate":
-      return { ...state, library: action.library, settings: action.settings };
+      return {
+        ...state,
+        library: action.library,
+        settings: action.settings,
+        search: { ...state.search, limit: action.settings.browseLimit, offset: 0 },
+        collectionSearch: {
+          ...state.collectionSearch,
+          limit: action.settings.browseLimit,
+          offset: 0
+        }
+      };
     case "navigate":
       return { ...state, route: action.route };
     case "summary-started":
@@ -238,11 +258,11 @@ export function reduce(state: AppState, action: AppAction): AppState {
           ...state,
           catalogue: {
             status: "ready",
-            page: { ...action.page, offset: 0 },
+            page: action.page,
             message: "",
             loadingMore: false,
             loadMoreMessage: "",
-            exhausted: action.page.items.length >= action.page.total
+            exhausted: action.page.offset + action.page.items.length >= action.page.total
           }
         };
       {
@@ -314,11 +334,11 @@ export function reduce(state: AppState, action: AppAction): AppState {
           collections: {
             ...state.collections,
             status: "ready",
-            page: { ...action.page, offset: 0 },
+            page: action.page,
             message: "",
             loadingMore: false,
             loadMoreMessage: "",
-            exhausted: action.page.items.length >= action.page.total
+            exhausted: action.page.offset + action.page.items.length >= action.page.total
           }
         };
       {
@@ -431,11 +451,11 @@ export function reduce(state: AppState, action: AppAction): AppState {
           ...state,
           teacherTalks: {
             status: "ready",
-            page: { ...action.page, offset: 0 },
+            page: action.page,
             message: "",
             loadingMore: false,
             loadMoreMessage: "",
-            exhausted: action.page.items.length >= action.page.total
+            exhausted: action.page.offset + action.page.items.length >= action.page.total
           }
         };
       {
@@ -485,6 +505,34 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return { ...state, homeRecent: { status: "ready", tracks: action.tracks } };
     case "recent-failed":
       return { ...state, homeRecent: { status: "error", tracks: [] } };
+    case "favorite-tracks-loaded":
+      return { ...state, favoriteTracks: action.tracks };
+    case "downloaded-tracks-loaded":
+      return { ...state, downloadedTracks: action.tracks };
+    case "downloaded":
+      return {
+        ...state,
+        downloadProgress: Object.fromEntries(
+          Object.entries(state.downloadProgress).filter(([key]) => key !== String(action.id))
+        ),
+        library: {
+          ...state.library,
+          downloads: { ...(state.library.downloads ?? {}), [String(action.id)]: action.path }
+        }
+      };
+    case "download-progress":
+      return {
+        ...state,
+        downloadProgress: {
+          ...state.downloadProgress,
+          [String(action.id)]: action.progress
+        }
+      };
+    case "download-failed": {
+      const downloadProgress = { ...state.downloadProgress };
+      delete downloadProgress[String(action.id)];
+      return { ...state, downloadProgress };
+    }
     case "toggle-favorite": {
       const exists = state.library.favorites.includes(action.id);
       const favorites = exists
@@ -580,5 +628,14 @@ export function reduce(state: AppState, action: AppAction): AppState {
         ...state,
         settings: { ...state.settings, playbackRate: clamp(action.rate, 0.75, 2) }
       };
+    case "set-browse-limit":
+      return {
+        ...state,
+        settings: { ...state.settings, browseLimit: action.limit },
+        search: { ...state.search, limit: action.limit, offset: 0 },
+        collectionSearch: { ...state.collectionSearch, limit: action.limit, offset: 0 }
+      };
+    case "set-theme":
+      return { ...state, settings: { ...state.settings, theme: action.theme } };
   }
 }

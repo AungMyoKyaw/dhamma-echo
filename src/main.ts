@@ -10,7 +10,12 @@ import type { InvokeFn } from "./types.js";
 
 declare global {
   interface Window {
-    __TAURI__?: { core?: { invoke?: InvokeFn } };
+    __TAURI__?: {
+      core?: { invoke?: InvokeFn; convertFileSrc?: (path: string) => string };
+      event?: {
+        listen?: (name: string, handler: (event: { payload: unknown }) => void) => Promise<unknown>;
+      };
+    };
   }
 }
 
@@ -27,6 +32,17 @@ export async function bootstrap(): Promise<DhammaApp> {
     audio,
     now: () => Date.now(),
     render: (state) => stateStore.set(state)
+  });
+
+  await window.__TAURI__?.event?.listen?.("download-progress", (event) => {
+    if (typeof event.payload !== "object" || event.payload === null) return;
+    const payload = event.payload as Record<string, unknown>;
+    if (typeof payload.id !== "number" || typeof payload.downloaded !== "number") return;
+    app.setDownloadProgress(
+      payload.id,
+      payload.downloaded,
+      typeof payload.total === "number" ? payload.total : null
+    );
   });
 
   stateStore.set(app.state);

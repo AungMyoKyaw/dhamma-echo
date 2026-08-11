@@ -5,6 +5,7 @@
   import ProgressiveControls from "../components/ProgressiveControls.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, CollectionSummary } from "../types.js";
+  import { isMyanmarText } from "../ui.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   function retry(): void {
     if (state.selectedTeacherId !== null)
@@ -27,7 +28,7 @@
 
 <section class="space-y-6">
   <button
-    class="rounded-full border border-app-border px-4 py-2 text-sm font-bold text-app-primary"
+    class="pill-button rounded-full border border-app-border px-4 text-sm font-bold text-app-primary"
     type="button"
     onclick={() => app.dispatch({ type: "return-to-list" })}>Back</button
   >
@@ -44,9 +45,14 @@
       <p class="text-xs font-bold uppercase tracking-wider text-app-primary">
         {detail.audioCount.toLocaleString("en-US")} talks
       </p>
-      <h2 class="mt-2 text-2xl font-bold">{detail.name}</h2>
+      <h2
+        class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
+        lang={isMyanmarText(detail.name) ? "my" : undefined}
+      >
+        {detail.name}
+      </h2>
       <button
-        class="mt-4 rounded-full bg-app-primary px-4 py-2 text-xs font-bold text-white"
+        class="primary-button mt-4 rounded-full bg-app-primary px-4 text-xs font-bold text-white"
         type="button"
         onclick={() => void explore()}>Explore this teacher</button
       >
@@ -88,6 +94,10 @@
             exhausted={state.teacherTalks.exhausted}
             noun="talks"
             onloadmore={() => app.loadMoreTeacherTalks()}
+            onlimit={async (limit: 25 | 50 | 100) => {
+              app.setBrowseLimit(limit);
+              await app.loadTeacherTalks();
+            }}
           />
         </div>{/if}
     </div>{/if}

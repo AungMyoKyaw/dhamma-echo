@@ -45,12 +45,22 @@ test("library storage validates, deduplicates, and bounds data", () => {
 
 test("settings storage uses safe defaults and accepted values", () => {
   const storage = new MemoryStorage();
-  assert.deepEqual(loadSettings(storage), { playbackRate: 1, volume: 0.8 });
+  assert.deepEqual(loadSettings(storage), {
+    playbackRate: 1,
+    volume: 0.8,
+    browseLimit: 50,
+    theme: "light"
+  });
   storage.setItem(
     "dhamma-echo:settings",
     JSON.stringify({ version: 1, theme: "dark", playbackRate: 1.5, volume: 0.7 })
   );
-  assert.deepEqual(loadSettings(storage), { playbackRate: 1.5, volume: 0.7 });
+  assert.deepEqual(loadSettings(storage), {
+    playbackRate: 1.5,
+    volume: 0.7,
+    browseLimit: 50,
+    theme: "dark"
+  });
   storage.setItem(
     "dhamma-echo:settings",
     JSON.stringify({ version: 1, theme: "purple", playbackRate: 9, volume: -4 })
@@ -60,9 +70,14 @@ test("settings storage uses safe defaults and accepted values", () => {
 
 test("settings can be saved and loaded", () => {
   const storage = new MemoryStorage();
-  saveSettings(storage, { playbackRate: 0.75, volume: 0.4 });
-  assert.deepEqual(loadSettings(storage), { playbackRate: 0.75, volume: 0.4 });
-  assert.doesNotMatch(storage.getItem("dhamma-echo:settings"), /theme/);
+  saveSettings(storage, { playbackRate: 0.75, volume: 0.4, browseLimit: 100, theme: "dark" });
+  assert.deepEqual(loadSettings(storage), {
+    playbackRate: 0.75,
+    volume: 0.4,
+    browseLimit: 100,
+    theme: "dark"
+  });
+  assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"dark"/);
 });
 
 test("library storage rejects malformed nested values", () => {
@@ -85,7 +100,8 @@ test("library storage rejects malformed nested values", () => {
   assert.deepEqual(loadLibrary(storage), {
     favorites: [],
     history: [{ id: 2, playedAt: 2 }],
-    resume: { 3: 4 }
+    resume: { 3: 4 },
+    downloads: {}
   });
   storage.setItem("dhamma-echo:library", JSON.stringify({ version: 1, resume: null }));
   assert.deepEqual(loadLibrary(storage), createDefaultLibrary());
@@ -105,7 +121,8 @@ test("library save removes invalid history and resume entries", () => {
   assert.deepEqual(loadLibrary(storage), {
     favorites: [1],
     history: [{ id: 2, playedAt: 4 }],
-    resume: { 4: 4 }
+    resume: { 4: 4 },
+    downloads: {}
   });
 });
 

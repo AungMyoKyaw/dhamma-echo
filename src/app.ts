@@ -1,6 +1,7 @@
 import type { CatalogueApi } from "./api.js";
 import { loadLibrary, loadSettings, saveLibrary, saveSettings } from "./persistence.js";
 import { AudioEngine, type AudioLike } from "./player.js";
+import { localFileUrl } from "./runtime.js";
 import { createInitialState, reduce, type AppAction } from "./store.js";
 import type {
   AppState,
@@ -17,6 +18,7 @@ interface CatalogueClient {
   searchTeachers: CatalogueApi["searchTeachers"];
   searchAudio: CatalogueApi["searchAudio"];
   getAudioTrack: CatalogueApi["getAudioTrack"];
+  downloadAudio: CatalogueApi["downloadAudio"];
   listAudioCategories: CatalogueApi["listAudioCategories"];
   searchCollections: CatalogueApi["searchCollections"];
   getCollection: CatalogueApi["getCollection"];
@@ -38,10 +40,17 @@ function messageFrom(error: unknown): string {
 const libraryActions = new Set<AppAction["type"]>([
   "hydrate",
   "toggle-favorite",
+  "downloaded",
   "record-history",
   "save-resume"
 ]);
-const settingsActions = new Set<AppAction["type"]>(["hydrate", "set-volume", "set-rate"]);
+const settingsActions = new Set<AppAction["type"]>([
+  "hydrate",
+  "set-volume",
+  "set-rate",
+  "set-browse-limit",
+  "set-theme"
+]);
 
 export class DhammaApp {
   state = createInitialState();
@@ -66,7 +75,9 @@ export class DhammaApp {
       this.loadTeachers(),
       this.loadCategories(),
       this.search(),
-      this.loadRecent()
+      this.loadRecent(),
+      this.loadFavoriteTracks(),
+      this.loadDownloadedTracks()
     ]);
   }
 
@@ -112,6 +123,10 @@ export class DhammaApp {
   }
 
   async searchCollections(): Promise<void> {
+    await this.searchCollectionsPage(0);
+  }
+
+  async searchCollectionsPage(offset: number): Promise<void> {
     this.dispatch({ type: "collections-started", mode: "initial" });
     try {
       this.dispatch({
@@ -119,7 +134,7 @@ export class DhammaApp {
         mode: "initial",
         page: await this.dependencies.api.searchCollections({
           ...this.state.collectionSearch,
-          offset: 0
+          offset
         })
       });
     } catch (error) {
@@ -181,6 +196,10 @@ export class DhammaApp {
   }
 
   async loadTeacherTalks(): Promise<void> {
+    await this.loadTeacherTalksPage(0);
+  }
+
+  async loadTeacherTalksPage(offset: number): Promise<void> {
     const id = this.state.selectedTeacherId;
     if (id === null) return;
     this.dispatch({ type: "teacher-talks-started", mode: "initial" });
@@ -192,8 +211,8 @@ export class DhammaApp {
         teacherId: id,
         categoryId: null,
         collectionId: null,
-        limit: 50,
-        offset: 0
+        limit: this.state.settings.browseLimit,
+        offset
       })
       .then((page) => this.dispatch({ type: "teacher-talks-loaded", mode: "initial", page }))
       .catch((error: unknown) =>
@@ -239,6 +258,14 @@ export class DhammaApp {
       );
   }
 
+  setBrowseLimit(limit: 25 | 50 | 100): void {
+    this.dispatch({ type: "set-browse-limit", limit });
+  }
+
+  setTheme(theme: "light" | "dark"): void {
+    this.dispatch({ type: "set-theme", theme });
+  }
+
   async loadRecent(): Promise<void> {
     const ids = this.state.library.history.slice(0, 5).map((entry) => entry.id);
     if (ids.length === 0) {
@@ -263,6 +290,31 @@ export class DhammaApp {
     this.dispatch({ type: "recent-loaded", tracks });
   }
 
+  async loadFavoriteTracks(): Promise<void> {
+    const tracks = await this.loadTracksById(this.state.library.favorites);
+    this.dispatch({ type: "favorite-tracks-loaded", tracks });
+  }
+
+  async loadDownloadedTracks(): Promise<void> {
+    const tracks = await this.loadTracksById(
+      Object.keys(this.state.library.downloads ?? {}).map(Number)
+    );
+    this.dispatch({ type: "downloaded-tracks-loaded", tracks });
+  }
+
+  private async loadTracksById(ids: number[]): Promise<AudioTrack[]> {
+    const tracks = await Promise.all(
+      ids.map(async (id) => {
+        try {
+          return await this.dependencies.api.getAudioTrack(id);
+        } catch {
+          return null;
+        }
+      })
+    );
+    return tracks.filter((track): track is AudioTrack => track !== null);
+  }
+
   async searchTeachers(query: string): Promise<void> {
     this.dispatch({ type: "set-teacher-query", query });
     if (this.state.teacherQuery.length === 0) {
@@ -280,6 +332,10 @@ export class DhammaApp {
   }
 
   async search(): Promise<void> {
+    await this.searchPage(0);
+  }
+
+  async searchPage(offset: number): Promise<void> {
     this.dispatch({ type: "search-started", mode: "initial" });
     const request: AudioSearchRequest = {
       query: this.state.search.query,
@@ -289,7 +345,7 @@ export class DhammaApp {
       categoryId: this.state.search.categoryId,
       collectionId: this.state.search.collectionId,
       limit: this.state.search.limit,
-      offset: 0
+      offset
     };
     try {
       this.dispatch({
@@ -361,7 +417,31 @@ export class DhammaApp {
     this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
     this.engine.setVolume(this.state.settings.volume);
     this.engine.setRate(this.state.settings.playbackRate);
-    await this.engine.setTrack(track, this.state.library.resume[String(track.id)] ?? 0);
+    await this.engine.setTrack(
+      track,
+      this.state.library.resume[String(track.id)] ?? 0,
+      this.localUrlFor(track.id)
+    );
+  }
+
+  async downloadTrack(track: AudioTrack): Promise<void> {
+    if (!track.playable || this.state.library.downloads?.[String(track.id)] !== undefined) return;
+    try {
+      const path = await this.dependencies.api.downloadAudio(track.id, track.url);
+      this.dispatch({ type: "downloaded", id: track.id, path });
+    } catch (error) {
+      this.dispatch({ type: "download-failed", id: track.id });
+      throw error;
+    }
+  }
+
+  setDownloadProgress(id: number, downloaded: number, total: number | null): void {
+    this.dispatch({ type: "download-progress", id, progress: { downloaded, total } });
+  }
+
+  private localUrlFor(id: number): string | undefined {
+    const path = this.state.library.downloads?.[String(id)];
+    return path === undefined ? undefined : localFileUrl(path);
   }
 
   async togglePlayback(): Promise<void> {
@@ -378,7 +458,7 @@ export class DhammaApp {
       this.state.player.currentTime,
       this.state.library.resume[String(track.id)] ?? 0
     );
-    await this.engine.setTrack(track, resumeAt);
+    await this.engine.setTrack(track, resumeAt, this.localUrlFor(track.id));
   }
 
   seek(value: number): void {

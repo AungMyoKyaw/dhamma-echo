@@ -78,4 +78,8 @@ export class CatalogueApi {
   searchAudio(request: AudioSearchRequest): Promise<AudioSearchPage> {
     return this.call("search_audio", { request });
   }
+
+  downloadAudio(id: number, url: string): Promise<string> {
+    return this.call("download_audio", { id, url });
+  }
 }

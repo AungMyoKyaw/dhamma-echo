@@ -47,7 +47,7 @@
         className="flex-1"
         onclear={clear}
       /><button
-        class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white"
+        class="primary-button h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white"
         type="submit">Search</button
       >
     </form>

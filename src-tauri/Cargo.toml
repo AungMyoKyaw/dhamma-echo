@@ -1,6 +1,6 @@
 [package]
 name = "dhamma-echo"
-version = "0.4.1"
+version = "0.5.0"
 description = "A quiet desktop library for Dhamma talks"
 authors = ["Aung Myo Kyaw"]
 edition = "2024"
@@ -16,6 +16,9 @@ tauri-build = { version = "2.6.3", features = [] }
 
 [dependencies]
 rusqlite = { version = "0.40.1", features = ["bundled"] }
+reqwest = { version = "0.12.24", default-features = false, features = ["rustls-tls", "stream"] }
+futures-util = "0.3.31"
+tokio = { version = "1.48.0", features = ["fs"] }
 serde = { version = "1.0.229", features = ["derive"] }
-tauri = { version = "2.11.5", features = [] }
+tauri = { version = "2.11.5", features = ["protocol-asset"] }
 thiserror = "2.0"

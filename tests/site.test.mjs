@@ -80,6 +80,40 @@ test("app Myanmar text preserves script clusters while wrapping", async () => {
   assert.match(css, /\.myanmar-text[\s\S]*word-break:\s*keep-all/);
 });
 
+test("dynamic audio text uses unclipped Myanmar typography", async () => {
+  const [css, trackRow, home] = await Promise.all([
+    readFile(new URL("../src/index.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/TrackRow.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/HomeView.svelte", import.meta.url), "utf8")
+  ]);
+
+  assert.match(css, /\.myanmar-text\.myanmar-text\s*\{[^}]*line-height:\s*1\.8/s);
+  assert.match(css, /\.myanmar-text\.myanmar-text\s*\{[^}]*padding-block:\s*0\.2em/s);
+  assert.match(trackRow, /isMyanmarText\(track\.title\)/);
+  assert.match(home, /isMyanmarText\(latest\.title\)/);
+});
+
+test("shared pill controls use optical vertical centering", async () => {
+  const css = await readFile(new URL("../src/index.css", import.meta.url), "utf8");
+
+  assert.match(css, /\.pill-button,[\s\S]*padding-top:\s*2px/);
+  assert.match(css, /\.filter-pill[\s\S]*padding-top:\s*2px/);
+  assert.match(css, /\.row-queue-button[\s\S]*padding-top:\s*2px/);
+  assert.match(css, /\.badge-pill\s*\{[^}]*align-items:\s*center[^}]*padding-top:\s*2px/s);
+});
+
+test("active filter clear icons cannot expand beyond their control", async () => {
+  const [css, explore] = await Promise.all([
+    readFile(new URL("../src/index.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8")
+  ]);
+
+  assert.match(css, /\.filter-clear-button\s*\{[^}]*width:\s*24px[^}]*height:\s*24px/s);
+  assert.equal((explore.match(/class="filter-clear-button"/g) ?? []).length, 3);
+  assert.match(css, /\.active-filter-pill\s*\{[^}]*min-height:\s*40px[^}]*align-items:\s*center/s);
+  assert.equal((explore.match(/active-filter-pill/g) ?? []).length, 3);
+});
+
 test("privacy policy publishes the required user-data disclosures", async () => {
   const [privacy, landing] = await Promise.all([
     readFile(privacyPath, "utf8"),

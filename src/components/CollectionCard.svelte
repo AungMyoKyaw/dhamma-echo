@@ -21,7 +21,12 @@
   <p class="font-bold leading-7 {myanmar ? 'myanmar-text' : ''}" lang={myanmar ? "my" : undefined}>
     {collection.name}
   </p>
-  {#if showTeacher}<p class="mt-2 text-sm text-app-muted">
+  {#if showTeacher}<p
+      class="mt-2 text-sm text-app-muted {isMyanmarText(collection.teacherName)
+        ? 'myanmar-text'
+        : ''}"
+      lang={isMyanmarText(collection.teacherName) ? "my" : undefined}
+    >
       {collection.teacherName || "Unknown teacher"}
     </p>{/if}
   <p class="mt-4 text-xs font-bold text-app-primary">

@@ -5,7 +5,7 @@
   import TeacherCard from "../components/TeacherCard.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, AudioTrack, TeacherSummary } from "../types.js";
-  import { featuredTeachers } from "../ui.js";
+  import { featuredTeachers, isMyanmarText } from "../ui.js";
   import { formatDuration } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   let featured = $derived(featuredTeachers(state.teachers.data));
@@ -70,8 +70,18 @@
               ><span class="ml-0.5 size-6"><Icon name={playing ? "pause" : "play"} /></span></button
             >
             <div class="min-w-0">
-              <h3 class="truncate font-bold">{latest.title}</h3>
-              <p class="mt-1 truncate text-sm text-app-muted">
+              <h3
+                class="truncate font-bold {isMyanmarText(latest.title) ? 'myanmar-text' : ''}"
+                lang={isMyanmarText(latest.title) ? "my" : undefined}
+              >
+                {latest.title}
+              </h3>
+              <p
+                class="mt-1 truncate text-sm text-app-muted {isMyanmarText(latest.teacherName)
+                  ? 'myanmar-text'
+                  : ''}"
+                lang={isMyanmarText(latest.teacherName) ? "my" : undefined}
+              >
                 {latest.teacherName || "Unknown teacher"}{resume > 0
                   ? ` · Resume at ${formatDuration(resume)}`
                   : ""}

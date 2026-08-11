@@ -16,14 +16,16 @@
     | "search"
     | "close"
     | "chevron"
+    | "download"
     | "leaf";
-  let { name }: { name: IconName } = $props();
+  let { name, filled = false }: { name: IconName; filled?: boolean } = $props();
 </script>
 
 <svg
+  class="icon"
   aria-hidden="true"
   viewBox="0 0 24 24"
-  fill="none"
+  fill={name === "heart" && filled ? "currentColor" : "none"}
   stroke="currentColor"
   stroke-width="1.8"
   stroke-linecap="round"
@@ -76,6 +78,7 @@
     />
   {:else if name === "heart"}<path
       d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
+      fill={filled ? "currentColor" : "none"}
     />
   {:else if name === "queue"}<path d="M4 7h10M4 12h10M4 17h7" /><path
       d="m16 14 4 3-4 3z"
@@ -85,5 +88,6 @@
   {:else if name === "search"}<circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" />
   {:else if name === "close"}<path d="m7 7 10 10M17 7 7 17" />
   {:else if name === "chevron"}<path d="m9 18 6-6-6-6" />
+  {:else if name === "download"}<path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
   {:else}<path d="M20 4C12 4 5 8 5 15c0 2 1 4 3 5 0-5 4-9 10-12-5 4-7 8-7 12 6-1 10-6 9-16Z" />{/if}
 </svg>

@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-11
+
+### Added
+
+- Offline MP3 downloads with persisted local files, progress indicators, and offline playback from My Library.
+- A unified My Library view for downloaded talks, favorites, and listening history.
+- User-selectable Light and Dark themes, with Light as the default and the choice stored locally.
+- Configurable 25, 50, or 100-row Load more pagination across talks, collections, and teacher pages.
+
+### Changed
+
+- Refined the desktop navigation, rounded controls, filter chips, badges, and hover/focus states for consistent alignment.
+- Improved Myanmar typography and vertical spacing across track rows, cards, player metadata, and library views.
+- Added stronger favorite-state contrast with a filled active heart and clearer download states.
+
+### Fixed
+
+- Prevented duplicate favorite/download entries in library sections.
+- Fixed oversized active-filter close icons and blank pagination row selectors.
+- Fixed clipped Myanmar glyphs and inconsistent pill/badge vertical alignment.
+- Added download URL validation, progress event handling, and safer local asset playback.
+
 ## [0.4.1] - 2026-08-10
 
 ### Changed

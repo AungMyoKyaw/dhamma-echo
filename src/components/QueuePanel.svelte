@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
   import type { AppState } from "../types.js";
+  import { isMyanmarText } from "../ui.js";
   import Icon from "./Icon.svelte";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
 </script>
@@ -29,8 +30,22 @@
             class="flex items-center gap-3 border-b border-app-border p-3 last:border-0"
           >
             <div class="min-w-0 flex-1">
-              <p class="truncate text-sm font-bold">{track.title}</p>
-              <p class="truncate text-xs text-app-muted">{track.teacherName}</p>
+              <p
+                class="truncate text-sm font-bold {isMyanmarText(track.title)
+                  ? 'myanmar-text'
+                  : ''}"
+                lang={isMyanmarText(track.title) ? "my" : undefined}
+              >
+                {track.title}
+              </p>
+              <p
+                class="truncate text-xs text-app-muted {isMyanmarText(track.teacherName)
+                  ? 'myanmar-text'
+                  : ''}"
+                lang={isMyanmarText(track.teacherName) ? "my" : undefined}
+              >
+                {track.teacherName}
+              </p>
             </div>
             <button
               class="flex size-8 items-center justify-center rounded-full hover:bg-app-soft"

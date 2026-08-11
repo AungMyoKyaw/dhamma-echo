@@ -40,7 +40,7 @@
 </script>
 
 <svelte:window onkeydown={keydown} onbeforeunload={() => app.destroy()} />
-<div class="app-shell min-h-screen bg-app-bg text-app">
+<div class="app-shell min-h-screen bg-app-bg text-app" data-theme={state.settings.theme}>
   <Sidebar {state} {app} />
   <div class="app-content ml-64 {state.player.current === null ? 'pb-8' : 'pb-40'}">
     <Header {state} />

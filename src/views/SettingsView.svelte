@@ -10,6 +10,23 @@
 
 <section class="mx-auto max-w-3xl space-y-4">
   <div class="rounded-card border border-app-border bg-app-surface p-6">
+    <h2 class="text-lg font-bold">Appearance</h2>
+    <p class="mt-1 text-sm text-app-muted">
+      Light is the default. Choose dark for a softer low-light display.
+    </p>
+    <div class="mt-4 inline-flex rounded-2xl bg-app-soft p-1" aria-label="Color theme">
+      {#each ["light", "dark"] as theme (theme)}<button
+          class="pill-button rounded-xl px-5 text-sm font-bold capitalize {state.settings.theme ===
+          theme
+            ? 'bg-app-surface text-app-primary shadow-sm'
+            : 'text-app-muted'}"
+          type="button"
+          aria-pressed={state.settings.theme === theme}
+          onclick={() => app.setTheme(theme as "light" | "dark")}>{theme}</button
+        >{/each}
+    </div>
+  </div>
+  <div class="rounded-card border border-app-border bg-app-surface p-6">
     <h2 class="text-lg font-bold">Playback</h2>
     <div class="mt-5 grid grid-cols-2 gap-4">
       <label class="text-sm font-bold"

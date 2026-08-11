@@ -23,11 +23,28 @@
   background: var(--color-app-bg);
 }
 
+[data-theme="dark"] {
+  --color-app: #eee9df;
+  --color-app-muted: #b8b0a4;
+  --color-app-bg: #181714;
+  --color-app-surface: #23211d;
+  --color-app-soft: #2e2b25;
+  --color-app-border: #464138;
+  --color-app-primary: #d8894d;
+  --color-app-primary-strong: #bf7138;
+  --color-app-secondary: #9bab82;
+  --color-app-tertiary: #d0aa62;
+  --color-error: #e2938c;
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
 }
 
-.myanmar-text {
+.myanmar-text.myanmar-text {
+  line-height: 1.8;
+  padding-block: 0.2em;
   line-break: strict;
   overflow-wrap: break-word;
   word-break: keep-all;
@@ -95,6 +112,135 @@ button:disabled {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 160px 140px auto;
   align-items: center;
+}
+
+.filter-pill {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2px;
+  padding-bottom: 0;
+  line-height: 1;
+  vertical-align: middle;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    border-color 140ms ease;
+}
+
+.filter-pill:hover {
+  border-color: color-mix(in srgb, var(--color-app-primary) 45%, var(--color-app-border));
+}
+
+.filter-clear-button {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.active-filter-pill {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2px 16px 0;
+  line-height: 1;
+}
+
+.filter-clear-button:hover {
+  background: color-mix(in srgb, var(--color-app-primary) 14%, transparent);
+}
+
+.filter-clear-button > span {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.badge-pill {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  padding-top: 2px;
+  padding-bottom: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.pill-button,
+.primary-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  padding-top: 2px;
+  padding-bottom: 0;
+  line-height: 1;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease,
+    transform 90ms ease;
+}
+
+.pill-button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--color-app-primary) 45%, var(--color-app-border));
+  background: var(--color-app-soft);
+}
+
+.primary-button:hover:not(:disabled) {
+  background: var(--color-app-primary-strong);
+}
+
+.pill-button:active:not(:disabled),
+.primary-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.sidebar-nav-button {
+  display: flex;
+  height: 3rem;
+  min-height: 3rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.25;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.sidebar-nav-icon {
+  display: flex;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 1.25rem;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-1px);
+}
+
+.sidebar-nav-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* macOS-style compact media controls */
@@ -182,15 +328,25 @@ button:disabled {
   color: var(--color-app-primary);
 }
 
+.row-action-button.is-active {
+  background: transparent;
+}
+
 .row-queue-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 30px;
   border: 1px solid var(--color-app-border);
   border-radius: 999px;
   background: transparent;
   padding: 0 12px;
+  padding-top: 2px;
+  padding-bottom: 0;
   color: var(--color-app-muted);
   font-size: 0.75rem;
   font-weight: 700;
+  line-height: 1.25;
   transition:
     border-color 140ms ease,
     background-color 140ms ease,
@@ -201,6 +357,22 @@ button:disabled {
   border-color: color-mix(in srgb, var(--color-app-primary) 45%, var(--color-app-border));
   background: var(--color-app-soft);
   color: var(--color-app);
+}
+
+.download-progress {
+  width: 28px;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-app-border);
+}
+
+.download-progress-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-app-primary);
+  transition: width 160ms ease;
 }
 
 .player-shell {

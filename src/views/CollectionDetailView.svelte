@@ -3,6 +3,7 @@
   import AsyncState from "../components/AsyncState.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState } from "../types.js";
+  import { isMyanmarText } from "../ui.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   function retry(): void {
     if (state.selectedCollectionId !== null)
@@ -15,7 +16,7 @@
 
 <section class="space-y-5">
   <button
-    class="rounded-full border border-app-border px-4 py-2 text-sm font-bold text-app-primary"
+    class="pill-button rounded-full border border-app-border px-4 text-sm font-bold text-app-primary"
     type="button"
     onclick={() => app.dispatch({ type: "return-to-list" })}>Back</button
   >
@@ -32,8 +33,20 @@
       <p class="text-xs font-bold uppercase tracking-wider text-app-primary">
         {detail.audioCount.toLocaleString("en-US")} talks
       </p>
-      <h2 class="mt-2 text-2xl font-bold">{detail.name}</h2>
-      <p class="mt-2 text-sm text-app-muted">{detail.teacherName || "Unknown teacher"}</p>
+      <h2
+        class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
+        lang={isMyanmarText(detail.name) ? "my" : undefined}
+      >
+        {detail.name}
+      </h2>
+      <p
+        class="mt-2 text-sm text-app-muted {isMyanmarText(detail.teacherName)
+          ? 'myanmar-text'
+          : ''}"
+        lang={isMyanmarText(detail.teacherName) ? "my" : undefined}
+      >
+        {detail.teacherName || "Unknown teacher"}
+      </p>
       {#if detail.description !== null}<p class="mt-4 text-sm leading-6 text-app-muted">
           {detail.description}
         </p>{/if}

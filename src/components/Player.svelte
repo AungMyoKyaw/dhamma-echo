@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
   import type { AppState } from "../types.js";
+  import { isMyanmarText } from "../ui.js";
   import { formatDuration } from "../utils.js";
   import Icon from "./Icon.svelte";
   import QueuePanel from "./QueuePanel.svelte";
@@ -23,8 +24,20 @@
   >
     <div class="player-grid">
       <div class="player-track min-w-0" aria-live="polite">
-        <p class="truncate text-sm font-bold">{track.title}</p>
-        <p class="truncate text-xs text-app-muted">{track.teacherName || "Unknown teacher"}</p>
+        <p
+          class="truncate text-sm font-bold {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
+          lang={isMyanmarText(track.title) ? "my" : undefined}
+        >
+          {track.title}
+        </p>
+        <p
+          class="truncate text-xs text-app-muted {isMyanmarText(track.teacherName)
+            ? 'myanmar-text'
+            : ''}"
+          lang={isMyanmarText(track.teacherName) ? "my" : undefined}
+        >
+          {track.teacherName || "Unknown teacher"}
+        </p>
         <div class="mt-1 min-h-4">
           {#if state.player.error}<span class="player-status player-status-error" role="alert"
               ><span class="truncate">{state.player.error}</span><button

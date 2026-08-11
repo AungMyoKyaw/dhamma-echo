@@ -5,13 +5,14 @@ const LIBRARY_KEY = "dhamma-echo:library";
 const SETTINGS_KEY = "dhamma-echo:settings";
 const VERSION = 1;
 const RATES = new Set([0.75, 1, 1.25, 1.5, 1.75, 2]);
+const BROWSE_LIMITS = new Set([25, 50, 100]);
 
 export function createDefaultLibrary(): LibraryState {
-  return { favorites: [], history: [], resume: {} };
+  return { favorites: [], history: [], resume: {}, downloads: {} };
 }
 
 export function createDefaultSettings(): SettingsState {
-  return { playbackRate: 1, volume: 0.8 };
+  return { playbackRate: 1, volume: 0.8, browseLimit: 50, theme: "light" };
 }
 
 function positiveInteger(value: unknown): value is number {
@@ -55,7 +56,21 @@ export function loadLibrary(storage: StorageLike): LibraryState {
             )
             .slice(-500)
         : [];
-    return { favorites, history, resume: Object.fromEntries(resumeEntries) };
+    const downloads =
+      typeof record.downloads === "object" && record.downloads !== null
+        ? Object.fromEntries(
+            Object.entries(record.downloads).filter(
+              ([key, value]) =>
+                positiveInteger(Number(key)) && typeof value === "string" && value.length > 0
+            )
+          )
+        : {};
+    return {
+      favorites,
+      history,
+      resume: Object.fromEntries(resumeEntries),
+      downloads
+    };
   } catch {
     return createDefaultLibrary();
   }
@@ -73,7 +88,16 @@ export function saveLibrary(storage: StorageLike, library: LibraryState): void {
       )
       .slice(-500)
   );
-  storage.setItem(LIBRARY_KEY, JSON.stringify({ version: VERSION, favorites, history, resume }));
+  const downloads = Object.fromEntries(
+    Object.entries(library.downloads ?? {}).filter(
+      ([key, value]) =>
+        positiveInteger(Number(key)) && typeof value === "string" && value.length > 0
+    )
+  );
+  storage.setItem(
+    LIBRARY_KEY,
+    JSON.stringify({ version: VERSION, favorites, history, resume, downloads })
+  );
 }
 
 export function loadSettings(storage: StorageLike): SettingsState {
@@ -95,7 +119,12 @@ export function loadSettings(storage: StorageLike): SettingsState {
     }
     return {
       playbackRate: record.playbackRate,
-      volume: clamp(record.volume, 0, 1)
+      volume: clamp(record.volume, 0, 1),
+      browseLimit:
+        typeof record.browseLimit === "number" && BROWSE_LIMITS.has(record.browseLimit)
+          ? (record.browseLimit as 25 | 50 | 100)
+          : 50,
+      theme: record.theme === "dark" ? "dark" : "light"
     };
   } catch {
     return createDefaultSettings();
@@ -108,7 +137,9 @@ export function saveSettings(storage: StorageLike, settings: SettingsState): voi
     JSON.stringify({
       version: VERSION,
       playbackRate: settings.playbackRate,
-      volume: settings.volume
+      volume: settings.volume,
+      browseLimit: settings.browseLimit,
+      theme: settings.theme
     })
   );
 }

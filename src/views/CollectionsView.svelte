@@ -57,8 +57,9 @@
             >{teacher.name}</option
           >{/each}</select
       ></label
-    ><button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit"
-      >Search</button
+    ><button
+      class="primary-button h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white"
+      type="submit">Search</button
     >
   </form>
   {#if state.collections.status === "error"}<AsyncState
@@ -102,5 +103,9 @@
       exhausted={state.collections.exhausted}
       noun="collections"
       onloadmore={() => app.loadMoreCollections()}
+      onlimit={async (limit: 25 | 50 | 100) => {
+        app.setBrowseLimit(limit);
+        await app.searchCollections();
+      }}
     />{/if}
 </section>

@@ -113,11 +113,19 @@ export interface LibraryState {
   favorites: number[];
   history: HistoryEntry[];
   resume: Record<string, number>;
+  downloads?: Record<string, string>;
+}
+
+export interface DownloadProgress {
+  downloaded: number;
+  total: number | null;
 }
 
 export interface SettingsState {
   playbackRate: number;
   volume: number;
+  browseLimit: 25 | 50 | 100;
+  theme: "light" | "dark";
 }
 
 interface SearchState {
@@ -195,6 +203,9 @@ export interface AppState {
   navigationContext: { returnRoute: Route } | null;
   homeRecent: RecentState;
   library: LibraryState;
+  favoriteTracks: AudioTrack[];
+  downloadedTracks: AudioTrack[];
+  downloadProgress: Record<string, DownloadProgress>;
   settings: SettingsState;
   player: PlayerState;
 }

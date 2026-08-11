@@ -78,3 +78,28 @@ export function knownFavoriteTracks(state: AppState): AudioTrack[] {
       list.findIndex((candidate) => candidate.id === track.id) === index
   );
 }
+
+export function favoriteTracks(state: AppState): AudioTrack[] {
+  const loaded = [...state.favoriteTracks, ...knownFavoriteTracks(state)];
+  return loaded.filter(
+    (track, index, list) =>
+      state.library.favorites.includes(track.id) &&
+      list.findIndex((candidate) => candidate.id === track.id) === index
+  );
+}
+
+export function downloadedTracks(state: AppState): AudioTrack[] {
+  const known = [
+    ...state.downloadedTracks,
+    ...state.favoriteTracks,
+    state.player.current,
+    ...state.player.queue,
+    ...state.catalogue.page.items,
+    ...state.homeRecent.tracks
+  ].filter((track): track is AudioTrack => track !== null);
+  return known.filter(
+    (track, index, list) =>
+      state.library.downloads?.[String(track.id)] !== undefined &&
+      list.findIndex((candidate) => candidate.id === track.id) === index
+  );
+}

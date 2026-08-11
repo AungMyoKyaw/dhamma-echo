@@ -13,6 +13,8 @@ pub enum AppError {
     NotFound,
     #[error("Unable to resolve the bundled catalogue path: {0}")]
     ResourcePath(String),
+    #[error("Unable to download the audio file: {0}")]
+    Download(String),
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
@@ -29,6 +31,7 @@ impl From<AppError> for CommandError {
             AppError::InvalidInput(_) => "invalid_input",
             AppError::NotFound => "not_found",
             AppError::ResourcePath(_) => "resource_path",
+            AppError::Download(_) => "download",
         };
         Self {
             code,

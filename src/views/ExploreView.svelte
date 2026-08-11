@@ -69,21 +69,24 @@
         ></select
       ></label
     >
-    <button class="h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white" type="submit"
-      >Search</button
+    <button
+      class="primary-button h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white"
+      type="submit">Search</button
     >
     {#if state.categories.status === "ready"}<div
         class="col-span-full flex flex-wrap gap-2"
         aria-label="Audio categories"
       >
         <button
-          class="rounded-full px-3 py-2 text-xs font-bold {state.search.categoryId === null
+          class="filter-pill rounded-full px-3 py-2 text-xs font-bold {state.search.categoryId ===
+          null
             ? 'bg-app-primary text-white'
             : 'bg-app-soft text-app-muted'}"
           type="button"
           onclick={() => setCategory(null)}>All audio</button
         >{#each state.categories.data as item (item.id)}<button
-            class="rounded-full px-3 py-2 text-xs font-bold {state.search.categoryId === item.id
+            class="filter-pill rounded-full px-3 py-2 text-xs font-bold {state.search.categoryId ===
+            item.id
               ? 'bg-app-primary text-white'
               : 'bg-app-soft text-app-muted'}"
             type="button"
@@ -94,7 +97,7 @@
   </form>
   <div class="flex flex-wrap gap-2">
     {#if state.search.teacherId !== null}<div
-        class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary"
+        class="active-filter-pill rounded-full bg-app-primary/10 text-xs font-bold text-app-primary"
       >
         Teacher: {teacherFilterName(state)}<button
           type="button"
@@ -102,12 +105,12 @@
             app.dispatch({ type: "set-teacher", teacherId: null });
             void app.search();
           }}
-          aria-label="Clear teacher filter"
-          ><span class="size-3"><Icon name="close" /></span></button
+          class="filter-clear-button"
+          aria-label="Clear teacher filter"><span><Icon name="close" /></span></button
         >
       </div>{/if}
     {#if category !== undefined}<div
-        class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary"
+        class="active-filter-pill rounded-full bg-app-primary/10 text-xs font-bold text-app-primary"
       >
         Category: {category.name}<button
           type="button"
@@ -115,12 +118,12 @@
             app.dispatch({ type: "clear-category" });
             void app.search();
           }}
-          aria-label="Clear category filter"
-          ><span class="size-3"><Icon name="close" /></span></button
+          class="filter-clear-button"
+          aria-label="Clear category filter"><span><Icon name="close" /></span></button
         >
       </div>{/if}
     {#if state.search.collectionId !== null}<div
-        class="flex items-center gap-2 rounded-full bg-app-primary/10 px-4 py-2 text-xs font-bold text-app-primary"
+        class="active-filter-pill rounded-full bg-app-primary/10 text-xs font-bold text-app-primary"
       >
         Collection filter<button
           type="button"
@@ -128,8 +131,8 @@
             app.dispatch({ type: "clear-collection" });
             void app.search();
           }}
-          aria-label="Clear collection filter"
-          ><span class="size-3"><Icon name="close" /></span></button
+          class="filter-clear-button"
+          aria-label="Clear collection filter"><span><Icon name="close" /></span></button
         >
       </div>{/if}
   </div>
@@ -160,5 +163,9 @@
       exhausted={state.catalogue.exhausted}
       noun="talks"
       onloadmore={() => app.loadMoreSearchResults()}
+      onlimit={async (limit: 25 | 50 | 100) => {
+        app.setBrowseLimit(limit);
+        await app.search();
+      }}
     />{:else}<p class="text-sm text-app-muted">Search the complete audio catalogue</p>{/if}
 </section>

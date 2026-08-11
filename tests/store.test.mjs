@@ -16,6 +16,24 @@ test("navigation and search actions update deterministic state", () => {
   assert.equal(state.search.offset, 0);
 });
 
+test("browse row size is shared across catalogue surfaces", () => {
+  let state = createInitialState();
+  state = reduce(state, { type: "set-browse-limit", limit: 100 });
+
+  assert.equal(state.settings.browseLimit, 100);
+  assert.equal(state.search.limit, 100);
+  assert.equal(state.collectionSearch.limit, 100);
+  assert.equal(state.search.offset, 0);
+  assert.equal(state.collectionSearch.offset, 0);
+});
+
+test("theme remains light until the user chooses dark", () => {
+  let state = createInitialState();
+  assert.equal(state.settings.theme, "light");
+  state = reduce(state, { type: "set-theme", theme: "dark" });
+  assert.equal(state.settings.theme, "dark");
+});
+
 test("catalogue requests expose loading, success, and error states", () => {
   let state = createInitialState();
   state = reduce(state, { type: "search-started" });

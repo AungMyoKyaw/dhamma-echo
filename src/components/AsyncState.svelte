@@ -32,7 +32,7 @@
     <h2 class="text-xl font-bold">The library needs another try</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
-        class="mt-5 rounded-full bg-app-primary px-5 py-2.5 text-sm font-bold text-white"
+        class="primary-button mt-5 rounded-full bg-app-primary px-5 text-sm font-bold text-white"
         type="button"
         onclick={onretry}>Try again</button
       >{/if}
