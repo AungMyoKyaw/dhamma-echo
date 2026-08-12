@@ -19,10 +19,12 @@
 {#if track !== null}
   <QueuePanel {state} {app} />
   <footer
-    class="player-shell fixed bottom-0 left-64 right-0 z-30 border-t border-app-border bg-app-surface/95 px-5 py-3 shadow-player backdrop-blur-xl"
+    class="fixed right-0 bottom-0 left-64 z-30 min-h-[84px] border-t border-app-border bg-app-surface/95 px-5 py-3 shadow-[0_-10px_34px_rgb(46_46_42_/_0.1)] backdrop-blur-xl max-[980px]:px-[0.85rem]"
     aria-label="Audio player"
   >
-    <div class="player-grid">
+    <div
+      class="grid grid-cols-[minmax(180px,0.9fr)_minmax(340px,1.45fr)_minmax(210px,0.9fr)] items-center gap-5 max-[1100px]:grid-cols-[minmax(135px,0.75fr)_minmax(280px,1.35fr)_minmax(160px,auto)] max-[1100px]:gap-[0.9rem] max-[980px]:grid-cols-[minmax(110px,0.62fr)_minmax(245px,1.3fr)_minmax(130px,auto)] max-[980px]:gap-[0.7rem]"
+    >
       <div class="player-track min-w-0" aria-live="polite">
         <p
           class="truncate text-sm font-bold {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
@@ -39,52 +41,59 @@
           {track.teacherName || "Unknown teacher"}
         </p>
         <div class="mt-1 min-h-4">
-          {#if state.player.error}<span class="player-status player-status-error" role="alert"
+          {#if state.player.error}<span
+              class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-error"
+              role="alert"
               ><span class="truncate">{state.player.error}</span><button
-                class="player-retry-button"
+                class="shrink-0 rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-[7px] py-px text-[0.65rem] font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
                 type="button"
                 onclick={() => void app.retryPlayback()}>Retry</button
               ></span
-            >{:else if loading}<span class="player-status text-app-primary" role="status"
+            >{:else if loading}<span
+              class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-app-primary"
+              role="status"
               ><span class="size-2 animate-pulse rounded-full bg-app-primary"
               ></span>Connecting…</span
-            >{:else}<span class="player-status player-status-hint text-app-muted"
+            >{:else}<span
+              class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-app-muted max-[980px]:truncate"
               >Space: play/pause · ←/→: seek</span
             >{/if}
         </div>
       </div>
-      <div class="player-center">
-        <div class="player-controls" aria-label="Playback controls">
+      <div class="min-w-0">
+        <div class="flex items-center justify-center gap-2" aria-label="Playback controls">
           <button
-            class="transport-button"
+            class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 max-[980px]:size-[30px] [&>span]:block [&>span]:size-5 [&_svg]:size-full"
             type="button"
             onclick={() => app.seekBy(-15)}
             aria-label="Jump back 15 seconds"
             title="Jump back 15 seconds"><span><Icon name="backward15" /></span></button
           >
           <button
-            class="transport-button transport-button-primary"
+            class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-white shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_7px_18px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 max-[980px]:size-10 [&_svg]:size-full"
             type="button"
             onclick={() => void app.togglePlayback()}
             aria-label={loading ? "Connecting to audio" : playing ? "Pause" : "Play"}
             title={loading ? "Connecting to audio" : playing ? "Pause" : "Play"}
             aria-pressed={playing}
             disabled={loading}
-            ><span class="transport-primary-icon {playing ? '' : 'is-play'}"
+            ><span class="block size-[21px] {playing ? '' : 'translate-x-px'}"
               ><Icon name={playing ? "pause" : "play"} /></span
             ></button
           >
           <button
-            class="transport-button"
+            class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 max-[980px]:size-[30px] [&>span]:block [&>span]:size-5 [&_svg]:size-full"
             type="button"
             onclick={() => app.seekBy(15)}
             aria-label="Jump forward 15 seconds"
             title="Jump forward 15 seconds"><span><Icon name="forward15" /></span></button
           >
         </div>
-        <div class="player-timeline">
+        <div
+          class="mt-[0.3rem] grid grid-cols-[3.4rem_minmax(90px,1fr)_3.4rem] items-center gap-[0.55rem] text-[0.68rem] text-app-muted tabular-nums max-[980px]:grid-cols-[2.8rem_minmax(70px,1fr)_3.1rem] max-[980px]:gap-[0.35rem] [&>span:first-child]:text-right"
+        >
           <span>{formatDuration(state.player.currentTime)}</span><input
-            class="range-accent"
+            class="w-full min-w-0 accent-app-primary"
             type="range"
             min="0"
             {max}
@@ -95,19 +104,22 @@
           /><span>{formatDuration(state.player.duration)}</span>
         </div>
       </div>
-      <div class="player-session-controls">
-        <label class="player-rate-control" title="Playback speed"
+      <div class="flex min-w-0 items-center justify-end gap-[0.55rem]">
+        <label title="Playback speed"
           ><span class="sr-only">Playback speed</span><select
             value={String(state.settings.playbackRate)}
             onchange={(event) => app.setRate(numberFromControl(event))}
+            class="h-8 min-w-16 rounded-[10px] border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app max-[980px]:min-w-[58px] max-[980px]:pr-[1.3rem] max-[980px]:pl-2"
             aria-label="Playback speed"
             >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
               >{/each}</select
           ></label
         >
-        <label class="player-volume-control" title="Volume"
-          ><span class="player-volume-icon"><Icon name="volume" /></span><input
-            class="player-volume range-accent"
+        <label class="flex min-w-0 items-center gap-[0.4rem] max-[980px]:gap-1" title="Volume"
+          ><span class="block size-[18px] shrink-0 text-app-muted [&_svg]:size-full"
+            ><Icon name="volume" /></span
+          ><input
+            class="w-[78px] min-w-[38px] accent-app-primary max-[1100px]:w-14 max-[980px]:w-[42px]"
             type="range"
             min="0"
             max="1"
@@ -118,14 +130,15 @@
           /></label
         >
         <button
-          class="queue-button"
+          class="relative inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary aria-expanded:bg-app-soft aria-expanded:text-app-primary disabled:opacity-45 [&>span:first-child]:block [&>span:first-child]:size-[19px] [&_svg]:size-full"
           type="button"
           onclick={() => app.dispatch({ type: "toggle-queue" })}
           aria-label="Show queue"
           title="Show queue"
           aria-expanded={state.player.queueOpen}
           ><span><Icon name="queue" /></span>{#if state.player.queue.length > 0}<span
-              class="queue-count">{state.player.queue.length}</span
+              class="absolute -top-[3px] -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.58rem] font-extrabold text-white"
+              >{state.player.queue.length}</span
             >{/if}</button
         >
       </div>

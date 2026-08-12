@@ -28,7 +28,7 @@
     {teacher.name.charAt(0)}
   </div>
   {#if featured}<span
-      class="badge-pill mt-4 w-fit rounded-full bg-app-primary/10 text-[10px] font-bold uppercase tracking-wide text-app-primary"
+      class="mt-4 inline-flex min-h-[22px] w-fit items-center justify-center rounded-full bg-app-primary/10 px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold tracking-wide text-app-primary uppercase"
       >Featured</span
     >{/if}
   <p

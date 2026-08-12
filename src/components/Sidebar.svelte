@@ -37,7 +37,7 @@
   </div>
   <nav class="mt-10 space-y-2" aria-label="Primary navigation">
     {#each routes as item (item.route)}<button
-        class="sidebar-nav-button group w-full rounded-2xl px-4 text-left text-sm font-semibold {active(
+        class="group flex h-12 min-h-12 w-full items-center gap-3 rounded-2xl px-4 py-0 text-left text-sm font-semibold leading-5 transition-[background-color,color,box-shadow] duration-150 {active(
           item.route
         )
           ? 'bg-app-primary text-white shadow-sm'
@@ -45,9 +45,10 @@
         type="button"
         onclick={() => navigate(item.route)}
         aria-current={active(item.route) ? "page" : undefined}
-        ><span class="sidebar-nav-icon size-5"><Icon name={item.icon} /></span><span
-          >{item.label}</span
-        ></button
+        ><span
+          class="flex size-5 shrink-0 -translate-y-px items-center justify-center [&_svg]:block [&_svg]:size-full"
+          ><Icon name={item.icon} /></span
+        ><span>{item.label}</span></button
       >{/each}
   </nav>
   <div class="mt-auto rounded-3xl bg-app-soft p-4">

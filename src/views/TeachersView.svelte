@@ -47,7 +47,7 @@
         className="flex-1"
         onclear={clear}
       /><button
-        class="primary-button h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white"
+        class="inline-flex h-12 min-h-10 items-center justify-center rounded-2xl bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="submit">Search</button
       >
     </form>

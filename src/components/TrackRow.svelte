@@ -32,21 +32,24 @@
 </script>
 
 <article
-  class="track-row grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-3 last:border-0 {current
-    ? 'is-current bg-app-primary/5'
+  class="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-3 last:border-0 {current
+    ? 'bg-app-primary/5'
     : ''} {track.playable ? 'transition hover:bg-app-soft/60' : ''}"
 >
   <button
-    class="track-play-button {track.playable ? 'is-playable' : 'is-unavailable'} {loading
-      ? 'is-loading'
-      : ''}"
+    class="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-soft text-app-muted shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-app-border)_70%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45 {track.playable
+      ? 'bg-[color-mix(in_srgb,var(--color-app-primary)_12%,var(--color-app-surface))] text-app-primary hover:bg-app-primary hover:text-white hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)] group-hover:bg-app-primary group-hover:text-white group-hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
+      : ''} {current && track.playable
+      ? 'bg-app-primary text-white shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
+      : ''} {loading ? 'cursor-wait opacity-72' : ''}"
     type="button"
     onclick={() => void play()}
     aria-label="{actionLabel} {track.title}"
     title="{actionLabel} {track.title}"
     aria-pressed={playing}
     disabled={!track.playable || loading}
-    ><span class="track-play-icon {playing ? '' : 'is-play'}"
+    ><span
+      class="block size-4 [&_svg]:block [&_svg]:size-full {playing ? '' : 'translate-x-[0.75px]'}"
       ><Icon name={playing ? "pause" : "play"} /></span
     ></button
   >
@@ -62,7 +65,7 @@
         class="truncate font-bold {myanmarTitle ? 'myanmar-text' : ''}"
         lang={myanmarTitle ? "my" : undefined}>{track.title}</span
       >{#if !track.playable}<span
-          class="badge-pill rounded-full bg-app-soft text-[10px] font-bold uppercase text-app-muted"
+          class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-soft px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-muted uppercase"
           >{track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Unavailable"}</span
         >{/if}</span
     >
@@ -77,7 +80,9 @@
   </button>
   <div class="flex items-center gap-2">
     <button
-      class="row-action-button {favorite ? 'is-active' : ''}"
+      class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {favorite
+        ? 'bg-transparent text-app-primary'
+        : ''} [&_svg]:block [&_svg]:size-full"
       type="button"
       onclick={() => app.dispatch({ type: "toggle-favorite", id: track.id })}
       aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
@@ -87,7 +92,9 @@
       </span>
     </button>
     <button
-      class="row-action-button {downloaded ? 'is-active' : ''}"
+      class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {downloaded
+        ? 'bg-transparent text-app-primary'
+        : ''} [&_svg]:block [&_svg]:size-full"
       type="button"
       onclick={() => void download()}
       aria-label={downloaded
@@ -104,20 +111,20 @@
       ><span class="size-5"><Icon name="download" /></span>
     </button>
     {#if progress !== null}<span
-        class="download-progress"
+        class="h-[3px] w-7 overflow-hidden rounded-full bg-app-border"
         aria-label={progress.total === null
           ? "Download in progress"
           : `${Math.round((progress.downloaded / progress.total) * 100)} percent downloaded`}
       >
         <span
-          class="download-progress-bar"
+          class="block h-full rounded-[inherit] bg-app-primary transition-[width] duration-150"
           style:width={progress.total === null
             ? "35%"
             : `${Math.min(100, (progress.downloaded / progress.total) * 100)}%`}
         ></span>
       </span>{/if}
     <button
-      class="row-queue-button"
+      class="inline-flex min-h-[30px] items-center justify-center rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-5 font-bold text-app-muted transition-[border-color,background-color,color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] hover:bg-app-soft hover:text-app"
       type="button"
       onclick={() => app.dispatch({ type: "enqueue", track })}>Queue</button
     >

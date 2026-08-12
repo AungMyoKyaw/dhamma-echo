@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { readFile, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import test from "node:test";
 
 const htmlPath = new URL("../docs/index.html", import.meta.url);
@@ -93,25 +93,99 @@ test("dynamic audio text uses unclipped Myanmar typography", async () => {
   assert.match(home, /isMyanmarText\(latest\.title\)/);
 });
 
-test("shared pill controls use optical vertical centering", async () => {
-  const css = await readFile(new URL("../src/index.css", import.meta.url), "utf8");
+test("shared pill controls use Tailwind optical vertical centering", async () => {
+  const [explore, trackRow, teacherCard] = await Promise.all([
+    readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/TrackRow.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/TeacherCard.svelte", import.meta.url), "utf8")
+  ]);
 
-  assert.match(css, /\.pill-button,[\s\S]*padding-top:\s*2px/);
-  assert.match(css, /\.filter-pill[\s\S]*padding-top:\s*2px/);
-  assert.match(css, /\.row-queue-button[\s\S]*padding-top:\s*2px/);
-  assert.match(css, /\.badge-pill\s*\{[^}]*align-items:\s*center[^}]*padding-top:\s*2px/s);
+  assert.match(explore, /min-h-10[^"']*pt-0\.5/);
+  assert.match(trackRow, /min-h-\[30px\][^"']*pt-0\.5/);
+  assert.match(teacherCard, /items-center[^"']*pt-0\.5/);
 });
 
 test("active filter clear icons cannot expand beyond their control", async () => {
-  const [css, explore] = await Promise.all([
-    readFile(new URL("../src/index.css", import.meta.url), "utf8"),
-    readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8")
-  ]);
+  const explore = await readFile(
+    new URL("../src/views/ExploreView.svelte", import.meta.url),
+    "utf8"
+  );
 
-  assert.match(css, /\.filter-clear-button\s*\{[^}]*width:\s*24px[^}]*height:\s*24px/s);
-  assert.equal((explore.match(/class="filter-clear-button"/g) ?? []).length, 3);
-  assert.match(css, /\.active-filter-pill\s*\{[^}]*min-height:\s*40px[^}]*align-items:\s*center/s);
-  assert.equal((explore.match(/active-filter-pill/g) ?? []).length, 3);
+  assert.equal((explore.match(/inline-flex size-6 shrink-0/g) ?? []).length, 3);
+  assert.equal((explore.match(/class="block size-3"/g) ?? []).length, 3);
+  assert.equal((explore.match(/inline-flex min-h-10 items-center gap-2/g) ?? []).length, 3);
+});
+
+test("app styling uses Tailwind utilities without legacy component CSS", async () => {
+  const css = await readFile(new URL("../src/index.css", import.meta.url), "utf8");
+  const componentNames = await readdir(new URL("../src/components/", import.meta.url));
+  const viewNames = await readdir(new URL("../src/views/", import.meta.url));
+  const svelteUrls = [
+    new URL("../src/App.svelte", import.meta.url),
+    ...componentNames
+      .filter((name) => name.endsWith(".svelte"))
+      .map((name) => new URL(`../src/components/${name}`, import.meta.url)),
+    ...viewNames
+      .filter((name) => name.endsWith(".svelte"))
+      .map((name) => new URL(`../src/views/${name}`, import.meta.url))
+  ];
+  const sources = await Promise.all(svelteUrls.map((url) => readFile(url, "utf8")));
+  const forbiddenSelectors = [
+    "app-shell",
+    "app-content",
+    "search-form",
+    "filter-pill",
+    "filter-clear-button",
+    "active-filter-pill",
+    "badge-pill",
+    "pill-button",
+    "primary-button",
+    "sidebar-nav-button",
+    "sidebar-nav-icon",
+    "track-play-button",
+    "track-play-icon",
+    "row-action-button",
+    "row-queue-button",
+    "download-progress",
+    "player-shell",
+    "player-grid",
+    "player-center",
+    "player-controls",
+    "transport-button",
+    "transport-primary-icon",
+    "player-timeline",
+    "player-session-controls",
+    "player-rate-control",
+    "player-volume-control",
+    "player-volume-icon",
+    "player-volume",
+    "queue-button",
+    "queue-count",
+    "player-status",
+    "player-retry-button",
+    "range-accent",
+    "scrollbar-thin",
+    "icon"
+  ];
+
+  assert.match(css, /^@import "tailwindcss";/);
+  assert.match(css, /@theme\s*\{/);
+  for (const selector of forbiddenSelectors) {
+    assert.doesNotMatch(css, new RegExp(`\\.${selector}(?![a-z-])`), selector);
+    if (selector !== "icon") {
+      assert.equal(
+        sources.some((source) =>
+          new RegExp(`class=["'][^"']*(?:^|\\s)${selector}(?:\\s|["'])`).test(source)
+        ),
+        false,
+        selector
+      );
+    }
+  }
+  for (const source of sources) {
+    assert.doesNotMatch(source, /<style(?:\s|>)/);
+    assert.doesNotMatch(source, /\sstyle\s*=/);
+  }
 });
 
 test("privacy policy publishes the required user-data disclosures", async () => {

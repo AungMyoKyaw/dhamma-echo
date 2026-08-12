@@ -40,9 +40,17 @@
 </script>
 
 <svelte:window onkeydown={keydown} onbeforeunload={() => app.destroy()} />
-<div class="app-shell min-h-screen bg-app-bg text-app" data-theme={state.settings.theme}>
+<div
+  class="h-screen min-h-screen overflow-hidden bg-app-bg text-app"
+  data-theme={state.settings.theme}
+>
   <Sidebar {state} {app} />
-  <div class="app-content ml-64 {state.player.current === null ? 'pb-8' : 'pb-40'}">
+  <div
+    class="ml-64 h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] {state.player
+      .current === null
+      ? 'pb-8'
+      : 'pb-40'}"
+  >
     <Header {state} />
     <main class="px-10 py-4">
       {#if state.route === "home"}<HomeView {state} {app} />

@@ -16,8 +16,8 @@
     </p>
     <div class="mt-4 inline-flex rounded-2xl bg-app-soft p-1" aria-label="Color theme">
       {#each ["light", "dark"] as theme (theme)}<button
-          class="pill-button rounded-xl px-5 text-sm font-bold capitalize {state.settings.theme ===
-          theme
+          class="inline-flex min-h-10 items-center justify-center rounded-xl px-5 pt-0.5 pb-0 text-sm leading-none font-bold capitalize transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {state
+            .settings.theme === theme
             ? 'bg-app-surface text-app-primary shadow-sm'
             : 'text-app-muted'}"
           type="button"
@@ -40,7 +40,7 @@
         >Default volume<span
           class="mt-2 flex h-12 items-center rounded-2xl border border-app-border bg-app-bg px-4"
           ><input
-            class="range-accent w-full"
+            class="w-full accent-app-primary"
             type="range"
             min="0"
             max="1"

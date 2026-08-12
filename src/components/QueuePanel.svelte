@@ -22,7 +22,9 @@
         onclick={() => app.dispatch({ type: "clear-queue" })}>Clear</button
       >
     </div>
-    <div class="scrollbar-thin max-h-80 overflow-y-auto">
+    <div
+      class="max-h-80 overflow-y-auto [scrollbar-color:var(--color-app-border)_transparent] [scrollbar-width:thin]"
+    >
       {#if state.player.queue.length === 0}<p class="p-6 text-center text-sm text-app-muted">
           Your queue is empty.
         </p>

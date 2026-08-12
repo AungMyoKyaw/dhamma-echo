@@ -40,7 +40,7 @@
 
 <section class="space-y-5">
   <form
-    class="search-form gap-3 rounded-card border border-app-border bg-app-surface p-4"
+    class="grid grid-cols-[minmax(0,1fr)_160px_140px_auto] items-center gap-3 rounded-card border border-app-border bg-app-surface p-4 max-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] max-[760px]:[&>label:first-child]:col-span-full"
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
@@ -70,7 +70,7 @@
       ></label
     >
     <button
-      class="primary-button h-12 rounded-2xl bg-app-primary px-5 text-sm font-bold text-white"
+      class="inline-flex h-12 min-h-10 items-center justify-center rounded-2xl bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
       type="submit">Search</button
     >
     {#if state.categories.status === "ready"}<div
@@ -78,15 +78,15 @@
         aria-label="Audio categories"
       >
         <button
-          class="filter-pill rounded-full px-3 py-2 text-xs font-bold {state.search.categoryId ===
-          null
+          class="inline-flex min-h-[40px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
+            .search.categoryId === null
             ? 'bg-app-primary text-white'
             : 'bg-app-soft text-app-muted'}"
           type="button"
           onclick={() => setCategory(null)}>All audio</button
         >{#each state.categories.data as item (item.id)}<button
-            class="filter-pill rounded-full px-3 py-2 text-xs font-bold {state.search.categoryId ===
-            item.id
+            class="inline-flex min-h-[40px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
+              .search.categoryId === item.id
               ? 'bg-app-primary text-white'
               : 'bg-app-soft text-app-muted'}"
             type="button"
@@ -97,7 +97,7 @@
   </form>
   <div class="flex flex-wrap gap-2">
     {#if state.search.teacherId !== null}<div
-        class="active-filter-pill rounded-full bg-app-primary/10 text-xs font-bold text-app-primary"
+        class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
       >
         Teacher: {teacherFilterName(state)}<button
           type="button"
@@ -105,12 +105,13 @@
             app.dispatch({ type: "set-teacher", teacherId: null });
             void app.search();
           }}
-          class="filter-clear-button"
-          aria-label="Clear teacher filter"><span><Icon name="close" /></span></button
+          class="inline-flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+          aria-label="Clear teacher filter"
+          ><span class="block size-3"><Icon name="close" /></span></button
         >
       </div>{/if}
     {#if category !== undefined}<div
-        class="active-filter-pill rounded-full bg-app-primary/10 text-xs font-bold text-app-primary"
+        class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
       >
         Category: {category.name}<button
           type="button"
@@ -118,12 +119,13 @@
             app.dispatch({ type: "clear-category" });
             void app.search();
           }}
-          class="filter-clear-button"
-          aria-label="Clear category filter"><span><Icon name="close" /></span></button
+          class="inline-flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+          aria-label="Clear category filter"
+          ><span class="block size-3"><Icon name="close" /></span></button
         >
       </div>{/if}
     {#if state.search.collectionId !== null}<div
-        class="active-filter-pill rounded-full bg-app-primary/10 text-xs font-bold text-app-primary"
+        class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
       >
         Collection filter<button
           type="button"
@@ -131,8 +133,9 @@
             app.dispatch({ type: "clear-collection" });
             void app.search();
           }}
-          class="filter-clear-button"
-          aria-label="Clear collection filter"><span><Icon name="close" /></span></button
+          class="inline-flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+          aria-label="Clear collection filter"
+          ><span class="block size-3"><Icon name="close" /></span></button
         >
       </div>{/if}
   </div>

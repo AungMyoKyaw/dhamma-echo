@@ -32,7 +32,7 @@
     <h2 class="text-xl font-bold">The library needs another try</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
-        class="primary-button mt-5 rounded-full bg-app-primary px-5 text-sm font-bold text-white"
+        class="mt-5 inline-flex min-h-10 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         onclick={onretry}>Try again</button
       >{/if}

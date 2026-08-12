@@ -22,7 +22,7 @@
 </script>
 
 <svg
-  class="icon"
+  class="block size-full align-middle"
   aria-hidden="true"
   viewBox="0 0 24 24"
   fill={name === "heart" && filled ? "currentColor" : "none"}

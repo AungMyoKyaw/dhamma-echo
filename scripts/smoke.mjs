@@ -18,9 +18,9 @@ const checks = [
   [/<script[^>]+type="module"[^>]+src="\.\/assets\/[^"]+\.js"/.test(html), "Vite module entry"],
   [javascript.length > 1000, "compiled Svelte application"],
   [css.includes("--color-app-primary"), "design tokens"],
-  [css.includes(".search-form"), "responsive search styling"],
-  [css.includes(".transport-button"), "transport control styling"],
-  [css.includes(".player-controls"), "player control grouping"],
+  [css.includes("color-mix(in srgb"), "Tailwind arbitrary color utilities"],
+  [css.includes("accent-color"), "native range control styling"],
+  [css.includes("grid-template-columns"), "responsive application grids"],
   [!html.includes("http://") && !html.includes("https://"), "no remote page assets"]
 ];
 for (const [passed, label] of checks)

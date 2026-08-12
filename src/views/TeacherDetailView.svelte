@@ -28,7 +28,7 @@
 
 <section class="space-y-6">
   <button
-    class="pill-button rounded-full border border-app-border px-4 text-sm font-bold text-app-primary"
+    class="inline-flex min-h-10 items-center justify-center rounded-full border border-app-border px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
     type="button"
     onclick={() => app.dispatch({ type: "return-to-list" })}>Back</button
   >
@@ -52,7 +52,7 @@
         {detail.name}
       </h2>
       <button
-        class="primary-button mt-4 rounded-full bg-app-primary px-4 text-xs font-bold text-white"
+        class="mt-4 inline-flex min-h-10 items-center justify-center rounded-full bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         onclick={() => void explore()}>Explore this teacher</button
       >

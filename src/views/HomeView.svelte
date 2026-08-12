@@ -121,7 +121,7 @@
       </div>
       <div
         class={hasRecent
-          ? "scrollbar-thin -mx-2 flex gap-4 overflow-x-auto px-2 pb-4 pt-2"
+          ? "-mx-2 flex gap-4 overflow-x-auto px-2 pt-2 pb-4 [scrollbar-color:var(--color-app-border)_transparent] [scrollbar-width:thin]"
           : "grid grid-cols-3 gap-4"}
         data-featured-layout={hasRecent ? "carousel" : "grid"}
       >
