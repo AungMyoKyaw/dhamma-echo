@@ -48,10 +48,12 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 - [Modules and trust boundaries](docs/architecture/modules.md)
 - [Catalogue and playback data flow](docs/architecture/data-flow.md)
 - [Build and release flow](docs/architecture/release.md)
+- [UI shell and responsive layout](docs/architecture/ui-shell.md)
 - [Product website architecture](docs/architecture/product-site.md)
 - [Product website design](docs/superpowers/specs/2026-08-05-github-pages-product-site-design.md)
 - [Product and technical design](docs/superpowers/specs/2026-08-04-dhamma-echo-design.md)
 - [Svelte migration design](docs/superpowers/specs/2026-08-10-svelte-frontend-migration-design.md)
+- [Production UI hardening design](docs/superpowers/specs/2026-08-13-production-ui-hardening-design.md)
 - [Ralph Loop](docs/ralph-loop.md)
 
 ## Technology stack
@@ -67,7 +69,7 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 ## Requirements
 
 - Node.js 22.13 or newer
-- Bun 1.4 canary or newer
+- Bun 1.3.14 (pinned by `packageManager`)
 - Rust 1.85 or newer with Cargo and rustfmt
 - Platform prerequisites required by Tauri 2
 
@@ -97,7 +99,7 @@ cd dhamma-echo
 bun install
 ```
 
-This Svelte migration changes the frontend build dependencies. The lockfile uses Bun lockfile version 2, so use the Bun 1.4 canary or newer for installs and CI; Bun 1.4 is not yet published as a stable release. Run `bun install` once on a networked development machine if dependencies change, review and commit the resulting lockfile diff, then use `bun install --frozen-lockfile --ignore-scripts` for deterministic CI/release installs. `src-tauri/Cargo.lock` remains unchanged.
+The committed `bun.lock` is authoritative and the repository pins Bun 1.3.14 for local and CI reproducibility. Use `bun install --frozen-lockfile --ignore-scripts` for ordinary installs. If dependencies intentionally change, run `bun install`, review the dependency and lockfile diff, and commit only the expected changes. `src-tauri/Cargo.lock` is authoritative for Rust dependencies.
 
 ## Run
 
@@ -126,6 +128,7 @@ Then open `http://127.0.0.1:1420`.
 | `bun run lint`           | Run strict ESLint with zero warnings                                  |
 | `bun run typecheck`      | Run `svelte-check` and strict TypeScript checking                     |
 | `bun run test`           | Run the core TypeScript behavior tests                                |
+| `bun run test:policy`    | Reject focused or skipped required tests                              |
 | `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
 | `bun run site:test`      | Run product website behavior and link tests                           |
 | `bun run site:smoke`     | Validate static assets, paths, budgets, and runtime isolation         |

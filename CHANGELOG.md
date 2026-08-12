@@ -4,6 +4,20 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Added a machine-verifiable required-test policy check that rejects focused or skipped tests.
+- Added a UI shell architecture diagram covering normal and compact desktop layouts.
+
+### Changed
+
+- Refined the desktop shell, route headers, search forms, card grids, track actions, async states, and persistent player for clearer hierarchy and better behavior at the 860×620 minimum window.
+- Made the compact player a deliberate two-row layout while preserving seek, progress, speed, volume, retry, and queue controls.
+- Increased critical navigation/playback action targets and made current-track emphasis visible through both structure and color.
+- Pinned Bun 1.3.14 across package metadata and GitHub workflows instead of canary/latest channels.
+- Updated GitHub workflow checkout steps to the current `actions/checkout@v7` major.
+- Raised measured core TypeScript branch coverage from the previous 99% exception to a strict 100% threshold.
+
 ## [0.5.1] - 2026-08-11
 
 ### Fixed

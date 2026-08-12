@@ -2,7 +2,7 @@
 
 ## Development setup
 
-1. Install Node.js 22+, Bun 1.4+, Rust 1.85+, and the Tauri platform prerequisites.
+1. Install Node.js 22+, Bun 1.3.14, Rust 1.85+, and the Tauri platform prerequisites.
 2. Run `bun install --frozen-lockfile`.
 3. Run `cargo generate-lockfile --manifest-path src-tauri/Cargo.toml` when `Cargo.lock` is absent.
 4. Start the desktop app with `bun run tauri:dev` or the mock browser preview with `bun run dev:web`.
