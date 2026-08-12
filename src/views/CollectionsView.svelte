@@ -36,18 +36,18 @@
 
 <section class="space-y-5">
   <form
-    class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4"
+    class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4 shadow-[0_1px_2px_rgb(46_46_42_/_0.03)]"
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
       label="Search collections"
       placeholder="Search collection name"
       value={state.collectionSearch.query}
-      className="min-w-64 flex-1"
+      className="min-w-[260px] flex-[1_1_360px]"
       onclear={clear}
-    /><label
+    /><label class="min-w-[190px] flex-[0_1_240px]"
       ><span class="sr-only">Collection teacher</span><select
-        class="h-12 max-w-64 rounded-2xl border border-app-border bg-app-bg px-4 text-sm"
+        class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm"
         name="teacherId"
         value={state.collectionSearch.teacherId === null
           ? ""
@@ -74,7 +74,7 @@
       detail="Try a shorter collection name or clear the teacher filter."
     />
   {:else if state.collectionSearch.teacherId !== null}<div
-      class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+      class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"
     >
       {#each state.collections.page.items as collection (collection.id)}<CollectionCard
           {collection}
@@ -85,7 +85,7 @@
   {:else}<div class="space-y-7">
       {#each groups as group (group.key)}<section>
           <h2 class="mb-3 text-lg font-bold" data-collection-group-heading>{group.name}</h2>
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
             {#each group.items as collection (collection.id)}<CollectionCard
                 {collection}
                 showTeacher={false}

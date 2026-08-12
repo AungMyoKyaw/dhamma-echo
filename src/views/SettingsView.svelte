@@ -16,7 +16,7 @@
     </p>
     <div class="mt-4 inline-flex rounded-2xl bg-app-soft p-1" aria-label="Color theme">
       {#each ["light", "dark"] as theme (theme)}<button
-          class="inline-flex min-h-10 items-center justify-center rounded-xl px-5 pt-0.5 pb-0 text-sm leading-none font-bold capitalize transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {state
+          class="inline-flex min-h-11 items-center justify-center rounded-xl px-5 pt-0.5 pb-0 text-sm leading-none font-bold capitalize transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {state
             .settings.theme === theme
             ? 'bg-app-surface text-app-primary shadow-sm'
             : 'text-app-muted'}"
@@ -28,7 +28,7 @@
   </div>
   <div class="rounded-card border border-app-border bg-app-surface p-6">
     <h2 class="text-lg font-bold">Playback</h2>
-    <div class="mt-5 grid grid-cols-2 gap-4">
+    <div class="mt-5 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
       <label class="text-sm font-bold"
         >Default speed<select
           class="mt-2 h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 font-normal"

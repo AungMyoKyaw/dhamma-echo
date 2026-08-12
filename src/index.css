@@ -13,6 +13,7 @@
   --color-app-secondary: #485b37;
   --color-app-tertiary: #6e5014;
   --color-error: #8d3531;
+  --color-error-soft: #f9e8e6;
   --shadow-player: 0 -16px 50px rgb(46 46 42 / 0.12);
   --radius-card: 1.25rem;
 }
@@ -35,6 +36,7 @@
   --color-app-secondary: #9bab82;
   --color-app-tertiary: #d0aa62;
   --color-error: #e2938c;
+  --color-error-soft: #35201f;
   color-scheme: dark;
 }
 

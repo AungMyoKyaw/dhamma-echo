@@ -384,3 +384,10 @@ test("teacher talk append failures preserve records and empty appends exhaust lo
   assert.equal(state.teacherTalks.exhausted, false);
   assert.equal(state.teacherTalks.loadMoreMessage, "");
 });
+
+test("download completion rebuilds a missing legacy downloads map", () => {
+  const state = createInitialState();
+  state.library.downloads = undefined;
+  const next = reduce(state, { type: "downloaded", id: 9, path: "/tmp/nine.mp3" });
+  assert.deepEqual(next.library.downloads, { 9: "/tmp/nine.mp3" });
+});

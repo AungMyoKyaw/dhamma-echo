@@ -101,7 +101,7 @@ test("shared pill controls use Tailwind optical vertical centering", async () =>
   ]);
 
   assert.match(explore, /min-h-10[^"']*pt-0\.5/);
-  assert.match(trackRow, /min-h-\[30px\][^"']*pt-0\.5/);
+  assert.match(trackRow, /min-h-10[^"']*pt-0\.5/);
   assert.match(teacherCard, /items-center[^"']*pt-0\.5/);
 });
 
@@ -216,4 +216,22 @@ test("site smoke command passes", () => {
 
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.match(result.stdout, /Product site smoke checks passed/);
+});
+
+test("desktop shell keeps compact-window layout contracts", async () => {
+  const [app, sidebar, player, teachers, explore] = await Promise.all([
+    readFile(new URL("../src/App.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/Sidebar.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/Player.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/TeachersView.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8")
+  ]);
+
+  assert.match(app, /max-\[1040px\]:ml-56/);
+  assert.match(app, /@container/);
+  assert.match(sidebar, /max-\[1040px\]:w-56/);
+  assert.match(player, /max-\[1040px\]:min-h-\[132px\]/);
+  assert.match(player, /max-\[1040px\]:col-span-2 max-\[1040px\]:row-start-2/);
+  assert.match(teachers, /repeat\(auto-fit,minmax\(220px,1fr\)\)/);
+  assert.doesNotMatch(explore, /max-\[760px\]/);
 });

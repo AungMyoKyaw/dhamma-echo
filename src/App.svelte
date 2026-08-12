@@ -46,13 +46,13 @@
 >
   <Sidebar {state} {app} />
   <div
-    class="ml-64 h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] {state.player
+    class="ml-64 h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] max-[1040px]:ml-56 {state.player
       .current === null
       ? 'pb-8'
       : 'pb-40'}"
   >
     <Header {state} />
-    <main class="px-10 py-4">
+    <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
       {#if state.route === "home"}<HomeView {state} {app} />
       {:else if state.route === "explore"}<ExploreView {state} {app} />
       {:else if state.route === "collections"}<CollectionsView {state} {app} />

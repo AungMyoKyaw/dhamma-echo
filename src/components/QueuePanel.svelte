@@ -8,7 +8,7 @@
 
 {#if state.player.queueOpen}
   <aside
-    class="fixed bottom-28 right-6 z-40 w-96 overflow-hidden rounded-card border border-app-border bg-app-surface shadow-2xl"
+    class="fixed right-6 bottom-28 z-40 w-96 max-[1040px]:right-4 max-[1040px]:bottom-40 overflow-hidden rounded-card border border-app-border bg-app-surface shadow-2xl"
     aria-label="Playback queue"
   >
     <div class="flex items-center justify-between border-b border-app-border p-4">
@@ -17,7 +17,7 @@
         <p class="text-xs text-app-muted">{state.player.queue.length} talks</p>
       </div>
       <button
-        class="text-xs font-bold text-app-primary"
+        class="inline-flex min-h-10 items-center rounded-full px-3 text-xs font-bold text-app-primary hover:bg-app-soft"
         type="button"
         onclick={() => app.dispatch({ type: "clear-queue" })}>Clear</button
       >
@@ -50,7 +50,7 @@
               </p>
             </div>
             <button
-              class="flex size-8 items-center justify-center rounded-full hover:bg-app-soft"
+              class="flex size-10 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
               type="button"
               onclick={() => app.dispatch({ type: "remove-queue", id: track.id })}
               aria-label="Remove {track.title} from queue"

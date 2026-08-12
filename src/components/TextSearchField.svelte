@@ -37,7 +37,7 @@
     {placeholder}
   />
   {#if value}<button
-      class="absolute right-3 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
+      class="absolute right-2 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
       type="button"
       onclick={() => void clear()}
       aria-label="Clear {label.toLowerCase()}"

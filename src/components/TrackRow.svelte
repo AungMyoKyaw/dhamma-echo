@@ -32,12 +32,12 @@
 </script>
 
 <article
-  class="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-app-border px-4 py-3 last:border-0 {current
-    ? 'bg-app-primary/5'
+  class="group grid grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-l-2 border-b-app-border border-l-transparent px-4 py-3 last:border-b-0 {current
+    ? 'border-l-app-primary bg-app-primary/5'
     : ''} {track.playable ? 'transition hover:bg-app-soft/60' : ''}"
 >
   <button
-    class="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-soft text-app-muted shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-app-border)_70%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45 {track.playable
+    class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-soft text-app-muted shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-app-border)_70%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45 {track.playable
       ? 'bg-[color-mix(in_srgb,var(--color-app-primary)_12%,var(--color-app-surface))] text-app-primary hover:bg-app-primary hover:text-white hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)] group-hover:bg-app-primary group-hover:text-white group-hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
       : ''} {current && track.playable
       ? 'bg-app-primary text-white shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
@@ -49,7 +49,7 @@
     aria-pressed={playing}
     disabled={!track.playable || loading}
     ><span
-      class="block size-4 [&_svg]:block [&_svg]:size-full {playing ? '' : 'translate-x-[0.75px]'}"
+      class="block size-[18px] [&_svg]:block [&_svg]:size-full {playing ? '' : 'translate-x-[0.75px]'}"
       ><Icon name={playing ? "pause" : "play"} /></span
     ></button
   >
@@ -80,7 +80,7 @@
   </button>
   <div class="flex items-center gap-2">
     <button
-      class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {favorite
+      class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {favorite
         ? 'bg-transparent text-app-primary'
         : ''} [&_svg]:block [&_svg]:size-full"
       type="button"
@@ -92,7 +92,7 @@
       </span>
     </button>
     <button
-      class="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {downloaded
+      class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {downloaded
         ? 'bg-transparent text-app-primary'
         : ''} [&_svg]:block [&_svg]:size-full"
       type="button"
@@ -124,7 +124,7 @@
         ></span>
       </span>{/if}
     <button
-      class="inline-flex min-h-[30px] items-center justify-center rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-5 font-bold text-app-muted transition-[border-color,background-color,color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] hover:bg-app-soft hover:text-app"
+      class="inline-flex min-h-10 items-center justify-center rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-5 font-bold text-app-muted transition-[border-color,background-color,color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] hover:bg-app-soft hover:text-app"
       type="button"
       onclick={() => app.dispatch({ type: "enqueue", track })}>Queue</button
     >

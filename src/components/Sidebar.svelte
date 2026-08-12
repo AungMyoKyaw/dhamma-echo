@@ -26,7 +26,7 @@
 </script>
 
 <aside
-  class="fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r border-app-border bg-app-surface px-5 py-6"
+  class="fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r border-app-border bg-app-surface px-5 py-6 max-[1040px]:w-56 max-[1040px]:px-4"
 >
   <div class="flex items-center gap-3 px-2">
     <img src="./logo.svg" alt="" class="size-11 rounded-2xl" />
@@ -35,7 +35,7 @@
       <p class="text-xs text-app-muted">Listen with intention</p>
     </div>
   </div>
-  <nav class="mt-10 space-y-2" aria-label="Primary navigation">
+  <nav class="mt-9 space-y-2 max-[1040px]:mt-8" aria-label="Primary navigation">
     {#each routes as item (item.route)}<button
         class="group flex h-12 min-h-12 w-full items-center gap-3 rounded-2xl px-4 py-0 text-left text-sm font-semibold leading-5 transition-[background-color,color,box-shadow] duration-150 {active(
           item.route
@@ -51,7 +51,7 @@
         ><span>{item.label}</span></button
       >{/each}
   </nav>
-  <div class="mt-auto rounded-3xl bg-app-soft p-4">
+  <div class="mt-auto rounded-3xl border border-app-border/70 bg-app-soft p-4 max-[1040px]:p-3.5">
     <div
       class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-secondary/15 text-app-secondary"
     >

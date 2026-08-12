@@ -137,3 +137,40 @@ test("settings storage rejects corrupt JSON and non-object values", () => {
     assert.deepEqual(loadSettings(storage), createDefaultSettings());
   }
 });
+
+test("library storage rejects fractional identifiers", () => {
+  const storage = new MemoryStorage();
+  storage.setItem(
+    "dhamma-echo:library",
+    JSON.stringify({
+      version: 1,
+      favorites: [1.5, 2],
+      history: [
+        { id: 3.5, playedAt: 1 },
+        { id: 3, playedAt: 2 }
+      ],
+      resume: { "4.5": 2, 4: 3 },
+      downloads: { "5.5": "/tmp/bad.mp3", 5: "/tmp/good.mp3" }
+    })
+  );
+  assert.deepEqual(loadLibrary(storage), {
+    favorites: [2],
+    history: [{ id: 3, playedAt: 2 }],
+    resume: { 4: 3 },
+    downloads: { 5: "/tmp/good.mp3" }
+  });
+});
+
+test("settings keep valid playback values while defaulting unknown optional preferences", () => {
+  const storage = new MemoryStorage();
+  storage.setItem(
+    "dhamma-echo:settings",
+    JSON.stringify({ version: 1, playbackRate: 1, volume: 0.5, browseLimit: 17, theme: "purple" })
+  );
+  assert.deepEqual(loadSettings(storage), {
+    playbackRate: 1,
+    volume: 0.5,
+    browseLimit: 50,
+    theme: "light"
+  });
+});

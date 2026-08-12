@@ -14,7 +14,7 @@
 </script>
 
 <button
-  class="group flex min-w-0 flex-col rounded-card border border-app-border bg-app-surface p-5 text-left transition hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-lg"
+  class="group flex min-h-40 min-w-0 flex-col rounded-card border border-app-border bg-app-surface p-5 text-left shadow-[0_1px_2px_rgb(46_46_42_/_0.04)] transition-[transform,border-color,box-shadow,background-color] duration-150 hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-[0_10px_28px_rgb(46_46_42_/_0.09)] focus-visible:-translate-y-0.5 focus-visible:border-app-primary/60"
   type="button"
   onclick={() => void onselect(collection)}
 >
@@ -29,7 +29,7 @@
     >
       {collection.teacherName || "Unknown teacher"}
     </p>{/if}
-  <p class="mt-4 text-xs font-bold text-app-primary">
+  <p class="mt-auto pt-4 text-xs font-bold text-app-primary tabular-nums">
     {collection.audioCount.toLocaleString("en-US")} talks
   </p>
 </button>

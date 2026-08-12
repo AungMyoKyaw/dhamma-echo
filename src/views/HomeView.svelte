@@ -37,7 +37,7 @@
         <p class="text-xs font-bold uppercase tracking-wider text-app-primary">
           Continue listening
         </p>
-        <div class="h-20 animate-pulse rounded-card bg-app-soft"></div>
+        <div class="h-20 animate-pulse rounded-card bg-app-soft motion-reduce:animate-none"></div>
       </section>
     {:else if state.homeRecent.status === "ready" && state.homeRecent.tracks.length > 0}
       {@const latest = state.homeRecent.tracks[0]}
@@ -57,7 +57,7 @@
             <h2 class="mt-1 text-2xl font-bold">Pick up where you left off</h2>
           </div>
           <div
-            class="flex items-center gap-4 rounded-card border border-app-border bg-app-surface p-5"
+            class="relative flex items-center gap-4 overflow-hidden rounded-card border border-app-border bg-app-surface p-5 shadow-[0_1px_2px_rgb(46_46_42_/_0.04)] before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-app-primary"
           >
             <button
               class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-white transition hover:opacity-90 {latest.playable
@@ -96,7 +96,7 @@
         </section>
       {/if}
     {/if}
-    {#if !hasRecent}<div class="grid grid-cols-4 gap-4">
+    {#if !hasRecent}<div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
         {#each stats as stat (stat.label)}<article
             class="rounded-card border border-app-border bg-app-surface p-5"
           >
@@ -122,7 +122,7 @@
       <div
         class={hasRecent
           ? "-mx-2 flex gap-4 overflow-x-auto px-2 pt-2 pb-4 [scrollbar-color:var(--color-app-border)_transparent] [scrollbar-width:thin]"
-          : "grid grid-cols-3 gap-4"}
+          : "grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"}
         data-featured-layout={hasRecent ? "carousel" : "grid"}
       >
         {#if state.teachers.status === "ready" && featured.length > 0}{#each featured as teacher (teacher.id)}<TeacherCard

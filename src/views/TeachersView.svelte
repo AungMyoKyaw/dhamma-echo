@@ -37,14 +37,14 @@
   />
 {:else}<section class="space-y-5">
     <form
-      class="flex gap-3 rounded-card border border-app-border bg-app-surface p-4"
+      class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4 shadow-[0_1px_2px_rgb(46_46_42_/_0.03)]"
       onsubmit={(event) => void submit(event)}
     >
       <TextSearchField
         label="Search teachers"
         placeholder="Search teacher name"
         value={state.teacherQuery}
-        className="flex-1"
+        className="min-w-[260px] flex-[1_1_360px]"
         onclear={clear}
       /><button
         class="inline-flex h-12 min-h-10 items-center justify-center rounded-2xl bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
@@ -55,7 +55,7 @@
         kind="empty"
         title="No teachers match"
         detail="Try a different spelling or a shorter name."
-      />{:else}<div class="grid grid-cols-3 gap-4">
+      />{:else}<div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
         {#each results as teacher (teacher.id)}<TeacherCard {teacher} onselect={open} />{/each}
       </div>{/if}
   </section>{/if}

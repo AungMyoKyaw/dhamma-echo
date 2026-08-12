@@ -774,3 +774,29 @@ test("DhammaApp reports category, collection, and detail failures", async () => 
   assert.equal(idle.state.teacherTalks.status, "idle");
   idle.destroy();
 });
+
+test("DhammaApp handles legacy download state and prefers a downloaded local file", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+
+  app.state.library.downloads = undefined;
+  await app.loadDownloadedTracks();
+  assert.deepEqual(app.state.downloadedTracks, []);
+
+  app.state.library.downloads = { [String(tracks[0].id)]: "/tmp/talk.mp3" };
+  const previousWindow = globalThis.window;
+  globalThis.window = {};
+  try {
+    await app.playTrack(tracks[0]);
+    assert.equal(audio.src, "/tmp/talk.mp3");
+  } finally {
+    globalThis.window = previousWindow;
+    app.destroy();
+  }
+});

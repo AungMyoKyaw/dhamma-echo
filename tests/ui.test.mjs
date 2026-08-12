@@ -38,7 +38,11 @@ test("Myanmar text detection identifies Myanmar script", () => {
   assert.equal(isMyanmarText("English"), false);
 });
 test("route labels cover every route", () => {
-  assert.deepEqual(routeLabel("home", 30563), { eyebrow: "Home", title: "Discover the Dhamma" });
+  assert.deepEqual(routeLabel("home", 30563), {
+    eyebrow: "Home",
+    title: "Discover the Dhamma",
+    detail: "Return to recent talks and trusted teachers."
+  });
   assert.equal(routeLabel("explore", 30563).eyebrow, "30,563 audio talks");
   for (const route of [
     "collections",
@@ -48,7 +52,12 @@ test("route labels cover every route", () => {
     "library",
     "settings"
   ])
-    assert.equal(typeof routeLabel(route, 1).title, "string");
+    {
+      const label = routeLabel(route, 1);
+      assert.equal(typeof label.title, "string");
+      assert.equal(typeof label.detail, "string");
+      assert.ok(label.detail.length > 0);
+    }
 });
 test("teacherFilterName prefers loaded teacher and preserves legacy fallback", () => {
   const state = createInitialState();

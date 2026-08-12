@@ -24,22 +24,55 @@ export function isMyanmarText(value: string): boolean {
   return /[\u1000-\u109F]/u.test(value);
 }
 
-export function routeLabel(route: Route, totalAudio: number): { eyebrow: string; title: string } {
-  const labels: Record<Route, { eyebrow: string; title: string }> = {
-    home: { eyebrow: "Home", title: "Discover the Dhamma" },
+export function routeLabel(
+  route: Route,
+  totalAudio: number
+): { eyebrow: string; title: string; detail: string } {
+  const labels: Record<Route, { eyebrow: string; title: string; detail: string }> = {
+    home: {
+      eyebrow: "Home",
+      title: "Discover the Dhamma",
+      detail: "Return to recent talks and trusted teachers."
+    },
     explore: {
       eyebrow: `${totalAudio.toLocaleString("en-US")} audio talks`,
-      title: "Explore the Dhamma library"
+      title: "Explore the Dhamma library",
+      detail: "Search by teacher, language, format, or collection."
     },
-    collections: { eyebrow: "Collections", title: "Browse listening collections" },
-    "collection-detail": { eyebrow: "Collection", title: "Collection details" },
-    teachers: { eyebrow: "Teachers", title: "Learn from trusted voices" },
-    "teacher-detail": { eyebrow: "Teacher", title: "Teacher details" },
-    library: { eyebrow: "Your space", title: "Continue listening" },
-    settings: { eyebrow: "Preferences", title: "Make listening yours" }
+    collections: {
+      eyebrow: "Collections",
+      title: "Browse listening collections",
+      detail: "Move through related talks without losing your place."
+    },
+    "collection-detail": {
+      eyebrow: "Collection",
+      title: "Collection details",
+      detail: "Listen through this collection at your own pace."
+    },
+    teachers: {
+      eyebrow: "Teachers",
+      title: "Learn from trusted voices",
+      detail: "Browse teachers and continue into their available talks."
+    },
+    "teacher-detail": {
+      eyebrow: "Teacher",
+      title: "Teacher details",
+      detail: "Explore talks and collections from this teacher."
+    },
+    library: {
+      eyebrow: "Your space",
+      title: "Continue listening",
+      detail: "Resume, revisit favorites, and manage downloaded talks."
+    },
+    settings: {
+      eyebrow: "Preferences",
+      title: "Make listening yours",
+      detail: "Adjust appearance and playback defaults for this device."
+    }
   };
   return labels[route];
 }
+
 
 export function teacherFilterName(state: AppState): string {
   const fromList = state.teachers.data.find(

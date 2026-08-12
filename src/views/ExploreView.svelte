@@ -40,16 +40,17 @@
 
 <section class="space-y-5">
   <form
-    class="grid grid-cols-[minmax(0,1fr)_160px_140px_auto] items-center gap-3 rounded-card border border-app-border bg-app-surface p-4 max-[760px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] max-[760px]:[&>label:first-child]:col-span-full"
+    class="flex flex-wrap items-center gap-3 rounded-card border border-app-border bg-app-surface p-4 shadow-[0_1px_2px_rgb(46_46_42_/_0.03)]"
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
       label="Search talks"
       placeholder="Search title or teacher"
       value={state.search.query}
+      className="min-w-[280px] flex-[1_1_360px]"
       onclear={clearQuery}
     />
-    <label
+    <label class="min-w-40 flex-[1_1_160px]"
       ><span class="sr-only">Language</span><select
         class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm"
         name="language"
@@ -59,7 +60,7 @@
         ></select
       ></label
     >
-    <label
+    <label class="min-w-36 flex-[1_1_140px]"
       ><span class="sr-only">Format</span><select
         class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm"
         name="format"
@@ -74,7 +75,7 @@
       type="submit">Search</button
     >
     {#if state.categories.status === "ready"}<div
-        class="col-span-full flex flex-wrap gap-2"
+        class="basis-full flex flex-wrap gap-2"
         aria-label="Audio categories"
       >
         <button
