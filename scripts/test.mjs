@@ -21,9 +21,7 @@ if (coverage) {
     "--experimental-test-coverage",
     "--test-coverage-lines=100",
     "--test-coverage-functions=100",
-    // Keep line/function coverage strict while allowing defensive short-circuit
-    // branches that Node's built-in instrumenter cannot observe reliably.
-    "--test-coverage-branches=99",
+    "--test-coverage-branches=100",
     "--test-coverage-include=.test-build/src/**/*.js",
     "--test-coverage-exclude=.test-build/src/types.js"
   );
