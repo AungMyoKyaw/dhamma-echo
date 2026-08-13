@@ -32,7 +32,7 @@ The page makes no runtime request for fonts, scripts, styles, analytics, or medi
 ```mermaid
 flowchart LR
     push[Push to master or manual run] --> checkout[Checkout repository]
-    checkout --> bun[Set up Bun 1.3.14]
+    checkout --> bun[Set up Bun 1.4.0]
     bun --> verify[bun run site:verify]
     verify --> artifact[Upload docs/ Pages artifact]
     artifact --> deploy[Deploy with GitHub Pages]

@@ -4,7 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-## [0.5.2] - 2026-08-13
+## [0.5.3] - 2026-08-13
 
 ### Added
 
@@ -17,7 +17,7 @@ All notable changes to this project are documented here.
 - Made the compact player a deliberate two-row layout while preserving seek, progress, speed, retry, and queue controls.
 - Removed application volume controls so playback loudness follows the operating system exclusively.
 - Increased critical navigation/playback action targets and made current-track emphasis visible through both structure and color.
-- Pinned Bun 1.3.14 across package metadata and GitHub workflows instead of canary/latest channels.
+- Pinned Bun 1.4.0 across package metadata and GitHub workflows so CI can read the committed lockfile.
 - Updated GitHub workflow checkout steps to the current `actions/checkout@v7` major.
 - Raised measured core TypeScript branch coverage from the previous 99% exception to a strict 100% threshold.
 

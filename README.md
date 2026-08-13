@@ -69,7 +69,7 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 ## Requirements
 
 - Node.js 22.13 or newer
-- Bun 1.3.14 (pinned by `packageManager`)
+- Bun 1.4.0 (pinned by `packageManager`)
 - Rust 1.85 or newer with Cargo and rustfmt
 - Platform prerequisites required by Tauri 2
 
@@ -99,7 +99,7 @@ cd dhamma-echo
 bun install
 ```
 
-The committed `bun.lock` is authoritative and the repository pins Bun 1.3.14 for local and CI reproducibility. Use `bun install --frozen-lockfile --ignore-scripts` for ordinary installs. If dependencies intentionally change, run `bun install`, review the dependency and lockfile diff, and commit only the expected changes. `src-tauri/Cargo.lock` is authoritative for Rust dependencies.
+The committed `bun.lock` is authoritative and the repository pins Bun 1.4.0 for local and CI reproducibility. Use `bun install --frozen-lockfile --ignore-scripts` for ordinary installs. If dependencies intentionally change, run `bun install`, review the dependency and lockfile diff, and commit only the expected changes. `src-tauri/Cargo.lock` is authoritative for Rust dependencies.
 
 ## Run
 
