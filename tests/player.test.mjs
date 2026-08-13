@@ -8,7 +8,6 @@ class FakeAudio {
   src = "";
   currentTime = 0;
   duration = 0;
-  volume = 1;
   playbackRate = 1;
   paused = true;
   failPlay = false;
@@ -59,10 +58,8 @@ test("AudioEngine loads, controls, and reports secure tracks", async () => {
   await engine.toggle();
   assert.equal(audio.paused, false);
   engine.seek(50);
-  engine.setVolume(0.4);
   engine.setRate(1.5);
   assert.equal(audio.currentTime, 50);
-  assert.equal(audio.volume, 0.4);
   assert.equal(audio.playbackRate, 1.5);
   audio.duration = 100;
   audio.emit("timeupdate");
@@ -100,10 +97,8 @@ test("AudioEngine rejects unsafe media and reports play failures", async () => {
   });
   audio.duration = Number.NaN;
   engine.seek(Number.NaN);
-  engine.setVolume(5);
   engine.setRate(9);
   assert.equal(audio.currentTime, 0);
-  assert.equal(audio.volume, 1);
   assert.equal(audio.playbackRate, 2);
 });
 

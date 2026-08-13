@@ -205,10 +205,8 @@ test("player actions select tracks, advance queue, and update progress", () => {
   assert.equal(state.player.queue.length, 0);
   state = reduce(state, { type: "play-next" });
   assert.equal(state.player.status, "paused");
-  state = reduce(state, { type: "set-volume", volume: 0.25 });
   state = reduce(state, { type: "set-rate", rate: 1.75 });
   state = reduce(state, { type: "set-player-error", message: "network" });
-  assert.equal(state.settings.volume, 0.25);
   assert.equal(state.settings.playbackRate, 1.75);
   assert.equal(state.player.error, "network");
 });
@@ -216,7 +214,7 @@ test("player actions select tracks, advance queue, and update progress", () => {
 test("all load, failure, persistence, queue, and settings actions are deterministic", () => {
   let state = createInitialState();
   const library = { favorites: [1], history: [{ id: 1, playedAt: 10 }], resume: { 1: 3 } };
-  const settings = { playbackRate: 1.5, volume: 0.6 };
+  const settings = { playbackRate: 1.5 };
   state = reduce(state, { type: "hydrate", library, settings });
   assert.equal(state.settings.playbackRate, 1.5);
   state = reduce(state, { type: "summary-started" });
@@ -234,9 +232,8 @@ test("all load, failure, persistence, queue, and settings actions are determinis
   assert.deepEqual(state.player.queue, []);
   state = reduce(state, { type: "toggle-queue" });
   assert.equal(state.player.queueOpen, true);
-  state = reduce(state, { type: "set-volume", volume: -2 });
   state = reduce(state, { type: "set-rate", rate: 4 });
-  assert.deepEqual(state.settings, { volume: 0, playbackRate: 2 });
+  assert.deepEqual(state.settings, { playbackRate: 2 });
 });
 
 test("recent actions track loading, results, and failure", () => {

@@ -78,7 +78,6 @@ export type AppAction =
   | { type: "player-progress"; currentTime: number; duration: number }
   | { type: "set-player-error"; message: string }
   | { type: "toggle-queue" }
-  | { type: "set-volume"; volume: number }
   | { type: "set-rate"; rate: number }
   | { type: "set-browse-limit"; limit: 25 | 50 | 100 }
   | { type: "set-theme"; theme: "light" | "dark" };
@@ -621,8 +620,6 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return { ...state, player: { ...state.player, error: action.message, status: "paused" } };
     case "toggle-queue":
       return { ...state, player: { ...state.player, queueOpen: !state.player.queueOpen } };
-    case "set-volume":
-      return { ...state, settings: { ...state.settings, volume: clamp(action.volume, 0, 1) } };
     case "set-rate":
       return {
         ...state,

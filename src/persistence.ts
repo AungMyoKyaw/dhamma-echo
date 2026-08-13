@@ -1,5 +1,4 @@
 import type { LibraryState, SettingsState, StorageLike } from "./types.js";
-import { clamp } from "./utils.js";
 
 const LIBRARY_KEY = "dhamma-echo:library";
 const SETTINGS_KEY = "dhamma-echo:settings";
@@ -12,7 +11,7 @@ export function createDefaultLibrary(): LibraryState {
 }
 
 export function createDefaultSettings(): SettingsState {
-  return { playbackRate: 1, volume: 0.8, browseLimit: 50, theme: "light" };
+  return { playbackRate: 1, browseLimit: 50, theme: "light" };
 }
 
 function positiveInteger(value: unknown): value is number {
@@ -110,16 +109,12 @@ export function loadSettings(storage: StorageLike): SettingsState {
     if (
       record.version !== VERSION ||
       typeof record.playbackRate !== "number" ||
-      !RATES.has(record.playbackRate) ||
-      typeof record.volume !== "number" ||
-      record.volume < 0 ||
-      record.volume > 1
+      !RATES.has(record.playbackRate)
     ) {
       return createDefaultSettings();
     }
     return {
       playbackRate: record.playbackRate,
-      volume: clamp(record.volume, 0, 1),
       browseLimit:
         typeof record.browseLimit === "number" && BROWSE_LIMITS.has(record.browseLimit)
           ? (record.browseLimit as 25 | 50 | 100)
@@ -137,7 +132,6 @@ export function saveSettings(storage: StorageLike, settings: SettingsState): voi
     JSON.stringify({
       version: VERSION,
       playbackRate: settings.playbackRate,
-      volume: settings.volume,
       browseLimit: settings.browseLimit,
       theme: settings.theme
     })

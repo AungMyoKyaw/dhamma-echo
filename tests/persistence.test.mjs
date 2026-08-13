@@ -49,7 +49,6 @@ test("settings storage uses safe defaults and accepted values", () => {
   const storage = new MemoryStorage();
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
-    volume: 0.8,
     browseLimit: 50,
     theme: "light"
   });
@@ -59,7 +58,6 @@ test("settings storage uses safe defaults and accepted values", () => {
   );
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1.5,
-    volume: 0.7,
     browseLimit: 25,
     theme: "dark"
   });
@@ -72,14 +70,14 @@ test("settings storage uses safe defaults and accepted values", () => {
 
 test("settings can be saved and loaded", () => {
   const storage = new MemoryStorage();
-  saveSettings(storage, { playbackRate: 0.75, volume: 0.4, browseLimit: 100, theme: "dark" });
+  saveSettings(storage, { playbackRate: 0.75, browseLimit: 100, theme: "dark" });
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 0.75,
-    volume: 0.4,
     browseLimit: 100,
     theme: "dark"
   });
   assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"dark"/);
+  assert.equal(Object.hasOwn(JSON.parse(storage.getItem("dhamma-echo:settings")), "volume"), false);
 });
 
 test("library storage rejects malformed nested values", () => {
@@ -149,8 +147,8 @@ test("library storage rejects fractional identifiers", () => {
         { id: 3.5, playedAt: 1 },
         { id: 3, playedAt: 2 }
       ],
-      resume: { "4.5": 2, 4: 3 },
-      downloads: { "5.5": "/tmp/bad.mp3", 5: "/tmp/good.mp3" }
+      resume: { 4.5: 2, 4: 3 },
+      downloads: { 5.5: "/tmp/bad.mp3", 5: "/tmp/good.mp3" }
     })
   );
   assert.deepEqual(loadLibrary(storage), {
@@ -169,7 +167,6 @@ test("settings keep valid playback values while defaulting unknown optional pref
   );
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
-    volume: 0.5,
     browseLimit: 50,
     theme: "light"
   });

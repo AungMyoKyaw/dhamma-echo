@@ -31,7 +31,7 @@ The site architecture and deployment boundary are documented in [Product website
 - Filter by audio category, collection, teacher, Myanmar/English, and MP3/WMA.
 - Browse 429 audio collections and open teacher detail pages with their collections and talks.
 - Keep playable talks available with neutral labels when optional catalogue metadata is missing.
-- Play approved MP3 audio through HTTPS with 15-second jump controls, seek, volume, speed, and queue management.
+- Play approved MP3 audio through HTTPS with 15-second jump controls, seek, speed, and queue management.
 - Normalize and encode catalogue URLs, then retry across the approved `www` and bare Dhamma Download hosts.
 - Store favorites, history, queue, settings, and resume positions locally.
 - Upgrade approved same-host HTTP MP3 records to HTTPS before playback; WMA records remain searchable but unavailable in the macOS webview.

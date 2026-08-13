@@ -116,6 +116,22 @@ test("active filter clear icons cannot expand beyond their control", async () =>
   assert.equal((explore.match(/inline-flex min-h-10 items-center gap-2/g) ?? []).length, 3);
 });
 
+test("application UI leaves volume control to the operating system", async () => {
+  const settings = await readFile(
+    new URL("../src/views/SettingsView.svelte", import.meta.url),
+    "utf8"
+  );
+  const player = await readFile(
+    new URL("../src/components/Player.svelte", import.meta.url),
+    "utf8"
+  );
+  const icon = await readFile(new URL("../src/components/Icon.svelte", import.meta.url), "utf8");
+
+  for (const source of [settings, player, icon]) {
+    assert.doesNotMatch(source, /Default volume|aria-label="Volume"|setVolume|name="volume"/);
+  }
+});
+
 test("app styling uses Tailwind utilities without legacy component CSS", async () => {
   const css = await readFile(new URL("../src/index.css", import.meta.url), "utf8");
   const componentNames = await readdir(new URL("../src/components/", import.meta.url));

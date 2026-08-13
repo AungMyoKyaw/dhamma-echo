@@ -12,7 +12,8 @@ All notable changes to this project are documented here.
 ### Changed
 
 - Refined the desktop shell, route headers, search forms, card grids, track actions, async states, and persistent player for clearer hierarchy and better behavior at the 860×620 minimum window.
-- Made the compact player a deliberate two-row layout while preserving seek, progress, speed, volume, retry, and queue controls.
+- Made the compact player a deliberate two-row layout while preserving seek, progress, speed, retry, and queue controls.
+- Removed application volume controls so playback loudness follows the operating system exclusively.
 - Increased critical navigation/playback action targets and made current-track emphasis visible through both structure and color.
 - Pinned Bun 1.3.14 across package metadata and GitHub workflows instead of canary/latest channels.
 - Updated GitHub workflow checkout steps to the current `actions/checkout@v7` major.

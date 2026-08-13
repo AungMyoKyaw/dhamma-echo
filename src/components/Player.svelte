@@ -52,7 +52,8 @@
             >{:else if loading}<span
               class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-app-primary"
               role="status"
-              ><span class="size-2 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
+              ><span
+                class="size-2 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
               ></span>Connecting…</span
             >{:else}<span
               class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-app-muted max-[980px]:truncate"
@@ -104,7 +105,9 @@
           /><span>{formatDuration(state.player.duration)}</span>
         </div>
       </div>
-      <div class="flex min-w-0 items-center justify-end gap-[0.55rem] max-[1040px]:col-start-2 max-[1040px]:row-start-1">
+      <div
+        class="flex min-w-0 items-center justify-end gap-[0.55rem] max-[1040px]:col-start-2 max-[1040px]:row-start-1"
+      >
         <label title="Playback speed"
           ><span class="sr-only">Playback speed</span><select
             value={String(state.settings.playbackRate)}
@@ -114,20 +117,6 @@
             >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
               >{/each}</select
           ></label
-        >
-        <label class="flex min-w-0 items-center gap-[0.4rem] max-[1040px]:gap-1" title="Volume"
-          ><span class="block size-[18px] shrink-0 text-app-muted [&_svg]:size-full"
-            ><Icon name="volume" /></span
-          ><input
-            class="w-[78px] min-w-[38px] accent-app-primary max-[1180px]:w-14 max-[1040px]:w-[54px]"
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={state.settings.volume}
-            oninput={(event) => app.setVolume(numberFromControl(event))}
-            aria-label="Volume"
-          /></label
         >
         <button
           class="relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary aria-expanded:bg-app-soft aria-expanded:text-app-primary disabled:opacity-45 [&>span:first-child]:block [&>span:first-child]:size-[19px] [&_svg]:size-full"

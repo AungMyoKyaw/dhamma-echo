@@ -36,20 +36,6 @@
           onchange={(event) => app.setRate(numberValue(event))}
           >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option>{/each}</select
         ></label
-      ><label class="text-sm font-bold"
-        >Default volume<span
-          class="mt-2 flex h-12 items-center rounded-2xl border border-app-border bg-app-bg px-4"
-          ><input
-            class="w-full accent-app-primary"
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={state.settings.volume}
-            oninput={(event) => app.setVolume(numberValue(event))}
-            aria-label="Default volume"
-          /></span
-        ></label
       >
     </div>
   </div>

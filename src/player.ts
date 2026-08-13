@@ -5,7 +5,6 @@ export interface AudioLike {
   src: string;
   currentTime: number;
   duration: number;
-  volume: number;
   playbackRate: number;
   readonly paused: boolean;
   addEventListener(type: string, listener: () => void): void;
@@ -104,10 +103,6 @@ export class AudioEngine {
         : Number.POSITIVE_INFINITY;
     this.audio.currentTime = clamp(value, 0, maximum);
     this.resumeAt = this.audio.currentTime;
-  }
-
-  setVolume(value: number): void {
-    this.audio.volume = clamp(value, 0, 1);
   }
 
   setRate(value: number): void {

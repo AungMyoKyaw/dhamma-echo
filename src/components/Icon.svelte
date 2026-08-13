@@ -10,7 +10,6 @@
     | "backward15"
     | "forward15"
     | "next"
-    | "volume"
     | "heart"
     | "queue"
     | "search"
@@ -72,9 +71,6 @@
     >
   {:else if name === "next"}<path d="m7 7 7 5-7 5z" fill="currentColor" stroke="none" /><path
       d="M16 7v10"
-    />
-  {:else if name === "volume"}<path d="M5 10v4h3l4 3V7l-4 3H5Z" /><path
-      d="M15 9.2a4 4 0 0 1 0 5.6M17.5 6.8a7.3 7.3 0 0 1 0 10.4"
     />
   {:else if name === "heart"}<path
       d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"

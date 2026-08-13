@@ -123,7 +123,6 @@ export interface DownloadProgress {
 
 export interface SettingsState {
   playbackRate: number;
-  volume: number;
   browseLimit: 25 | 50 | 100;
   theme: "light" | "dark";
 }

@@ -18,7 +18,6 @@ class FakeAudio {
   src = "";
   currentTime = 0;
   duration = 0;
-  volume = 1;
   playbackRate = 1;
   paused = true;
   addEventListener(type, listener) {
@@ -157,10 +156,8 @@ test("DhammaApp controls playback, queue advancement, and resume progress", asyn
   audio.emit("timeupdate");
   app.seekBy(-15);
   assert.equal(audio.currentTime, 40);
-  app.setVolume(0.3);
   app.setRate(1.25);
   assert.equal(audio.currentTime, 40);
-  assert.equal(audio.volume, 0.3);
   assert.equal(audio.playbackRate, 1.25);
   app.destroy();
 });

@@ -61,7 +61,7 @@ sequenceDiagram
     UI->>Guard: Validate format, scheme, host, port, credentials
     Guard->>Guard: Upgrade HTTP to HTTPS and encode path
     Guard-->>UI: Primary and fallback HTTPS candidates
-    UI->>Audio: Set primary source, volume, rate, then play
+    UI->>Audio: Set primary source and rate, then play
     Audio->>Primary: Request media stream
     alt Primary succeeds
         Primary-->>Audio: Audio bytes and metadata

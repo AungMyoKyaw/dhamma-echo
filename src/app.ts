@@ -46,7 +46,6 @@ const libraryActions = new Set<AppAction["type"]>([
 ]);
 const settingsActions = new Set<AppAction["type"]>([
   "hydrate",
-  "set-volume",
   "set-rate",
   "set-browse-limit",
   "set-theme"
@@ -68,7 +67,6 @@ export class DhammaApp {
       library: loadLibrary(this.dependencies.storage),
       settings: loadSettings(this.dependencies.storage)
     });
-    this.engine.setVolume(this.state.settings.volume);
     this.engine.setRate(this.state.settings.playbackRate);
     await Promise.all([
       this.loadSummary(),
@@ -403,7 +401,6 @@ export class DhammaApp {
     if (!track.playable) return;
     this.dispatch({ type: "play-track", track });
     this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
-    this.engine.setVolume(this.state.settings.volume);
     this.engine.setRate(this.state.settings.playbackRate);
     await this.engine.setTrack(
       track,
@@ -440,7 +437,6 @@ export class DhammaApp {
   async retryPlayback(): Promise<void> {
     const track = this.state.player.current;
     if (track === null) return;
-    this.engine.setVolume(this.state.settings.volume);
     this.engine.setRate(this.state.settings.playbackRate);
     const resumeAt = Math.max(
       this.state.player.currentTime,
@@ -457,11 +453,6 @@ export class DhammaApp {
   seekBy(deltaSeconds: number): void {
     if (this.state.player.current === null) return;
     this.engine.seek(this.state.player.currentTime + deltaSeconds);
-  }
-
-  setVolume(value: number): void {
-    this.dispatch({ type: "set-volume", volume: value });
-    this.engine.setVolume(this.state.settings.volume);
   }
 
   setRate(value: number): void {
