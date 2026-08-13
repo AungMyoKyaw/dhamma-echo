@@ -20,7 +20,7 @@ Ship a production-ready Dhamma Echo desktop build with materially improved UI/UX
 - Main shell, grids, search controls, cards, async states, and player remain usable at 860×620 and 1280×820.
 - Light/dark themes and keyboard focus are coherent.
 - No new production dependency.
-- Bun 1.4.0 is pinned consistently.
+- Bun 1.4.0-canary.1 is used locally, and GitHub Actions follows the Bun canary channel.
 - Zero required focused/skipped tests are machine-checked.
 - Measured line/branch/function coverage threshold is 100%; no 99% exception remains.
 - No false claim is made about statement/component coverage if the available coverage tooling cannot measure it.
