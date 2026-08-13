@@ -24,6 +24,7 @@
 ### Task 1: Make toolchain and test policy reproducible
 
 **Files:**
+
 - Modify: `package.json`
 - Modify: `scripts/test.mjs`
 - Create: `scripts/check-tests.mjs`
@@ -33,6 +34,7 @@
 - Test: `tests/site-links.test.mjs` only if documentation links change as part of the same commit
 
 **Interfaces:**
+
 - Consumes: existing Bun lockfile and Node test runner.
 - Produces: `bun run test:policy` command; package manager metadata pinned to `bun@1.3.14`; 100% Node line/branch/function thresholds.
 
@@ -47,6 +49,7 @@
 ### Task 2: Harden layout primitives and design tokens
 
 **Files:**
+
 - Modify: `src/index.css`
 - Modify: `src/App.svelte`
 - Modify: `src/components/Header.svelte`
@@ -55,6 +58,7 @@
 - Modify: `tests/ui.test.mjs`
 
 **Interfaces:**
+
 - Consumes: `routeLabel(route, totalAudio)` from `src/ui.ts`.
 - Produces: route header metadata with `eyebrow`, `title`, and concise `detail`; shell data attributes/classes used for responsive layout.
 
@@ -70,6 +74,7 @@
 ### Task 3: Make catalogue discovery surfaces adaptive
 
 **Files:**
+
 - Modify: `src/views/HomeView.svelte`
 - Modify: `src/views/ExploreView.svelte`
 - Modify: `src/views/TeachersView.svelte`
@@ -79,6 +84,7 @@
 - Modify: `src/components/TextSearchField.svelte` only if compact control sizing requires it
 
 **Interfaces:**
+
 - Consumes: unchanged view state and app methods.
 - Produces: adaptive grid/search layout only; no data API changes.
 
@@ -91,6 +97,7 @@
 ### Task 4: Refine track rows, async states, and persistent player
 
 **Files:**
+
 - Modify: `src/components/TrackRow.svelte`
 - Modify: `src/components/AsyncState.svelte`
 - Modify: `src/components/Player.svelte`
@@ -98,6 +105,7 @@
 - Modify: `src/App.svelte` for player bottom-space reservation if needed
 
 **Interfaces:**
+
 - Consumes: unchanged `DhammaApp` playback, download, favorite, seek, rate, volume, and queue methods.
 - Produces: responsive presentation only; no player state-machine change.
 
@@ -112,12 +120,14 @@
 ### Task 5: Document the UI architecture and release workflow
 
 **Files:**
+
 - Create: `docs/architecture/ui-shell.md`
 - Modify: `README.md`
 - Modify: `CHANGELOG.md`
 - Modify: `docs/ralph-loop.md` only if command names changed during implementation
 
 **Interfaces:**
+
 - Consumes: final shell and command names.
 - Produces: contributor-facing Mermaid UI diagram and accurate release documentation.
 
@@ -130,6 +140,7 @@
 ### Task 6: Run the full release Ralph Loop and create deliverables
 
 **Files:**
+
 - Generated: `coverage/**` when coverage can run
 - Generated: `dist/**` when build can run
 - Generated: Tauri bundle output when packaging can run
@@ -137,6 +148,7 @@
 - Generated outside repo: visual screenshots under `/mnt/data/dhamma-echo-visual-verification/` when runtime can run
 
 **Interfaces:**
+
 - Consumes: final repository.
 - Produces: evidence for every final quality gate and a clone-tested Git bundle.
 

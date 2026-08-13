@@ -46,8 +46,8 @@
 >
   <Sidebar {state} {app} />
   <div
-    class="ml-64 h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] max-[1040px]:ml-56 {state.player
-      .current === null
+    class="ml-64 h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] max-[1040px]:ml-56 {state
+      .player.current === null
       ? 'pb-8'
       : 'pb-40'}"
   >

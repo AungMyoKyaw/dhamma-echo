@@ -73,7 +73,6 @@ export function routeLabel(
   return labels[route];
 }
 
-
 export function teacherFilterName(state: AppState): string {
   const fromList = state.teachers.data.find(
     (teacher) => teacher.id === state.search.teacherId

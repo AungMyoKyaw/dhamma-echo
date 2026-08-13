@@ -49,8 +49,9 @@
     aria-pressed={playing}
     disabled={!track.playable || loading}
     ><span
-      class="block size-[18px] [&_svg]:block [&_svg]:size-full {playing ? '' : 'translate-x-[0.75px]'}"
-      ><Icon name={playing ? "pause" : "play"} /></span
+      class="block size-[18px] [&_svg]:block [&_svg]:size-full {playing
+        ? ''
+        : 'translate-x-[0.75px]'}"><Icon name={playing ? "pause" : "play"} /></span
     ></button
   >
   <button

@@ -51,13 +51,12 @@ test("route labels cover every route", () => {
     "teacher-detail",
     "library",
     "settings"
-  ])
-    {
-      const label = routeLabel(route, 1);
-      assert.equal(typeof label.title, "string");
-      assert.equal(typeof label.detail, "string");
-      assert.ok(label.detail.length > 0);
-    }
+  ]) {
+    const label = routeLabel(route, 1);
+    assert.equal(typeof label.title, "string");
+    assert.equal(typeof label.detail, "string");
+    assert.ok(label.detail.length > 0);
+  }
 });
 test("teacherFilterName prefers loaded teacher and preserves legacy fallback", () => {
   const state = createInitialState();

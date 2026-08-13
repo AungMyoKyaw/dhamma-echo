@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-08-13
+
 ### Added
 
 - Added a machine-verifiable required-test policy check that rejects focused or skipped tests.

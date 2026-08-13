@@ -37,7 +37,9 @@
   >
     {teacher.name}
   </p>
-  <p class="mt-2 text-sm text-app-muted tabular-nums">{teacher.audioCount.toLocaleString("en-US")} talks</p>
+  <p class="mt-2 text-sm text-app-muted tabular-nums">
+    {teacher.audioCount.toLocaleString("en-US")} talks
+  </p>
   <span class="mt-auto inline-flex items-center gap-1 pt-5 text-xs font-bold text-app-primary"
     >Browse talks <span class="size-4"><Icon name="chevron" /></span></span
   >

@@ -18,7 +18,8 @@ async function testFiles(directory) {
   for (const entry of entries) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) files.push(...(await testFiles(path)));
-    else if (entry.isFile() && TEST_FILE.test(entry.name) && extname(entry.name) !== "") files.push(path);
+    else if (entry.isFile() && TEST_FILE.test(entry.name) && extname(entry.name) !== "")
+      files.push(path);
   }
   return files;
 }
@@ -29,7 +30,8 @@ for (const file of await testFiles(TEST_ROOT)) {
   const lines = source.split(/\r?\n/u);
   for (const [index, line] of lines.entries()) {
     for (const rule of FORBIDDEN) {
-      if (rule.pattern.test(line)) violations.push(`${file}:${index + 1}: ${rule.name}: ${line.trim()}`);
+      if (rule.pattern.test(line))
+        violations.push(`${file}:${index + 1}: ${rule.name}: ${line.trim()}`);
     }
   }
 }
