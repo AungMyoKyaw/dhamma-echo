@@ -17,7 +17,7 @@
 
 <button
   class="group flex h-full w-full {carousel
-    ? 'min-w-64'
+    ? 'min-w-72'
     : 'min-w-0'} min-h-[13rem] flex-col rounded-card border border-app-border bg-app-surface p-5 text-left shadow-[0_1px_2px_rgb(46_46_42_/_0.04)] transition-[transform,border-color,box-shadow,background-color] duration-150 hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-[0_10px_28px_rgb(46_46_42_/_0.09)] focus-visible:-translate-y-0.5 focus-visible:border-app-primary/60"
   type="button"
   onclick={() => void onselect(teacher)}

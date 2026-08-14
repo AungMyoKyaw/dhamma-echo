@@ -65,9 +65,10 @@
 .myanmar-text.myanmar-text {
   line-height: 1.8;
   padding-block: 0.2em;
-  line-break: strict;
-  overflow-wrap: break-word;
   word-break: keep-all;
+  overflow-wrap: normal;
+  line-break: auto;
+  text-wrap: balance;
 }
 
 html,
