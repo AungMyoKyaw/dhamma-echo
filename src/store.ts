@@ -1,4 +1,4 @@
-import { createDefaultLibrary, createDefaultSettings } from "./persistence.js";
+import { createDefaultLibrary, createDefaultSettings, createDefaultUi } from "./persistence.js";
 import type {
   AppState,
   AudioSearchPage,
@@ -13,7 +13,12 @@ import type {
 import { clamp, normalizeWhitespace } from "./utils.js";
 
 export type AppAction =
-  | { type: "hydrate"; library: AppState["library"]; settings: AppState["settings"] }
+  | {
+      type: "hydrate";
+      library: AppState["library"];
+      settings: AppState["settings"];
+      ui: AppState["ui"];
+    }
   | { type: "navigate"; route: Route }
   | { type: "summary-started" }
   | { type: "summary-loaded"; summary: CatalogueSummary }
@@ -80,7 +85,8 @@ export type AppAction =
   | { type: "toggle-queue" }
   | { type: "set-rate"; rate: number }
   | { type: "set-browse-limit"; limit: 25 | 50 | 100 }
-  | { type: "set-theme"; theme: "light" | "dark" };
+  | { type: "set-theme"; theme: "light" | "dark" | "system" }
+  | { type: "set-sidebar-collapsed"; collapsed: boolean };
 
 const emptyPage: AudioSearchPage = { items: [], total: 0, limit: 50, offset: 0 };
 const emptySummary: CatalogueSummary = {
@@ -149,6 +155,7 @@ export function createInitialState(): AppState {
     downloadedTracks: [],
     downloadProgress: {},
     settings: createDefaultSettings(),
+    ui: createDefaultUi(),
     player: {
       current: null,
       queue: [],
@@ -174,6 +181,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
         ...state,
         library: action.library,
         settings: action.settings,
+        ui: action.ui,
         search: { ...state.search, limit: action.settings.browseLimit, offset: 0 },
         collectionSearch: {
           ...state.collectionSearch,
@@ -634,5 +642,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
       };
     case "set-theme":
       return { ...state, settings: { ...state.settings, theme: action.theme } };
+    case "set-sidebar-collapsed":
+      return { ...state, ui: { ...state.ui, sidebarCollapsed: action.collapsed } };
   }
 }

@@ -15,6 +15,8 @@
     | "search"
     | "close"
     | "chevron"
+    | "chevron-left"
+    | "chevron-right"
     | "download"
     | "leaf";
   let { name, filled = false }: { name: IconName; filled?: boolean } = $props();
@@ -84,6 +86,8 @@
   {:else if name === "search"}<circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" />
   {:else if name === "close"}<path d="m7 7 10 10M17 7 7 17" />
   {:else if name === "chevron"}<path d="m9 18 6-6-6-6" />
+  {:else if name === "chevron-left"}<path d="m15 18-6-6 6-6" />
+  {:else if name === "chevron-right"}<path d="m9 18 6-6-6-6" />
   {:else if name === "download"}<path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
   {:else}<path d="M20 4C12 4 5 8 5 15c0 2 1 4 3 5 0-5 4-9 10-12-5 4-7 8-7 12 6-1 10-6 9-16Z" />{/if}
 </svg>

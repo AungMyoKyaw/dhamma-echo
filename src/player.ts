@@ -14,12 +14,15 @@ export interface AudioLike {
   load(): void;
 }
 
+const FALLBACK_TIMEOUT_MS = 8000;
+
 export class AudioEngine {
   private candidates: string[] = [];
   private candidateIndex = -1;
   private resumeAt = 0;
-  private handlingFailure = false;
   private finalErrorEmitted = false;
+  private activeAttempt = 0;
+  private startedAttempt = 0;
 
   private readonly onPlay = (): void => {
     this.emit({ type: "status", status: "playing" });
@@ -50,12 +53,19 @@ export class AudioEngine {
     this.emit({ type: "ended" });
   };
   private readonly onError = (): void => {
-    if (!this.handlingFailure) void this.startFrom(this.candidateIndex + 1);
+    if (this.startedAttempt === 0) return;
+    const next = this.candidateIndex + 1;
+    if (next >= this.candidates.length) {
+      this.emitFinalError();
+      return;
+    }
+    void this.attempt(next);
   };
 
   constructor(
     private readonly audio: AudioLike,
-    private readonly emit: (event: PlayerEvent) => void
+    private readonly emit: (event: PlayerEvent) => void,
+    private readonly fallbackTimeoutMs: number = FALLBACK_TIMEOUT_MS
   ) {
     audio.addEventListener("play", this.onPlay);
     audio.addEventListener("pause", this.onPause);
@@ -71,6 +81,8 @@ export class AudioEngine {
     this.candidateIndex = -1;
     this.resumeAt = Math.max(0, Number.isFinite(resumeAt) ? resumeAt : 0);
     this.finalErrorEmitted = false;
+    this.activeAttempt += 1;
+    this.startedAttempt = 0;
     if (this.candidates.length === 0) {
       this.emit({
         type: "error",
@@ -81,7 +93,7 @@ export class AudioEngine {
       });
       return false;
     }
-    return this.startFrom(0);
+    return this.attempt(0);
   }
 
   async toggle(): Promise<void> {
@@ -97,10 +109,8 @@ export class AudioEngine {
   }
 
   seek(value: number): void {
-    const maximum =
-      Number.isFinite(this.audio.duration) && this.audio.duration > 0
-        ? this.audio.duration
-        : Number.POSITIVE_INFINITY;
+    const duration = this.audio.duration;
+    const maximum = Number.isFinite(duration) && duration > 0 ? duration : Number.POSITIVE_INFINITY;
     this.audio.currentTime = clamp(value, 0, maximum);
     this.resumeAt = this.audio.currentTime;
   }
@@ -118,26 +128,38 @@ export class AudioEngine {
     this.audio.removeEventListener("error", this.onError);
   }
 
-  private async startFrom(index: number): Promise<boolean> {
-    this.handlingFailure = true;
-    let candidateIndex = index;
-    for (const candidate of this.candidates.slice(index)) {
-      this.candidateIndex = candidateIndex;
-      candidateIndex += 1;
-      this.audio.src = candidate;
-      this.audio.load();
-      this.emit({ type: "status", status: "loading" });
-      try {
-        await this.audio.play();
-        this.handlingFailure = false;
-        return true;
-      } catch {
-        // Try the alternate approved hostname before surfacing a final error.
-      }
-    }
-    this.handlingFailure = false;
-    this.emitFinalError();
-    return false;
+  private attempt(index: number): Promise<boolean> {
+    const target = ++this.activeAttempt;
+    const candidate = this.candidates[index] as string;
+    this.candidateIndex = index;
+    this.audio.src = candidate;
+    this.audio.load();
+    this.emit({ type: "status", status: "loading" });
+    return new Promise<boolean>((resolve) => {
+      const timer = setTimeout(() => {
+        if (target !== this.activeAttempt) return;
+        const next = this.candidateIndex + 1;
+        resolve(false);
+        if (next >= this.candidates.length) this.emitFinalError();
+        else void this.attempt(next).then(resolve);
+      }, this.fallbackTimeoutMs);
+      this.startedAttempt = target;
+      void this.audio.play().then(
+        () => {
+          if (target !== this.activeAttempt) return;
+          clearTimeout(timer);
+          resolve(true);
+        },
+        () => {
+          if (target !== this.activeAttempt) return;
+          clearTimeout(timer);
+          const next = this.candidateIndex + 1;
+          resolve(false);
+          if (next >= this.candidates.length) this.emitFinalError();
+          else void this.attempt(next).then(resolve);
+        }
+      );
+    });
   }
 
   private emitFinalError(): void {

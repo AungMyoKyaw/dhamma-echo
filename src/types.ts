@@ -124,7 +124,7 @@ export interface DownloadProgress {
 export interface SettingsState {
   playbackRate: number;
   browseLimit: 25 | 50 | 100;
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
 }
 
 interface SearchState {
@@ -206,6 +206,7 @@ export interface AppState {
   downloadedTracks: AudioTrack[];
   downloadProgress: Record<string, DownloadProgress>;
   settings: SettingsState;
+  ui: { sidebarCollapsed: boolean };
   player: PlayerState;
 }
 

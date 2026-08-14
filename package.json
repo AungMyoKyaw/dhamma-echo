@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "tauri dev",
-    "dev:web": "vite --host 127.0.0.1 --port 1420 --strictPort",
+    "dev:web": "vite --host 127.0.0.1 --port 5173 --strictPort",
     "build": "bun run build:web",
     "build:web": "vite build",
     "smoke:web": "node scripts/smoke.mjs",

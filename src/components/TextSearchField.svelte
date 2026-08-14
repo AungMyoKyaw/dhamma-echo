@@ -20,6 +20,12 @@
     await tick();
     input.focus();
   }
+  function onKeydown(event: KeyboardEvent): void {
+    if (event.key === "Escape" && value.length > 0) {
+      event.preventDefault();
+      void clear();
+    }
+  }
 </script>
 
 <label class="relative {className}">
@@ -35,6 +41,7 @@
     name="query"
     {value}
     {placeholder}
+    onkeydown={onKeydown}
   />
   {#if value}<button
       class="absolute right-2 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"

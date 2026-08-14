@@ -112,7 +112,7 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
   app.setRate(1.5);
   assert.match(storage.getItem("dhamma-echo:library"), /"favorites":\[1\]/);
   assert.match(storage.getItem("dhamma-echo:settings"), /"playbackRate":1.5/);
-  assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"light"/);
+  assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"system"/);
   app.destroy();
 });
 
@@ -526,6 +526,31 @@ test("DhammaApp loads collection and teacher detail flows", async () => {
   assert.equal(app.findTrack(999), null);
   await app.loadTeacherTalks();
   assert.equal(app.state.teacherTalks.page.offset, 0);
+  app.destroy();
+});
+
+test("DhammaApp surfaces teacher-talks failures and renders the error message", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio() {
+        throw new Error("talks offline");
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 1
+  });
+  await app.start();
+  await app.openTeacher(3, "teachers");
+  await Promise.resolve();
+  assert.equal(app.state.teacherTalks.status, "error");
+  assert.equal(app.state.teacherTalks.message, "talks offline");
+  app.setSidebarCollapsed(true);
+  assert.equal(app.state.ui.sidebarCollapsed, true);
+  app.setSidebarCollapsed(false);
+  assert.equal(app.state.ui.sidebarCollapsed, false);
   app.destroy();
 });
 

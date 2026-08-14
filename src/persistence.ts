@@ -2,7 +2,9 @@ import type { LibraryState, SettingsState, StorageLike } from "./types.js";
 
 const LIBRARY_KEY = "dhamma-echo:library";
 const SETTINGS_KEY = "dhamma-echo:settings";
-const VERSION = 1;
+const UI_KEY = "dhamma-echo:ui";
+const VERSION = 2;
+const LEGACY_VERSION = 1;
 const RATES = new Set([0.75, 1, 1.25, 1.5, 1.75, 2]);
 const BROWSE_LIMITS = new Set([25, 50, 100]);
 
@@ -11,7 +13,7 @@ export function createDefaultLibrary(): LibraryState {
 }
 
 export function createDefaultSettings(): SettingsState {
-  return { playbackRate: 1, browseLimit: 50, theme: "light" };
+  return { playbackRate: 1, browseLimit: 50, theme: "system" };
 }
 
 function positiveInteger(value: unknown): value is number {
@@ -27,7 +29,7 @@ export function loadLibrary(storage: StorageLike): LibraryState {
       typeof parsed !== "object" ||
       parsed === null ||
       !("version" in parsed) ||
-      parsed.version !== VERSION
+      (parsed.version !== VERSION && parsed.version !== LEGACY_VERSION)
     ) {
       return createDefaultLibrary();
     }
@@ -99,6 +101,10 @@ export function saveLibrary(storage: StorageLike, library: LibraryState): void {
   );
 }
 
+function isTheme(value: unknown): value is "light" | "dark" | "system" {
+  return value === "light" || value === "dark" || value === "system";
+}
+
 export function loadSettings(storage: StorageLike): SettingsState {
   const raw = storage.getItem(SETTINGS_KEY);
   if (raw === null) return createDefaultSettings();
@@ -106,11 +112,10 @@ export function loadSettings(storage: StorageLike): SettingsState {
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return createDefaultSettings();
     const record = parsed as Record<string, unknown>;
-    if (
-      record.version !== VERSION ||
-      typeof record.playbackRate !== "number" ||
-      !RATES.has(record.playbackRate)
-    ) {
+    if (record.version !== VERSION && record.version !== LEGACY_VERSION) {
+      return createDefaultSettings();
+    }
+    if (typeof record.playbackRate !== "number" || !RATES.has(record.playbackRate)) {
       return createDefaultSettings();
     }
     return {
@@ -119,7 +124,7 @@ export function loadSettings(storage: StorageLike): SettingsState {
         typeof record.browseLimit === "number" && BROWSE_LIMITS.has(record.browseLimit)
           ? (record.browseLimit as 25 | 50 | 100)
           : 50,
-      theme: record.theme === "dark" ? "dark" : "light"
+      theme: isTheme(record.theme) ? record.theme : "system"
     };
   } catch {
     return createDefaultSettings();
@@ -136,4 +141,31 @@ export function saveSettings(storage: StorageLike, settings: SettingsState): voi
       theme: settings.theme
     })
   );
+}
+
+export interface UiPreferences {
+  sidebarCollapsed: boolean;
+}
+
+export function createDefaultUi(): UiPreferences {
+  return { sidebarCollapsed: false };
+}
+
+export function loadUi(storage: StorageLike): UiPreferences {
+  const raw = storage.getItem(UI_KEY);
+  if (raw === null) return createDefaultUi();
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null) return createDefaultUi();
+    const record = parsed as Record<string, unknown>;
+    return {
+      sidebarCollapsed: record.sidebarCollapsed === true
+    };
+  } catch {
+    return createDefaultUi();
+  }
+}
+
+export function saveUi(storage: StorageLike, ui: UiPreferences): void {
+  storage.setItem(UI_KEY, JSON.stringify({ sidebarCollapsed: ui.sidebarCollapsed }));
 }

@@ -57,7 +57,7 @@
               ></span>Connecting…</span
             >{:else}<span
               class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-app-muted max-[980px]:truncate"
-              >Space: play/pause · ←/→: seek</span
+              >Space: play/pause · ←/→: seek · ?: help</span
             >{/if}
         </div>
       </div>

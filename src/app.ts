@@ -1,5 +1,12 @@
 import type { CatalogueApi } from "./api.js";
-import { loadLibrary, loadSettings, saveLibrary, saveSettings } from "./persistence.js";
+import {
+  loadLibrary,
+  loadSettings,
+  loadUi,
+  saveLibrary,
+  saveSettings,
+  saveUi
+} from "./persistence.js";
 import { AudioEngine, type AudioLike } from "./player.js";
 import { localFileUrl } from "./runtime.js";
 import { createInitialState, reduce, type AppAction } from "./store.js";
@@ -50,6 +57,7 @@ const settingsActions = new Set<AppAction["type"]>([
   "set-browse-limit",
   "set-theme"
 ]);
+const uiActions = new Set<AppAction["type"]>(["hydrate", "set-sidebar-collapsed"]);
 
 export class DhammaApp {
   state = createInitialState();
@@ -65,7 +73,8 @@ export class DhammaApp {
     this.dispatch({
       type: "hydrate",
       library: loadLibrary(this.dependencies.storage),
-      settings: loadSettings(this.dependencies.storage)
+      settings: loadSettings(this.dependencies.storage),
+      ui: loadUi(this.dependencies.storage)
     });
     this.engine.setRate(this.state.settings.playbackRate);
     await Promise.all([
@@ -84,6 +93,7 @@ export class DhammaApp {
     if (libraryActions.has(action.type)) saveLibrary(this.dependencies.storage, this.state.library);
     if (settingsActions.has(action.type))
       saveSettings(this.dependencies.storage, this.state.settings);
+    if (uiActions.has(action.type)) saveUi(this.dependencies.storage, this.state.ui);
     this.dependencies.render(this.state, action);
   }
 
@@ -252,8 +262,12 @@ export class DhammaApp {
     this.dispatch({ type: "set-browse-limit", limit });
   }
 
-  setTheme(theme: "light" | "dark"): void {
+  setTheme(theme: "light" | "dark" | "system"): void {
     this.dispatch({ type: "set-theme", theme });
+  }
+
+  setSidebarCollapsed(collapsed: boolean): void {
+    this.dispatch({ type: "set-sidebar-collapsed", collapsed });
   }
 
   async loadRecent(): Promise<void> {

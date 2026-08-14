@@ -6,6 +6,7 @@ import { DhammaApp } from "./app.js";
 import "./index.css";
 import { selectInvoke } from "./runtime.js";
 import { createInitialState } from "./store.js";
+import { applyTheme } from "./theme.js";
 import type { InvokeFn } from "./types.js";
 
 declare global {
@@ -33,6 +34,8 @@ export async function bootstrap(): Promise<DhammaApp> {
     now: () => Date.now(),
     render: (state) => stateStore.set(state)
   });
+
+  applyTheme(app.state.settings.theme);
 
   await window.__TAURI__?.event?.listen?.("download-progress", (event) => {
     if (typeof event.payload !== "object" || event.payload === null) return;

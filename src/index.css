@@ -40,6 +40,24 @@
   color-scheme: dark;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-app: #eee9df;
+    --color-app-muted: #b8b0a4;
+    --color-app-bg: #181714;
+    --color-app-surface: #23211d;
+    --color-app-soft: #2e2b25;
+    --color-app-border: #464138;
+    --color-app-primary: #d8894d;
+    --color-app-primary-strong: #bf7138;
+    --color-app-secondary: #9bab82;
+    --color-app-tertiary: #d0aa62;
+    --color-error: #e2938c;
+    --color-error-soft: #35201f;
+    color-scheme: dark;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -54,11 +72,17 @@
 
 html,
 body {
-  min-width: 860px;
-  min-height: 620px;
   margin: 0;
   background: var(--color-app-bg);
   overflow: hidden;
+}
+
+@media (max-width: 1040px), (max-height: 620px) {
+  html,
+  body {
+    min-width: 0;
+    min-height: 0;
+  }
 }
 
 #app {

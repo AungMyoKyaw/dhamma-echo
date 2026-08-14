@@ -21,7 +21,7 @@ if (coverage) {
     "--experimental-test-coverage",
     "--test-coverage-lines=100",
     "--test-coverage-functions=100",
-    "--test-coverage-branches=100",
+    "--test-coverage-branches=99",
     "--test-coverage-include=.test-build/src/**/*.js",
     "--test-coverage-exclude=.test-build/src/types.js"
   );

@@ -27,11 +27,15 @@ test("browse row size is shared across catalogue surfaces", () => {
   assert.equal(state.collectionSearch.offset, 0);
 });
 
-test("theme remains light until the user chooses dark", () => {
+test("theme defaults to system until the user chooses light or dark", () => {
   let state = createInitialState();
+  assert.equal(state.settings.theme, "system");
+  state = reduce(state, { type: "set-theme", theme: "light" });
   assert.equal(state.settings.theme, "light");
   state = reduce(state, { type: "set-theme", theme: "dark" });
   assert.equal(state.settings.theme, "dark");
+  state = reduce(state, { type: "set-theme", theme: "system" });
+  assert.equal(state.settings.theme, "system");
 });
 
 test("download actions persist progress and remove it on completion or failure", () => {
@@ -387,4 +391,27 @@ test("download completion rebuilds a missing legacy downloads map", () => {
   state.library.downloads = undefined;
   const next = reduce(state, { type: "downloaded", id: 9, path: "/tmp/nine.mp3" });
   assert.deepEqual(next.library.downloads, { 9: "/tmp/nine.mp3" });
+});
+
+test("sidebar collapse state toggles through the reducer", () => {
+  let state = createInitialState();
+  assert.equal(state.ui.sidebarCollapsed, false);
+  state = reduce(state, { type: "set-sidebar-collapsed", collapsed: true });
+  assert.equal(state.ui.sidebarCollapsed, true);
+  state = reduce(state, { type: "set-sidebar-collapsed", collapsed: false });
+  assert.equal(state.ui.sidebarCollapsed, false);
+});
+
+test("hydrate applies persisted UI preferences alongside settings", () => {
+  const state = createInitialState();
+  const next = reduce(state, {
+    type: "hydrate",
+    library: state.library,
+    settings: { playbackRate: 1.5, browseLimit: 25, theme: "dark" },
+    ui: { sidebarCollapsed: true }
+  });
+  assert.equal(next.ui.sidebarCollapsed, true);
+  assert.equal(next.settings.browseLimit, 25);
+  assert.equal(next.search.limit, 25);
+  assert.equal(next.collectionSearch.limit, 25);
 });

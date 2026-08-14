@@ -3,10 +3,13 @@ import assert from "node:assert/strict";
 import {
   createDefaultLibrary,
   createDefaultSettings,
+  createDefaultUi,
   loadLibrary,
   loadSettings,
+  loadUi,
   saveLibrary,
-  saveSettings
+  saveSettings,
+  saveUi
 } from "../.test-build/src/persistence.js";
 
 class MemoryStorage {
@@ -50,7 +53,7 @@ test("settings storage uses safe defaults and accepted values", () => {
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
     browseLimit: 50,
-    theme: "light"
+    theme: "system"
   });
   storage.setItem(
     "dhamma-echo:settings",
@@ -168,6 +171,59 @@ test("settings keep valid playback values while defaulting unknown optional pref
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
     browseLimit: 50,
-    theme: "light"
+    theme: "system"
   });
+});
+
+test("settings reject unknown versions and unknown playback rates", () => {
+  const storage = new MemoryStorage();
+  storage.setItem(
+    "dhamma-echo:settings",
+    JSON.stringify({ version: 99, playbackRate: 3, theme: "light" })
+  );
+  assert.deepEqual(loadSettings(storage), createDefaultSettings());
+
+  storage.setItem(
+    "dhamma-echo:settings",
+    JSON.stringify({ version: 2, playbackRate: "fast", theme: "light" })
+  );
+  assert.deepEqual(loadSettings(storage), createDefaultSettings());
+});
+
+test("settings normalize an invalid playback rate to the safe default", () => {
+  const storage = new MemoryStorage();
+  storage.setItem("dhamma-echo:settings", JSON.stringify({ version: 2, playbackRate: 1.75 }));
+  assert.deepEqual(loadSettings(storage), {
+    playbackRate: 1.75,
+    browseLimit: 50,
+    theme: "system"
+  });
+});
+
+test("saveLibrary drops non-positive resume values and saves a v2 envelope", () => {
+  const storage = new MemoryStorage();
+  saveLibrary(storage, {
+    favorites: [1, 2, 2],
+    history: [{ id: 1, playedAt: 5 }],
+    resume: { 1: -3, 2: Number.NaN, 3: 0, 4: 9 },
+    downloads: { 1: "/tmp/a.mp3" }
+  });
+  const stored = JSON.parse(storage.getItem("dhamma-echo:library"));
+  assert.equal(stored.version, 2);
+  assert.deepEqual(stored.favorites, [1, 2]);
+  assert.deepEqual(Object.keys(stored.resume), ["3", "4"]);
+  assert.deepEqual(stored.downloads, { 1: "/tmp/a.mp3" });
+});
+
+test("ui preferences fall back to defaults and persist collapsed state", () => {
+  const storage = new MemoryStorage();
+  assert.deepEqual(loadUi(storage), createDefaultUi());
+  storage.setItem("dhamma-echo:ui", "not-json");
+  assert.deepEqual(loadUi(storage), createDefaultUi());
+  storage.setItem("dhamma-echo:ui", "null");
+  assert.deepEqual(loadUi(storage), createDefaultUi());
+  storage.setItem("dhamma-echo:ui", JSON.stringify({ sidebarCollapsed: "yes" }));
+  assert.deepEqual(loadUi(storage), createDefaultUi());
+  saveUi(storage, { sidebarCollapsed: true });
+  assert.deepEqual(loadUi(storage), { sidebarCollapsed: true });
 });
