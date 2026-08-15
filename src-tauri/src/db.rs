@@ -1077,7 +1077,7 @@ mod tests {
             database.summary().expect("summary"),
             crate::models::CatalogueSummary {
                 total_audio: 30563,
-                total_teachers: 257,
+                total_teachers: 256,
                 myanmar_audio: 30098,
                 english_audio: 465,
             }
