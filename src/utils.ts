@@ -21,7 +21,8 @@ export function formatDuration(value: number): string {
 }
 
 export function mediaUrlCandidates(value: string, format: string): string[] {
-  if (format.trim().toLowerCase() !== "mp3") return [];
+  const normalized = format.trim().toLowerCase();
+  if (normalized !== "mp3" && normalized !== "mp4") return [];
   try {
     const url = new URL(value);
     if (

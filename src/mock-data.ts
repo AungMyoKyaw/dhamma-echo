@@ -45,7 +45,8 @@ const tracks: AudioTrack[] = [
     location: null,
     teacherId: 3,
     teacherName: "Venerable Sayadaw U Jotika",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   },
   {
     id: 2,
@@ -57,7 +58,8 @@ const tracks: AudioTrack[] = [
     location: "Yangon",
     teacherId: 4,
     teacherName: "Venerable Dr. K. Dhammasami",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   },
   {
     id: 3,
@@ -69,7 +71,8 @@ const tracks: AudioTrack[] = [
     location: null,
     teacherId: 3,
     teacherName: "Venerable Sayadaw U Jotika",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   },
   {
     id: 4,
@@ -81,7 +84,8 @@ const tracks: AudioTrack[] = [
     location: "Mandalay",
     teacherId: 12,
     teacherName: "Mogok Sayadaw",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   },
   {
     id: 5,
@@ -93,7 +97,8 @@ const tracks: AudioTrack[] = [
     location: null,
     teacherId: 18,
     teacherName: "Pa-Auk Tawya Sayadaw",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   },
   {
     id: 6,
@@ -105,7 +110,8 @@ const tracks: AudioTrack[] = [
     location: null,
     teacherId: 31,
     teacherName: "Sitagu Sayadaw",
-    playable: false
+    playable: false,
+    mediaType: "audio"
   },
   {
     id: 99,
@@ -117,7 +123,8 @@ const tracks: AudioTrack[] = [
     location: null,
     teacherId: null,
     teacherName: "Unknown teacher",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   }
 ];
 

@@ -14,9 +14,16 @@ export interface AudioLike {
   load(): void;
 }
 
+/**
+ * Structural shape of `HTMLMediaElement` shared by `<audio>` and `<video>`.
+ * The webview creates the matching element based on the track's `mediaType`
+ * and hands it to `MediaEngine`; the engine never needs to know which kind.
+ */
+export type MediaLike = AudioLike;
+
 const FALLBACK_TIMEOUT_MS = 8000;
 
-export class AudioEngine {
+export class MediaEngine {
   private candidates: string[] = [];
   private candidateIndex = -1;
   private resumeAt = 0;
@@ -63,7 +70,7 @@ export class AudioEngine {
   };
 
   constructor(
-    private readonly audio: AudioLike,
+    private readonly audio: MediaLike,
     private readonly emit: (event: PlayerEvent) => void,
     private readonly fallbackTimeoutMs: number = FALLBACK_TIMEOUT_MS
   ) {
@@ -84,12 +91,13 @@ export class AudioEngine {
     this.activeAttempt += 1;
     this.startedAttempt = 0;
     if (this.candidates.length === 0) {
+      const normalized = track.format.trim().toLowerCase();
+      const isWebviewPlayable = normalized === "mp3" || normalized === "mp4";
       this.emit({
         type: "error",
-        message:
-          track.format.trim().toLowerCase() === "mp3"
-            ? "This audio source is not trusted."
-            : "This audio format is not supported by the macOS player."
+        message: isWebviewPlayable
+          ? "This media source is not trusted."
+          : "This media format is not supported by the macOS player."
       });
       return false;
     }

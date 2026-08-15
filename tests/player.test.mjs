@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AudioEngine } from "../.test-build/src/player.js";
+import { MediaEngine } from "../.test-build/src/player.js";
 import { tracks } from "./test-data.mjs";
 
 class FakeAudio {
@@ -42,10 +42,10 @@ class FakeAudio {
   }
 }
 
-test("AudioEngine loads, controls, and reports secure tracks", async () => {
+test("MediaEngine loads, controls, and reports secure tracks", async () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   assert.equal(await engine.setTrack(tracks[0], 12), true);
   assert.equal(audio.src, "https://www.dhammadownload.com/MP3Library/UJotika/praise.mp3");
   assert.equal(audio.currentTime, 0);
@@ -73,10 +73,10 @@ test("AudioEngine loads, controls, and reports secure tracks", async () => {
   );
 });
 
-test("AudioEngine rejects unsafe media and reports play failures", async () => {
+test("MediaEngine rejects unsafe media and reports play failures", async () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   assert.equal(
     await engine.setTrack({
       ...tracks[0],
@@ -87,7 +87,7 @@ test("AudioEngine rejects unsafe media and reports play failures", async () => {
   );
   assert.deepEqual(events.at(-1), {
     type: "error",
-    message: "This audio source is not trusted."
+    message: "This media source is not trusted."
   });
   audio.failPlay = true;
   assert.equal(await engine.setTrack(tracks[0]), false);
@@ -102,10 +102,10 @@ test("AudioEngine rejects unsafe media and reports play failures", async () => {
   assert.equal(audio.playbackRate, 2);
 });
 
-test("AudioEngine reports media events and non-finite metadata safely", async () => {
+test("MediaEngine reports media events and non-finite metadata safely", async () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   assert.equal(await engine.setTrack(tracks[0], Number.NaN), true);
   assert.equal(audio.currentTime, 0);
   audio.currentTime = Number.NaN;
@@ -129,10 +129,10 @@ test("AudioEngine reports media events and non-finite metadata safely", async ()
   assert.deepEqual(events.at(-1), { type: "error", message: "The audio stream could not start." });
 });
 
-test("AudioEngine waits for metadata, clamps resume, and retries the alternate approved host", async () => {
+test("MediaEngine waits for metadata, clamps resume, and retries the alternate approved host", async () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   const track = {
     ...tracks[0],
     url: "http://dhammadownload.com/MP3Library/Myanmar/တရား တော်.mp3"
@@ -173,11 +173,11 @@ test("AudioEngine waits for metadata, clamps resume, and retries the alternate a
   assert.equal(events.filter((event) => event.type === "error").length, finalErrorCount);
 });
 
-test("AudioEngine ignores a synchronous media error while the candidate is starting", async () => {
+test("MediaEngine ignores a synchronous media error while the candidate is starting", async () => {
   const audio = new FakeAudio();
   const events = [];
   audio.emitErrorOnLoad = true;
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   assert.equal(await engine.setTrack(tracks[0]), true);
   assert.equal(audio.playCalls, 1);
   assert.equal(
@@ -186,28 +186,48 @@ test("AudioEngine ignores a synchronous media error while the candidate is start
   );
 });
 
-test("AudioEngine rejects unsupported formats before changing the media source", async () => {
+test("MediaEngine rejects unsupported formats before changing the media source", async () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   assert.equal(await engine.setTrack({ ...tracks[0], format: "wma" }), false);
   assert.equal(audio.src, "");
   assert.deepEqual(events.at(-1), {
     type: "error",
-    message: "This audio format is not supported by the macOS player."
+    message: "This media format is not supported by the macOS player."
   });
 });
 
-test("AudioEngine prefers a downloaded local URL when provided", async () => {
+test("MediaEngine rejects untrusted mp4 sources before changing the media source", async () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  assert.equal(
+    await engine.setTrack({
+      ...tracks[0],
+      format: "mp4",
+      url: "https://example.com/a.mp4",
+      playable: false
+    }),
+    false
+  );
+  assert.equal(audio.src, "");
+  assert.deepEqual(events.at(-1), {
+    type: "error",
+    message: "This media source is not trusted."
+  });
+});
+
+test("MediaEngine prefers a downloaded local URL when provided", async () => {
+  const audio = new FakeAudio();
+  const engine = new MediaEngine(audio, () => {});
   assert.equal(await engine.setTrack(tracks[0], 0, "asset:///tmp/talk.mp3"), true);
   assert.equal(audio.src, "asset:///tmp/talk.mp3");
 });
 
-test("AudioEngine cleans up event listeners and restores paused state on destroy", async () => {
+test("MediaEngine cleans up event listeners and restores paused state on destroy", async () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   await engine.setTrack(tracks[0]);
   audio.play();
   engine.destroy();
@@ -216,9 +236,9 @@ test("AudioEngine cleans up event listeners and restores paused state on destroy
   }
 });
 
-test("AudioEngine seeks with a non-finite duration and a clamped rate", () => {
+test("MediaEngine seeks with a non-finite duration and a clamped rate", () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   audio.duration = Number.NaN;
   engine.seek(42);
   assert.equal(audio.currentTime, 42);
@@ -231,10 +251,10 @@ test("AudioEngine seeks with a non-finite duration and a clamped rate", () => {
   assert.equal(audio.playbackRate, 0.75);
 });
 
-test("AudioEngine handles timeupdate and loadedmetadata with non-finite values", () => {
+test("MediaEngine handles timeupdate and loadedmetadata with non-finite values", () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   void engine.setTrack(tracks[0]);
   audio.currentTime = Number.NaN;
   audio.duration = Number.NaN;
@@ -247,9 +267,9 @@ test("AudioEngine handles timeupdate and loadedmetadata with non-finite values",
   );
 });
 
-test("AudioEngine falls back to resumeAt when metadata duration is zero", () => {
+test("MediaEngine falls back to resumeAt when metadata duration is zero", () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   void engine.setTrack(tracks[0], 30);
   audio.duration = 0;
   audio.emit("loadedmetadata");
@@ -259,16 +279,16 @@ test("AudioEngine falls back to resumeAt when metadata duration is zero", () => 
   audio.emit("timeupdate");
 });
 
-test("AudioEngine rejects a non-positive resumeAt value when loading", async () => {
+test("MediaEngine rejects a non-positive resumeAt value when loading", async () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   assert.equal(await engine.setTrack(tracks[0], -5), true);
   assert.equal(engine["resumeAt"], 0);
 });
 
-test("AudioEngine seek treats a finite non-positive duration as unbounded", () => {
+test("MediaEngine seek treats a finite non-positive duration as unbounded", () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   audio.duration = 0;
   engine.seek(60);
   assert.equal(audio.currentTime, 60);
@@ -277,19 +297,19 @@ test("AudioEngine seek treats a finite non-positive duration as unbounded", () =
   assert.equal(audio.currentTime, 90);
 });
 
-test("AudioEngine loadedmetadata with a negative duration falls back to resumeAt", () => {
+test("MediaEngine loadedmetadata with a negative duration falls back to resumeAt", () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   void engine.setTrack(tracks[0], 25);
   audio.duration = -1;
   audio.emit("loadedmetadata");
   assert.equal(audio.currentTime, 25);
 });
 
-test("AudioEngine timeupdate reports non-finite currentTime as zero", () => {
+test("MediaEngine timeupdate reports non-finite currentTime as zero", () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   void engine.setTrack(tracks[0]);
   audio.currentTime = Number.NaN;
   audio.duration = Number.NaN;
@@ -298,10 +318,10 @@ test("AudioEngine timeupdate reports non-finite currentTime as zero", () => {
   assert.deepEqual(progress, { type: "progress", currentTime: 0, duration: 0 });
 });
 
-test("AudioEngine advances candidates when play rejects", async () => {
+test("MediaEngine advances candidates when play rejects", async () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   audio.failPlay = true;
   assert.equal(await engine.setTrack(tracks[0]), false);
   assert.equal(audio.playCalls, 2);
@@ -311,7 +331,7 @@ test("AudioEngine advances candidates when play rejects", async () => {
   });
 });
 
-test("AudioEngine timeout advances to the next candidate", async () => {
+test("MediaEngine timeout advances to the next candidate", async () => {
   const audio = new FakeAudio();
   const events = [];
   audio.play = async () => {
@@ -319,7 +339,7 @@ test("AudioEngine timeout advances to the next candidate", async () => {
     // never resolves; emulates a stalled network request
     return new Promise(() => {});
   };
-  const engine = new AudioEngine(audio, (event) => events.push(event), 5);
+  const engine = new MediaEngine(audio, (event) => events.push(event), 5);
   const result = await engine.setTrack(tracks[0]);
   // Wait for the chained fallback attempt to also time out and emit its final error.
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -331,14 +351,14 @@ test("AudioEngine timeout advances to the next candidate", async () => {
   );
 });
 
-test("AudioEngine cancels in-flight candidates when a new track is loaded", async () => {
+test("MediaEngine cancels in-flight candidates when a new track is loaded", async () => {
   const audio = new FakeAudio();
   const events = [];
   audio.play = async () => {
     audio.playCalls += 1;
     return new Promise(() => {});
   };
-  const engine = new AudioEngine(audio, (event) => events.push(event), 5);
+  const engine = new MediaEngine(audio, (event) => events.push(event), 5);
   void engine.setTrack(tracks[0]);
   // Immediately start a second track; the first attempt should be invalidated.
   void engine.setTrack(tracks[1]);
@@ -348,9 +368,9 @@ test("AudioEngine cancels in-flight candidates when a new track is loaded", asyn
   engine.destroy();
 });
 
-test("AudioEngine invalidates stale onTimeout callbacks after success", async () => {
+test("MediaEngine invalidates stale onTimeout callbacks after success", async () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {}, 1);
+  const engine = new MediaEngine(audio, () => {}, 1);
   await engine.setTrack(tracks[0]);
   // The play() promise has already resolved; the setTimeout will fire and immediately
   // bail because settled=true.
@@ -358,42 +378,42 @@ test("AudioEngine invalidates stale onTimeout callbacks after success", async ()
   engine.destroy();
 });
 
-test("AudioEngine invalidates stale play callbacks after a timeout-driven retry", async () => {
+test("MediaEngine invalidates stale play callbacks after a timeout-driven retry", async () => {
   const audio = new FakeAudio();
   audio.play = async () => {
     audio.playCalls += 1;
     // Resolves later, after the timeout has already triggered a fallback attempt.
     return new Promise((resolve) => setTimeout(() => resolve(), 50));
   };
-  const engine = new AudioEngine(audio, () => {}, 1);
+  const engine = new MediaEngine(audio, () => {}, 1);
   const result = await engine.setTrack(tracks[0]);
   await new Promise((resolve) => setTimeout(resolve, 100));
   assert.equal(typeof result, "boolean");
   engine.destroy();
 });
 
-test("AudioEngine seek keeps the position when audio duration is infinite", () => {
+test("MediaEngine seek keeps the position when audio duration is infinite", () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   audio.duration = Number.POSITIVE_INFINITY;
   engine.seek(50);
   assert.equal(audio.currentTime, 50);
 });
 
-test("AudioEngine seek with no playable track leaves currentTime at zero", () => {
+test("MediaEngine seek with no playable track leaves currentTime at zero", () => {
   const audio = new FakeAudio();
-  const engine = new AudioEngine(audio, () => {});
+  const engine = new MediaEngine(audio, () => {});
   audio.duration = 0;
   audio.currentTime = -5;
   engine.seek(60);
   assert.equal(audio.currentTime, 60);
 });
 
-test("AudioEngine surfaces the final error after a fallback also fails", async () => {
+test("MediaEngine surfaces the final error after a fallback also fails", async () => {
   const audio = new FakeAudio();
   const events = [];
   audio.failPlay = true;
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   await engine.setTrack(tracks[0]);
   assert.equal(audio.playCalls, 2);
   assert.equal(
@@ -402,10 +422,10 @@ test("AudioEngine surfaces the final error after a fallback also fails", async (
   );
 });
 
-test("AudioEngine timeupdate with finite duration records progress", () => {
+test("MediaEngine timeupdate with finite duration records progress", () => {
   const audio = new FakeAudio();
   const events = [];
-  const engine = new AudioEngine(audio, (event) => events.push(event));
+  const engine = new MediaEngine(audio, (event) => events.push(event));
   void engine.setTrack(tracks[0]);
   audio.currentTime = 25;
   audio.duration = 200;

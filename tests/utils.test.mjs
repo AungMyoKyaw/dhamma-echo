@@ -27,7 +27,7 @@ test("clamp constrains finite and non-finite values", () => {
   assert.equal(clamp(Number.NaN, 0, 10), 0);
 });
 
-test("mediaUrlCandidates normalizes approved MP3 sources and blocks unsupported media", () => {
+test("mediaUrlCandidates normalizes approved MP3 and MP4 sources and blocks unsupported media", () => {
   assert.deepEqual(
     mediaUrlCandidates("http://dhammadownload.com/MP3Library/Myanmar/တရား တော်.mp3", "MP3"),
     [
@@ -39,9 +39,18 @@ test("mediaUrlCandidates normalizes approved MP3 sources and blocks unsupported 
     "https://www.dhammadownload.com/audio/talk.mp3",
     "https://dhammadownload.com/audio/talk.mp3"
   ]);
+  assert.deepEqual(mediaUrlCandidates("https://dhammadownload.com/audio/talk.mp4", "mp4"), [
+    "https://www.dhammadownload.com/audio/talk.mp4",
+    "https://dhammadownload.com/audio/talk.mp4"
+  ]);
+  assert.deepEqual(mediaUrlCandidates("http://dhammadownload.com/audio/talk.mp4", "MP4"), [
+    "https://www.dhammadownload.com/audio/talk.mp4",
+    "https://dhammadownload.com/audio/talk.mp4"
+  ]);
   assert.deepEqual(mediaUrlCandidates("https://dhammadownload.com/audio/talk.wma", "wma"), []);
-  assert.deepEqual(mediaUrlCandidates("https://example.com/audio/talk.mp3", "mp3"), []);
-  assert.deepEqual(mediaUrlCandidates("https://dhammadownload.com:8443/audio/talk.mp3", "mp3"), []);
-  assert.deepEqual(mediaUrlCandidates("https://user@dhammadownload.com/audio/talk.mp3", "mp3"), []);
+  assert.deepEqual(mediaUrlCandidates("https://dhammadownload.com/audio/talk.wmv", "wmv"), []);
+  assert.deepEqual(mediaUrlCandidates("https://example.com/audio/talk.mp4", "mp4"), []);
+  assert.deepEqual(mediaUrlCandidates("https://dhammadownload.com:8443/audio/talk.mp4", "mp4"), []);
+  assert.deepEqual(mediaUrlCandidates("https://user@dhammadownload.com/audio/talk.mp4", "mp4"), []);
   assert.deepEqual(mediaUrlCandidates("not a url", "mp3"), []);
 });

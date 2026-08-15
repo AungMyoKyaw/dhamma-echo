@@ -8,7 +8,7 @@ export type Route =
   | "library"
   | "settings";
 export type LanguageFilter = "all" | "myanmar" | "english";
-export type FormatFilter = "all" | "mp3" | "wma";
+export type FormatFilter = "all" | "mp3" | "wma" | "mp4" | "wmv";
 export type PlayerStatus = "idle" | "loading" | "playing" | "paused";
 
 export interface CatalogueSummary {
@@ -84,6 +84,11 @@ export interface AudioTrack {
   teacherId: number | null;
   teacherName: string;
   playable: boolean;
+  /**
+   * Catalogue media type. `audio` rows are played through `<audio>`;
+   * `video` rows route to the dedicated video view.
+   */
+  mediaType: "audio" | "video";
 }
 
 export interface AudioSearchRequest {

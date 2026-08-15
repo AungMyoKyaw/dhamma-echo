@@ -7,7 +7,7 @@ import {
   saveSettings,
   saveUi
 } from "./persistence.js";
-import { AudioEngine, type AudioLike } from "./player.js";
+import { MediaEngine, type MediaLike } from "./player.js";
 import { localFileUrl } from "./runtime.js";
 import { createInitialState, reduce, type AppAction } from "./store.js";
 import type {
@@ -35,7 +35,7 @@ interface CatalogueClient {
 interface AppDependencies {
   api: CatalogueClient;
   storage: StorageLike;
-  audio: AudioLike;
+  audio: MediaLike;
   render: (state: AppState, action: AppAction) => void;
   now: () => number;
 }
@@ -61,10 +61,10 @@ const uiActions = new Set<AppAction["type"]>(["hydrate", "set-sidebar-collapsed"
 
 export class DhammaApp {
   state = createInitialState();
-  private readonly engine: AudioEngine;
+  private readonly engine: MediaEngine;
 
   constructor(private readonly dependencies: AppDependencies) {
-    this.engine = new AudioEngine(dependencies.audio, (event) => {
+    this.engine = new MediaEngine(dependencies.audio, (event) => {
       this.handlePlayerEvent(event);
     });
   }

@@ -15,7 +15,8 @@ export const tracks = [
     location: null,
     teacherId: 3,
     teacherName: "Venerable Sayadaw U Jotika",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   },
   {
     id: 2,
@@ -27,7 +28,8 @@ export const tracks = [
     location: "Yangon",
     teacherId: 4,
     teacherName: "Venerable Dr. K. Dhammasami",
-    playable: true
+    playable: true,
+    mediaType: "audio"
   }
 ];
 
@@ -51,5 +53,6 @@ export const incompleteTrack = {
   location: null,
   teacherId: null,
   teacherName: "Unknown teacher",
-  playable: true
+  playable: true,
+  mediaType: "audio"
 };
