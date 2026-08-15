@@ -67,6 +67,7 @@
         value={state.search.format}
         ><option value="all">All formats</option><option value="mp3">MP3</option><option value="wma"
           >WMA</option
+        ><option value="mp4">MP4 video</option><option value="wmv">WMV</option
         ></select
       ></label
     >
