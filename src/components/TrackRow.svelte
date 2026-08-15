@@ -65,9 +65,14 @@
       ><span
         class="truncate font-bold {myanmarTitle ? 'myanmar-text' : ''}"
         lang={myanmarTitle ? "my" : undefined}>{track.title}</span
-      >{#if !track.playable}<span
+      >{#if track.mediaType === "video"}<span
+          class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-primary/15 px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-primary uppercase"
+          >Video</span
+        >{/if}{#if !track.playable}<span
           class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-soft px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-muted uppercase"
-          >{track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Unavailable"}</span
+          >{track.format.toLowerCase() === "wma"
+            ? "WMA unavailable"
+            : "Source unavailable"}</span
         >{/if}</span
     >
     <span
