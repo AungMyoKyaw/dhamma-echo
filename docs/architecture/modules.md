@@ -9,7 +9,7 @@ flowchart TB
       app[src/app.ts\napplication controller]
       store[src/store.ts\ndeterministic state]
       ui[src/ui.ts\npure presentation helpers]
-      player[src/player.ts\nHTML audio adapter]
+      player[src/player.ts\nHTML media adapter\n(audio + video)]
       urls[src/utils.ts\nmedia URL allowlist and normalization]
       persistence[src/persistence.ts\nvalidated local state]
       api[src/api.ts\ntyped IPC client]
@@ -35,7 +35,7 @@ flowchart TB
 
     api -->|Tauri IPC| commands
     db -->|read-only| sqlite[(Bundled SQLite)]
-    player -->|HTTPS allowlist: bare and www hosts| remote[Remote MP3 audio]
+    player -->|HTTPS allowlist: bare and www hosts| remote[Remote MP3 audio and MP4 video]
 ```
 
 ## Boundaries
@@ -43,7 +43,7 @@ flowchart TB
 - Svelte renders catalogue strings as text nodes; the application does not use `{@html}` for catalogue content.
 - The webview never receives a generic SQL command, filesystem path, or shell interface.
 - Rust validates identifiers, page limits, language, format, and teacher filters.
-- Rust marks only MP3 records on the approved Dhamma Download hostnames as playable.
-- The audio adapter reparses every URL, rejects credentials and custom ports, upgrades approved HTTP records to HTTPS, removes fragments, encodes paths, and exposes only two approved HTTPS candidates.
+- Rust marks only MP3 and MP4 records on the approved Dhamma Download hostnames as playable. Audio and video rows are both returned by `search_audio` and `get_audio_track`; collections, teacher summaries, and audio categories continue to count audio rows only.
+- The media adapter reparses every URL, rejects credentials and custom ports, upgrades approved HTTP records to HTTPS, removes fragments, encodes paths, and exposes only two approved HTTPS candidates for MP3 and MP4 sources.
 - The Tauri CSP permits media from those two HTTPS origins only.
 - Local storage data is treated as untrusted and schema-checked on every load.

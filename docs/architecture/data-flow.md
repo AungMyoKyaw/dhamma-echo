@@ -51,7 +51,7 @@ sequenceDiagram
     actor User
     participant UI as App controller
     participant Guard as Media URL guard
-    participant Audio as HTMLAudioElement
+    participant Media as HTMLMediaElement<br/>(audio or video)
     participant Primary as www.dhammadownload.com
     participant Fallback as dhammadownload.com
     participant Local as Local storage
@@ -61,20 +61,23 @@ sequenceDiagram
     UI->>Guard: Validate format, scheme, host, port, credentials
     Guard->>Guard: Upgrade HTTP to HTTPS and encode path
     Guard-->>UI: Primary and fallback HTTPS candidates
-    UI->>Audio: Set primary source and rate, then play
-    Audio->>Primary: Request media stream
-    alt Primary succeeds
-        Primary-->>Audio: Audio bytes and metadata
-    else Primary fails
-        Audio-->>UI: Media error
-        UI->>Audio: Set fallback source and play
-        Audio->>Fallback: Request media stream
-        Fallback-->>Audio: Audio bytes or final error
+    alt Track mediaType is "video"
+        UI->>UI: Navigate to play route; persistent audio footer hides
     end
-    Audio-->>UI: loadedmetadata/play/pause/timeupdate/ended/error
-    UI->>Audio: Apply bounded resume after metadata
+    UI->>Media: Set primary source and rate, then play
+    Media->>Primary: Request media stream
+    alt Primary succeeds
+        Primary-->>Media: Media bytes and metadata
+    else Primary fails
+        Media-->>UI: Media error
+        UI->>Media: Set fallback source and play
+        Media->>Fallback: Request media stream
+        Fallback-->>Media: Media bytes or final error
+    end
+    Media-->>UI: loadedmetadata/play/pause/timeupdate/ended/error
+    UI->>Media: Apply bounded resume after metadata
     UI->>Local: Persist throttled resume position
     UI-->>User: Update compact player, queue, loading, and retry states
 ```
 
-The database does not contain duration metadata. Resume is applied only after the audio element exposes media metadata. Completion resets the saved position to zero so replaying a finished talk starts from the beginning.
+The database does not contain duration metadata. Resume is applied only after the media element exposes its metadata. Completion resets the saved position to zero so replaying a finished talk starts from the beginning. Audio plays in the persistent footer; video opens the `play` route and renders `VideoView` with the same transport skin and keyboard shortcuts (`space`, `←`, `→`, `Esc`).

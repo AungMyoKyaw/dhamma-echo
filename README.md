@@ -56,15 +56,15 @@ The web codebase enforces 100% lines, 100% functions, and 99.82% branches across
 
 ## Features
 
-- Browse 30,563 audio talks from 257 teachers.
+- Browse 30,563 audio talks and 14,474 video walkthroughs from 257 teachers.
 - Search by talk title or teacher.
-- Filter by audio category, collection, teacher, Myanmar/English, and MP3/WMA.
+- Filter by audio category, collection, teacher, Myanmar/English, and MP3/WMA/MP4/WMV.
 - Browse 429 audio collections and open teacher detail pages with their collections and talks.
 - Keep playable talks available with neutral labels when optional catalogue metadata is missing.
-- Play approved MP3 audio through HTTPS with 15-second jump controls, seek, speed, and queue management.
+- Play approved MP3 audio and MP4 video through HTTPS with 15-second jump controls, seek, speed, and queue management.
 - Normalize and encode catalogue URLs, then retry across the approved `www` and bare Dhamma Download hosts.
-- Store favorites, history, queue, settings, and resume positions locally.
-- Upgrade approved same-host HTTP MP3 records to HTTPS before playback; WMA records remain searchable but unavailable in the macOS webview.
+- Store favorites, history, queue, settings, and resume positions locally. Resume, history, and queue are shared across audio and video tracks.
+- Upgrade approved same-host HTTP MP3/MP4 records to HTTPS before playback; WMA/WMV records remain searchable but unavailable in the macOS webview.
 - Use the supplied SQLite database as an immutable bundled resource.
 - Run a compiled Svelte 5 + TypeScript web UI inside a small Tauri shell.
 - Render Myanmar text through system fonts; no font files are bundled.
@@ -93,7 +93,7 @@ The webview can call only six purpose-built Tauri commands. Rust validates each 
 - `rusqlite` with bundled SQLite
 - Svelte 5 with strict TypeScript and Vite
 - Tailwind CSS v4 through the official Vite plugin with CSS-first design tokens
-- Native HTML audio element
+- Native HTML audio and video elements (a generalized `MediaEngine` wraps `HTMLMediaElement`)
 - Node's built-in test runner and V8 coverage
 
 ## Requirements
