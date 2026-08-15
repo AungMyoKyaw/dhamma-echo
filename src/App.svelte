@@ -16,6 +16,7 @@
   import SettingsView from "./views/SettingsView.svelte";
   import TeacherDetailView from "./views/TeacherDetailView.svelte";
   import TeachersView from "./views/TeachersView.svelte";
+  import VideoView from "./views/VideoView.svelte";
 
   let { app, stateStore }: { app: DhammaApp; stateStore: Readable<AppState> } = $props();
   let appState = $derived($stateStore);
@@ -39,6 +40,11 @@
       return;
     }
     if (helpOpen) return;
+    if (event.key === "Escape" && appState.route === "play") {
+      event.preventDefault();
+      void app.dispatch({ type: "return-to-list" });
+      return;
+    }
     if (event.code === "Space") {
       event.preventDefault();
       void app.togglePlayback();
@@ -57,6 +63,9 @@
     }
   }
 
+  let showAudioFooter = $derived(
+    appState.player.current !== null && appState.player.current.mediaType !== "video"
+  );
   let marginLeft = $derived(
     appState.ui.sidebarCollapsed ? "ml-[72px]" : "ml-64 max-[1040px]:ml-56"
   );
@@ -66,10 +75,9 @@
 <div class="h-screen min-h-screen overflow-hidden bg-app-bg text-app">
   <Sidebar state={appState} {app} />
   <div
-    class="{marginLeft} h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] transition-[margin] duration-200 {appState
-      .player.current === null
-      ? 'pb-8'
-      : 'pb-40'}"
+    class="{marginLeft} h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] transition-[margin] duration-200 {showAudioFooter
+      ? 'pb-40'
+      : 'pb-8'}"
   >
     <Header state={appState} />
     <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
@@ -83,9 +91,13 @@
       {:else if appState.route === "teachers"}<TeachersView state={appState} {app} />
       {:else if appState.route === "teacher-detail"}<TeacherDetailView state={appState} {app} />
       {:else if appState.route === "library"}<LibraryView state={appState} {app} />
+      {:else if appState.route === "play"}<VideoView state={appState} {app} />
       {:else}<SettingsView state={appState} {app} />{/if}
     </main>
   </div>
-  <Player state={appState} {app} />
+  {#if appState.player.current !== null && appState.player.current.mediaType !== "video"}<Player
+      state={appState}
+      {app}
+    />{/if}
   {#if helpOpen}<KeyboardCheatsheet onclose={() => (helpOpen = false)} />{/if}
 </div>
