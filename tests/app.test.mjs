@@ -292,20 +292,74 @@ test("DhammaApp refuses to play unplayable tracks", async () => {
 });
 
 test("DhammaApp routes video tracks to the play route and records history", async () => {
+  const audio = new FakeAudio();
+  const video = new FakeAudio();
   const app = new DhammaApp({
     api: createApi(),
     storage: new MemoryStorage(),
-    audio: new FakeAudio(),
+    audio,
     render() {},
     now: () => 1000
   });
   await app.start();
+  app.registerVideoElement(video);
   await app.playTrack(videoTrack);
   assert.equal(app.state.route, "play");
   assert.equal(app.state.navigationContext?.returnRoute, "home");
   assert.equal(app.state.player.current?.id, videoTrack.id);
   assert.deepEqual(app.state.library.history[0], { id: videoTrack.id, playedAt: 1000 });
+  // The audio stream is paused and cleared when video takes over.
+  assert.equal(audio.paused, true);
+  assert.equal(audio.src, "");
+  // The video element received the source.
+  assert.match(video.src, /walkthrough\.mp4$/);
   app.destroy();
+});
+
+test("DhammaApp rebuilds the engine against the video element when it mounts after playTrack", async () => {
+  const audio = new FakeAudio();
+  const video = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  // Play the track BEFORE the video element registers (the typical flow
+  // because the route change and the view mount happen after playTrack).
+  await app.playTrack(videoTrack);
+  assert.equal(app.state.player.current?.id, videoTrack.id);
+  // The audio element received the source as a fallback.
+  assert.match(audio.src, /walkthrough\.mp4$/);
+  // Now the view mounts and registers the video element.
+  app.registerVideoElement(video);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  // The engine is rebuilt against the video element.
+  assert.match(video.src, /walkthrough\.mp4$/);
+  // The audio stream is paused and cleared.
+  assert.equal(audio.paused, true);
+  assert.equal(audio.src, "");
+  app.destroy();
+});
+
+test("DhammaApp ignores registerVideoElement when no video track is active", async () => {
+  const audio = new FakeAudio();
+  const video = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  app.registerVideoElement(video);
+  // No current track; nothing should change on the video element.
+  assert.equal(video.src, "");
+  app.registerVideoElement(null);
+  await app.destroy();
 });
 
 test("DhammaApp searches teachers by name", async () => {

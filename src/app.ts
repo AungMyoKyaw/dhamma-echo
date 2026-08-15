@@ -61,12 +61,61 @@ const uiActions = new Set<AppAction["type"]>(["hydrate", "set-sidebar-collapsed"
 
 export class DhammaApp {
   state = createInitialState();
-  private readonly engine: MediaEngine;
+  private engine: MediaEngine;
+  private engineMediaType: "audio" | "video" | null = null;
+  private engineElement: MediaLike | null = null;
+  private videoElement: MediaLike | null = null;
 
   constructor(private readonly dependencies: AppDependencies) {
     this.engine = new MediaEngine(dependencies.audio, (event) => {
       this.handlePlayerEvent(event);
     });
+  }
+
+  /**
+   * Registers the live `<video>` element owned by `VideoView`. The engine
+   * uses this element when the active track is a video. Called from the
+   * view's mount/unmount lifecycle. If the active track is already a video
+   * and the engine was created before the element was available, the
+   * engine is rebuilt against the freshly registered element and the
+   * track is reloaded so playback resumes on the visible video.
+   */
+  registerVideoElement(element: MediaLike | null): void {
+    this.videoElement = element;
+    const current = this.state.player.current;
+    if (element !== null && current !== null && current.mediaType === "video") {
+      void this.reloadCurrentTrack();
+    }
+  }
+
+  private async reloadCurrentTrack(): Promise<void> {
+    const track = this.state.player.current;
+    if (track === null) return;
+    const engine = this.ensureEngineFor(track.mediaType);
+    engine.setRate(this.state.settings.playbackRate);
+    await engine.setTrack(track, this.state.player.currentTime, this.localUrlFor(track.id));
+  }
+
+  private ensureEngineFor(mediaType: "audio" | "video"): MediaEngine {
+    const desiredElement =
+      mediaType === "video"
+        ? (this.videoElement ?? this.dependencies.audio)
+        : this.dependencies.audio;
+    if (this.engineMediaType === mediaType && this.engineElement === desiredElement) {
+      return this.engine;
+    }
+    this.engine.destroy();
+    this.engine = new MediaEngine(desiredElement, (event) => {
+      this.handlePlayerEvent(event);
+    });
+    this.engineMediaType = mediaType;
+    this.engineElement = desiredElement;
+    // Pause and clear the audio stream so the inactive element does not
+    // keep streaming behind the video view.
+    this.dependencies.audio.pause();
+    this.dependencies.audio.src = "";
+    this.dependencies.audio.load();
+    return this.engine;
   }
 
   async start(): Promise<void> {
@@ -415,20 +464,12 @@ export class DhammaApp {
     if (!track.playable) return;
     if (track.mediaType === "video") {
       this.dispatch({ type: "open-play", track, returnRoute: this.state.route });
-      this.dispatch({ type: "play-track", track });
-      this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
-      this.engine.setRate(this.state.settings.playbackRate);
-      await this.engine.setTrack(
-        track,
-        this.state.library.resume[String(track.id)] ?? 0,
-        this.localUrlFor(track.id)
-      );
-      return;
     }
     this.dispatch({ type: "play-track", track });
     this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
-    this.engine.setRate(this.state.settings.playbackRate);
-    await this.engine.setTrack(
+    const engine = this.ensureEngineFor(track.mediaType);
+    engine.setRate(this.state.settings.playbackRate);
+    await engine.setTrack(
       track,
       this.state.library.resume[String(track.id)] ?? 0,
       this.localUrlFor(track.id)

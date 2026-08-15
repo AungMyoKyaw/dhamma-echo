@@ -24,6 +24,7 @@ export type MediaLike = AudioLike;
 const FALLBACK_TIMEOUT_MS = 8000;
 
 export class MediaEngine {
+  private audio: MediaLike;
   private candidates: string[] = [];
   private candidateIndex = -1;
   private resumeAt = 0;
@@ -70,16 +71,31 @@ export class MediaEngine {
   };
 
   constructor(
-    private readonly audio: MediaLike,
+    audio: MediaLike,
     private readonly emit: (event: PlayerEvent) => void,
     private readonly fallbackTimeoutMs: number = FALLBACK_TIMEOUT_MS
   ) {
-    audio.addEventListener("play", this.onPlay);
-    audio.addEventListener("pause", this.onPause);
-    audio.addEventListener("loadedmetadata", this.onLoadedMetadata);
-    audio.addEventListener("timeupdate", this.onTimeUpdate);
-    audio.addEventListener("ended", this.onEnded);
-    audio.addEventListener("error", this.onError);
+    this.audio = audio;
+    this.attach(audio);
+  }
+
+  private attach(element: MediaLike): void {
+    element.addEventListener("play", this.onPlay);
+    element.addEventListener("pause", this.onPause);
+    element.addEventListener("loadedmetadata", this.onLoadedMetadata);
+    element.addEventListener("timeupdate", this.onTimeUpdate);
+    element.addEventListener("ended", this.onEnded);
+    element.addEventListener("error", this.onError);
+  }
+
+  private detach(): void {
+    const element = this.audio;
+    element.removeEventListener("play", this.onPlay);
+    element.removeEventListener("pause", this.onPause);
+    element.removeEventListener("loadedmetadata", this.onLoadedMetadata);
+    element.removeEventListener("timeupdate", this.onTimeUpdate);
+    element.removeEventListener("ended", this.onEnded);
+    element.removeEventListener("error", this.onError);
   }
 
   async setTrack(track: AudioTrack, resumeAt = 0, localUrl?: string): Promise<boolean> {
@@ -128,12 +144,7 @@ export class MediaEngine {
   }
 
   destroy(): void {
-    this.audio.removeEventListener("play", this.onPlay);
-    this.audio.removeEventListener("pause", this.onPause);
-    this.audio.removeEventListener("loadedmetadata", this.onLoadedMetadata);
-    this.audio.removeEventListener("timeupdate", this.onTimeUpdate);
-    this.audio.removeEventListener("ended", this.onEnded);
-    this.audio.removeEventListener("error", this.onError);
+    this.detach();
   }
 
   private attempt(index: number): Promise<boolean> {

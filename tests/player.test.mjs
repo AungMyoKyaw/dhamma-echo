@@ -432,3 +432,12 @@ test("MediaEngine timeupdate with finite duration records progress", () => {
   audio.emit("timeupdate");
   assert.deepEqual(events.at(-1), { type: "progress", currentTime: 25, duration: 200 });
 });
+
+test("MediaEngine error without startedAttempt does not advance candidates", async () => {
+  const audio = new FakeAudio();
+  const events = [];
+  new MediaEngine(audio, (event) => events.push(event));
+  audio.emit("error");
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(events.length, 0);
+});

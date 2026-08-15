@@ -66,6 +66,7 @@
   let showAudioFooter = $derived(
     appState.player.current !== null && appState.player.current.mediaType !== "video"
   );
+  let showRouteContent = $derived(appState.route !== "play");
   let marginLeft = $derived(
     appState.ui.sidebarCollapsed ? "ml-[72px]" : "ml-64 max-[1040px]:ml-56"
   );
@@ -80,7 +81,10 @@
       : 'pb-8'}"
   >
     <Header state={appState} />
-    <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
+    <main
+      class:hidden={!showRouteContent}
+      class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6"
+    >
       {#if appState.route === "home"}<HomeView state={appState} {app} />
       {:else if appState.route === "explore"}<ExploreView state={appState} {app} />
       {:else if appState.route === "collections"}<CollectionsView state={appState} {app} />
@@ -91,7 +95,6 @@
       {:else if appState.route === "teachers"}<TeachersView state={appState} {app} />
       {:else if appState.route === "teacher-detail"}<TeacherDetailView state={appState} {app} />
       {:else if appState.route === "library"}<LibraryView state={appState} {app} />
-      {:else if appState.route === "play"}<VideoView state={appState} {app} />
       {:else}<SettingsView state={appState} {app} />{/if}
     </main>
   </div>
@@ -99,5 +102,6 @@
       state={appState}
       {app}
     />{/if}
+  <VideoView state={appState} {app} />
   {#if helpOpen}<KeyboardCheatsheet onclose={() => (helpOpen = false)} />{/if}
 </div>
