@@ -5,6 +5,16 @@ const VIRAMA: char = '္';
 const KINZI_TONE: char = '်';
 
 const HONORIFICS: &[&str] = &["ဆရာတော်ကြီး", "ဆရာတော်", "ဆရာမ", "ဉာဏ်တော်", "မဟာဂန္ဓဝိဟတ"];
+const WORD_BOUNDARIES: &[&str] = &[
+    "ဆရာတော်",
+    "ဘုရားကြီး",
+    "ဦး",
+    "စင်္ကာပူ",
+    "မြန်မာ",
+    "ဘုန်းကြီးကျောင်းထိုင်",
+    "အတွက်",
+    "စာဝါများ",
+];
 
 const ENGLISH_TITLES: &[&str] = &[
     "Sayadaw", "Sayalay", "Ashin", "Maha", "Saya", "Sayado", "Ven.", "Dr.", "Prof.", "Maung", "Ma",
@@ -61,8 +71,31 @@ fn should_insert_before(index: usize, chars: &[char]) -> bool {
         return false;
     }
     let prev = chars[index - 1];
+    let current = chars[index];
+    let opens_word_parenthetical = current == '('
+        && MYANMAR_RANGE.contains(&prev)
+        && chars[index + 1..]
+            .iter()
+            .take_while(|&&ch| ch != ')')
+            .any(|&ch| is_myanmar_consonant(ch));
+    let starts_parenthetical_word = prev == '(' && is_myanmar_consonant(current);
+    let closes_word_parenthetical = current == ')'
+        && chars[..index]
+            .iter()
+            .rev()
+            .take_while(|&&ch| ch != '(')
+            .any(|&ch| is_myanmar_consonant(ch));
+    if opens_word_parenthetical || starts_parenthetical_word || closes_word_parenthetical {
+        return true;
+    }
     if !MYANMAR_RANGE.contains(&prev) {
         return false;
+    }
+    for boundary in WORD_BOUNDARIES {
+        let boundary_chars: Vec<char> = boundary.chars().collect();
+        if chars[index..].starts_with(&boundary_chars) {
+            return true;
+        }
     }
     if matches!(prev, VIRAMA | KINZI_TONE) || is_myanmar_combining(prev) {
         return false;
@@ -248,6 +281,41 @@ mod tests {
         assert!(
             out.contains(&format!("မြစိမ်း{ZWSP}ဆရာမ")),
             "expected ZWSP before ဆရာမ in {out:?}"
+        );
+    }
+
+    #[test]
+    fn adds_word_boundaries_to_compact_course_names() {
+        let out = normalize_text("စာချတန်း(၃)ကျမ်းအတွက်စာဝါများ");
+        assert_eq!(out, format!("စာချတန်း(၃)ကျမ်း{ZWSP}အတွက်{ZWSP}စာဝါများ"));
+    }
+
+    #[test]
+    fn adds_semantic_boundaries_to_sayadaw_buragyi_titles() {
+        let out = normalize_text("သဲအင်းဂူဆရာတော်ဘုရားကြီး ဦးဥက္ကဋ္ဌ");
+        assert_eq!(
+            out,
+            format!("သဲအင်းဂူ{ZWSP}ဆရာတော်{ZWSP}ဘုရားကြီး ဦး{ZWSP}ဥ{ZWSP}က္ကဋ္ဌ")
+        );
+    }
+
+    #[test]
+    fn adds_reusable_boundaries_to_compact_parenthetical_names() {
+        let out = normalize_text("ဆရာတော်ဦးပညာဝံသ(စင်္ကာပူမြန်မာဘုန်းကြီးကျောင်းထိုင်ဆရာတော်)");
+        assert_eq!(
+            out,
+            format!(
+                "ဆရာတော်{ZWSP}ဦးပညာဝံသ{ZWSP}({ZWSP}စင်္ကာပူ{ZWSP}မြန်မာ{ZWSP}ဘုန်းကြီးကျောင်းထိုင်{ZWSP}ဆရာတော်{ZWSP})"
+            )
+        );
+    }
+
+    #[test]
+    fn adds_wrap_opportunities_around_attached_parentheses() {
+        let out = normalize_text("အောင်ဆန်းဆရာတော်(မိုးကုတ်ဆရာတော်)");
+        assert_eq!(
+            out,
+            format!("အောင်ဆန်း{ZWSP}ဆရာတော်{ZWSP}({ZWSP}မိုးကုတ်{ZWSP}ဆရာတော်{ZWSP})")
         );
     }
 }
