@@ -70,9 +70,7 @@
           >Video</span
         >{/if}{#if !track.playable}<span
           class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-soft px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-muted uppercase"
-          >{track.format.toLowerCase() === "wma"
-            ? "WMA unavailable"
-            : "Source unavailable"}</span
+          >{track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Source unavailable"}</span
         >{/if}</span
     >
     <span
