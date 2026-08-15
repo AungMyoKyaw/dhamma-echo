@@ -92,6 +92,10 @@ pub struct AudioTrack {
     pub teacher_id: Option<i64>,
     pub teacher_name: String,
     pub playable: bool,
+    /// Catalogue media type discriminator. Always `"audio"` or `"video"`.
+    /// The webview chooses `<audio>` vs `<video>` from this field instead of
+    /// inspecting `format`, so the schema's truth stays in one place.
+    pub media_type: String,
 }
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]

@@ -182,7 +182,8 @@ impl Database {
                 })?;
             let mut statement = connection.prepare(
                 "SELECT m.id, m.title, COALESCE(m.format, ''), m.language, m.url,
-                        m.date_recorded, m.location, m.teacher_id, t.name
+                        m.date_recorded, m.location, m.teacher_id, t.name,
+                        m.type
                  FROM media_collections mc
                  JOIN media m ON m.id = mc.media_id AND m.type = 'audio'
                  LEFT JOIN teachers t ON t.id = m.teacher_id
@@ -280,10 +281,11 @@ impl Database {
             connection
                 .query_row(
                     "SELECT m.id, m.title, COALESCE(m.format, ''), m.language, m.url,
-                            m.date_recorded, m.location, m.teacher_id, t.name
+                            m.date_recorded, m.location, m.teacher_id, t.name,
+                            m.type
                      FROM media m
                      LEFT JOIN teachers t ON t.id = m.teacher_id
-                     WHERE m.id = ?1 AND m.type = 'audio'",
+                     WHERE m.id = ?1 AND m.type IN ('audio', 'video')",
                     [id],
                     map_audio_track,
                 )
@@ -302,7 +304,11 @@ impl Database {
             request.language.as_deref(),
             &["myanmar", "english"],
         )?;
-        validate_filter("format", request.format.as_deref(), &["mp3", "wma"])?;
+        validate_filter(
+            "format",
+            request.format.as_deref(),
+            &["mp3", "wma", "mp4", "wmv"],
+        )?;
         if let Some(teacher_id) = request.teacher_id {
             validate_id(teacher_id)?;
         }
@@ -313,7 +319,7 @@ impl Database {
             validate_id(collection_id)?;
         }
 
-        let mut clauses = vec!["m.type = 'audio'".to_string()];
+        let mut clauses = vec!["m.type IN ('audio', 'video')".to_string()];
         let mut values = Vec::<Value>::new();
         let query = normalize_text(&request.query).to_lowercase();
         if !query.is_empty() {
@@ -358,7 +364,8 @@ impl Database {
 
             let page_sql = format!(
                 "SELECT m.id, m.title, COALESCE(m.format, ''), m.language, m.url,
-                        m.date_recorded, m.location, m.teacher_id, t.name
+                        m.date_recorded, m.location, m.teacher_id, t.name,
+                        m.type
                  FROM media m
                  LEFT JOIN teachers t ON t.id = m.teacher_id
                  WHERE {where_clause}
@@ -513,7 +520,7 @@ fn map_collection_summary(row: &Row<'_>) -> rusqlite::Result<CollectionSummary> 
 }
 
 fn is_webview_playable(format: &str, url: &str) -> bool {
-    if !format.eq_ignore_ascii_case("mp3") {
+    if !matches!(format.trim().to_ascii_lowercase().as_str(), "mp3" | "mp4") {
         return false;
     }
     let url = url.trim().to_ascii_lowercase();
@@ -531,6 +538,11 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
     let url: String = row.get(4)?;
     let format = normalize_text(&row.get::<_, String>(2)?).to_lowercase();
     let playable = is_webview_playable(&format, &url);
+    let media_type = normalize_text(&row.get::<_, String>(9)?).to_lowercase();
+    let media_type = match media_type.as_str() {
+        "video" => "video".to_string(),
+        _ => "audio".to_string(),
+    };
     Ok(AudioTrack {
         id: row.get(0)?,
         title: normalized_or(row.get(1)?, "Untitled talk"),
@@ -542,6 +554,7 @@ fn map_audio_track(row: &Row<'_>) -> rusqlite::Result<AudioTrack> {
         location: optional_normalized(row.get(6)?),
         teacher_id: row.get(7)?,
         teacher_name: normalized_or(row.get(8)?, "Unknown teacher"),
+        media_type,
     })
 }
 
@@ -768,9 +781,25 @@ mod tests {
             "MP3",
             "https://www.dhammadownload.com/talk.mp3"
         ));
+        assert!(is_webview_playable(
+            "mp4",
+            "https://dhammadownload.com/talk.mp4"
+        ));
+        assert!(is_webview_playable(
+            "MP4",
+            "https://www.dhammadownload.com/talk.mp4"
+        ));
         assert!(!is_webview_playable(
             "wma",
             "https://dhammadownload.com/talk.wma"
+        ));
+        assert!(!is_webview_playable(
+            "wmv",
+            "https://dhammadownload.com/talk.wmv"
+        ));
+        assert!(!is_webview_playable(
+            "mpg",
+            "https://dhammadownload.com/talk.mpg"
         ));
         assert!(!is_webview_playable(
             "mp3",
@@ -779,6 +808,11 @@ mod tests {
         assert!(!is_webview_playable(
             "mp3",
             "https://dhammadownload.com:8443/talk.mp3"
+        ));
+        assert!(!is_webview_playable("mp4", "file:///Users/me/talk.mp4"));
+        assert!(!is_webview_playable(
+            "mp4",
+            "mms://dhammadownload.com/talk.mp4"
         ));
     }
 
@@ -933,6 +967,76 @@ mod tests {
         assert_eq!(track.title, "Untitled talk");
         assert_eq!(track.teacher_name, "Unknown teacher");
         assert!(track.playable);
+        assert_eq!(track.media_type, "audio");
+    }
+
+    #[test]
+    fn audio_track_emits_video_media_type_for_video_rows() {
+        // Fixture inserts id=3 as type='video', format='mp4'.
+        let track = fixture().audio_track(3).expect("video track");
+        assert_eq!(track.media_type, "video");
+        assert_eq!(track.format, "mp4");
+        assert!(track.playable);
+    }
+
+    #[test]
+    fn search_audio_includes_video_rows_when_format_filter_matches() {
+        // Fixture inserts id=3 as type='video', format='mp4', language='myanmar'.
+        let page = fixture()
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: Some("myanmar".into()),
+                format: Some("mp4".into()),
+                teacher_id: None,
+                category_id: None,
+                collection_id: None,
+                limit: 20,
+                offset: 0,
+            })
+            .expect("mp4 page");
+        assert_eq!(page.total, 1, "only the mp4 row should match");
+        let track = &page.items[0];
+        assert_eq!(track.id, 3);
+        assert_eq!(track.media_type, "video");
+        assert!(track.playable);
+    }
+
+    #[test]
+    fn search_audio_accepts_wmv_filter_and_marks_video_unplayable() {
+        // wmv is searchable (matches the WMA pattern) but no fixture row uses it.
+        let page = fixture()
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: Some("wmv".into()),
+                teacher_id: None,
+                category_id: None,
+                collection_id: None,
+                limit: 20,
+                offset: 0,
+            })
+            .expect("wmv filter is searchable");
+        assert_eq!(page.total, 0);
+    }
+
+    #[test]
+    fn search_audio_rejects_unsupported_format_values() {
+        let error = fixture()
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: Some("mpg".into()),
+                teacher_id: None,
+                category_id: None,
+                collection_id: None,
+                limit: 20,
+                offset: 0,
+            })
+            .expect_err("mpg is not a searchable format");
+        assert!(
+            matches!(error, AppError::InvalidInput(_)),
+            "expected InvalidInput, got {error:?}"
+        );
     }
 
     #[test]
@@ -990,7 +1094,7 @@ mod tests {
                 offset: 0,
             })
             .expect("blank search");
-        assert_eq!(page.total, 30563);
+        assert_eq!(page.total, 45428);
         assert_eq!(page.items.len(), 50);
         let categories = database.audio_categories().expect("audio categories");
         assert_eq!(categories.len(), 4);
