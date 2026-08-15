@@ -78,6 +78,7 @@ test("app Myanmar text preserves script clusters while wrapping", async () => {
   const css = await readFile(new URL("../src/index.css", import.meta.url), "utf8");
 
   assert.match(css, /\.myanmar-text[\s\S]*word-break:\s*keep-all/);
+  assert.match(css, /\.myanmar-text[\s\S]*overflow-wrap:\s*normal/);
 });
 
 test("dynamic audio text uses unclipped Myanmar typography", async () => {
@@ -103,6 +104,40 @@ test("shared pill controls use Tailwind optical vertical centering", async () =>
   assert.match(explore, /min-h-10[^"']*pt-0\.5/);
   assert.match(trackRow, /min-h-10[^"']*pt-0\.5/);
   assert.match(teacherCard, /items-center[^"']*pt-0\.5/);
+});
+
+test("teacher avatars keep their circular dimensions beside long names", async () => {
+  const teacherCard = await readFile(
+    new URL("../src/components/TeacherCard.svelte", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(teacherCard, /size-12 shrink-0[^"']*rounded-full/);
+  assert.match(teacherCard, /title=\{teacher\.name\}/);
+  assert.match(teacherCard, /aria-label=\{teacher\.name\}/);
+});
+
+test("interactive card hover feedback does not move cards", async () => {
+  const [teacherCard, collectionCard] = await Promise.all([
+    readFile(new URL("../src/components/TeacherCard.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/CollectionCard.svelte", import.meta.url), "utf8")
+  ]);
+
+  assert.match(teacherCard, /hover:border-app-primary\/50/);
+  assert.match(collectionCard, /hover:border-app-primary\/50/);
+  for (const card of [teacherCard, collectionCard]) {
+    assert.doesNotMatch(card, /hover:-translate-y/);
+    assert.doesNotMatch(card, /focus-visible:-translate-y/);
+  }
+});
+
+test("collection cards show complete names", async () => {
+  const collectionCard = await readFile(
+    new URL("../src/components/CollectionCard.svelte", import.meta.url),
+    "utf8"
+  );
+
+  assert.doesNotMatch(collectionCard, /line-clamp-/);
 });
 
 test("active filter clear icons cannot expand beyond their control", async () => {

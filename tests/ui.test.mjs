@@ -11,7 +11,8 @@ import {
   downloadedTracks,
   orderTeachersFeaturedFirst,
   routeLabel,
-  teacherFilterName
+  teacherFilterName,
+  truncateTeacherCardName
 } from "../.test-build/src/ui.js";
 
 const teachers = [
@@ -36,6 +37,13 @@ test("featured teacher helpers preserve curated order", () => {
 test("Myanmar text detection identifies Myanmar script", () => {
   assert.equal(isMyanmarText("မြန်မာ"), true);
   assert.equal(isMyanmarText("English"), false);
+});
+test("teacher card names use grapheme-safe middle ellipsis only when long", () => {
+  assert.equal(truncateTeacherCardName("မိုးကုတ်ဆရာတော်ဘုရားကြီး"), "မိုးကုတ်ဆရာတော်ဘုရားကြီး");
+
+  const cluster = "ကြီး";
+  const longName = cluster.repeat(40);
+  assert.equal(truncateTeacherCardName(longName), `${cluster.repeat(24)}…${cluster.repeat(11)}`);
 });
 test("route labels cover every route", () => {
   assert.deepEqual(routeLabel("home", 30563), {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { TeacherSummary } from "../types.js";
-  import { isCuratedFeaturedTeacher, isMyanmarText } from "../ui.js";
+  import { isCuratedFeaturedTeacher, isMyanmarText, truncateTeacherCardName } from "../ui.js";
+  import { teacherAvatarDataUri } from "../teacherAvatar.js";
   import Icon from "./Icon.svelte";
   let {
     teacher,
@@ -13,29 +14,36 @@
   } = $props();
   let featured = $derived(isCuratedFeaturedTeacher(teacher.id));
   let myanmar = $derived(isMyanmarText(teacher.name));
+  let avatar = $derived(teacherAvatarDataUri(teacher.id));
+  let displayName = $derived(truncateTeacherCardName(teacher.name));
 </script>
 
 <button
-  class="group flex h-full w-full {carousel
+  class="group flex h-80 w-full {carousel
     ? 'min-w-72'
-    : 'min-w-0'} min-h-[13rem] flex-col rounded-card border border-app-border bg-app-surface p-5 text-left shadow-[0_1px_2px_rgb(46_46_42_/_0.04)] transition-[transform,border-color,box-shadow,background-color] duration-150 hover:-translate-y-0.5 hover:border-app-primary/50 hover:shadow-[0_10px_28px_rgb(46_46_42_/_0.09)] focus-visible:-translate-y-0.5 focus-visible:border-app-primary/60"
+    : 'min-w-0'} flex-col overflow-hidden rounded-card border border-app-border bg-app-surface p-5 text-left shadow-[0_1px_2px_rgb(46_46_42_/_0.04)] transition-[border-color,box-shadow,background-color] duration-150 hover:border-app-primary/50 hover:shadow-[0_10px_28px_rgb(46_46_42_/_0.09)] focus-visible:border-app-primary/60"
   type="button"
   onclick={() => void onselect(teacher)}
 >
   <div
-    class="flex size-12 items-center justify-center rounded-full bg-app-secondary/15 text-lg font-bold text-app-secondary"
+    class="size-12 shrink-0 overflow-hidden rounded-full bg-app-soft ring-1 ring-app-border/60"
+    aria-hidden="true"
   >
-    {teacher.name.charAt(0)}
+    <img src={avatar} alt="" class="block size-full object-cover" />
   </div>
-  {#if featured}<span
-      class="mt-4 inline-flex min-h-[22px] w-fit items-center justify-center rounded-full bg-app-primary/10 px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold tracking-wide text-app-primary uppercase"
-      >Featured</span
-    >{/if}
+  <div class="mt-4 h-[22px] shrink-0">
+    {#if featured}<span
+        class="inline-flex h-[22px] w-fit items-center justify-center rounded-full bg-app-primary/10 px-2 pt-0.5 pb-0 text-[10px] leading-none font-bold tracking-wide text-app-primary uppercase"
+        >Featured</span
+      >{/if}
+  </div>
   <p
-    class="{featured ? 'mt-3' : 'mt-4'} font-bold leading-7 {myanmar ? 'myanmar-text' : ''}"
+    class="mt-1 break-words font-bold leading-7 {myanmar ? 'myanmar-text' : ''}"
     lang={myanmar ? "my" : undefined}
+    title={teacher.name}
+    aria-label={teacher.name}
   >
-    {teacher.name}
+    {displayName}
   </p>
   <p class="mt-2 text-sm text-app-muted tabular-nums">
     {teacher.audioCount.toLocaleString("en-US")} talks

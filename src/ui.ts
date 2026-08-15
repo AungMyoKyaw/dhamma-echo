@@ -24,6 +24,20 @@ export function isMyanmarText(value: string): boolean {
   return /[\u1000-\u109F]/u.test(value);
 }
 
+export function truncateTeacherCardName(value: string): string {
+  const clusters: string[] = [];
+  for (const character of value) {
+    const previous = clusters.at(-1);
+    if (previous !== undefined && (/\p{Mark}/u.test(character) || previous.endsWith("္"))) {
+      clusters[clusters.length - 1] += character;
+    } else {
+      clusters.push(character);
+    }
+  }
+  if (clusters.length <= 36) return value;
+  return `${clusters.slice(0, 24).join("")}…${clusters.slice(-11).join("")}`;
+}
+
 export function routeLabel(
   route: Route,
   totalAudio: number
