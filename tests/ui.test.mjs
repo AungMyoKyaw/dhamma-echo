@@ -20,18 +20,22 @@ const teachers = [
   { id: 42, name: "42", audioCount: 2 },
   { id: 16, name: "16", audioCount: 3 },
   { id: 61, name: "61", audioCount: 4 },
+  { id: 55, name: "55", audioCount: 4 },
+  { id: 1307, name: "1307", audioCount: 4 },
   { id: 901, name: "Regular B", audioCount: 5 }
 ];
 test("featured teacher helpers preserve curated order", () => {
   assert.equal(isCuratedFeaturedTeacher(42), true);
+  assert.equal(isCuratedFeaturedTeacher(55), true);
+  assert.equal(isCuratedFeaturedTeacher(1307), true);
   assert.equal(isCuratedFeaturedTeacher(900), false);
   assert.deepEqual(
     featuredTeachers(teachers).map((t) => t.id),
-    [16, 42, 61]
+    [16, 42, 61, 55, 1307]
   );
   assert.deepEqual(
     orderTeachersFeaturedFirst(teachers).map((t) => t.id),
-    [16, 42, 61, 900, 901]
+    [16, 42, 61, 55, 1307, 900, 901]
   );
 });
 test("Myanmar text detection identifies Myanmar script", () => {
