@@ -56,3 +56,17 @@ export const incompleteTrack = {
   playable: true,
   mediaType: "audio"
 };
+
+export const videoTrack = {
+  id: 7,
+  title: "Guided walkthrough",
+  format: "mp4",
+  language: "english",
+  url: "https://www.dhammadownload.com/walkthrough.mp4",
+  dateRecorded: "2024-04-10",
+  location: null,
+  teacherId: 3,
+  teacherName: "Venerable Sayadaw U Jotika",
+  playable: true,
+  mediaType: "video"
+};

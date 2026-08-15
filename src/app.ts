@@ -413,6 +413,18 @@ export class DhammaApp {
 
   async playTrack(track: AudioTrack): Promise<void> {
     if (!track.playable) return;
+    if (track.mediaType === "video") {
+      this.dispatch({ type: "open-play", track, returnRoute: this.state.route });
+      this.dispatch({ type: "play-track", track });
+      this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
+      this.engine.setRate(this.state.settings.playbackRate);
+      await this.engine.setTrack(
+        track,
+        this.state.library.resume[String(track.id)] ?? 0,
+        this.localUrlFor(track.id)
+      );
+      return;
+    }
     this.dispatch({ type: "play-track", track });
     this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
     this.engine.setRate(this.state.settings.playbackRate);

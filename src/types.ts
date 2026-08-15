@@ -6,7 +6,8 @@ export type Route =
   | "teachers"
   | "teacher-detail"
   | "library"
-  | "settings";
+  | "settings"
+  | "play";
 export type LanguageFilter = "all" | "myanmar" | "english";
 export type FormatFilter = "all" | "mp3" | "wma" | "mp4" | "wmv";
 export type PlayerStatus = "idle" | "loading" | "playing" | "paused";

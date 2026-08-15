@@ -59,6 +59,7 @@ export type AppAction =
   | { type: "teacher-detail-started" }
   | { type: "teacher-detail-loaded"; detail: NonNullable<AppState["teacherDetail"]["data"]> }
   | { type: "teacher-detail-failed"; message: string }
+  | { type: "open-play"; track: AudioTrack; returnRoute: Route }
   | { type: "teacher-talks-started"; mode: "initial" | "append" }
   | { type: "teacher-talks-loaded"; mode: "initial" | "append"; page: AudioSearchPage }
   | { type: "teacher-talks-failed"; mode: "initial" | "append"; message: string }
@@ -428,7 +429,13 @@ export function reduce(state: AppState, action: AppAction): AppState {
     case "teacher-detail-failed":
       return {
         ...state,
-        teacherDetail: { status: "error", data: null, message: action.message }
+        teacherDetail: { ...state.teacherDetail, status: "error", message: action.message }
+      };
+    case "open-play":
+      return {
+        ...state,
+        route: "play",
+        navigationContext: { returnRoute: action.returnRoute }
       };
     case "teacher-talks-started":
       return action.mode === "initial"

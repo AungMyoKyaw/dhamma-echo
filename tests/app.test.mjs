@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DhammaApp } from "../.test-build/src/app.js";
-import { tracks, teachers } from "./test-data.mjs";
+import { tracks, teachers, videoTrack } from "./test-data.mjs";
 
 class MemoryStorage {
   values = new Map();
@@ -288,6 +288,23 @@ test("DhammaApp refuses to play unplayable tracks", async () => {
   await app.playTrack({ ...tracks[0], playable: false });
   assert.equal(app.state.player.current, null);
   assert.equal(app.state.player.status, "idle");
+  app.destroy();
+});
+
+test("DhammaApp routes video tracks to the play route and records history", async () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 1000
+  });
+  await app.start();
+  await app.playTrack(videoTrack);
+  assert.equal(app.state.route, "play");
+  assert.equal(app.state.navigationContext?.returnRoute, "home");
+  assert.equal(app.state.player.current?.id, videoTrack.id);
+  assert.deepEqual(app.state.library.history[0], { id: videoTrack.id, playedAt: 1000 });
   app.destroy();
 });
 

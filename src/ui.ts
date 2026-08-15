@@ -82,6 +82,11 @@ export function routeLabel(
       eyebrow: "Preferences",
       title: "Make listening yours",
       detail: "Adjust appearance and playback defaults for this device."
+    },
+    play: {
+      eyebrow: "Now playing",
+      title: "Video walkthrough",
+      detail: "Watch this talk alongside the audio version."
     }
   };
   return labels[route];

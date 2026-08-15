@@ -277,6 +277,18 @@ test("audio discovery filters and detail navigation are deterministic", () => {
   assert.equal(state.selectedCollectionId, 10);
   assert.deepEqual(state.navigationContext, { returnRoute: "collections" });
 
+  state = reduce(state, {
+    type: "open-play",
+    track: tracks[0],
+    returnRoute: "explore"
+  });
+  assert.equal(state.route, "play");
+  assert.deepEqual(state.navigationContext, { returnRoute: "explore" });
+
+  state = reduce(state, { type: "return-to-list" });
+  assert.equal(state.route, "explore");
+  assert.equal(state.navigationContext, null);
+
   state = reduce(state, { type: "open-teacher", teacherId: 3, returnRoute: "teachers" });
   assert.equal(state.route, "teacher-detail");
   assert.equal(state.selectedTeacherId, 3);
