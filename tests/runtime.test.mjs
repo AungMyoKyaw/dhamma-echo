@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isEditableTarget, selectInvoke } from "../.test-build/src/runtime.js";
+import { getNativeWindow, isEditableTarget, selectInvoke } from "../.test-build/src/runtime.js";
 
 const supplied = async () => "ok";
 test("selectInvoke keeps a supplied Tauri invoke function", () => {
@@ -31,5 +31,21 @@ test("localFileUrl falls back to the original path", async () => {
   globalThis.window = {};
   const { localFileUrl } = await import("../.test-build/src/runtime.js");
   assert.equal(localFileUrl("/tmp/talk.mp3"), "/tmp/talk.mp3");
+  globalThis.window = previous;
+});
+test("getNativeWindow exposes the Tauri window fullscreen bridge", () => {
+  const previous = globalThis.window;
+  const nativeWindow = {
+    isFullscreen: async () => false,
+    setFullscreen: async () => {}
+  };
+  globalThis.window = { __TAURI__: { window: { getCurrentWindow: () => nativeWindow } } };
+  assert.equal(getNativeWindow(), nativeWindow);
+  globalThis.window = previous;
+});
+test("getNativeWindow returns null outside Tauri", () => {
+  const previous = globalThis.window;
+  globalThis.window = {};
+  assert.equal(getNativeWindow(), null);
   globalThis.window = previous;
 });

@@ -4,7 +4,7 @@ import App from "./App.svelte";
 import { CatalogueApi } from "./api.js";
 import { DhammaApp } from "./app.js";
 import "./index.css";
-import { selectInvoke } from "./runtime.js";
+import { selectInvoke, type NativeWindowFullscreenBridge } from "./runtime.js";
 import { createInitialState } from "./store.js";
 import { applyTheme } from "./theme.js";
 import type { InvokeFn } from "./types.js";
@@ -13,6 +13,7 @@ declare global {
   interface Window {
     __TAURI__?: {
       core?: { invoke?: InvokeFn; convertFileSrc?: (path: string) => string };
+      window?: { getCurrentWindow?: () => NativeWindowFullscreenBridge };
       event?: {
         listen?: (name: string, handler: (event: { payload: unknown }) => void) => Promise<unknown>;
       };

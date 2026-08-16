@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
+  import { getNativeWindow } from "../runtime.js";
   import type { AppState } from "../types.js";
   import { isMyanmarText } from "../ui.js";
   import { formatDuration } from "../utils.js";
@@ -14,14 +15,30 @@
   let playing = $derived(appState.player.status === "playing");
   let loading = $derived(appState.player.status === "loading");
   let max = $derived(appState.player.duration > 0 ? appState.player.duration : 1);
+  let videoEl: HTMLVideoElement | undefined = $state();
+  let fullscreen = $state(false);
+
   let contentLeft = $derived(
     appState.ui.sidebarCollapsed
       ? "left-[72px] max-[640px]:left-0"
       : "left-64 max-[1040px]:left-56 max-[640px]:left-0"
   );
-
-  let videoEl: HTMLVideoElement | undefined = $state();
-  let fullscreen = $state(false);
+  let asideClass = $derived(
+    fullscreen ? "fixed inset-0 z-50 bg-black" : `fixed right-0 bottom-0 z-30 ${contentLeft}`
+  );
+  let sectionClass = $derived(
+    fullscreen
+      ? "h-full w-full overflow-hidden bg-black"
+      : "mx-auto max-w-[1120px] overflow-hidden rounded-t-card border border-b-0 border-app-border bg-app-surface shadow-[0_-18px_48px_rgb(46_46_42_/_0.16)]"
+  );
+  let layoutClass = $derived(
+    fullscreen
+      ? "h-full w-full"
+      : "grid min-h-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]"
+  );
+  let stageClass = $derived(
+    fullscreen ? "relative h-full w-full bg-black" : "relative aspect-video min-h-0 bg-black"
+  );
 
   $effect(() => {
     if (videoEl === undefined) return;
@@ -29,24 +46,76 @@
     const onFullscreenChange = (): void => {
       fullscreen = globalThis.document.fullscreenElement === videoEl;
     };
+    const onResize = (): void => {
+      void syncNativeFullscreen();
+    };
+    const onKeydown = (event: KeyboardEvent): void => {
+      if (event.key !== "Escape" || !fullscreen || globalThis.document.fullscreenElement !== null) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      void exitFullscreen();
+    };
     globalThis.document.addEventListener("fullscreenchange", onFullscreenChange);
+    globalThis.addEventListener("resize", onResize);
+    globalThis.document.addEventListener("keydown", onKeydown, true);
+    void syncNativeFullscreen();
     return () => {
       globalThis.document.removeEventListener("fullscreenchange", onFullscreenChange);
+      globalThis.removeEventListener("resize", onResize);
+      globalThis.document.removeEventListener("keydown", onKeydown, true);
       app.registerVideoElement(null);
     };
+  });
+
+  $effect(() => {
+    if (videoVisible || !fullscreen) return;
+    void exitFullscreen();
   });
 
   function numberFromControl(event: Event): number {
     return Number((event.currentTarget as HTMLInputElement | HTMLSelectElement).value);
   }
 
-  async function toggleFullscreen(): Promise<void> {
-    if (videoEl === undefined) return;
+  async function syncNativeFullscreen(): Promise<void> {
+    const nativeWindow = getNativeWindow();
+    if (nativeWindow === null || globalThis.document.fullscreenElement !== null) return;
+    try {
+      fullscreen = await nativeWindow.isFullscreen();
+    } catch {
+      // Keep the current visual state if the native window is temporarily unavailable.
+    }
+  }
+
+  async function exitFullscreen(): Promise<void> {
     try {
       if (globalThis.document.fullscreenElement === videoEl) {
         await globalThis.document.exitFullscreen();
+      }
+      const nativeWindow = getNativeWindow();
+      if (nativeWindow !== null) await nativeWindow.setFullscreen(false);
+    } catch {
+      // The player can still leave its fullscreen layout if the platform refuses the exit.
+    }
+    fullscreen = false;
+  }
+
+  async function toggleFullscreen(): Promise<void> {
+    if (videoEl === undefined) return;
+    try {
+      const nativeWindow = getNativeWindow();
+      if (nativeWindow !== null) {
+        const isFullscreen = await nativeWindow.isFullscreen();
+        await nativeWindow.setFullscreen(!isFullscreen);
+        fullscreen = !isFullscreen;
+      } else if (globalThis.document.fullscreenElement === videoEl) {
+        await exitFullscreen();
       } else if (typeof videoEl.requestFullscreen === "function") {
         await videoEl.requestFullscreen();
+        fullscreen = true;
+      } else {
+        fullscreen = !fullscreen;
       }
     } catch {
       fullscreen = false;
@@ -54,29 +123,21 @@
   }
 
   async function close(): Promise<void> {
-    if (globalThis.document.fullscreenElement === videoEl) {
-      try {
-        await globalThis.document.exitFullscreen();
-      } catch {
-        // The player can still close if the browser refuses the fullscreen exit.
-      }
-    }
+    await exitFullscreen();
     app.closeVideoPlayer();
     fullscreen = false;
   }
 </script>
 
 <aside
-  class="fixed right-0 bottom-0 z-30 {contentLeft} {videoVisible ? '' : 'hidden'}"
+  class="{asideClass} {videoVisible ? '' : 'hidden'}"
   aria-hidden={!videoVisible}
   aria-label="Video player"
 >
-  <QueuePanel state={appState} {app} placement="video" />
-  <section
-    class="mx-auto max-w-[1120px] overflow-hidden rounded-t-card border border-b-0 border-app-border bg-app-surface shadow-[0_-18px_48px_rgb(46_46_42_/_0.16)]"
-  >
-    <div class="grid min-h-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]">
-      <div class="relative aspect-video min-h-0 bg-black">
+  {#if !fullscreen}<QueuePanel state={appState} {app} placement="video" />{/if}
+  <section class={sectionClass}>
+    <div class={layoutClass}>
+      <div class={stageClass}>
         <video
           bind:this={videoEl}
           class="h-full w-full object-contain {videoVisible ? '' : 'hidden'}"
@@ -85,6 +146,16 @@
           playsinline
           aria-label="Video player"
         ></video>
+        {#if fullscreen}<button
+            type="button"
+            onclick={() => void exitFullscreen()}
+            class="absolute top-4 right-4 z-10 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 text-xs font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
+            aria-label="Exit fullscreen"
+            title="Exit fullscreen"
+          >
+            <span class="block size-4 [&_svg]:size-full"><Icon name="exit-fullscreen" /></span>
+            <span>Exit fullscreen</span>
+          </button>{/if}
         {#if videoVisible && loading}<div
             class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/25 text-xs font-bold text-white"
             role="status"
@@ -96,7 +167,7 @@
           </div>{/if}
       </div>
 
-      {#if videoVisible && track !== null}
+      {#if !fullscreen && videoVisible && track !== null}
         <div class="flex min-w-0 flex-col border-l border-app-border max-lg:border-t">
           <header class="flex items-start justify-between gap-4 p-5 pb-3">
             <div class="min-w-0">
