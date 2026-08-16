@@ -37,6 +37,9 @@ class FakeAudio {
   load() {
     if (this.emitErrorOnLoad) this.emit("error");
   }
+  removeAttribute(name) {
+    if (name === "src") this.src = "";
+  }
   emit(type) {
     for (const listener of this.listeners.get(type) ?? []) listener();
   }
@@ -71,6 +74,64 @@ test("MediaEngine loads, controls, and reports secure tracks", async () => {
     [...audio.listeners.values()].every((listeners) => listeners.length === 0),
     true
   );
+});
+
+test("MediaEngine stops and clears the active media source", async () => {
+  const audio = new FakeAudio();
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  await engine.setTrack(tracks[0]);
+
+  engine.stop();
+
+  assert.equal(audio.paused, true);
+  assert.equal(audio.src, "");
+  assert.equal(audio.currentTime, 0);
+  assert.deepEqual(events.at(-1), { type: "status", status: "paused" });
+});
+
+test("MediaEngine ignores stale media events after stop", async () => {
+  const audio = new FakeAudio();
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  await engine.setTrack(tracks[0]);
+  engine.stop();
+  const eventCount = events.length;
+
+  audio.emit("play");
+  audio.emit("pause");
+  audio.emit("loadedmetadata");
+  audio.emit("timeupdate");
+  audio.emit("ended");
+  audio.emit("error");
+
+  assert.equal(events.length, eventCount);
+  engine.destroy();
+});
+
+test("MediaEngine cancels a pending play request when toggled", async () => {
+  const audio = new FakeAudio();
+  let resolvePlay;
+  let playPromise;
+  audio.play = () => {
+    audio.playCalls += 1;
+    playPromise ??= new Promise((resolve) => (resolvePlay = resolve));
+    return playPromise;
+  };
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  const loading = engine.setTrack(tracks[0]);
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const toggling = engine.toggle();
+  resolvePlay();
+  await toggling;
+  await loading;
+
+  assert.equal(audio.playCalls, 1);
+  assert.equal(audio.paused, true);
+  assert.deepEqual(events.at(-1), { type: "status", status: "paused" });
+  engine.destroy();
 });
 
 test("MediaEngine rejects unsafe media and reports play failures", async () => {

@@ -3,14 +3,20 @@
   import type { AppState } from "../types.js";
   import { isMyanmarText } from "../ui.js";
   import Icon from "./Icon.svelte";
-  let { state, app }: { state: AppState; app: DhammaApp } = $props();
+  let {
+    state,
+    app,
+    placement = "audio"
+  }: { state: AppState; app: DhammaApp; placement?: "audio" | "video" } = $props();
+  let panelClass = $derived(
+    placement === "video"
+      ? "absolute right-4 bottom-full z-40 mb-3 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-card border border-app-border bg-app-surface shadow-2xl"
+      : "fixed right-6 bottom-28 z-40 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-card border border-app-border bg-app-surface shadow-2xl max-[1040px]:right-4 max-[1040px]:bottom-40"
+  );
 </script>
 
 {#if state.player.queueOpen}
-  <aside
-    class="fixed right-6 bottom-28 z-40 w-96 max-[1040px]:right-4 max-[1040px]:bottom-40 overflow-hidden rounded-card border border-app-border bg-app-surface shadow-2xl"
-    aria-label="Playback queue"
-  >
+  <aside class={panelClass} aria-label="Playback queue">
     <div class="flex items-center justify-between border-b border-app-border p-4">
       <div>
         <p class="font-bold">Up next</p>

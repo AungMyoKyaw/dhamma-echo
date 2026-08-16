@@ -62,8 +62,7 @@ test("route labels cover every route", () => {
     "teachers",
     "teacher-detail",
     "library",
-    "settings",
-    "play"
+    "settings"
   ]) {
     const label = routeLabel(route, 1);
     assert.equal(typeof label.title, "string");

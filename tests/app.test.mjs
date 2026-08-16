@@ -38,6 +38,9 @@ class FakeAudio {
     this.emit("pause");
   }
   load() {}
+  removeAttribute(name) {
+    if (name === "src") this.src = "";
+  }
   emit(type) {
     for (const listener of this.listeners.get(type) ?? []) listener();
   }
@@ -291,7 +294,25 @@ test("DhammaApp refuses to play unplayable tracks", async () => {
   app.destroy();
 });
 
-test("DhammaApp routes video tracks to the play route and records history", async () => {
+test("DhammaApp ignores close requests when audio is active or nothing is playing", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  app.closeVideoPlayer();
+  await app.playTrack(tracks[0]);
+  app.closeVideoPlayer();
+  assert.equal(app.state.player.current?.id, tracks[0].id);
+  assert.equal(audio.paused, false);
+  app.destroy();
+});
+
+test("DhammaApp plays video tracks through the registered video element and records history", async () => {
   const audio = new FakeAudio();
   const video = new FakeAudio();
   const app = new DhammaApp({
@@ -304,14 +325,47 @@ test("DhammaApp routes video tracks to the play route and records history", asyn
   await app.start();
   app.registerVideoElement(video);
   await app.playTrack(videoTrack);
-  assert.equal(app.state.route, "play");
-  assert.equal(app.state.navigationContext?.returnRoute, "home");
+  // The route is left alone; the video card is rendered from player state.
+  assert.notEqual(app.state.route, "play");
   assert.equal(app.state.player.current?.id, videoTrack.id);
   assert.deepEqual(app.state.library.history[0], { id: videoTrack.id, playedAt: 1000 });
   // The audio stream is paused and cleared when video takes over.
   assert.equal(audio.paused, true);
   assert.equal(audio.src, "");
   // The video element received the source.
+  assert.match(video.src, /walkthrough\.mp4$/);
+  app.destroy();
+});
+
+test("DhammaApp closes a video by pausing, clearing, and resetting the player", async () => {
+  const audio = new FakeAudio();
+  const video = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  app.registerVideoElement(video);
+  await app.playTrack(videoTrack);
+  assert.equal(video.paused, false);
+  assert.match(video.src, /walkthrough\.mp4$/);
+  app.closeVideoPlayer();
+  assert.equal(video.paused, true);
+  assert.equal(video.src, "");
+  assert.equal(video.currentTime, 0);
+  assert.equal(app.state.player.current, null);
+  assert.equal(app.state.player.status, "idle");
+  app.dispatch({ type: "enqueue", track: tracks[1] });
+  video.emit("ended");
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(app.state.player.current, null);
+  assert.equal(app.state.player.queue.length, 1);
+  assert.equal(video.src, "");
+  await app.playTrack(videoTrack);
+  assert.equal(app.state.player.current?.id, videoTrack.id);
   assert.match(video.src, /walkthrough\.mp4$/);
   app.destroy();
 });
@@ -341,6 +395,9 @@ test("DhammaApp rebuilds the engine against the video element when it mounts aft
   // The audio stream is paused and cleared.
   assert.equal(audio.paused, true);
   assert.equal(audio.src, "");
+  app.registerVideoElement(null);
+  assert.equal(video.paused, true);
+  assert.equal(video.src, "");
   app.destroy();
 });
 

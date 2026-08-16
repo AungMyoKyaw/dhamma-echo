@@ -204,6 +204,16 @@ test("player actions select tracks, advance queue, and update progress", () => {
   assert.equal(state.player.current?.id, 1);
   assert.equal(state.player.status, "playing");
   assert.equal(state.player.currentTime, 10);
+  const video = { ...tracks[0], id: 7, format: "mp4", mediaType: "video" };
+  state = reduce(state, { type: "play-track", track: video });
+  state = reduce(state, { type: "player-progress", currentTime: 42, duration: 120 });
+  state = reduce(state, { type: "close-video-player" });
+  assert.equal(state.player.current, null);
+  assert.equal(state.player.status, "idle");
+  assert.equal(state.player.currentTime, 0);
+  assert.equal(state.player.duration, 0);
+  assert.equal(state.player.error, "");
+  state = reduce(state, { type: "play-track", track: tracks[1] });
   state = reduce(state, { type: "play-next" });
   assert.equal(state.player.current?.id, 2);
   assert.equal(state.player.queue.length, 0);
@@ -277,16 +287,8 @@ test("audio discovery filters and detail navigation are deterministic", () => {
   assert.equal(state.selectedCollectionId, 10);
   assert.deepEqual(state.navigationContext, { returnRoute: "collections" });
 
-  state = reduce(state, {
-    type: "open-play",
-    track: tracks[0],
-    returnRoute: "explore"
-  });
-  assert.equal(state.route, "play");
-  assert.deepEqual(state.navigationContext, { returnRoute: "explore" });
-
   state = reduce(state, { type: "return-to-list" });
-  assert.equal(state.route, "explore");
+  assert.equal(state.route, "collections");
   assert.equal(state.navigationContext, null);
 
   state = reduce(state, { type: "open-teacher", teacherId: 3, returnRoute: "teachers" });

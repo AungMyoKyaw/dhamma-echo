@@ -12,6 +12,7 @@ export interface AudioLike {
   play(): Promise<void>;
   pause(): void;
   load(): void;
+  removeAttribute(name: string): void;
 }
 
 /**
@@ -31,14 +32,20 @@ export class MediaEngine {
   private finalErrorEmitted = false;
   private activeAttempt = 0;
   private startedAttempt = 0;
+  private playPending = false;
+  private activeTimer: ReturnType<typeof setTimeout> | null = null;
+  private activeResolve: ((result: boolean) => void) | null = null;
 
   private readonly onPlay = (): void => {
+    if (!this.hasActiveAttempt()) return;
     this.emit({ type: "status", status: "playing" });
   };
   private readonly onPause = (): void => {
+    if (!this.hasActiveAttempt()) return;
     this.emit({ type: "status", status: "paused" });
   };
   private readonly onLoadedMetadata = (): void => {
+    if (!this.hasActiveAttempt()) return;
     const duration = Number.isFinite(this.audio.duration) ? Math.max(0, this.audio.duration) : 0;
     const upperBound = duration > 0 ? duration : this.resumeAt;
     this.audio.currentTime = clamp(this.resumeAt, 0, upperBound);
@@ -49,6 +56,7 @@ export class MediaEngine {
     });
   };
   private readonly onTimeUpdate = (): void => {
+    if (!this.hasActiveAttempt()) return;
     const currentTime = Number.isFinite(this.audio.currentTime) ? this.audio.currentTime : 0;
     this.resumeAt = Math.max(0, currentTime);
     this.emit({
@@ -58,10 +66,11 @@ export class MediaEngine {
     });
   };
   private readonly onEnded = (): void => {
+    if (!this.hasActiveAttempt()) return;
     this.emit({ type: "ended" });
   };
   private readonly onError = (): void => {
-    if (this.startedAttempt === 0) return;
+    if (!this.hasActiveAttempt()) return;
     const next = this.candidateIndex + 1;
     if (next >= this.candidates.length) {
       this.emitFinalError();
@@ -98,13 +107,17 @@ export class MediaEngine {
     element.removeEventListener("error", this.onError);
   }
 
+  private hasActiveAttempt(): boolean {
+    return this.startedAttempt !== 0;
+  }
+
   async setTrack(track: AudioTrack, resumeAt = 0, localUrl?: string): Promise<boolean> {
+    this.invalidateAttempt();
     this.candidates =
       localUrl === undefined ? mediaUrlCandidates(track.url, track.format) : [localUrl];
     this.candidateIndex = -1;
     this.resumeAt = Math.max(0, Number.isFinite(resumeAt) ? resumeAt : 0);
     this.finalErrorEmitted = false;
-    this.activeAttempt += 1;
     this.startedAttempt = 0;
     if (this.candidates.length === 0) {
       const normalized = track.format.trim().toLowerCase();
@@ -121,6 +134,12 @@ export class MediaEngine {
   }
 
   async toggle(): Promise<void> {
+    if (this.playPending) {
+      this.invalidateAttempt();
+      this.audio.pause();
+      this.emit({ type: "status", status: "paused" });
+      return;
+    }
     if (this.audio.paused) {
       try {
         await this.audio.play();
@@ -143,8 +162,37 @@ export class MediaEngine {
     this.audio.playbackRate = clamp(value, 0.75, 2);
   }
 
+  stop(): void {
+    this.invalidateAttempt();
+    this.candidates = [];
+    this.candidateIndex = -1;
+    this.resumeAt = 0;
+    this.audio.pause();
+    this.audio.currentTime = 0;
+    this.audio.removeAttribute("src");
+    this.audio.load();
+    this.emit({ type: "status", status: "paused" });
+  }
+
   destroy(): void {
+    this.stop();
     this.detach();
+  }
+
+  private clearAttemptTimer(): void {
+    if (this.activeTimer === null) return;
+    clearTimeout(this.activeTimer);
+    this.activeTimer = null;
+  }
+
+  private invalidateAttempt(): void {
+    this.activeAttempt += 1;
+    this.clearAttemptTimer();
+    this.startedAttempt = 0;
+    this.playPending = false;
+    const resolve = this.activeResolve;
+    this.activeResolve = null;
+    resolve?.(false);
   }
 
   private attempt(index: number): Promise<boolean> {
@@ -157,21 +205,31 @@ export class MediaEngine {
     return new Promise<boolean>((resolve) => {
       const timer = setTimeout(() => {
         if (target !== this.activeAttempt) return;
+        this.activeTimer = null;
+        this.activeResolve = null;
+        this.playPending = false;
         const next = this.candidateIndex + 1;
         resolve(false);
         if (next >= this.candidates.length) this.emitFinalError();
         else void this.attempt(next).then(resolve);
       }, this.fallbackTimeoutMs);
+      this.activeTimer = timer;
+      this.activeResolve = () => resolve(false);
       this.startedAttempt = target;
+      this.playPending = true;
       void this.audio.play().then(
         () => {
           if (target !== this.activeAttempt) return;
-          clearTimeout(timer);
+          this.clearAttemptTimer();
+          this.activeResolve = null;
+          this.playPending = false;
           resolve(true);
         },
         () => {
           if (target !== this.activeAttempt) return;
-          clearTimeout(timer);
+          this.clearAttemptTimer();
+          this.activeResolve = null;
+          this.playPending = false;
           const next = this.candidateIndex + 1;
           resolve(false);
           if (next >= this.candidates.length) this.emitFinalError();

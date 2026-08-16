@@ -59,11 +59,11 @@ export type AppAction =
   | { type: "teacher-detail-started" }
   | { type: "teacher-detail-loaded"; detail: NonNullable<AppState["teacherDetail"]["data"]> }
   | { type: "teacher-detail-failed"; message: string }
-  | { type: "open-play"; track: AudioTrack; returnRoute: Route }
   | { type: "teacher-talks-started"; mode: "initial" | "append" }
   | { type: "teacher-talks-loaded"; mode: "initial" | "append"; page: AudioSearchPage }
   | { type: "teacher-talks-failed"; mode: "initial" | "append"; message: string }
   | { type: "return-to-list" }
+  | { type: "close-video-player" }
   | { type: "recent-started" }
   | { type: "recent-loaded"; tracks: AudioTrack[] }
   | { type: "recent-failed" }
@@ -431,12 +431,6 @@ export function reduce(state: AppState, action: AppAction): AppState {
         ...state,
         teacherDetail: { ...state.teacherDetail, status: "error", message: action.message }
       };
-    case "open-play":
-      return {
-        ...state,
-        route: "play",
-        navigationContext: { returnRoute: action.returnRoute }
-      };
     case "teacher-talks-started":
       return action.mode === "initial"
         ? {
@@ -579,6 +573,19 @@ export function reduce(state: AppState, action: AppAction): AppState {
           currentTime: 0,
           duration: 0,
           error: ""
+        }
+      };
+    case "close-video-player":
+      return {
+        ...state,
+        player: {
+          ...state.player,
+          current: null,
+          status: "idle",
+          currentTime: 0,
+          duration: 0,
+          error: "",
+          queueOpen: false
         }
       };
     case "enqueue":

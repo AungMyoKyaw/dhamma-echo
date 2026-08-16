@@ -6,8 +6,7 @@ export type Route =
   | "teachers"
   | "teacher-detail"
   | "library"
-  | "settings"
-  | "play";
+  | "settings";
 export type LanguageFilter = "all" | "myanmar" | "english";
 export type FormatFilter = "all" | "mp3" | "wma" | "mp4" | "wmv";
 export type PlayerStatus = "idle" | "loading" | "playing" | "paused";
@@ -87,7 +86,7 @@ export interface AudioTrack {
   playable: boolean;
   /**
    * Catalogue media type. `audio` rows are played through `<audio>`;
-   * `video` rows route to the dedicated video view.
+   * `video` rows play in the pinned video card overlay.
    */
   mediaType: "audio" | "video";
 }

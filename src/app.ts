@@ -73,17 +73,21 @@ export class DhammaApp {
   }
 
   /**
-   * Registers the live `<video>` element owned by `VideoView`. The engine
+   * Registers the live `<video>` element owned by `VideoPlayer`. The engine
    * uses this element when the active track is a video. Called from the
-   * view's mount/unmount lifecycle. If the active track is already a video
-   * and the engine was created before the element was available, the
-   * engine is rebuilt against the freshly registered element and the
-   * track is reloaded so playback resumes on the visible video.
+   * component's mount/unmount lifecycle. If the active track is already a
+   * video and the engine was created before the element was available, the
+   * engine is rebuilt against the freshly registered element and the track
+   * is reloaded so playback resumes on the visible video.
    */
   registerVideoElement(element: MediaLike | null): void {
-    this.videoElement = element;
+    const changed = this.videoElement !== element;
     const current = this.state.player.current;
-    if (element !== null && current !== null && current.mediaType === "video") {
+    if (element === null && changed && current !== null && current.mediaType === "video") {
+      this.engine.stop();
+    }
+    this.videoElement = element;
+    if (changed && element !== null && current !== null && current.mediaType === "video") {
       void this.reloadCurrentTrack();
     }
   }
@@ -113,7 +117,7 @@ export class DhammaApp {
     // Pause and clear the audio stream so the inactive element does not
     // keep streaming behind the video view.
     this.dependencies.audio.pause();
-    this.dependencies.audio.src = "";
+    this.dependencies.audio.removeAttribute("src");
     this.dependencies.audio.load();
     return this.engine;
   }
@@ -462,9 +466,6 @@ export class DhammaApp {
 
   async playTrack(track: AudioTrack): Promise<void> {
     if (!track.playable) return;
-    if (track.mediaType === "video") {
-      this.dispatch({ type: "open-play", track, returnRoute: this.state.route });
-    }
     this.dispatch({ type: "play-track", track });
     this.dispatch({ type: "record-history", id: track.id, playedAt: this.dependencies.now() });
     const engine = this.ensureEngineFor(track.mediaType);
@@ -499,6 +500,14 @@ export class DhammaApp {
   async togglePlayback(): Promise<void> {
     if (this.state.player.current === null) return;
     await this.engine.toggle();
+  }
+
+  closeVideoPlayer(): void {
+    const track = this.state.player.current;
+    if (track === null || track.mediaType !== "video") return;
+    this.persistCurrentResume(true);
+    this.engine.stop();
+    this.dispatch({ type: "close-video-player" });
   }
 
   async retryPlayback(): Promise<void> {
