@@ -76,7 +76,7 @@
     >
     {#if state.categories.status === "ready"}<div
         class="basis-full flex flex-wrap gap-2"
-        aria-label="Audio categories"
+        aria-label="Content categories"
       >
         <button
           class="inline-flex min-h-[40px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
@@ -84,7 +84,7 @@
             ? 'bg-app-primary text-white'
             : 'bg-app-soft text-app-muted'}"
           type="button"
-          onclick={() => setCategory(null)}>All audio</button
+          onclick={() => setCategory(null)}>All content</button
         >{#each state.categories.data as item (item.id)}<button
             class="inline-flex min-h-[40px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
               .search.categoryId === item.id
@@ -92,7 +92,7 @@
               : 'bg-app-soft text-app-muted'}"
             type="button"
             onclick={() => setCategory(item.id)}
-            >{item.name} · {item.audioCount.toLocaleString("en-US")}</button
+            >{item.name} · {item.count.toLocaleString("en-US")}</button
           >{/each}
       </div>{/if}
   </form>
@@ -171,5 +171,5 @@
         app.setBrowseLimit(limit);
         await app.search();
       }}
-    />{:else}<p class="text-sm text-app-muted">Search the complete audio catalogue</p>{/if}
+    />{:else}<p class="text-sm text-app-muted">Search the complete talk catalogue</p>{/if}
 </section>
