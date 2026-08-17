@@ -21,11 +21,23 @@
 
 Dhamma Echo is a lightweight Tauri 2 desktop audio player built around the supplied read-only SQLite catalogue. It provides fast search, teacher browsing, queue management, favorites, listening history, resume positions, playback speed controls, and a calm light interface without accounts, analytics, or background services.
 
-![Dhamma Echo explore view with active player](docs/images/dhamma-echo-demo.png)
+## Screenshots
+
+| Home | Explore |
+| --- | --- |
+| ![Home — continue listening and discover the Dhamma](docs/images/home.png) | ![Explore — search and filter the library](docs/images/explore.png) |
+
+| Collections | Teachers |
+| --- | --- |
+| ![Collections — browse listening collections](docs/images/collections.png) | ![Teachers — browse trusted voices](docs/images/teachers.png) |
+
+| My library | Settings |
+| --- | --- |
+| ![My library — resume, favorites, and downloads](docs/images/library.png) | ![Settings — appearance and playback defaults](docs/images/settings.png) |
 
 ## Product website
 
-The repository includes a dependency-free product website in [`docs/`](docs/index.html). It reuses the application screenshot above and deploys through the dedicated GitHub Pages workflow.
+The repository includes a dependency-free product website in [`docs/`](docs/index.html). It reuses the explore screenshot above and deploys through the dedicated GitHub Pages workflow.
 
 Preview it locally without installing dependencies:
 

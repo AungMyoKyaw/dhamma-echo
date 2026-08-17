@@ -6,7 +6,7 @@ import test from "node:test";
 const htmlPath = new URL("../docs/index.html", import.meta.url);
 const privacyPath = new URL("../docs/privacy/index.html", import.meta.url);
 const cssPath = new URL("../docs/assets/site.css", import.meta.url);
-const screenshotPath = new URL("../docs/images/dhamma-echo-demo.png", import.meta.url);
+const screenshotPath = new URL("../docs/images/explore.png", import.meta.url);
 
 async function readSite() {
   const [html, css] = await Promise.all([readFile(htmlPath, "utf8"), readFile(cssPath, "utf8")]);
@@ -24,12 +24,12 @@ test("product page exposes the approved semantic structure", async () => {
   assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
 });
 
-test("product page integrates the supplied demo screenshot without duplication", async () => {
+test("product page integrates the explore screenshot without duplication", async () => {
   const { html } = await readSite();
   const screenshot = await stat(screenshotPath);
 
-  assert.match(html, /src="images\/dhamma-echo-demo\.png"/);
-  assert.match(html, /width="3248"\s+height="2122"/);
+  assert.match(html, /src="images\/explore\.png"/);
+  assert.match(html, /width="2784"\s+height="1866"/);
   assert.match(html, /alt="Dhamma Echo explore view with an active audio player"/);
   assert.equal(screenshot.isFile(), true);
   assert.ok(screenshot.size > 100_000);

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const docsRoot = path.join(root, "docs");
 const htmlPath = path.join(docsRoot, "index.html");
-const screenshotPath = path.join(docsRoot, "images", "dhamma-echo-demo.png");
+const screenshotPath = path.join(docsRoot, "images", "explore.png");
 const textAssetLimit = 100 * 1024;
 
 function isIgnoredReference(value) {
