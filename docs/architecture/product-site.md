@@ -1,6 +1,6 @@
 # Product website architecture
 
-Dhamma Echo's product website is a dependency-free static surface under `docs/`. It is deliberately separate from the TypeScript bundle loaded by the Tauri desktop webview.
+Dhamma Echo's product website is a dependency-free static surface under `docs/`. It is deliberately separate from the Svelte/TypeScript bundle loaded by the Tauri desktop webview.
 
 ## Browser asset flow
 
@@ -11,7 +11,7 @@ flowchart LR
     html --> css[docs/assets/site.css]
     html --> js[docs/assets/site.js]
     html --> logo[docs/assets/logo.svg]
-    html --> screenshot[docs/images/explore.png]
+    html --> screenshots[docs/images/*.png]
     js --> derive[Derive owner/repository from standard github.io URL]
     derive --> links[Upgrade repository and release links]
 
@@ -20,12 +20,12 @@ flowchart LR
       css
       js
       logo
-      screenshot
+      screenshots
       derive
     end
 ```
 
-The page makes no runtime request for fonts, scripts, styles, analytics, or media. The only browser code parses the current page URL. On a standard `owner.github.io/repository/` deployment it upgrades the repository and release links. On localhost, a custom domain, an invalid URL, or a user-site root, it leaves safe in-page fallback links unchanged.
+The page makes no runtime request for fonts, scripts, styles, analytics, or product media. The only browser code parses the current page URL. On a standard `owner.github.io/repository/` deployment it upgrades the repository and release links. On localhost, a custom domain, an invalid URL, or a user-site root, it leaves safe in-page fallback links unchanged.
 
 ## Deployment flow
 
@@ -45,15 +45,17 @@ The build job has read-only repository permission. The deploy job receives only 
 
 - The product site does not import files from `src/`, `dist/`, or `src-tauri/` at runtime.
 - The website and desktop application share only repository-owned visual assets and documented product facts.
-- The supplied screenshot remains at `docs/images/explore.png`; it is not copied into a second deploy tree.
+- The launch narrative uses the six checked-in application captures: `home.png`, `explore.png`, `collections.png`, `teachers.png`, `library.png`, and `settings.png`.
+- `home.png` is the hero proof. The remaining screenshots are loaded lazily as the visitor reaches their product narrative sections.
 - The site's Content Security Policy blocks network connections, frames, objects, external fonts, and nonlocal runtime assets.
-- GitHub Pages serves static product material only. It does not proxy the catalogue, audio, SQLite database, or Tauri commands.
+- GitHub Pages serves static product material only. It does not proxy the catalogue, audio/video streams, SQLite database, or Tauri commands.
 
 ## Performance budget
 
 - HTML, CSS, JavaScript, and logo: less than 100 KiB each.
 - No framework or package installation is required to render the site.
-- The supplied screenshot is the largest asset and retains its native 2784×1866 dimensions to avoid a second lossy derivative in the repository.
+- Product screenshots are the largest assets and retain their checked-in source dimensions so the site does not create a second lossy derivative set in the repository.
+- Offscreen screenshots use native lazy loading.
 - CSS uses system fonts and honors reduced-motion preferences.
 
 ## Validation

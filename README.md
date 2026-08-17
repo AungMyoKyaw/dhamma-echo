@@ -1,149 +1,144 @@
 # Dhamma Echo
 
-**A quiet desktop library for Dhamma talks.**
+**Dhamma, without the noise.** A private desktop library for discovering, listening to, and resuming Dhamma audio and video teachings.
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-119%20passing-44cc11.svg?style=flat-square)](tests)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-44cc11.svg?style=flat-square)](coverage)
-[![Tauri 2](https://img.shields.io/badge/Tauri-2.11-orange.svg?style=flat-square)](https://tauri.app)
-[![Svelte 5](https://img.shields.io/badge/Svelte-5.56-ff3e00.svg?style=flat-square)](https://svelte.dev)
+[![MIT License](https://img.shields.io/badge/license-MIT-2f342d.svg?style=flat-square)](LICENSE)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-d66d31.svg?style=flat-square)](https://tauri.app)
+[![Svelte 5](https://img.shields.io/badge/Svelte-5-ff3e00.svg?style=flat-square)](https://svelte.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6.svg?style=flat-square)](https://www.typescriptlang.org)
-[![Tailwind v4](https://img.shields.io/badge/Tailwind-4.3-38bdf8.svg?style=flat-square)](https://tailwindcss.com)
 
-<p align="left">
-  <img src="https://img.shields.io/badge/coverage-100%25-success?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage">
-  <img src="https://img.shields.io/badge/tests-119%20passing-success?style=for-the-badge&logo=vitest&logoColor=white" alt="Tests">
-  <img src="https://img.shields.io/badge/Tauri-2.11-blue?style=for-the-badge&logo=tauri&logoColor=white" alt="Tauri 2">
-  <img src="https://img.shields.io/badge/Svelte-5.56-orange?style=for-the-badge&logo=svelte&logoColor=white" alt="Svelte 5">
-  <img src="https://img.shields.io/badge/TypeScript-strict-blue?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Tailwind-4.3-38bdf8?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind v4">
-</p>
+![Dhamma Echo home view with recent listening activity and featured teachings](docs/images/home.png)
 
-Dhamma Echo is a lightweight Tauri 2 desktop audio player built around the supplied read-only SQLite catalogue. It provides fast search, teacher browsing, queue management, favorites, listening history, resume positions, playback speed controls, and a calm light interface without accounts, analytics, or background services.
+## Install
 
-## Screenshots
-
-| Home | Explore |
-| --- | --- |
-| ![Home — continue listening and discover the Dhamma](docs/images/home.png) | ![Explore — search and filter the library](docs/images/explore.png) |
-
-| Collections | Teachers |
-| --- | --- |
-| ![Collections — browse listening collections](docs/images/collections.png) | ![Teachers — browse trusted voices](docs/images/teachers.png) |
-
-| My library | Settings |
-| --- | --- |
-| ![My library — resume, favorites, and downloads](docs/images/library.png) | ![Settings — appearance and playback defaults](docs/images/settings.png) |
-
-## Product website
-
-The repository includes a dependency-free product website in [`docs/`](docs/index.html). It reuses the explore screenshot above and deploys through the dedicated GitHub Pages workflow.
-
-Preview it locally without installing dependencies:
+### macOS with Homebrew
 
 ```bash
-python3 -m http.server 4173 --directory docs
+brew install --cask AungMyoKyaw/homebrew-tap/dhamma-echo
 ```
 
-Then open `http://127.0.0.1:4173`. Validate the complete static site with:
+Dhamma Echo is currently ad-hoc signed, so the Homebrew cask removes the quarantine attribute during installation. If macOS still blocks the first launch, right-click the app and choose **Open** once.
 
-```bash
-bun run site:verify
+### macOS, Windows, and Linux installers
+
+Download the latest `.dmg`, `.msi` / `-setup.exe`, `.deb`, `.rpm`, or `.AppImage` from [GitHub Releases](https://github.com/AungMyoKyaw/dhamma-echo/releases).
+
+## What Dhamma Echo is
+
+Dhamma Echo turns a large Dhamma catalogue into a desktop library instead of a feed. It helps you find a teaching, play a compatible source file, keep your place, and return later without creating an account.
+
+| Catalogue | Current index |
+| --- | ---: |
+| Audio talks | **30,563** |
+| Video records | **14,474** |
+| Teachers | **257** |
+| Audio collections | **429** |
+
+The application does **not** host those media files. It catalogs records sourced from [Dhamma Download](https://www.dhammadownload.com/) and requests compatible media from the approved Dhamma Download hosts when you choose to play it. See [Data and licensing](#data-and-licensing) before redistributing catalogue data or media references.
+
+## Built as a library, not a feed
+
+- **Find what you came for.** Search titles and teachers, then filter by content category, collection, teacher, language, and source format.
+- **Listen without losing context.** Keep the player available while browsing, with seek, 15-second jumps, playback speed, queue management, and resume positions.
+- **Audio and video share one library.** History, favorites, queue state, and resume positions work across supported MP3 audio and MP4 video.
+- **Return where you left off.** Recent listening activity and saved state stay on the device.
+- **Keep personal activity private.** No accounts, analytics, ads, telemetry, or cloud sync.
+- **Keep the source catalogue intact.** Legacy WMA and WMV records remain searchable even when the macOS webview cannot play them.
+
+## See the product
+
+| Explore | Teachers |
+| --- | --- |
+| ![Explore the Dhamma catalogue with search and filters](docs/images/explore.png) | ![Browse Dhamma teachers](docs/images/teachers.png) |
+
+| Collections | My library |
+| --- | --- |
+| ![Browse Dhamma collections](docs/images/collections.png) | ![Resume listening and review saved library state](docs/images/library.png) |
+
+| Home | Settings |
+| --- | --- |
+| ![Home view](docs/images/home.png) | ![Playback and appearance settings](docs/images/settings.png) |
+
+## Playback and catalogue behavior
+
+Dhamma Echo keeps catalogue visibility separate from playback capability.
+
+| Source format | Searchable | In-app playback |
+| --- | --- | --- |
+| MP3 | Yes | Yes, from approved HTTPS hosts |
+| MP4 | Yes | Yes, from approved HTTPS hosts |
+| WMA | Yes | Not available in the macOS webview |
+| WMV | Yes | Not available in the macOS webview |
+
+For playable records, the app normalizes and encodes catalogue URLs, removes credentials, ports, and fragments, upgrades approved same-host HTTP URLs to HTTPS, and can retry between the `www` and bare Dhamma Download hosts. A source file that has been removed or blocked by the remote service cannot be recovered by the app.
+
+## Privacy by architecture
+
+Your personal listening state stays in the webview's local storage. The bundled catalogue is opened read-only. The application has no account backend and no analytics or telemetry service.
+
+```mermaid
+flowchart LR
+    db[Bundled read-only SQLite catalogue] --> rust[Rust query layer]
+    rust --> commands[Ten purpose-built Tauri commands]
+    commands --> ui[Svelte desktop UI]
+    ui <--> local[Local favorites, history, queue, settings, resume positions]
+    ui -->|HTTPS media request after user playback action| source[Dhamma Download hosts]
 ```
 
-The site architecture and deployment boundary are documented in [Product website architecture](docs/architecture/product-site.md).
+Security boundaries that matter:
 
-## Quality bar
+- SQLite opens read-only and all queries are parameterized.
+- The webview exposes only ten purpose-built Tauri commands: nine catalogue operations and one constrained MP3 download path. There is no arbitrary SQL, shell, or general-purpose filesystem API.
+- The CSP permits media only from `https://dhammadownload.com` and `https://www.dhammadownload.com`.
+- Personal library state is not sent to the developer.
+- Security issues should be reported through [SECURITY.md](SECURITY.md), not a public issue.
 
-<p align="left">
-  <img src="https://img.shields.io/badge/tests-119%20passing-44cc11?style=flat-square" alt="119 tests passing">
-  <img src="https://img.shields.io/badge/coverage-lines%20100%25-44cc11?style=flat-square" alt="100% lines">
-  <img src="https://img.shields.io/badge/coverage-functions%20100%25-44cc11?style=flat-square" alt="100% functions">
-  <img src="https://img.shields.io/badge/coverage-branches%2099.82%25-44cc11?style=flat-square" alt="99.82% branches">
-  <img src="https://img.shields.io/badge/typecheck-strict%20svelte--check-44cc11?style=flat-square" alt="strict typecheck">
-  <img src="https://img.shields.io/badge/lint-eslint%200%20warnings-44cc11?style=flat-square" alt="lint clean">
-</p>
-
-The web codebase enforces 100% lines, 100% functions, and 99.82% branches across the eight TypeScript behavior modules (`api`, `app`, `mock-data`, `persistence`, `player`, `runtime`, `store`, `ui`, `utils`) via Node's built-in V8 coverage reporter. The remaining uncovered branches are V8 instrumentation artifacts on defensive `target !== activeAttempt` cancellation paths — the equivalent lines are exercised by integration tests, but V8's per-branch counter sees the early-return as a single uncovered edge.
-
-## Features
-
-- Browse 30,563 audio talks and 14,474 video walkthroughs from 257 teachers.
-- Search by talk title or teacher.
-- Filter by audio category, collection, teacher, Myanmar/English, and MP3/WMA/MP4/WMV.
-- Browse 429 audio collections and open teacher detail pages with their collections and talks.
-- Keep playable talks available with neutral labels when optional catalogue metadata is missing.
-- Play approved MP3 audio and MP4 video through HTTPS with 15-second jump controls, seek, speed, and queue management.
-- Normalize and encode catalogue URLs, then retry across the approved `www` and bare Dhamma Download hosts.
-- Store favorites, history, queue, settings, and resume positions locally. Resume, history, and queue are shared across audio and video tracks.
-- Upgrade approved same-host HTTP MP3/MP4 records to HTTPS before playback; WMA/WMV records remain searchable but unavailable in the macOS webview.
-- Use the supplied SQLite database as an immutable bundled resource.
-- Run a compiled Svelte 5 + TypeScript web UI inside a small Tauri shell.
-- Render Myanmar text through system fonts; no font files are bundled.
-- Use a regenerated macOS app icon with an optical safe area so it no longer dominates the Dock.
+Read the published [privacy policy](docs/privacy/).
 
 ## Architecture
 
-The webview can call only six purpose-built Tauri commands. Rust validates each request, executes parameterized read-only SQLite queries, normalizes catalogue text, and returns typed data. Playback and personal library state remain in the webview and local storage.
+Dhamma Echo is intentionally small: a Svelte application in a Tauri shell, a Rust read-only catalogue boundary, native HTML media playback, and local browser storage for personal state.
 
 - [System context](docs/architecture/context.md)
 - [Modules and trust boundaries](docs/architecture/modules.md)
 - [Catalogue and playback data flow](docs/architecture/data-flow.md)
-- [Build and release flow](docs/architecture/release.md)
 - [UI shell and responsive layout](docs/architecture/ui-shell.md)
+- [Build and release flow](docs/architecture/release.md)
 - [Product website architecture](docs/architecture/product-site.md)
-- [Product website design](docs/superpowers/specs/2026-08-05-github-pages-product-site-design.md)
-- [Product and technical design](docs/superpowers/specs/2026-08-04-dhamma-echo-design.md)
-- [Svelte migration design](docs/superpowers/specs/2026-08-10-svelte-frontend-migration-design.md)
-- [Production UI hardening design](docs/superpowers/specs/2026-08-13-production-ui-hardening-design.md)
 - [Ralph Loop](docs/ralph-loop.md)
 
-## Technology stack
+### Technology
 
-- Tauri 2 desktop shell
+- Tauri 2
 - Rust 2024 edition
 - `rusqlite` with bundled SQLite
-- Svelte 5 with strict TypeScript and Vite
-- Tailwind CSS v4 through the official Vite plugin with CSS-first design tokens
-- Native HTML audio and video elements (a generalized `MediaEngine` wraps `HTMLMediaElement`)
-- Node's built-in test runner and V8 coverage
+- Svelte 5 + strict TypeScript + Vite
+- Tailwind CSS v4 through the official Vite plugin
+- Native HTML audio/video wrapped by the app's media engine
+- Node built-in test runner and V8 coverage
 
-## Requirements
+## Run from source
+
+### Requirements
 
 - Node.js 22.13 or newer
-- Bun 1.4.0-canary.1 (pinned by `packageManager`)
+- Bun 1.4.0-canary.1, as pinned by `packageManager`
 - Rust 1.85 or newer with Cargo and rustfmt
-- Platform prerequisites required by Tauri 2
+- Tauri 2 platform prerequisites
 
 Linux development additionally needs WebKitGTK 4.1 and the standard Tauri Linux build packages.
 
-## Install
-
-### Homebrew (macOS)
+### Install dependencies
 
 ```bash
-brew tap AungMyoKyaw/homebrew-tap
-brew install --cask AungMyoKyaw/homebrew-tap/dhamma-echo
-```
-
-The app is ad-hoc signed (no Apple Developer certificate), so the cask removes the quarantine attribute on install. If macOS still blocks it, right-click the app and choose **Open** once.
-
-### Prebuilt installers
-
-Download macOS (`.dmg`), Windows (`.msi`, `-setup.exe`), or Linux (`.deb`, `.rpm`, `.AppImage`) installers from [GitHub Releases](https://github.com/AungMyoKyaw/dhamma-echo/releases).
-
-### From source
-
-Clone or extract the repository, then run:
-
-```bash
+git clone https://github.com/AungMyoKyaw/dhamma-echo.git
 cd dhamma-echo
-bun install
+bun install --frozen-lockfile --ignore-scripts
 ```
 
-The committed `bun.lock` is authoritative. Local tooling uses Bun 1.4.0-canary.1, while GitHub Actions follows the Bun canary channel so it can read the version 2 lockfile. Use `bun install --frozen-lockfile --ignore-scripts` for ordinary installs. If dependencies intentionally change, run `bun install`, review the dependency and lockfile diff, and commit only the expected changes. `src-tauri/Cargo.lock` is authoritative for Rust dependencies.
+`bun.lock` and `src-tauri/Cargo.lock` are authoritative. If dependencies intentionally change, run `bun install`, review the dependency and lockfile diff, and commit only the expected changes.
 
-## Run
+### Start the app
 
 Desktop development:
 
@@ -159,79 +154,70 @@ bun run dev:web
 
 Then open `http://127.0.0.1:51729`.
 
-## Commands
+## Useful commands
 
-| Command                  | Purpose                                                               |
-| ------------------------ | --------------------------------------------------------------------- |
-| `bun run dev:web`        | Start the Vite browser preview with HMR                               |
-| `bun run dev`            | Run the Tauri desktop application                                     |
-| `bun run format`         | Format web and Rust sources                                           |
-| `bun run format:check`   | Verify formatting                                                     |
-| `bun run lint`           | Run strict ESLint with zero warnings                                  |
-| `bun run typecheck`      | Run `svelte-check` and strict TypeScript checking                     |
-| `bun run test`           | Run the core TypeScript behavior tests                                |
-| `bun run test:policy`    | Reject focused or skipped required tests                              |
-| `bun run test:coverage`  | Enforce 100% line/branch/function coverage on core TypeScript modules |
-| `bun run site:test`      | Run product website behavior and link tests                           |
-| `bun run site:smoke`     | Validate static assets, paths, budgets, and runtime isolation         |
-| `bun run site:verify`    | Run all dependency-free product website checks                        |
-| `bun run build:web`      | Produce the web assets in `dist/`                                     |
-| `bun run smoke:web`      | Validate required production web assets                               |
-| `bun run icons:generate` | Regenerate desktop icon variants from the 1024px master               |
-| `bun run icons:check`    | Validate icon dimensions, margins, headers, and Tauri references      |
-| `bun run verify:web`     | Run all locally available web quality gates                           |
-| `bun run verify`         | Run full frontend and Rust quality gates                              |
-| `bun run package`        | Build native installers for the current platform                      |
-| `bun run clean`          | Remove generated web and coverage output                              |
+| Command | Purpose |
+| --- | --- |
+| `bun run dev` | Run the Tauri desktop application |
+| `bun run dev:web` | Run the browser preview with HMR |
+| `bun run format` | Format web and Rust sources |
+| `bun run lint` | Run strict ESLint with zero warnings |
+| `bun run typecheck` | Run strict Svelte/TypeScript checking |
+| `bun run test` | Run TypeScript behavior tests |
+| `bun run test:coverage` | Run the core TypeScript coverage gate |
+| `bun run verify:web` | Run the complete web-app verification gate |
+| `bun run site:verify` | Verify the static product website |
+| `bun run verify` | Run formatting, web, site, audit, clippy, Rust tests, and release build |
+| `bun run package` | Build native installers with Tauri |
 
-## Testing and coverage
+## Verification bar
 
-The core TypeScript behavior modules are covered by behavior-focused tests. The local Node coverage command enforces 100% lines, branches, and functions for those modules. Node's built-in coverage reporter does not expose a separate statement metric, and Svelte component executable code is validated separately by `svelte-check`, the Vite production build, and web smoke checks. The release report must not call the project-wide 100% statement/component coverage requirement complete unless a tool actually measures it.
+The repository treats verification as part of the product, not as a release afterthought.
 
-Rust tests cover normalization, request validation, query filtering, pagination, error paths, secure URL classification, and in-memory SQLite integration. Run them with:
+- ESLint runs with `--max-warnings 0`.
+- `svelte-check` runs in strict mode.
+- Focused or skipped required tests are rejected by policy.
+- Core TypeScript behavior modules enforce **100% lines**, **100% functions**, and at least **99% branches** with Node's V8 coverage.
+- The static product site's JavaScript enforces **100% line / function / branch coverage**.
+- Site smoke tests reject missing local assets, path escapes, duplicate IDs, remote runtime dependencies, and text assets over 100 KiB.
+- Rust verification includes rustfmt, clippy with `-D warnings`, tests, and a locked release build.
 
-```bash
-cargo test --manifest-path src-tauri/Cargo.toml --all-features
-```
+The coverage gate does not measure Svelte component statements separately; component correctness is checked through type checking, build/smoke gates, and behavior contracts. The repository does not claim a metric the tooling does not measure.
 
-The migration evidence and explicit blocked gates are recorded in [docs/verification/2026-08-10-svelte-frontend-migration.md](docs/verification/2026-08-10-svelte-frontend-migration.md).
+## Product website
 
-## Build and package
+The launch site under [`docs/`](docs/index.html) is deliberately dependency-free and separate from the Tauri webview build.
+
+Preview it locally:
 
 ```bash
-bun run package
+python3 -m http.server 4173 --directory docs
 ```
 
-Tauri creates platform-native bundles under `src-tauri/target/release/bundle/`. Build and sign each platform on its native CI runner. Signing credentials must be provided only through protected GitHub Actions secrets.
+Then open `http://127.0.0.1:4173` and run:
 
-## Configuration
+```bash
+bun run site:verify
+```
 
-No environment variables are required for development. The application uses:
+## Configuration and storage
 
-- `src-tauri/resources/dhamma.db` as the bundled catalogue.
-- `src-tauri/capabilities/default.json` for the minimum webview capability.
-- `src-tauri/tauri.conf.json` for CSP, window, resources, packaging, and generated desktop icons.
-- Browser local storage for personal settings and listening state.
-
-## Security and privacy
-
-- No accounts, analytics, advertisements, or telemetry.
-- No arbitrary shell, filesystem, SQL, or network command is exposed to the webview.
-- SQLite opens read-only and uses parameterized queries.
-- The CSP permits media only from `https://dhammadownload.com` and `https://www.dhammadownload.com`.
-- The frontend accepts only approved MP3 URLs, removes credentials/ports/fragments, upgrades HTTP to HTTPS, and encodes paths before playback.
-- Local preferences never leave the device.
-- Report security issues using [SECURITY.md](SECURITY.md).
+- The SQLite catalogue is bundled as an immutable application resource.
+- Favorites, history, queue, settings, and resume positions are stored locally.
+- Myanmar text uses installed system fonts; no font files are bundled.
+- Media network access is restricted to the approved Dhamma Download hosts.
 
 ## Data and licensing
 
-Source code and original visual assets are licensed under MIT. The bundled `dhamma.db`, catalogue metadata, remote audio, teacher names, and teachings are **not relicensed by this repository**. See [DATA_LICENSE.md](DATA_LICENSE.md) before public redistribution.
+The source code and original project assets are licensed under MIT. The bundled `dhamma.db`, catalogue metadata, remote media, teacher names, and teachings are **not relicensed by this repository**.
+
+Read [DATA_LICENSE.md](DATA_LICENSE.md) before public redistribution. Source media and catalogue records originate from [Dhamma Download](https://www.dhammadownload.com/); availability and rights remain with their respective source/rights holders.
 
 ## Troubleshooting
 
-### A track is visible but will not play
+### A record is visible but will not play
 
-WMA records are kept searchable but are not supported by the macOS webview player. For MP3 records, use the in-player **Retry** action; Dhamma Echo retries both approved HTTPS hostnames, but it cannot recover a file removed or blocked by the remote service.
+Check the source format first. WMA and WMV remain searchable but are not playable in the macOS webview. For MP3 or MP4, use the in-player retry path; Dhamma Echo can retry the approved HTTPS hostnames, but it cannot restore a file removed or blocked by the source service.
 
 ### Myanmar text uses an unexpected font
 
@@ -249,14 +235,7 @@ Confirm Bun and Cargo can reach their configured registries. This repository doe
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and run `bun run verify` before opening a pull request.
 
-## Release process
-
-1. Refresh and commit lockfiles when dependencies change.
-2. Run `bun run verify` on a supported development machine.
-3. Test native packages on macOS, Windows, and Linux.
-4. Update [CHANGELOG.md](CHANGELOG.md) and version fields.
-5. Tag `vX.Y.Z`; the release workflow builds platform artifacts.
-6. Review and sign the generated installers before publishing the release.
+For release history, see [CHANGELOG.md](CHANGELOG.md). For security reporting, see [SECURITY.md](SECURITY.md).
 
 ## License
 
