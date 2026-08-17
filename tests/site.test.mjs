@@ -6,7 +6,6 @@ import test from "node:test";
 const htmlPath = new URL("../docs/index.html", import.meta.url);
 const privacyPath = new URL("../docs/privacy/index.html", import.meta.url);
 const cssPath = new URL("../docs/assets/site.css", import.meta.url);
-const screenshotPath = new URL("../docs/images/explore.png", import.meta.url);
 
 async function readSite() {
   const [html, css] = await Promise.all([readFile(htmlPath, "utf8"), readFile(cssPath, "utf8")]);
@@ -49,7 +48,7 @@ test("product page proves audio, video, catalogue depth, and local privacy", asy
   assert.match(html, /audio talks/i);
   assert.match(html, /video records/i);
   assert.match(html, /personal listening state stays on your device/i);
-  assert.match(html, /no accounts, analytics, ads, or telemetry/i);
+  assert.match(html, /no accounts,\s+analytics,\s+ads,\s+or telemetry/i);
   assert.match(html, /Tauri 2/);
   assert.match(html, /read-only SQLite/i);
   assert.match(html, /ten purpose-built desktop commands/i);

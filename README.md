@@ -27,12 +27,12 @@ Download the latest `.dmg`, `.msi` / `-setup.exe`, `.deb`, `.rpm`, or `.AppImage
 
 Dhamma Echo turns a large Dhamma catalogue into a desktop library instead of a feed. It helps you find a teaching, play a compatible source file, keep your place, and return later without creating an account.
 
-| Catalogue | Current index |
-| --- | ---: |
-| Audio talks | **30,563** |
-| Video records | **14,474** |
-| Teachers | **257** |
-| Audio collections | **429** |
+| Catalogue         | Current index |
+| ----------------- | ------------: |
+| Audio talks       |    **30,563** |
+| Video records     |    **14,474** |
+| Teachers          |       **257** |
+| Audio collections |       **429** |
 
 The application does **not** host those media files. It catalogs records sourced from [Dhamma Download](https://www.dhammadownload.com/) and requests compatible media from the approved Dhamma Download hosts when you choose to play it. See [Data and licensing](#data-and-licensing) before redistributing catalogue data or media references.
 
@@ -47,28 +47,28 @@ The application does **not** host those media files. It catalogs records sourced
 
 ## See the product
 
-| Explore | Teachers |
-| --- | --- |
+| Explore                                                                          | Teachers                                            |
+| -------------------------------------------------------------------------------- | --------------------------------------------------- |
 | ![Explore the Dhamma catalogue with search and filters](docs/images/explore.png) | ![Browse Dhamma teachers](docs/images/teachers.png) |
 
-| Collections | My library |
-| --- | --- |
+| Collections                                               | My library                                                                  |
+| --------------------------------------------------------- | --------------------------------------------------------------------------- |
 | ![Browse Dhamma collections](docs/images/collections.png) | ![Resume listening and review saved library state](docs/images/library.png) |
 
-| Home | Settings |
-| --- | --- |
+| Home                               | Settings                                                      |
+| ---------------------------------- | ------------------------------------------------------------- |
 | ![Home view](docs/images/home.png) | ![Playback and appearance settings](docs/images/settings.png) |
 
 ## Playback and catalogue behavior
 
 Dhamma Echo keeps catalogue visibility separate from playback capability.
 
-| Source format | Searchable | In-app playback |
-| --- | --- | --- |
-| MP3 | Yes | Yes, from approved HTTPS hosts |
-| MP4 | Yes | Yes, from approved HTTPS hosts |
-| WMA | Yes | Not available in the macOS webview |
-| WMV | Yes | Not available in the macOS webview |
+| Source format | Searchable | In-app playback                    |
+| ------------- | ---------- | ---------------------------------- |
+| MP3           | Yes        | Yes, from approved HTTPS hosts     |
+| MP4           | Yes        | Yes, from approved HTTPS hosts     |
+| WMA           | Yes        | Not available in the macOS webview |
+| WMV           | Yes        | Not available in the macOS webview |
 
 For playable records, the app normalizes and encodes catalogue URLs, removes credentials, ports, and fragments, upgrades approved same-host HTTP URLs to HTTPS, and can retry between the `www` and bare Dhamma Download hosts. A source file that has been removed or blocked by the remote service cannot be recovered by the app.
 
@@ -156,19 +156,19 @@ Then open `http://127.0.0.1:51729`.
 
 ## Useful commands
 
-| Command | Purpose |
-| --- | --- |
-| `bun run dev` | Run the Tauri desktop application |
-| `bun run dev:web` | Run the browser preview with HMR |
-| `bun run format` | Format web and Rust sources |
-| `bun run lint` | Run strict ESLint with zero warnings |
-| `bun run typecheck` | Run strict Svelte/TypeScript checking |
-| `bun run test` | Run TypeScript behavior tests |
-| `bun run test:coverage` | Run the core TypeScript coverage gate |
-| `bun run verify:web` | Run the complete web-app verification gate |
-| `bun run site:verify` | Verify the static product website |
-| `bun run verify` | Run formatting, web, site, audit, clippy, Rust tests, and release build |
-| `bun run package` | Build native installers with Tauri |
+| Command                 | Purpose                                                                 |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `bun run dev`           | Run the Tauri desktop application                                       |
+| `bun run dev:web`       | Run the browser preview with HMR                                        |
+| `bun run format`        | Format web and Rust sources                                             |
+| `bun run lint`          | Run strict ESLint with zero warnings                                    |
+| `bun run typecheck`     | Run strict Svelte/TypeScript checking                                   |
+| `bun run test`          | Run TypeScript behavior tests                                           |
+| `bun run test:coverage` | Run the core TypeScript coverage gate                                   |
+| `bun run verify:web`    | Run the complete web-app verification gate                              |
+| `bun run site:verify`   | Verify the static product website                                       |
+| `bun run verify`        | Run formatting, web, site, audit, clippy, Rust tests, and release build |
+| `bun run package`       | Build native installers with Tauri                                      |
 
 ## Verification bar
 

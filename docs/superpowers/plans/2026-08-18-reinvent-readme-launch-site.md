@@ -24,9 +24,11 @@
 ### Task 1: Lock the new launch-site contract with tests
 
 **Files:**
+
 - Modify: `tests/site.test.mjs`
 
 **Interfaces:**
+
 - Consumes: `docs/index.html`, `docs/assets/site.css`, existing screenshot files.
 - Produces: static-content and accessibility contracts that the redesigned site must satisfy.
 
@@ -47,12 +49,14 @@ Expected: at least one product-page assertion fails because the old site does no
 ### Task 2: Rebuild the launch-site HTML and visual system
 
 **Files:**
+
 - Modify: `docs/index.html`
 - Modify: `docs/assets/site.css`
 - Preserve: `docs/assets/site.js`
 - Preserve: `docs/assets/site-bootstrap.js`
 
 **Interfaces:**
+
 - Consumes: `docs/images/home.png`, `explore.png`, `collections.png`, `teachers.png`, `library.png`, `settings.png`, `docs/assets/logo.svg`, existing `data-github-link` behavior.
 - Produces: a single responsive static product page with the new information architecture.
 
@@ -77,9 +81,11 @@ Expected: all tests pass.
 ### Task 3: Reinvent the README around launch and adoption
 
 **Files:**
+
 - Modify: `README.md`
 
 **Interfaces:**
+
 - Consumes: product facts and architecture already documented in `PRODUCT.md`, `DESIGN.md`, and `docs/architecture/`.
 - Produces: GitHub-native product documentation with fast install, product proof, screenshots, media/source disclosure, architecture, development, verification, and contributor links.
 
@@ -98,9 +104,11 @@ Run a small Node or shell path check against relative Markdown links and image r
 ### Task 4: Final product-site and design verification
 
 **Files:**
+
 - Modify only if verification finds a defect: `docs/index.html`, `docs/assets/site.css`, `tests/site.test.mjs`, `README.md`
 
 **Interfaces:**
+
 - Consumes: completed redesign.
 - Produces: verified static site and reviewable final diff.
 
