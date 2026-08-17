@@ -5,8 +5,8 @@ use rusqlite::{Connection, OpenFlags, Row, params, params_from_iter, types::Valu
 use crate::{
     error::AppError,
     models::{
-        AudioCategory, AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary,
-        CollectionDetail, CollectionSearchPage, CollectionSearchRequest, CollectionSummary,
+        AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary, CollectionDetail,
+        CollectionSearchPage, CollectionSearchRequest, CollectionSummary, ContentCategory,
         TeacherDetail, TeacherSummary,
     },
     normalize::normalize_text,
@@ -94,24 +94,26 @@ impl Database {
         })
     }
 
-    pub fn audio_categories(&self) -> Result<Vec<AudioCategory>, AppError> {
+    pub fn audio_categories(&self) -> Result<Vec<ContentCategory>, AppError> {
         self.with_connection(|connection| {
             let mut statement = connection.prepare(
                 "SELECT c.id, c.name, c.language, COUNT(m.id)
                  FROM categories c
-                 JOIN media m ON m.category_id = c.id AND m.type = 'audio'
-                 WHERE c.type IN ('audio', 'abhidhamma')
+                 JOIN media m ON m.category_id = c.id
+                    AND m.type IN ('audio', 'video')
+                    AND (c.type = 'abhidhamma' OR c.type = m.type)
+                 WHERE c.type IN ('audio', 'video', 'abhidhamma')
                  GROUP BY c.id, c.name, c.language
                  HAVING COUNT(m.id) > 0
                  ORDER BY c.id",
             )?;
             statement
                 .query_map([], |row| {
-                    Ok(AudioCategory {
+                    Ok(ContentCategory {
                         id: row.get(0)?,
                         name: normalized_or(row.get(1)?, "Uncategorized audio"),
                         language: normalize_text(&row.get::<_, String>(2)?).to_lowercase(),
-                        audio_count: row.get(3)?,
+                        count: row.get(3)?,
                     })
                 })?
                 .collect::<rusqlite::Result<Vec<_>>>()
@@ -341,7 +343,17 @@ impl Database {
             values.push(Value::Integer(teacher_id));
         }
         if let Some(category_id) = request.category_id {
-            clauses.push("m.category_id = ?".into());
+            clauses.push(
+                "EXISTS (
+                    SELECT 1
+                    FROM categories filter_category
+                    WHERE filter_category.id = m.category_id
+                      AND filter_category.id = ?
+                      AND filter_category.type IN ('audio', 'video', 'abhidhamma')
+                      AND (filter_category.type = 'abhidhamma' OR filter_category.type = m.type)
+                )"
+                .into(),
+            );
             values.push(Value::Integer(category_id));
         }
         if let Some(collection_id) = request.collection_id {
@@ -616,6 +628,7 @@ mod tests {
                  INSERT INTO categories VALUES (1, 'Audio in Myanmar', 'audio', 'myanmar');
                  INSERT INTO categories VALUES (4, 'Abhidhamma in Myanmar', 'abhidhamma', 'myanmar');
                  INSERT INTO categories VALUES (5, 'Abhidhamma in English', 'abhidhamma', 'english');
+                 INSERT INTO categories VALUES (6, 'Video in English', 'video', 'english');
                  INSERT INTO categories VALUES (7, 'Audio in English', 'audio', 'english');
                  INSERT INTO categories VALUES (8, 'Video in Myanmar', 'video', 'myanmar');
                  INSERT INTO media VALUES (1, ' Talk One ', 'audio', 'mp3', 'english', 'https://dhammadownload.com/one.mp3', NULL, NULL, 1, 7);
@@ -623,6 +636,8 @@ mod tests {
                  INSERT INTO media VALUES (3, 'Video', 'video', 'mp4', 'myanmar', 'https://dhammadownload.com/video.mp4', NULL, NULL, 2, 8);
                  INSERT INTO media VALUES (4, '   ', 'audio', 'mp3', 'myanmar', 'https://dhammadownload.com/four.mp3', NULL, NULL, NULL, 4);
                  INSERT INTO media VALUES (5, 'Abhidhamma English', 'audio', 'mp3', 'english', 'https://dhammadownload.com/five.mp3', NULL, NULL, 1, 5);
+                 INSERT INTO media VALUES (6, 'English Video', 'video', 'mp4', 'english', 'https://dhammadownload.com/english-video.mp4', NULL, NULL, 1, 6);
+                 INSERT INTO media VALUES (7, 'Mismatched Video', 'video', 'mp4', 'english', 'https://dhammadownload.com/mismatched-video.mp4', NULL, NULL, 1, 1);
                  INSERT INTO collections VALUES (10, 'Course One', 'A course', 1, 'audio', 'https://example.test/course');
                  INSERT INTO media_collections VALUES (1, 10, 2);
                  INSERT INTO media_collections VALUES (2, 10, 1);
@@ -836,12 +851,31 @@ mod tests {
     }
 
     #[test]
-    fn lists_only_meaningful_audio_categories() {
+    fn lists_meaningful_content_categories_and_scopes_category_search() {
         let categories = fixture().audio_categories().expect("categories");
         assert_eq!(
             categories.iter().map(|item| item.id).collect::<Vec<_>>(),
-            vec![1, 4, 5, 7]
+            vec![1, 4, 5, 6, 7, 8]
         );
+        assert_eq!(
+            categories.iter().map(|item| item.count).collect::<Vec<_>>(),
+            vec![1, 1, 1, 1, 1, 1]
+        );
+
+        let video_page = fixture()
+            .search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: None,
+                teacher_id: None,
+                category_id: Some(8),
+                collection_id: None,
+                limit: 50,
+                offset: 0,
+            })
+            .expect("video category page");
+        assert_eq!(video_page.total, 1);
+        assert_eq!(video_page.items[0].media_type, "video");
     }
 
     #[test]
@@ -1096,8 +1130,8 @@ mod tests {
             .expect("blank search");
         assert_eq!(page.total, 45428);
         assert_eq!(page.items.len(), 50);
-        let categories = database.audio_categories().expect("audio categories");
-        assert_eq!(categories.len(), 4);
+        let categories = database.audio_categories().expect("content categories");
+        assert_eq!(categories.len(), 6);
         let collections = database
             .search_collections(&CollectionSearchRequest {
                 query: String::new(),

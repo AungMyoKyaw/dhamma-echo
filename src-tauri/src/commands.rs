@@ -8,8 +8,8 @@ use crate::{
     db::Database,
     error::CommandError,
     models::{
-        AudioCategory, AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary,
-        CollectionDetail, CollectionSearchPage, CollectionSearchRequest, TeacherDetail,
+        AudioSearchPage, AudioSearchRequest, AudioTrack, CatalogueSummary, CollectionDetail,
+        CollectionSearchPage, CollectionSearchRequest, ContentCategory, TeacherDetail,
         TeacherSummary,
     },
 };
@@ -31,7 +31,7 @@ pub fn get_catalogue_summary(
 #[tauri::command]
 pub fn list_audio_categories(
     database: State<'_, Database>,
-) -> Result<Vec<AudioCategory>, CommandError> {
+) -> Result<Vec<ContentCategory>, CommandError> {
     database.audio_categories().map_err(CommandError::from)
 }
 

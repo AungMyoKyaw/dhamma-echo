@@ -31,11 +31,11 @@ pub struct TeacherDetail {
 
 #[derive(Debug, Clone, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
-pub struct AudioCategory {
+pub struct ContentCategory {
     pub id: i64,
     pub name: String,
     pub language: String,
-    pub audio_count: i64,
+    pub count: i64,
 }
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
