@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Dhamma Echo is a quiet, private desktop library for discovering and listening to Dhamma talks."
+      content="Dhamma Echo is a private desktop library for discovering, listening to, and resuming Dhamma audio and video teachings."
     />
-    <meta name="theme-color" content="#fcf9f2" />
-    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#181714" />
+    <meta name="color-scheme" content="dark" />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; base-uri 'self'; connect-src 'none'; font-src 'none'; frame-src 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self'; form-action 'none'; upgrade-insecure-requests"
     />
-    <title>Dhamma Echo — A quiet desktop library</title>
+    <title>Dhamma Echo — Dhamma, without the noise.</title>
     <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="assets/site.css" />
     <script type="module" src="assets/site-bootstrap.js"></script>
@@ -24,292 +24,356 @@
     <header class="site-header">
       <div class="shell header-inner">
         <a class="brand" href="#top" aria-label="Dhamma Echo home">
-          <img src="assets/logo.svg" alt="" width="40" height="40" />
+          <img src="assets/logo.svg" alt="" width="38" height="38" />
           <span class="brand-copy">
             <strong>Dhamma Echo</strong>
-            <span>Listen with intention</span>
+            <span>Desktop listening library</span>
           </span>
         </a>
 
         <nav aria-label="Primary">
           <a href="#product">Product</a>
-          <a href="#features">Features</a>
-          <a href="#technology">Technology</a>
-          <a class="nav-action" href="#open-source">Open source</a>
+          <a href="privacy/">Privacy</a>
+          <a
+            href="#source"
+            data-github-link="repository"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Source
+          </a>
+          <a
+            class="nav-action"
+            href="#download"
+            data-github-link="releases"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Download
+          </a>
         </nav>
       </div>
     </header>
 
     <main id="main-content">
       <section class="hero" id="top" aria-labelledby="hero-title">
-        <div class="shell hero-layout">
+        <div class="shell hero-grid">
           <div class="hero-copy">
-            <h1 id="hero-title">A quiet desktop library for Dhamma talks.</h1>
+            <p class="hero-kicker">Dhamma Echo · Desktop · Open source</p>
+            <h1 id="hero-title">Dhamma, without the noise.</h1>
             <p class="hero-lead">
-              Discover teachings, keep your place, and listen without accounts, analytics,
-              advertisements, or background noise.
+              A private desktop library for finding Dhamma teachings, playing compatible audio and
+              video, and returning exactly where you left off.
             </p>
-            <div class="hero-actions" aria-label="Product actions">
-              <a class="button button-primary" href="#product">
-                See Dhamma Echo
-                <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
+
+            <div class="hero-actions" aria-label="Dhamma Echo actions">
+              <a
+                class="button button-primary"
+                href="#download"
+                data-github-link="releases"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Download Dhamma Echo
+                <span aria-hidden="true">↗</span>
               </a>
               <a
                 class="button button-secondary"
-                href="#open-source"
+                href="#source"
                 data-github-link="repository"
                 target="_blank"
                 rel="noreferrer"
               >
                 View source
-                <svg aria-hidden="true" viewBox="0 0 24 24">
-                  <path d="M7 17 17 7M8 7h9v9" />
-                </svg>
+                <span aria-hidden="true">↗</span>
               </a>
             </div>
-            <dl class="hero-facts" aria-label="Dhamma Echo catalogue facts">
-              <div>
-                <dt>30,563</dt>
-                <dd>catalogued talks</dd>
-              </div>
-              <div>
-                <dt>257</dt>
-                <dd>teachers</dd>
-              </div>
-              <div>
-                <dt>Local</dt>
-                <dd>personal library</dd>
-              </div>
-            </dl>
+
+            <div class="hero-install" aria-label="Homebrew install command">
+              <span>macOS</span>
+              <code>brew install --cask AungMyoKyaw/homebrew-tap/dhamma-echo</code>
+            </div>
           </div>
 
-          <div class="hero-note" aria-label="Product principles">
-            <div class="hero-note-mark" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 21c4-2.1 7-5.4 7-10V5l-7-3-7 3v6c0 4.6 3 7.9 7 10Z" />
-                <path d="m9.2 11.8 1.8 1.8 3.9-4.2" />
-              </svg>
+          <div class="hero-artifact">
+            <div class="echo-rings" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
-            <p>
-              Your listening state stays on your device. The catalogue opens read-only, and the app
-              exposes only six purpose-built desktop commands.
-            </p>
+            <figure class="screen-shell screen-shell-hero">
+              <div class="screen-bar" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <strong>Dhamma Echo</strong>
+              </div>
+              <img
+                src="images/home.png"
+                width="2784"
+                height="1866"
+                loading="eager"
+                decoding="async"
+                alt="Dhamma Echo home view with listening activity and featured teachings"
+              />
+            </figure>
           </div>
         </div>
       </section>
 
-      <section class="product-section" id="product" aria-labelledby="product-title">
+      <section class="catalogue-band" aria-label="Catalogue at a glance">
         <div class="shell">
-          <div class="section-heading section-heading-wide">
+          <dl class="catalogue-facts">
             <div>
-              <h2 id="product-title">The library, not the noise.</h2>
-              <p>
-                Search by title or teacher, filter the catalogue, and keep the current teaching
-                visible while you browse.
-              </p>
+              <dt>30,563</dt>
+              <dd>audio talks</dd>
             </div>
-            <span class="section-index" aria-hidden="true">01</span>
-          </div>
+            <div>
+              <dt>14,474</dt>
+              <dd>video records</dd>
+            </div>
+            <div>
+              <dt>257</dt>
+              <dd>teachers</dd>
+            </div>
+            <div>
+              <dt>429</dt>
+              <dd>audio collections</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
 
-          <figure class="product-frame">
-            <div class="window-bar" aria-hidden="true">
+      <section class="story-section" id="product" aria-labelledby="product-title">
+        <div class="shell story-intro">
+          <h2 id="product-title">One library. More than one way in.</h2>
+          <p>
+            Search directly, browse a teacher, follow a collection, or pick up a recent teaching.
+            Dhamma Echo keeps discovery broad and the listening path simple.
+          </p>
+        </div>
+
+        <div class="shell story-row">
+          <figure class="screen-shell">
+            <div class="screen-bar" aria-hidden="true">
               <span></span><span></span><span></span>
-              <strong>Dhamma Echo</strong>
+              <strong>Explore</strong>
             </div>
             <img
               src="images/explore.png"
               width="2784"
               height="1866"
-              loading="eager"
+              loading="lazy"
               decoding="async"
-              alt="Dhamma Echo explore view with an active audio player"
+              alt="Dhamma Echo Explore view with search, filters, and persistent playback"
             />
-            <figcaption>
-              Explore view with teacher filtering, queue controls, resume positions, and the
-              persistent player.
-            </figcaption>
+            <figcaption>Search by title or teacher, then narrow the catalogue without losing playback.</figcaption>
+          </figure>
+
+          <div class="story-copy">
+            <p class="story-note">Find the teaching first.</p>
+            <h3>Search 45,000+ catalogued audio and video records without turning listening into a feed.</h3>
+            <p>
+              Filter by content category, teacher, collection, language, and source format. MP3 and
+              MP4 records can play in the app; legacy WMA and WMV records remain discoverable so the
+              catalogue stays complete.
+            </p>
+            <ul class="plain-list">
+              <li>Title and teacher search</li>
+              <li>Audio and video categories</li>
+              <li>Collection and teacher filters</li>
+              <li>Queue, seek, speed, and resume position</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="browse-section" aria-labelledby="browse-title">
+        <div class="shell browse-layout">
+          <div class="browse-copy">
+            <p class="story-note">Browse by context.</p>
+            <h2 id="browse-title">Teachers and collections stay visible as a library, not flattened into search results.</h2>
+            <p>
+              Follow the shape of the source catalogue when you already know the teacher or series
+              you want. Featured teachers, complete collection names, and progressive loading keep
+              large result sets usable.
+            </p>
+          </div>
+
+          <div class="screen-pair" aria-label="Teacher and collection screens">
+            <figure class="screen-shell screen-shell-small screen-pair-front">
+              <div class="screen-bar" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <strong>Teachers</strong>
+              </div>
+              <img
+                src="images/teachers.png"
+                width="2784"
+                height="1866"
+                loading="lazy"
+                decoding="async"
+                alt="Dhamma Echo Teachers view"
+              />
+            </figure>
+            <figure class="screen-shell screen-shell-small screen-pair-back">
+              <div class="screen-bar" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <strong>Collections</strong>
+              </div>
+              <img
+                src="images/collections.png"
+                width="2784"
+                height="1866"
+                loading="lazy"
+                decoding="async"
+                alt="Dhamma Echo Collections view"
+              />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="return-section" aria-labelledby="return-title">
+        <div class="shell return-layout">
+          <div class="return-visual">
+            <figure class="screen-shell">
+              <div class="screen-bar" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <strong>My library</strong>
+              </div>
+              <img
+                src="images/library.png"
+                width="2784"
+                height="1866"
+                loading="lazy"
+                decoding="async"
+                alt="Dhamma Echo My Library view with saved listening state"
+              />
+            </figure>
+            <figure class="screen-shell settings-inset">
+              <div class="screen-bar" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <strong>Settings</strong>
+              </div>
+              <img
+                src="images/settings.png"
+                width="2784"
+                height="1866"
+                loading="lazy"
+                decoding="async"
+                alt="Dhamma Echo Settings view"
+              />
+            </figure>
+          </div>
+
+          <div class="story-copy">
+            <p class="story-note">Leave. Come back. Continue.</p>
+            <h2 id="return-title">Your library remembers the useful things and nothing more.</h2>
+            <p>
+              Favorites, history, queue state, playback settings, and resume positions stay local.
+              Audio and video share the same personal library model, so the app can resume the media
+              you were actually using without an account or cloud profile.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-proof" aria-labelledby="privacy-title">
+        <div class="shell privacy-layout">
+          <div>
+            <h2 id="privacy-title">Private because the architecture is small.</h2>
+            <p class="privacy-lead">
+              Your personal listening state stays on your device. There are no accounts, analytics, ads, or telemetry.
+            </p>
+          </div>
+
+          <dl class="architecture-facts">
+            <div>
+              <dt>Read-only catalogue</dt>
+              <dd>A bundled read-only SQLite database is queried with parameterized Rust code.</dd>
+            </div>
+            <div>
+              <dt>Narrow desktop boundary</dt>
+              <dd>The webview can call only ten purpose-built desktop commands through Tauri 2: nine catalogue operations and one constrained MP3 download path.</dd>
+            </div>
+            <div>
+              <dt>Source-hosted media</dt>
+              <dd>
+                Dhamma Echo catalogs Dhamma Download records and streams compatible media from the
+                approved source hosts over HTTPS.
+              </dd>
+            </div>
+          </dl>
+
+          <a class="inline-link" href="privacy/">Read the privacy policy <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+
+      <section class="source-section" id="source" aria-labelledby="source-title">
+        <div class="shell source-layout">
+          <div class="source-copy">
+            <p class="story-note">Catalogue source</p>
+            <h2 id="source-title">The media is not hosted by this project.</h2>
+            <p>
+              Dhamma Echo is a desktop catalogue and player. It indexes records sourced from
+              <a href="https://www.dhammadownload.com/" target="_blank" rel="noreferrer">Dhamma Download</a>
+              and requests compatible audio or video from the approved source hosts when you choose
+              to play it.
+            </p>
+            <p>
+              The application, its catalogue tooling, and its user interface are open source. Media
+              ownership and availability remain with the original source.
+            </p>
+          </div>
+
+          <figure class="screen-shell source-screen">
+            <div class="screen-bar" aria-hidden="true">
+              <span></span><span></span><span></span>
+              <strong>Dhamma Echo</strong>
+            </div>
+            <img
+              src="images/home.png"
+              width="2784"
+              height="1866"
+              loading="lazy"
+              decoding="async"
+              alt="Dhamma Echo desktop library interface"
+            />
           </figure>
         </div>
       </section>
 
-      <section class="features-section" id="features" aria-labelledby="features-title">
-        <div class="shell">
-          <div class="section-heading">
-            <div>
-              <h2 id="features-title">Made for deliberate listening.</h2>
-              <p>
-                Every feature supports a simple path: find a teaching, listen, and return when you
-                are ready.
-              </p>
-            </div>
-            <span class="section-index" aria-hidden="true">02</span>
-          </div>
-
-          <div class="feature-grid">
-            <article class="feature-card feature-card-large">
-              <div class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="11" cy="11" r="6" />
-                  <path d="m16 16 4 4" />
-                </svg>
-              </div>
-              <div>
-                <h3>Discover the catalogue</h3>
-                <p>
-                  Browse 30,563 talks from 257 teachers. Search titles and teachers, explore audio
-                  collections, then narrow results by category, language, and audio format.
-                </p>
-              </div>
-              <div class="feature-example" aria-hidden="true">
-                <span class="search-line"></span>
-                <span></span><span></span><span></span>
-              </div>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7Z" />
-                </svg>
-              </div>
-              <div>
-                <h3>Focused playback</h3>
-                <p>
-                  Play supported MP3 talks with seeking, 15-second jumps, speed, queue management,
-                  and resilient HTTPS retry.
-                </p>
-              </div>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H20v15H6.5A2.5 2.5 0 0 1 4 16.5Z" />
-                  <path d="M4 6.5A2.5 2.5 0 0 0 6.5 9H20" />
-                </svg>
-              </div>
-              <div>
-                <h3>Your library stays local</h3>
-                <p>
-                  Favorites, history, queue, preferences, and resume positions remain in local
-                  storage on your device.
-                </p>
-              </div>
-            </article>
-
-            <article class="feature-card feature-card-dark">
-              <div class="feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <rect x="5" y="10" width="14" height="10" rx="2" />
-                  <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-                </svg>
-              </div>
-              <div>
-                <h3>Private by default</h3>
-                <p>
-                  No account, telemetry, advertisements, tracking pixels, or cloud sync. Dhamma Echo
-                  works as a quiet desktop tool.
-                </p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="quiet-section" aria-labelledby="quiet-title">
-        <div class="shell quiet-layout">
-          <div class="quiet-copy">
-            <span class="lotus-line" aria-hidden="true"></span>
-            <h2 id="quiet-title">A player that knows when to stay out of the way.</h2>
-            <p>
-              The interface keeps the current teaching, time, progress, and essential controls
-              available without turning listening into a dashboard. Its warm light interface keeps
-              the library calm, clear, and consistent.
-            </p>
-          </div>
-          <blockquote>
-            <p>“Listen with intention.”</p>
-            <footer>Dhamma Echo design principle</footer>
-          </blockquote>
-        </div>
-      </section>
-
-      <section class="technology-section" id="technology" aria-labelledby="technology-title">
-        <div class="shell technology-layout">
-          <div class="technology-copy">
-            <span class="section-index" aria-hidden="true">03</span>
-            <h2 id="technology-title">Small architecture. Clear boundaries.</h2>
-            <p>
-              A Svelte 5 + TypeScript interface runs inside Tauri 2. Rust opens the bundled SQLite
-              catalogue read-only, validates every request, and returns typed catalogue data through
-              a narrow command boundary.
-            </p>
-            <a class="text-link" href="architecture/context.md">
-              Read the architecture
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <path d="M7 17 17 7M8 7h9v9" />
-              </svg>
-            </a>
-          </div>
-
-          <div class="technology-list" role="list" aria-label="Technology stack">
-            <div role="listitem">
-              <span>Desktop shell</span>
-              <strong>Tauri 2</strong>
-            </div>
-            <div role="listitem">
-              <span>Trusted backend</span>
-              <strong>Rust</strong>
-            </div>
-            <div role="listitem">
-              <span>Catalogue</span>
-              <strong>SQLite</strong>
-            </div>
-            <div role="listitem">
-              <span>Interface</span>
-              <strong>strict TypeScript</strong>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="open-source-section" id="open-source" aria-labelledby="open-source-title">
-        <div class="shell open-source-panel">
-          <img src="assets/logo.svg" alt="" width="72" height="72" />
+      <section class="download-section" id="download" aria-labelledby="download-title">
+        <div class="shell download-layout">
           <div>
-            <h2 id="open-source-title">Open, inspectable, and yours to improve.</h2>
+            <h2 id="download-title">Install the library. Keep the rest local.</h2>
             <p>
-              Dhamma Echo is MIT-licensed software. Study the architecture, verify the privacy
-              model, build it locally, or contribute a focused improvement.
+              Dhamma Echo is MIT-licensed and available for macOS, Windows, and Linux through GitHub
+              Releases. On macOS, Homebrew is the fastest path.
             </p>
           </div>
-          <div class="open-source-actions">
-            <a
-              class="button button-light"
-              href="#open-source"
-              data-github-link="releases"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Latest release
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
-              </svg>
-            </a>
-            <a
-              class="text-link text-link-light"
-              href="#open-source"
-              data-github-link="repository"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Browse source
-              <svg aria-hidden="true" viewBox="0 0 24 24">
-                <path d="M7 17 17 7M8 7h9v9" />
-              </svg>
-            </a>
+
+          <div class="install-panel">
+            <span class="install-label">Homebrew · macOS</span>
+            <pre><code>brew install --cask AungMyoKyaw/homebrew-tap/dhamma-echo</code></pre>
+            <div class="install-actions">
+              <a
+                class="button button-light"
+                href="#download"
+                data-github-link="releases"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open latest release <span aria-hidden="true">↗</span>
+              </a>
+              <a
+                class="text-link"
+                href="#source"
+                data-github-link="repository"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Browse the source <span aria-hidden="true">↗</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -317,20 +381,30 @@
 
     <footer class="site-footer">
       <div class="shell footer-inner">
-        <div class="brand brand-footer">
-          <img src="assets/logo.svg" alt="" width="36" height="36" />
+        <a class="brand brand-footer" href="#top" aria-label="Back to Dhamma Echo home">
+          <img src="assets/logo.svg" alt="" width="34" height="34" />
           <span class="brand-copy">
             <strong>Dhamma Echo</strong>
-            <span>A quiet desktop library.</span>
+            <span>A private desktop listening library.</span>
           </span>
-        </div>
+        </a>
+
         <p>
-          Source code and original assets are MIT licensed. Catalogue data and remote teachings
-          retain their respective rights.
+          Open-source software. Catalogue records are sourced from Dhamma Download; this project
+          does not host the media.
         </p>
+
         <div class="footer-links">
-          <a href="privacy/">Privacy policy</a>
-          <a href="#top">Back to top</a>
+          <a href="privacy/">Privacy</a>
+          <a href="#source">Data source</a>
+          <a
+            href="#source"
+            data-github-link="repository"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
         </div>
       </div>
     </footer>

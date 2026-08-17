@@ -13,51 +13,55 @@ async function readSite() {
   return { html, css };
 }
 
-test("product page exposes the approved semantic structure", async () => {
+test("product page exposes the launch narrative and semantic structure", async () => {
   const { html } = await readSite();
 
-  assert.match(html, /<title>Dhamma Echo — A quiet desktop library<\/title>/);
+  assert.match(html, /<title>Dhamma Echo — Dhamma, without the noise\.<\/title>/);
   assert.match(html, /<main id="main-content">/);
-  assert.match(html, /<h1[^>]*>[^<]*Dhamma talks[^<]*<\/h1>/i);
+  assert.match(html, /<h1[^>]*>\s*Dhamma, without the noise\.\s*<\/h1>/i);
   assert.match(html, /<nav[^>]+aria-label="Primary"/);
   assert.match(html, /<footer/);
   assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
 });
 
-test("product page integrates the explore screenshot without duplication", async () => {
+test("product page treats the real application as the primary visual", async () => {
   const { html } = await readSite();
-  const screenshot = await stat(screenshotPath);
+  const screenshot = await stat(new URL("../docs/images/home.png", import.meta.url));
 
-  assert.match(html, /src="images\/explore\.png"/);
+  assert.match(html, /src="images\/home\.png"/);
   assert.match(html, /width="2784"\s+height="1866"/);
-  assert.match(html, /alt="Dhamma Echo explore view with an active audio player"/);
+  assert.match(html, /alt="Dhamma Echo home view with listening activity and featured teachings"/);
   assert.equal(screenshot.isFile(), true);
   assert.ok(screenshot.size > 100_000);
+
+  for (const name of ["home", "explore", "collections", "teachers", "library", "settings"]) {
+    assert.match(html, new RegExp(`src="images/${name}\\.png"`));
+  }
 });
 
-test("product page communicates the four approved product themes", async () => {
+test("product page proves audio, video, catalogue depth, and local privacy", async () => {
   const { html } = await readSite();
 
-  for (const phrase of [
-    "Discover the catalogue",
-    "Focused playback",
-    "Your library stays local",
-    "Private by default"
-  ]) {
-    assert.match(html, new RegExp(phrase, "i"));
+  for (const phrase of ["30,563", "14,474", "257", "429"]) {
+    assert.match(html, new RegExp(phrase));
   }
 
-  assert.match(html, /30,563/);
-  assert.match(html, /257/);
-  assert.match(html, /collections/i);
+  assert.match(html, /audio talks/i);
+  assert.match(html, /video records/i);
+  assert.match(html, /personal listening state stays on your device/i);
+  assert.match(html, /no accounts, analytics, ads, or telemetry/i);
   assert.match(html, /Tauri 2/);
-  assert.match(html, /SQLite/);
-  assert.match(html, /strict TypeScript/);
+  assert.match(html, /read-only SQLite/i);
+  assert.match(html, /ten purpose-built desktop commands/i);
 });
 
-test("product page includes safe GitHub link hooks and local runtime assets", async () => {
+test("product page exposes install, source attribution, privacy, and safe GitHub hooks", async () => {
   const { html } = await readSite();
 
+  assert.match(html, /brew install --cask AungMyoKyaw\/homebrew-tap\/dhamma-echo/);
+  assert.match(html, /https:\/\/www\.dhammadownload\.com\//);
+  assert.match(html, /catalog(?:s|ue)[^<]*Dhamma Download/i);
+  assert.match(html, /href="privacy\/"/);
   assert.match(html, /data-github-link="repository"/);
   assert.match(html, /data-github-link="releases"/);
   assert.match(html, /href="assets\/site\.css"/);
@@ -65,13 +69,17 @@ test("product page includes safe GitHub link hooks and local runtime assets", as
   assert.doesNotMatch(html, /https?:\/\/[^"']+\.(?:js|css|woff2?)/i);
 });
 
-test("product styles preserve keyboard focus and reduced motion", async () => {
+test("product styles preserve accessibility and avoid template design tells", async () => {
   const { css } = await readSite();
 
   assert.match(css, /:focus-visible/);
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(css, /min-height:\s*44px/);
   assert.match(css, /overflow-x:\s*hidden/);
+  assert.match(css, /\.echo-rings/);
+  assert.doesNotMatch(css, /background-clip:\s*text/);
+  assert.doesNotMatch(css, /repeating-linear-gradient/);
+  assert.doesNotMatch(css, /\.section-index/);
 });
 
 test("app Myanmar text preserves script clusters while wrapping", async () => {
@@ -287,9 +295,11 @@ test("privacy policy publishes the required user-data disclosures", async () => 
 
   assert.match(privacy, /<title>Privacy Policy — Dhamma Echo<\/title>/);
   assert.equal((privacy.match(/<h1\b/g) ?? []).length, 1);
-  assert.match(privacy, /Effective date:\s*August 9, 2026/i);
+  assert.match(privacy, /Effective date:\s*August 18, 2026/i);
   assert.match(privacy, /builtbyamk@duck\.com/);
   assert.match(privacy, /stored locally on your device/i);
+  assert.match(privacy, /Media streaming and third parties/i);
+  assert.match(privacy, /audio or video/i);
   assert.match(privacy, /dhammadownload\.com/);
   assert.match(privacy, /www\.dhammadownload\.com/);
   assert.match(privacy, /IP address/i);

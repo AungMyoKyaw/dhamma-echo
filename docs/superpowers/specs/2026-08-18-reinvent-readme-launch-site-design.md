@@ -52,9 +52,9 @@ Use concentric "echo" rings and the real application screenshots as the core ima
 2. **Hero** — "Dhamma, without the noise." value proposition, concise explanation, download/source actions, and a large Home screenshot layered with a restrained echo motif.
 3. **Catalogue proof** — a horizontal facts strip: 30,563 audio talks, 14,474 video records, 257 teachers, 429 audio collections.
 4. **Product narrative** — three alternating screenshot-led sections showing discovery, teacher/collection browsing, and persistent listening/library state. Avoid identical feature cards.
-5. **Privacy / architecture proof** — explain local personal state, read-only SQLite catalogue, six Tauri commands, and no accounts/analytics/ads/telemetry.
+5. **Privacy / architecture proof** — explain local personal state, read-only SQLite catalogue, ten Tauri commands, and no accounts/analytics/ads/telemetry.
 6. **Open-source / install** — Homebrew command as the fastest macOS path, release/source links, MIT license.
-7. **Footer** — repository, privacy, data-license/source attribution.
+7. **Footer** — repository, privacy, and source attribution.
 
 ## README information architecture
 
