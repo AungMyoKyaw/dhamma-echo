@@ -26,7 +26,7 @@ interface CatalogueClient {
   searchAudio: CatalogueApi["searchAudio"];
   getAudioTrack: CatalogueApi["getAudioTrack"];
   downloadAudio: CatalogueApi["downloadAudio"];
-  listAudioCategories: CatalogueApi["listAudioCategories"];
+  listContentCategories: CatalogueApi["listContentCategories"];
   searchCollections: CatalogueApi["searchCollections"];
   getCollection: CatalogueApi["getCollection"];
   getTeacher: CatalogueApi["getTeacher"];
@@ -176,7 +176,7 @@ export class DhammaApp {
     try {
       this.dispatch({
         type: "categories-loaded",
-        categories: await this.dependencies.api.listAudioCategories()
+        categories: await this.dependencies.api.listContentCategories()
       });
     } catch (error) {
       this.dispatch({ type: "categories-failed", message: messageFrom(error) });

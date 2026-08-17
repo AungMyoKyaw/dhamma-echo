@@ -1,5 +1,4 @@
 import type {
-  AudioCategory,
   AudioSearchPage,
   AudioSearchRequest,
   AudioTrack,
@@ -7,6 +6,7 @@ import type {
   CollectionDetail,
   CollectionSearchPage,
   CollectionSearchRequest,
+  ContentCategory,
   InvokeFn,
   TeacherDetail,
   TeacherSummary
@@ -51,7 +51,7 @@ export class CatalogueApi {
     return this.call("list_featured_teachers", { limit });
   }
 
-  listAudioCategories(): Promise<AudioCategory[]> {
+  listContentCategories(): Promise<ContentCategory[]> {
     return this.call("list_audio_categories");
   }
 

@@ -54,8 +54,8 @@ function createApi(overrides = {}) {
     async listFeaturedTeachers() {
       return teachers;
     },
-    async listAudioCategories() {
-      return [{ id: 7, name: "Audio in English", language: "english", audioCount: 465 }];
+    async listContentCategories() {
+      return [{ id: 7, name: "Audio in English", language: "english", count: 465 }];
     },
     async searchCollections(request) {
       return { items: [], total: 0, limit: request.limit, offset: request.offset };
@@ -878,7 +878,7 @@ test("DhammaApp reports category, collection, and detail failures", async () => 
   const failure = new Error("discovery offline");
   const app = new DhammaApp({
     api: createApi({
-      async listAudioCategories() {
+      async listContentCategories() {
         throw failure;
       },
       async searchCollections() {

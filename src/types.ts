@@ -24,11 +24,11 @@ export interface TeacherSummary {
   audioCount: number;
 }
 
-export interface AudioCategory {
+export interface ContentCategory {
   id: number;
   name: string;
   language: string;
-  audioCount: number;
+  count: number;
 }
 
 export interface CollectionSearchRequest {
@@ -192,7 +192,7 @@ export interface AppState {
   route: Route;
   summary: Loadable<CatalogueSummary>;
   teachers: Loadable<TeacherSummary[]>;
-  categories: Loadable<AudioCategory[]>;
+  categories: Loadable<ContentCategory[]>;
   teacherQuery: string;
   teacherResults: TeacherSummary[];
   search: SearchState;

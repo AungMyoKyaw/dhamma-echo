@@ -117,7 +117,7 @@ test("CatalogueApi exposes audio category, collection, and teacher detail comman
     return command === "list_audio_categories" ? [] : {};
   });
 
-  await api.listAudioCategories();
+  await api.listContentCategories();
   await api.searchCollections({ query: "disc", teacherId: 3, limit: 24, offset: 0 });
   await api.getCollection(10);
   await api.getTeacher(3);

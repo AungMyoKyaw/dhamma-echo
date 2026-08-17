@@ -48,7 +48,7 @@ test("mock invoke applies defaults and every optional filter branch", async () =
   const allTeachers = await invoke("search_teachers");
   assert.equal(allTeachers.length, 12);
   const all = await invoke("search_audio");
-  assert.equal(all.items.length, 7);
+  assert.equal(all.items.length, 8);
   const byTeacherName = await invoke("search_audio", {
     request: {
       query: "jotika",
@@ -85,6 +85,11 @@ test("mock invoke supports categories, collections, and detail records", async (
   const invoke = createMockInvoke();
   const categories = await invoke("list_audio_categories");
   assert.equal(categories.length > 0, true);
+  const videoCategories = categories.filter((item) => item.name.startsWith("Video"));
+  assert.deepEqual(
+    videoCategories.map((item) => item.name),
+    ["Video in English", "Video in Myanmar"]
+  );
   const page = await invoke("search_collections", {
     request: { query: "disc", teacherId: null, limit: 24, offset: 0 }
   });
@@ -115,6 +120,19 @@ test("mock invoke supports categories, collections, and detail records", async (
     }
   });
   assert.equal(byCategory.items.length, 2);
+  const videoPage = await invoke("search_audio", {
+    request: {
+      query: "",
+      language: null,
+      format: null,
+      teacherId: null,
+      categoryId: 8,
+      collectionId: null,
+      limit: 50,
+      offset: 0
+    }
+  });
+  assert.equal(videoPage.items.every((track) => track.mediaType === "video"), true);
   await assert.rejects(invoke("get_collection", { id: 999 }), /Unsupported command/);
   await assert.rejects(invoke("get_teacher", { id: 999 }), /Unsupported command/);
 });

@@ -34,8 +34,8 @@ export const tracks = [
 ];
 
 export const categories = [
-  { id: 1, name: "Audio in Myanmar", language: "myanmar", audioCount: 30098 },
-  { id: 7, name: "Audio in English", language: "english", audioCount: 465 }
+  { id: 1, name: "Audio in Myanmar", language: "myanmar", count: 30098 },
+  { id: 7, name: "Audio in English", language: "english", count: 465 }
 ];
 
 export const collections = [

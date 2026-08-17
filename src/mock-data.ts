@@ -1,5 +1,4 @@
 import type {
-  AudioCategory,
   AudioSearchPage,
   AudioSearchRequest,
   AudioTrack,
@@ -7,6 +6,7 @@ import type {
   CollectionSearchPage,
   CollectionSearchRequest,
   CollectionSummary,
+  ContentCategory,
   InvokeFn,
   TeacherSummary
 } from "./types.js";
@@ -114,6 +114,19 @@ const tracks: AudioTrack[] = [
     mediaType: "audio"
   },
   {
+    id: 7,
+    title: "Guided walkthrough",
+    format: "mp4",
+    language: "myanmar",
+    url: "https://www.dhammadownload.com/VideoLibrary/Myanmar/walkthrough.mp4",
+    dateRecorded: "2024-04-10",
+    location: null,
+    teacherId: 4,
+    teacherName: "Venerable Dr. K. Dhammasami",
+    playable: true,
+    mediaType: "video"
+  },
+  {
     id: 99,
     title: "Untitled talk",
     format: "mp3",
@@ -128,11 +141,13 @@ const tracks: AudioTrack[] = [
   }
 ];
 
-const categories: AudioCategory[] = [
-  { id: 1, name: "Audio in Myanmar", language: "myanmar", audioCount: 30098 },
-  { id: 4, name: "Abhidhamma in Myanmar", language: "myanmar", audioCount: 99 },
-  { id: 5, name: "Abhidhamma in English", language: "english", audioCount: 136 },
-  { id: 7, name: "Audio in English", language: "english", audioCount: 465 }
+const categories: ContentCategory[] = [
+  { id: 1, name: "Audio in Myanmar", language: "myanmar", count: 29938 },
+  { id: 4, name: "Abhidhamma in Myanmar", language: "myanmar", count: 956 },
+  { id: 5, name: "Abhidhamma in English", language: "english", count: 219 },
+  { id: 6, name: "Video in English", language: "english", count: 233 },
+  { id: 7, name: "Audio in English", language: "english", count: 327 },
+  { id: 8, name: "Video in Myanmar", language: "myanmar", count: 13107 }
 ];
 
 const collections: CollectionSummary[] = [
@@ -159,7 +174,16 @@ const categoryByTrack = new Map<number, number>([
   [4, 1],
   [5, 7],
   [6, 1],
+  [7, 8],
   [99, 4]
+]);
+const categoryTypeById = new Map<number, "audio" | "video" | "abhidhamma">([
+  [1, "audio"],
+  [4, "abhidhamma"],
+  [5, "abhidhamma"],
+  [6, "video"],
+  [7, "audio"],
+  [8, "video"]
 ]);
 const collectionByTrack = new Map<number, number>([
   [1, 10],
@@ -173,6 +197,12 @@ const summary: CatalogueSummary = {
   myanmarAudio: 30098,
   englishAudio: 465
 };
+
+function matchesCategory(track: AudioTrack, categoryId: number): boolean {
+  const categoryType = categoryTypeById.get(categoryId);
+  if (categoryByTrack.get(track.id) !== categoryId || categoryType === undefined) return false;
+  return categoryType === "abhidhamma" || categoryType === track.mediaType;
+}
 
 function readNumber(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) ? value : fallback;
@@ -258,7 +288,7 @@ export function createMockInvoke(): InvokeFn {
           (language === null || track.language === language) &&
           (format === null || track.format === format) &&
           (teacherId === null || track.teacherId === teacherId) &&
-          (categoryId === null || categoryByTrack.get(track.id) === categoryId) &&
+          (categoryId === null || matchesCategory(track, categoryId)) &&
           (collectionId === null || collectionByTrack.get(track.id) === collectionId)
       );
       const page: AudioSearchPage = {
