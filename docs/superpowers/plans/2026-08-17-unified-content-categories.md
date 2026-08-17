@@ -158,7 +158,10 @@ const videoPage = await invoke("search_audio", {
     offset: 0
   }
 });
-assert.equal(videoPage.items.every((track) => track.mediaType === "video"), true);
+assert.equal(
+  videoPage.items.every((track) => track.mediaType === "video"),
+  true
+);
 ```
 
 Update the API test to call `api.listContentCategories()` and retain the expected command `{ command: "list_audio_categories", args: undefined }`.

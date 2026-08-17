@@ -132,7 +132,10 @@ test("mock invoke supports categories, collections, and detail records", async (
       offset: 0
     }
   });
-  assert.equal(videoPage.items.every((track) => track.mediaType === "video"), true);
+  assert.equal(
+    videoPage.items.every((track) => track.mediaType === "video"),
+    true
+  );
   await assert.rejects(invoke("get_collection", { id: 999 }), /Unsupported command/);
   await assert.rejects(invoke("get_teacher", { id: 999 }), /Unsupported command/);
 });
