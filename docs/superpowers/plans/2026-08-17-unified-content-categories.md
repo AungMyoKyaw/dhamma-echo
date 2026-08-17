@@ -303,7 +303,7 @@ Expected: formatting is clean and Clippy reports no warnings.
 
 - [ ] **Step 3: Exercise the rendered Explore flow**
 
-With `bun run dev:web` serving `http://127.0.0.1:5173`, verify:
+With `bun run dev:web` serving `http://127.0.0.1:51729`, verify:
 
 1. The page loads as the Explore route with meaningful catalogue content.
 2. The category strip says `Content categories` and includes `Video in English` and `Video in Myanmar`.

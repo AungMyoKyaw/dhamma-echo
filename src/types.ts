@@ -151,6 +151,7 @@ interface CollectionBrowseState {
   teacherId: number | null;
   limit: number;
   offset: number;
+  nextLoadSize: number;
   loadingMore: boolean;
   loadMoreMessage: string;
   exhausted: boolean;
@@ -166,6 +167,7 @@ interface CatalogueState {
   status: "idle" | "loading" | "ready" | "error";
   page: AudioSearchPage;
   message: string;
+  nextLoadSize: number;
   loadingMore: boolean;
   loadMoreMessage: string;
   exhausted: boolean;

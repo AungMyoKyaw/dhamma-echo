@@ -17,6 +17,7 @@
   let max = $derived(appState.player.duration > 0 ? appState.player.duration : 1);
   let videoEl: HTMLVideoElement | undefined = $state();
   let fullscreen = $state(false);
+  let videoReady = $state(false);
 
   let contentLeft = $derived(
     appState.ui.sidebarCollapsed
@@ -42,9 +43,10 @@
 
   $effect(() => {
     if (videoEl === undefined) return;
-    app.registerVideoElement(videoEl);
+    const element = videoEl;
+    app.registerVideoElement(element);
     const onFullscreenChange = (): void => {
-      fullscreen = globalThis.document.fullscreenElement === videoEl;
+      fullscreen = globalThis.document.fullscreenElement === element;
     };
     const onResize = (): void => {
       void syncNativeFullscreen();
@@ -57,14 +59,28 @@
       event.stopPropagation();
       void exitFullscreen();
     };
+    const onVideoLoadStart = (): void => {
+      videoReady = false;
+    };
+    const onVideoReady = (): void => {
+      videoReady = true;
+    };
     globalThis.document.addEventListener("fullscreenchange", onFullscreenChange);
     globalThis.addEventListener("resize", onResize);
     globalThis.document.addEventListener("keydown", onKeydown, true);
+    element.addEventListener("loadstart", onVideoLoadStart);
+    element.addEventListener("loadeddata", onVideoReady);
+    element.addEventListener("emptied", onVideoLoadStart);
+    element.addEventListener("error", onVideoLoadStart);
     void syncNativeFullscreen();
     return () => {
       globalThis.document.removeEventListener("fullscreenchange", onFullscreenChange);
       globalThis.removeEventListener("resize", onResize);
       globalThis.document.removeEventListener("keydown", onKeydown, true);
+      element.removeEventListener("loadstart", onVideoLoadStart);
+      element.removeEventListener("loadeddata", onVideoReady);
+      element.removeEventListener("emptied", onVideoLoadStart);
+      element.removeEventListener("error", onVideoLoadStart);
       app.registerVideoElement(null);
     };
   });
@@ -72,6 +88,10 @@
   $effect(() => {
     if (videoVisible || !fullscreen) return;
     void exitFullscreen();
+  });
+
+  $effect(() => {
+    if (!videoVisible) videoReady = false;
   });
 
   function numberFromControl(event: Event): number {
@@ -156,14 +176,20 @@
             <span class="block size-4 [&_svg]:size-full"><Icon name="exit-fullscreen" /></span>
             <span>Exit fullscreen</span>
           </button>{/if}
-        {#if videoVisible && loading}<div
-            class="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/25 text-xs font-bold text-white"
+        {#if videoVisible && !videoReady && !appState.player.error}<div
+            class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/35 px-6 text-center"
             role="status"
+            aria-label="Preparing video"
           >
-            <span class="inline-flex items-center gap-2 rounded-full bg-black/60 px-3 py-2"
-              ><span class="size-2 animate-pulse rounded-full bg-white motion-reduce:animate-none"
-              ></span>Connecting…</span
+            <span
+              class="flex size-16 items-center justify-center rounded-full border border-app-primary/45 bg-app-soft/65 shadow-[0_0_0_10px_color-mix(in_srgb,var(--color-app-primary)_12%,transparent)]"
             >
+              <span
+                class="size-3 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
+              ></span>
+            </span>
+            <span class="mt-5 text-xs font-bold text-white">Preparing the video</span>
+            <span class="mt-1 text-[0.7rem] text-white/65">A moment of quiet before playback</span>
           </div>{/if}
       </div>
 

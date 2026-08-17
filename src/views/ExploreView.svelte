@@ -161,15 +161,11 @@
   {#if state.catalogue.status === "ready" && state.catalogue.page.total > 0}<ProgressiveControls
       shown={state.catalogue.page.items.length}
       total={state.catalogue.page.total}
-      limit={state.catalogue.page.limit}
+      nextLimit={state.catalogue.nextLoadSize}
       loading={state.catalogue.loadingMore}
       message={state.catalogue.loadMoreMessage}
       exhausted={state.catalogue.exhausted}
       noun="talks"
       onloadmore={() => app.loadMoreSearchResults()}
-      onlimit={async (limit: 25 | 50 | 100) => {
-        app.setBrowseLimit(limit);
-        await app.search();
-      }}
     />{:else}<p class="text-sm text-app-muted">Search the complete talk catalogue</p>{/if}
 </section>

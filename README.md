@@ -145,7 +145,7 @@ Browser preview with deterministic mock catalogue data:
 bun run dev:web
 ```
 
-Then open `http://127.0.0.1:5173`.
+Then open `http://127.0.0.1:51729`.
 
 ## Commands
 

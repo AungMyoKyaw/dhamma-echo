@@ -97,15 +97,11 @@
   {#if state.collections.status === "ready"}<ProgressiveControls
       shown={state.collections.page.items.length}
       total={state.collections.page.total}
-      limit={state.collections.page.limit}
+      nextLimit={state.collections.nextLoadSize}
       loading={state.collections.loadingMore}
       message={state.collections.loadMoreMessage}
       exhausted={state.collections.exhausted}
       noun="collections"
       onloadmore={() => app.loadMoreCollections()}
-      onlimit={async (limit: 25 | 50 | 100) => {
-        app.setBrowseLimit(limit);
-        await app.searchCollections();
-      }}
     />{/if}
 </section>

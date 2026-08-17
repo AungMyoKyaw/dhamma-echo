@@ -365,7 +365,7 @@ Run:
 bun run dev:web
 ```
 
-Use the exact host `http://127.0.0.1:5173`.
+Use the exact host `http://127.0.0.1:51729`.
 
 - [ ] **Step 2: Verify the target flow in a browser-capable test path.**
 

@@ -106,6 +106,46 @@ test("shared pill controls use Tailwind optical vertical centering", async () =>
   assert.match(teacherCard, /items-center[^"']*pt-0\.5/);
 });
 
+test("progressive loading controls use explicit batches without a row chooser", async () => {
+  const [controls, explore, collections, teacherDetail] = await Promise.all([
+    readFile(new URL("../src/components/ProgressiveControls.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/CollectionsView.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/views/TeacherDetailView.svelte", import.meta.url), "utf8")
+  ]);
+
+  assert.doesNotMatch(controls, /Rows|onlimit|<select/);
+  assert.match(explore, /nextLimit=\{state\.catalogue\.nextLoadSize\}/);
+  assert.match(collections, /nextLimit=\{state\.collections\.nextLoadSize\}/);
+  assert.match(teacherDetail, /nextLimit=\{state\.teacherTalks\.nextLoadSize\}/);
+});
+
+test("video loading state exposes the quiet centered signal", async () => {
+  const videoPlayer = await readFile(
+    new URL("../src/components/VideoPlayer.svelte", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(videoPlayer, /aria-label="Preparing video"/);
+  assert.match(videoPlayer, /Preparing the video/);
+  assert.match(videoPlayer, /A moment of quiet before playback/);
+  assert.match(videoPlayer, /bg-app-primary/);
+  assert.match(videoPlayer, /motion-reduce:animate-none/);
+  assert.doesNotMatch(videoPlayer, /Connecting…/);
+});
+
+test("video loading signal remains until the first video data is ready", async () => {
+  const videoPlayer = await readFile(
+    new URL("../src/components/VideoPlayer.svelte", import.meta.url),
+    "utf8"
+  );
+
+  assert.match(videoPlayer, /let videoReady = \$state\(false\);/);
+  assert.match(videoPlayer, /element\.addEventListener\("loadeddata", onVideoReady\)/);
+  assert.match(videoPlayer, /element\.addEventListener\("loadstart", onVideoLoadStart\)/);
+  assert.match(videoPlayer, /\{#if videoVisible && !videoReady && !appState\.player\.error\}/);
+});
+
 test("teacher avatars keep their circular dimensions beside long names", async () => {
   const teacherCard = await readFile(
     new URL("../src/components/TeacherCard.svelte", import.meta.url),

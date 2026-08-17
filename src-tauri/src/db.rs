@@ -125,7 +125,7 @@ impl Database {
         &self,
         request: &CollectionSearchRequest,
     ) -> Result<CollectionSearchPage, AppError> {
-        let limit = validate_limit(request.limit)?;
+        let limit = validate_collection_limit(request.limit)?;
         let offset = request.offset.max(0);
         if let Some(teacher_id) = request.teacher_id {
             validate_id(teacher_id)?;
@@ -299,7 +299,7 @@ impl Database {
     }
 
     pub fn search_audio(&self, request: &AudioSearchRequest) -> Result<AudioSearchPage, AppError> {
-        let limit = validate_limit(request.limit)?;
+        let limit = validate_audio_limit(request.limit)?;
         let offset = request.offset.max(0);
         validate_filter(
             "language",
@@ -491,6 +491,26 @@ fn validate_limit(limit: i64) -> Result<i64, AppError> {
     } else {
         Err(AppError::InvalidInput(
             "limit must be between 1 and 100".into(),
+        ))
+    }
+}
+
+fn validate_audio_limit(limit: i64) -> Result<i64, AppError> {
+    if (1..=400).contains(&limit) {
+        Ok(limit)
+    } else {
+        Err(AppError::InvalidInput(
+            "audio limit must be between 1 and 400".into(),
+        ))
+    }
+}
+
+fn validate_collection_limit(limit: i64) -> Result<i64, AppError> {
+    if (1..=400).contains(&limit) {
+        Ok(limit)
+    } else {
+        Err(AppError::InvalidInput(
+            "collection limit must be between 1 and 400".into(),
         ))
     }
 }
@@ -1181,6 +1201,56 @@ mod tests {
                 category_id: None,
                 collection_id: None,
                 limit: 50,
+                offset: 0,
+            }),
+            Err(AppError::InvalidInput(_))
+        ));
+        for limit in [200, 400] {
+            assert!(
+                database
+                    .search_collections(&CollectionSearchRequest {
+                        query: String::new(),
+                        teacher_id: None,
+                        limit,
+                        offset: 0,
+                    })
+                    .is_ok()
+            );
+        }
+        for limit in [200, 400] {
+            assert!(
+                database
+                    .search_audio(&AudioSearchRequest {
+                        query: String::new(),
+                        language: None,
+                        format: None,
+                        teacher_id: None,
+                        category_id: None,
+                        collection_id: None,
+                        limit,
+                        offset: 0,
+                    })
+                    .is_ok()
+            );
+        }
+        assert!(matches!(
+            database.search_collections(&CollectionSearchRequest {
+                query: String::new(),
+                teacher_id: None,
+                limit: 401,
+                offset: 0,
+            }),
+            Err(AppError::InvalidInput(_))
+        ));
+        assert!(matches!(
+            database.search_audio(&AudioSearchRequest {
+                query: String::new(),
+                language: None,
+                format: None,
+                teacher_id: None,
+                category_id: None,
+                collection_id: None,
+                limit: 401,
                 offset: 0,
             }),
             Err(AppError::InvalidInput(_))

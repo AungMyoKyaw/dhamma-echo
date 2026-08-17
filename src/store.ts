@@ -97,6 +97,8 @@ const emptySummary: CatalogueSummary = {
   englishAudio: 0
 };
 const emptyCollectionPage = { items: [], total: 0, limit: 24, offset: 0 };
+const initialProgressiveLoadSize = 100;
+const maximumProgressiveLoadSize = 400;
 
 export function createInitialState(): AppState {
   return {
@@ -120,6 +122,7 @@ export function createInitialState(): AppState {
       status: "idle",
       page: emptyPage,
       message: "",
+      nextLoadSize: initialProgressiveLoadSize,
       loadingMore: false,
       loadMoreMessage: "",
       exhausted: false
@@ -132,6 +135,7 @@ export function createInitialState(): AppState {
       teacherId: null,
       limit: 24,
       offset: 0,
+      nextLoadSize: initialProgressiveLoadSize,
       loadingMore: false,
       loadMoreMessage: "",
       exhausted: false
@@ -143,6 +147,7 @@ export function createInitialState(): AppState {
       status: "idle",
       page: emptyPage,
       message: "",
+      nextLoadSize: initialProgressiveLoadSize,
       loadingMore: false,
       loadMoreMessage: "",
       exhausted: false
@@ -255,6 +260,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
               status: "loading",
               page: emptyPage,
               message: "",
+              nextLoadSize: initialProgressiveLoadSize,
               loadingMore: false,
               loadMoreMessage: "",
               exhausted: false
@@ -268,6 +274,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
             status: "ready",
             page: action.page,
             message: "",
+            nextLoadSize: initialProgressiveLoadSize,
             loadingMore: false,
             loadMoreMessage: "",
             exhausted: action.page.offset + action.page.items.length >= action.page.total
@@ -283,6 +290,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
             status: "ready",
             page: { ...action.page, items, offset: 0 },
             message: "",
+            nextLoadSize: Math.min(state.catalogue.nextLoadSize * 2, maximumProgressiveLoadSize),
             loadingMore: false,
             loadMoreMessage: "",
             exhausted: appended.length === 0 || items.length >= action.page.total
@@ -308,14 +316,24 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         collectionSearch: { ...state.collectionSearch, query, offset: 0 },
-        collections: { ...state.collections, query, offset: 0 }
+        collections: {
+          ...state.collections,
+          query,
+          offset: 0,
+          nextLoadSize: initialProgressiveLoadSize
+        }
       };
     }
     case "set-collection-teacher":
       return {
         ...state,
         collectionSearch: { ...state.collectionSearch, teacherId: action.teacherId, offset: 0 },
-        collections: { ...state.collections, teacherId: action.teacherId, offset: 0 }
+        collections: {
+          ...state.collections,
+          teacherId: action.teacherId,
+          offset: 0,
+          nextLoadSize: initialProgressiveLoadSize
+        }
       };
     case "collections-started":
       return action.mode === "append"
@@ -330,6 +348,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
               status: "loading",
               page: emptyCollectionPage,
               message: "",
+              nextLoadSize: initialProgressiveLoadSize,
               loadingMore: false,
               loadMoreMessage: "",
               exhausted: false
@@ -344,6 +363,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
             status: "ready",
             page: action.page,
             message: "",
+            nextLoadSize: initialProgressiveLoadSize,
             loadingMore: false,
             loadMoreMessage: "",
             exhausted: action.page.offset + action.page.items.length >= action.page.total
@@ -360,6 +380,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
             status: "ready",
             page: { ...action.page, items, offset: 0 },
             message: "",
+            nextLoadSize: Math.min(state.collections.nextLoadSize * 2, maximumProgressiveLoadSize),
             loadingMore: false,
             loadMoreMessage: "",
             exhausted: appended.length === 0 || items.length >= action.page.total
@@ -414,6 +435,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
           status: "idle",
           page: emptyPage,
           message: "",
+          nextLoadSize: initialProgressiveLoadSize,
           loadingMore: false,
           loadMoreMessage: "",
           exhausted: false
@@ -440,6 +462,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
               status: "loading",
               page: emptyPage,
               message: "",
+              nextLoadSize: initialProgressiveLoadSize,
               loadingMore: false,
               loadMoreMessage: "",
               exhausted: false
@@ -461,6 +484,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
             status: "ready",
             page: action.page,
             message: "",
+            nextLoadSize: initialProgressiveLoadSize,
             loadingMore: false,
             loadMoreMessage: "",
             exhausted: action.page.offset + action.page.items.length >= action.page.total
@@ -476,6 +500,7 @@ export function reduce(state: AppState, action: AppAction): AppState {
             status: "ready",
             page: { ...action.page, items, offset: 0 },
             message: "",
+            nextLoadSize: Math.min(state.teacherTalks.nextLoadSize * 2, maximumProgressiveLoadSize),
             loadingMore: false,
             loadMoreMessage: "",
             exhausted: appended.length === 0 || items.length >= action.page.total

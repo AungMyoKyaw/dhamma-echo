@@ -208,6 +208,8 @@ export class DhammaApp {
     )
       return;
     const offset = collections.page.items.length;
+    const remaining = collections.page.total - offset;
+    const limit = Math.min(collections.nextLoadSize, remaining);
     this.dispatch({ type: "collections-started", mode: "append" });
     try {
       this.dispatch({
@@ -215,6 +217,7 @@ export class DhammaApp {
         mode: "append",
         page: await this.dependencies.api.searchCollections({
           ...this.state.collectionSearch,
+          limit,
           offset
         })
       });
@@ -289,6 +292,8 @@ export class DhammaApp {
       return;
 
     const offset = teacherTalks.page.items.length;
+    const remaining = teacherTalks.page.total - offset;
+    const limit = Math.min(teacherTalks.nextLoadSize, remaining);
     this.dispatch({ type: "teacher-talks-started", mode: "append" });
     await this.dependencies.api
       .searchAudio({
@@ -298,7 +303,7 @@ export class DhammaApp {
         teacherId,
         categoryId: null,
         collectionId: null,
-        limit: teacherTalks.page.limit,
+        limit,
         offset
       })
       .then((page) => this.dispatch({ type: "teacher-talks-loaded", mode: "append", page }))
@@ -420,6 +425,8 @@ export class DhammaApp {
     )
       return;
     const offset = catalogue.page.items.length;
+    const remaining = catalogue.page.total - offset;
+    const limit = Math.min(catalogue.nextLoadSize, remaining);
     this.dispatch({ type: "search-started", mode: "append" });
     const request: AudioSearchRequest = {
       query: this.state.search.query,
@@ -428,7 +435,7 @@ export class DhammaApp {
       teacherId: this.state.search.teacherId,
       categoryId: this.state.search.categoryId,
       collectionId: this.state.search.collectionId,
-      limit: this.state.search.limit,
+      limit,
       offset
     };
     try {

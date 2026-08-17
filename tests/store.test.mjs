@@ -133,6 +133,57 @@ test("catalogue and collection appends preserve and deduplicate visible results"
   assert.equal(state.collections.exhausted, true);
 });
 
+test("collection append sizes double and reset for new searches", () => {
+  const firstCollection = {
+    id: 10,
+    name: "One",
+    teacherId: 3,
+    teacherName: "Teacher",
+    audioCount: 1
+  };
+  let state = createInitialState();
+  assert.equal(state.collections.nextLoadSize, 100);
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "initial",
+    page: { items: [firstCollection], total: 801, limit: 50, offset: 0 }
+  });
+  assert.equal(state.collections.nextLoadSize, 100);
+  state = reduce(state, { type: "collections-started", mode: "append" });
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "append",
+    page: {
+      items: [{ ...firstCollection, id: 11, name: "Two" }],
+      total: 801,
+      limit: 100,
+      offset: 1
+    }
+  });
+  assert.equal(state.collections.nextLoadSize, 200);
+  state = reduce(state, { type: "collections-started", mode: "append" });
+  state = reduce(state, {
+    type: "collections-loaded",
+    mode: "append",
+    page: {
+      items: [{ ...firstCollection, id: 12, name: "Three" }],
+      total: 801,
+      limit: 200,
+      offset: 2
+    }
+  });
+  assert.equal(state.collections.nextLoadSize, 400);
+  state = reduce(state, { type: "collections-started", mode: "append" });
+  state = reduce(state, {
+    type: "collections-failed",
+    mode: "append",
+    message: "retry"
+  });
+  assert.equal(state.collections.nextLoadSize, 400);
+  state = reduce(state, { type: "set-collection-query", query: "disc" });
+  assert.equal(state.collections.nextLoadSize, 100);
+});
+
 test("append failures and no-progress responses preserve progressive lists", () => {
   let state = createInitialState();
   state = reduce(state, {

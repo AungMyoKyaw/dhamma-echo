@@ -838,6 +838,130 @@ test("DhammaApp appends and retries Explore and Collection batches", async () =>
   app.destroy();
 });
 
+test("DhammaApp doubles collection append limits and caps the final batch", async () => {
+  const collectionItems = Array.from({ length: 801 }, (_, index) => ({
+    id: index + 1,
+    name: `Collection ${index + 1}`,
+    teacherId: 3,
+    teacherName: "Teacher",
+    audioCount: 1
+  }));
+  const collectionRequests = [];
+  let failFirstAppend = true;
+  const app = new DhammaApp({
+    api: createApi({
+      async searchCollections(request) {
+        collectionRequests.push(request);
+        if (request.offset > 0 && failFirstAppend) {
+          failFirstAppend = false;
+          throw new Error("collection retry");
+        }
+        return {
+          items: collectionItems.slice(request.offset, request.offset + request.limit),
+          total: collectionItems.length,
+          limit: request.limit,
+          offset: request.offset
+        };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.searchCollections();
+  assert.equal(app.state.collections.page.items.length, 50);
+  await app.loadMoreCollections();
+  assert.deepEqual(collectionRequests.at(-1), {
+    query: "",
+    teacherId: null,
+    limit: 100,
+    offset: 50
+  });
+  assert.equal(app.state.collections.loadMoreMessage, "collection retry");
+  await app.loadMoreCollections();
+  assert.equal(collectionRequests.at(-1).limit, 100);
+  assert.equal(collectionRequests.at(-1).offset, 50);
+  assert.equal(app.state.collections.page.items.length, 150);
+  await app.loadMoreCollections();
+  assert.equal(collectionRequests.at(-1).limit, 200);
+  assert.equal(collectionRequests.at(-1).offset, 150);
+  assert.equal(app.state.collections.page.items.length, 350);
+  await app.loadMoreCollections();
+  assert.equal(collectionRequests.at(-1).limit, 400);
+  assert.equal(collectionRequests.at(-1).offset, 350);
+  assert.equal(app.state.collections.page.items.length, 750);
+  await app.loadMoreCollections();
+  assert.equal(collectionRequests.at(-1).limit, 51);
+  assert.equal(collectionRequests.at(-1).offset, 750);
+  assert.equal(app.state.collections.page.items.length, 801);
+  assert.equal(app.state.collections.exhausted, true);
+  await app.searchCollections();
+  assert.equal(app.state.collections.nextLoadSize, 100);
+  await app.loadMoreCollections();
+  assert.equal(collectionRequests.at(-1).limit, 100);
+  app.destroy();
+});
+
+test("DhammaApp doubles Explore and teacher-talk append limits", async () => {
+  const allTracks = Array.from({ length: 801 }, (_, index) => ({
+    ...tracks[0],
+    id: index + 1,
+    title: `Talk ${index + 1}`
+  }));
+  const requests = [];
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        requests.push(request);
+        return {
+          items: allTracks.slice(request.offset, request.offset + request.limit),
+          total: allTracks.length,
+          limit: request.limit,
+          offset: request.offset
+        };
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.loadMoreSearchResults();
+  assert.equal(requests.at(-1).limit, 100);
+  assert.equal(requests.at(-1).offset, 50);
+  await app.loadMoreSearchResults();
+  assert.equal(requests.at(-1).limit, 200);
+  assert.equal(requests.at(-1).offset, 150);
+  await app.loadMoreSearchResults();
+  assert.equal(requests.at(-1).limit, 400);
+  assert.equal(requests.at(-1).offset, 350);
+  await app.loadMoreSearchResults();
+  assert.equal(requests.at(-1).limit, 51);
+  assert.equal(requests.at(-1).offset, 750);
+  assert.equal(app.state.catalogue.page.items.length, 801);
+
+  await app.openTeacher(3, "teachers");
+  const teacherRequests = () => requests.filter((request) => request.teacherId === 3);
+  assert.equal(teacherRequests().at(-1).limit, 50);
+  await app.loadMoreTeacherTalks();
+  assert.equal(teacherRequests().at(-1).limit, 100);
+  assert.equal(teacherRequests().at(-1).offset, 50);
+  await app.loadMoreTeacherTalks();
+  assert.equal(teacherRequests().at(-1).limit, 200);
+  assert.equal(teacherRequests().at(-1).offset, 150);
+  await app.loadMoreTeacherTalks();
+  assert.equal(teacherRequests().at(-1).limit, 400);
+  assert.equal(teacherRequests().at(-1).offset, 350);
+  await app.loadMoreTeacherTalks();
+  assert.equal(teacherRequests().at(-1).limit, 51);
+  assert.equal(teacherRequests().at(-1).offset, 750);
+  assert.equal(app.state.teacherTalks.page.items.length, 801);
+  app.destroy();
+});
+
 test("DhammaApp guards completed catalogue append requests", async () => {
   let requests = 0;
   const app = new DhammaApp({

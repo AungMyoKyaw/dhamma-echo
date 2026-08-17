@@ -88,16 +88,12 @@
           <ProgressiveControls
             shown={state.teacherTalks.page.items.length}
             total={state.teacherTalks.page.total}
-            limit={state.teacherTalks.page.limit}
+            nextLimit={state.teacherTalks.nextLoadSize}
             loading={state.teacherTalks.loadingMore}
             message={state.teacherTalks.loadMoreMessage}
             exhausted={state.teacherTalks.exhausted}
             noun="talks"
             onloadmore={() => app.loadMoreTeacherTalks()}
-            onlimit={async (limit: 25 | 50 | 100) => {
-              app.setBrowseLimit(limit);
-              await app.loadTeacherTalks();
-            }}
           />
         </div>{/if}
     </div>{/if}
