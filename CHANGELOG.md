@@ -4,6 +4,18 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-08-17
+
+### Added
+
+- Added semantic audio and video categories with unified catalogue filtering.
+- Added MP4 and WMV format visibility plus reliable video playback, route lifecycle, and fullscreen behavior.
+- Added progressively growing load-more batches for large catalogue views.
+
+### Changed
+
+- Refined the listening-room interface, layout hierarchy, compact player spacing, loading/error states, and control treatments.
+
 ## [0.5.4] - 2026-08-13
 
 ### Added
