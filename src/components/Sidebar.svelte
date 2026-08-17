@@ -36,7 +36,7 @@
   aria-label="Primary"
 >
   <div class="flex items-center {collapsed ? 'justify-center' : 'gap-3 px-2'}">
-    <img src="./logo.svg" alt="" class="size-11 rounded-2xl" />
+    <img src="./logo.svg" alt="" class="size-11 rounded-control" />
     {#if !collapsed}<div>
         <p class="text-lg font-bold tracking-tight">Dhamma Echo</p>
         <p class="text-xs text-app-muted">Listen with intention</p>
@@ -46,7 +46,7 @@
     {#each routes as item (item.route)}<button
         class="group flex h-12 min-h-12 w-full items-center {collapsed
           ? 'justify-center'
-          : 'gap-3 px-4'} rounded-2xl py-0 text-left text-sm font-semibold leading-5 transition-[background-color,color,box-shadow] duration-150 {active(
+          : 'gap-3 px-4'} rounded-control py-0 text-left text-sm font-semibold leading-5 transition-[background-color,color,box-shadow] duration-150 {active(
           item.route
         )
           ? 'bg-app-primary text-white shadow-sm'
@@ -63,7 +63,7 @@
   </nav>
   <div class="mt-auto space-y-3">
     {#if !collapsed}<div
-        class="rounded-3xl border border-app-border/70 bg-app-soft p-4 max-[1040px]:p-3.5"
+        class="rounded-card border border-app-border/70 bg-app-soft p-4 max-[1040px]:p-3.5"
       >
         <div
           class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-secondary/15 text-app-secondary"
@@ -78,7 +78,7 @@
     <button
       class="flex h-10 w-full items-center {collapsed
         ? 'justify-center'
-        : 'gap-2 px-4'} rounded-2xl text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
+        : 'gap-2 px-4'} rounded-control text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
       type="button"
       onclick={toggle}
       aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}

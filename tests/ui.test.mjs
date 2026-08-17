@@ -55,7 +55,7 @@ test("route labels cover every route", () => {
     title: "Discover the Dhamma",
     detail: "Return to recent talks and trusted teachers."
   });
-  assert.equal(routeLabel("explore", 30563).eyebrow, "30,563 audio talks");
+  assert.equal(routeLabel("explore", 30563).eyebrow, "Explore");
   for (const route of [
     "collections",
     "collection-detail",

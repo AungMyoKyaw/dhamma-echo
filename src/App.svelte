@@ -72,7 +72,11 @@
   );
   let videoPlayerOpen = $derived(appState.player.current?.mediaType === "video");
   let bottomPadding = $derived(
-    videoPlayerOpen ? "pb-[38rem] max-[1040px]:pb-[34rem]" : showAudioFooter ? "pb-40" : "pb-8"
+    videoPlayerOpen
+      ? "pb-[38rem] max-[1040px]:pb-[34rem]"
+      : showAudioFooter
+        ? "pb-28 max-[1040px]:pb-40"
+        : "pb-8"
   );
   let marginLeft = $derived(
     appState.ui.sidebarCollapsed ? "ml-[72px]" : "ml-64 max-[1040px]:ml-56"

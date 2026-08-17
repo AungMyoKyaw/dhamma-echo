@@ -42,7 +42,7 @@
     />
   {:else}{@const detail = state.teacherDetail.data}
     <div class="rounded-card border border-app-border bg-app-surface p-6">
-      <p class="text-xs font-bold uppercase tracking-wider text-app-primary">
+      <p class="text-sm font-semibold text-app-muted">
         {detail.audioCount.toLocaleString("en-US")} talks
       </p>
       <h2
@@ -52,7 +52,7 @@
         {detail.name}
       </h2>
       <button
-        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         onclick={() => void explore()}>Explore this teacher</button
       >
@@ -77,7 +77,7 @@
         />{:else if state.teacherTalks.page.items.length === 0}<AsyncState
           kind="empty"
           title="No talks found"
-          detail="This teacher has no audio talks in the catalogue."
+          detail="This teacher has no talks in the catalogue."
         />{:else}<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
           {#each state.teacherTalks.page.items as track (track.id)}<TrackRow
               {track}

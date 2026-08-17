@@ -38,10 +38,7 @@ export function truncateTeacherCardName(value: string): string {
   return `${clusters.slice(0, 24).join("")}…${clusters.slice(-11).join("")}`;
 }
 
-export function routeLabel(
-  route: Route,
-  totalAudio: number
-): { eyebrow: string; title: string; detail: string } {
+export function routeLabel(route: Route): { eyebrow: string; title: string; detail: string } {
   const labels: Record<Route, { eyebrow: string; title: string; detail: string }> = {
     home: {
       eyebrow: "Home",
@@ -49,9 +46,9 @@ export function routeLabel(
       detail: "Return to recent talks and trusted teachers."
     },
     explore: {
-      eyebrow: `${totalAudio.toLocaleString("en-US")} audio talks`,
+      eyebrow: "Explore",
       title: "Explore the Dhamma library",
-      detail: "Search by teacher, language, format, or collection."
+      detail: "Search talks by teacher, language, format, or collection."
     },
     collections: {
       eyebrow: "Collections",

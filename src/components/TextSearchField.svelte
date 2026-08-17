@@ -35,7 +35,7 @@
   >
   <input
     bind:this={input}
-    class="h-12 w-full rounded-2xl border border-app-border bg-app-bg pl-12 {value
+    class="h-12 w-full rounded-control border border-app-border bg-app-bg pl-12 {value
       ? 'pr-12'
       : 'pr-4'} text-sm outline-none transition focus:border-app-primary"
     name="query"
@@ -44,7 +44,7 @@
     onkeydown={onKeydown}
   />
   {#if value}<button
-      class="absolute right-2 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
+      class="absolute right-1 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
       type="button"
       onclick={() => void clear()}
       aria-label="Clear {label.toLowerCase()}"

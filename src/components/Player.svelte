@@ -19,7 +19,7 @@
 {#if track !== null}
   <QueuePanel {state} {app} />
   <footer
-    class="fixed right-0 bottom-0 left-64 z-30 min-h-[84px] border-t border-app-border bg-app-surface/95 px-5 py-3 shadow-[0_-10px_34px_rgb(46_46_42_/_0.1)] backdrop-blur-xl max-[1040px]:left-56 max-[1040px]:min-h-[132px] max-[1040px]:px-4"
+    class="fixed right-0 bottom-0 left-64 z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)] max-[1040px]:left-56 max-[1040px]:min-h-[132px] max-[1040px]:px-4"
     aria-label="Audio player"
   >
     <div
@@ -112,7 +112,7 @@
           ><span class="sr-only">Playback speed</span><select
             value={String(state.settings.playbackRate)}
             onchange={(event) => app.setRate(numberFromControl(event))}
-            class="h-10 min-w-16 rounded-xl border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app max-[1040px]:min-w-[58px] max-[1040px]:pr-[1.3rem] max-[1040px]:pl-2"
+            class="h-10 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app max-[1040px]:min-w-[58px] max-[1040px]:pr-[1.3rem] max-[1040px]:pl-2"
             aria-label="Playback speed"
             >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
               >{/each}</select

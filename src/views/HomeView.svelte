@@ -34,9 +34,7 @@
   <section class="space-y-8">
     {#if state.homeRecent.status === "loading"}
       <section class="space-y-4">
-        <p class="text-xs font-bold uppercase tracking-wider text-app-primary">
-          Continue listening
-        </p>
+        <h2 class="text-xl font-bold">Continue listening</h2>
         <div class="h-20 animate-pulse rounded-card bg-app-soft motion-reduce:animate-none"></div>
       </section>
     {:else if state.homeRecent.status === "ready" && state.homeRecent.tracks.length > 0}
@@ -51,13 +49,11 @@
           state.player.current?.id === latest.id && state.player.status === "playing"}
         <section class="space-y-4">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-app-primary">
-              Continue listening
-            </p>
-            <h2 class="mt-1 text-2xl font-bold">Pick up where you left off</h2>
+            <h2 class="text-2xl font-bold">Continue listening</h2>
+            <p class="mt-1 text-sm text-app-muted">Pick up where you left off.</p>
           </div>
           <div
-            class="relative flex items-center gap-4 overflow-hidden rounded-card border border-app-border bg-app-surface p-5 shadow-[0_1px_2px_rgb(46_46_42_/_0.04)] before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-app-primary"
+            class="flex items-center gap-4 overflow-hidden rounded-card border border-app-primary/25 bg-app-primary/[0.04] p-5"
           >
             <button
               class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-white transition hover:opacity-90 {latest.playable
@@ -96,22 +92,37 @@
         </section>
       {/if}
     {/if}
-    {#if !hasRecent}<div class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4">
-        {#each stats as stat (stat.label)}<article
-            class="rounded-card border border-app-border bg-app-surface p-5"
-          >
-            <p class="text-xs font-bold uppercase tracking-wider text-app-muted">{stat.label}</p>
-            <p class="mt-2 text-3xl font-bold tracking-tight">
+    {#if !hasRecent}<section
+        class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 border-y border-app-border py-4"
+      >
+        {#each stats as stat (stat.label)}<article class="min-w-0 p-1">
+            <p class="text-xs font-semibold text-app-muted">{stat.label}</p>
+            <p class="mt-1 text-xl font-bold tracking-tight">
               {stat.value.toLocaleString("en-US")}
             </p>
-            <p class="mt-1 text-xs text-app-muted">{stat.detail}</p>
+            <p class="mt-0.5 text-xs text-app-muted">{stat.detail}</p>
           </article>{/each}
-      </div>{/if}
+      </section>
+      <section
+        class="flex flex-wrap items-center justify-between gap-4 rounded-card border border-app-border bg-app-surface p-5"
+      >
+        <div>
+          <h2 class="text-xl font-bold">Find something to listen to</h2>
+          <p class="mt-1 max-w-xl text-sm leading-6 text-app-muted">
+            Search the complete catalogue by title, teacher, language, or format.
+          </p>
+        </div>
+        <button
+          class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+          type="button"
+          onclick={() => app.dispatch({ type: "navigate", route: "explore" })}>Explore talks</button
+        >
+      </section>
+    {/if}
     <div>
       <div class="mb-4 flex items-end justify-between">
         <div>
-          <p class="text-xs font-bold uppercase tracking-wider text-app-primary">Browse by voice</p>
-          <h2 class="mt-1 text-2xl font-bold">Featured teachers</h2>
+          <h2 class="text-2xl font-bold">Featured teachers</h2>
         </div>
         <button
           class="text-sm font-bold text-app-primary"

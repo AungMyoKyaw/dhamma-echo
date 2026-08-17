@@ -14,8 +14,9 @@
   --color-app-tertiary: #6e5014;
   --color-error: #8d3531;
   --color-error-soft: #f9e8e6;
-  --shadow-player: 0 -16px 50px rgb(46 46 42 / 0.12);
-  --radius-card: 1.25rem;
+  --shadow-player: 0 -4px 12px rgb(46 46 42 / 0.08);
+  --radius-card: 0.875rem;
+  --radius-control: 0.625rem;
 }
 
 :root {
@@ -88,6 +89,12 @@ body {
 
 #app {
   height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
 }
 
 button:focus-visible,

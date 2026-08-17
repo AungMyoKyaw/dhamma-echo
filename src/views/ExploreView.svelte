@@ -40,7 +40,7 @@
 
 <section class="space-y-5">
   <form
-    class="flex flex-wrap items-center gap-3 rounded-card border border-app-border bg-app-surface p-4 shadow-[0_1px_2px_rgb(46_46_42_/_0.03)]"
+    class="flex flex-wrap items-center gap-3 rounded-card border border-app-border bg-app-surface p-4"
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
@@ -52,7 +52,7 @@
     />
     <label class="min-w-40 flex-[1_1_160px]"
       ><span class="sr-only">Language</span><select
-        class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm"
+        class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="language"
         value={state.search.language}
         ><option value="all">All languages</option><option value="myanmar">Myanmar</option><option
@@ -62,7 +62,7 @@
     >
     <label class="min-w-36 flex-[1_1_140px]"
       ><span class="sr-only">Format</span><select
-        class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm"
+        class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="format"
         value={state.search.format}
         ><option value="all">All formats</option><option value="mp3">MP3</option><option value="wma"
@@ -71,13 +71,11 @@
       ></label
     >
     <button
-      class="inline-flex h-12 min-h-10 items-center justify-center rounded-2xl bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+      class="inline-flex h-12 min-h-10 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
       type="submit">Search</button
     >
-    {#if state.categories.status === "ready"}<div
-        class="basis-full flex flex-wrap gap-2"
-        aria-label="Content categories"
-      >
+    {#if state.categories.status === "ready"}<fieldset class="basis-full flex flex-wrap gap-2">
+        <legend class="sr-only">Content categories</legend>
         <button
           class="inline-flex min-h-[40px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
             .search.categoryId === null
@@ -94,7 +92,7 @@
             onclick={() => setCategory(item.id)}
             >{item.name} · {item.count.toLocaleString("en-US")}</button
           >{/each}
-      </div>{/if}
+      </fieldset>{/if}
   </form>
   <div class="flex flex-wrap gap-2">
     {#if state.search.teacherId !== null}<div

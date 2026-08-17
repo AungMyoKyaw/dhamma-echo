@@ -32,8 +32,8 @@
 </script>
 
 <article
-  class="group grid grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-l-2 border-b-app-border border-l-transparent px-4 py-3 last:border-b-0 {current
-    ? 'border-l-app-primary bg-app-primary/5'
+  class="group grid grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-b-app-border px-4 py-3 last:border-b-0 {current
+    ? 'bg-app-primary/5 ring-1 ring-inset ring-app-primary/20'
     : ''} {track.playable ? 'transition hover:bg-app-soft/60' : ''}"
 >
   <button

@@ -30,7 +30,7 @@
     />
   {:else}{@const detail = state.collectionDetail.data}
     <div class="rounded-card border border-app-border bg-app-surface p-6">
-      <p class="text-xs font-bold uppercase tracking-wider text-app-primary">
+      <p class="text-sm font-semibold text-app-muted">
         {detail.audioCount.toLocaleString("en-US")} talks
       </p>
       <h2
@@ -53,8 +53,8 @@
     </div>
     {#if detail.tracks.length === 0}<AsyncState
         kind="empty"
-        title="No audio talks in this collection"
-        detail="This collection has no audio records to play."
+        title="No talks in this collection"
+        detail="This collection has no playable records to play."
       />{:else}<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
         {#each detail.tracks as track (track.id)}<TrackRow {track} {state} {app} />{/each}
       </div>{/if}{/if}

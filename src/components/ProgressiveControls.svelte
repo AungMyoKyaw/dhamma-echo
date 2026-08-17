@@ -37,6 +37,6 @@
       Showing {shown.toLocaleString("en-US")} of {total.toLocaleString("en-US")}
       {noun}
     </p>
-    {#if message}<p class="mt-1 text-xs text-red-700">{message}</p>{/if}
+    {#if message}<p class="mt-1 text-xs text-error" role="alert">{message}</p>{/if}
   </div>
 </div>

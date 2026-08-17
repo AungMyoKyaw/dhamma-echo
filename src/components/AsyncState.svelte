@@ -14,7 +14,7 @@
     aria-label="Loading talks"
   >
     {#each [0, 1, 2, 3, 4, 5] as row (row)}<div
-        class="h-16 animate-pulse rounded-2xl bg-app-soft motion-reduce:animate-none"
+        class="h-16 animate-pulse rounded-control bg-app-soft motion-reduce:animate-none"
       ></div>{/each}
   </div>
 {:else if kind === "empty"}
@@ -29,7 +29,7 @@
   <div
     class="flex min-h-64 flex-col items-center justify-center rounded-card border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-app-border))] bg-error-soft p-8 text-center"
   >
-    <h2 class="text-xl font-bold">The library needs another try</h2>
+    <h2 class="text-xl font-bold">This view needs another try</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
         class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"

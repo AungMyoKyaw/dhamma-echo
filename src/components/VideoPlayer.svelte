@@ -30,7 +30,7 @@
   let sectionClass = $derived(
     fullscreen
       ? "h-full w-full overflow-hidden bg-black"
-      : "mx-auto max-w-[1120px] overflow-hidden rounded-t-card border border-b-0 border-app-border bg-app-surface shadow-[0_-18px_48px_rgb(46_46_42_/_0.16)]"
+      : "mx-auto max-w-[1120px] overflow-hidden rounded-t-card border border-b-0 border-app-border bg-app-surface shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)]"
   );
   let layoutClass = $derived(
     fullscreen
@@ -197,9 +197,7 @@
         <div class="flex min-w-0 flex-col border-l border-app-border max-lg:border-t">
           <header class="flex items-start justify-between gap-4 p-5 pb-3">
             <div class="min-w-0">
-              <p class="text-[0.65rem] font-bold tracking-wider text-app-primary uppercase">
-                Now playing · video
-              </p>
+              <p class="text-xs font-semibold text-app-primary">Now playing · video</p>
               <h2
                 class="mt-1 truncate text-base font-bold {isMyanmarText(track.title)
                   ? 'myanmar-text'
@@ -313,7 +311,7 @@
                 <select
                   value={String(appState.settings.playbackRate)}
                   onchange={(event) => app.setRate(numberFromControl(event))}
-                  class="h-10 min-w-16 rounded-xl border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app"
+                  class="h-10 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app"
                   aria-label="Playback speed"
                 >
                   {#each rates as rate (rate)}

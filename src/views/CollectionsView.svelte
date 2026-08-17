@@ -36,7 +36,7 @@
 
 <section class="space-y-5">
   <form
-    class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4 shadow-[0_1px_2px_rgb(46_46_42_/_0.03)]"
+    class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4"
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
@@ -47,7 +47,7 @@
       onclear={clear}
     /><label class="min-w-[190px] flex-[0_1_240px]"
       ><span class="sr-only">Collection teacher</span><select
-        class="h-12 w-full rounded-2xl border border-app-border bg-app-bg px-4 text-sm"
+        class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="teacherId"
         value={state.collectionSearch.teacherId === null
           ? ""
@@ -58,7 +58,7 @@
           >{/each}</select
       ></label
     ><button
-      class="inline-flex h-12 min-h-10 items-center justify-center rounded-2xl bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+      class="inline-flex h-12 min-h-10 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
       type="submit">Search</button
     >
   </form>
