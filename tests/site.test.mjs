@@ -23,6 +23,19 @@ test("product page exposes the launch narrative and semantic structure", async (
   assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
 });
 
+test("product section names concrete entry points and keeps the proof close", async () => {
+  const { html, css } = await readSite();
+
+  assert.match(html, /One library\. Start wherever you are\./);
+  assert.match(
+    html,
+    /Search by title, browse by teacher or collection, or return to a recent talk\./
+  );
+  assert.doesNotMatch(html, /pick up a recent teaching/i);
+  assert.doesNotMatch(html, /follow a collection/i);
+  assert.match(css, /\.story-intro\s*\{[\s\S]*?margin-bottom:\s*clamp\(56px,\s*7vw,\s*88px\);/);
+});
+
 test("product page treats the real application as the primary visual", async () => {
   const { html } = await readSite();
   const screenshot = await stat(new URL("../docs/images/home.png", import.meta.url));
@@ -79,6 +92,25 @@ test("product styles preserve accessibility and avoid template design tells", as
   assert.doesNotMatch(css, /background-clip:\s*text/);
   assert.doesNotMatch(css, /repeating-linear-gradient/);
   assert.doesNotMatch(css, /\.section-index/);
+});
+
+test("narrow product layouts can shrink their grid children", async () => {
+  const { css } = await readSite();
+
+  assert.match(css, /\.download-layout\s*>\s*\*\s*\{[\s\S]*?min-width:\s*0;/);
+  assert.match(css, /@media \(max-width: 760px\)[\s\S]*?\.echo-rings\s*\{[\s\S]*?width:\s*100vw;/);
+  assert.match(
+    css,
+    /@media \(max-width: 760px\)[\s\S]*?\.screen-shell-small\s*\{[\s\S]*?margin-inline:\s*0;/
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 760px\)[\s\S]*?\.install-panel\s+pre\s*\{[\s\S]*?white-space:\s*pre-wrap;/
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 760px\)[\s\S]*?\.settings-inset\s*\{[\s\S]*?margin-inline:\s*0;/
+  );
 });
 
 test("app Myanmar text preserves script clusters while wrapping", async () => {
