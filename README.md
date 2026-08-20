@@ -23,6 +23,17 @@ Dhamma Echo is currently ad-hoc signed, so the Homebrew cask removes the quarant
 
 Download the latest `.dmg`, `.msi` / `-setup.exe`, `.deb`, `.rpm`, or `.AppImage` from [GitHub Releases](https://github.com/AungMyoKyaw/dhamma-echo/releases).
 
+The release workflow also publishes the Windows x64 setup executable to
+GitHub Pages without the GitHub Releases redirect. Its versioned direct URL
+follows this pattern:
+
+```text
+https://aungmyokyaw.github.io/dhamma-echo/downloads/Dhamma.Echo_<version>_x64-setup.exe
+```
+
+Use that URL when a package host must return the installer directly, such as
+Microsoft Partner Center.
+
 ## What Dhamma Echo is
 
 Dhamma Echo turns a large Dhamma catalogue into a desktop library instead of a feed. It helps you find a teaching, play a compatible source file, keep your place, and return later without creating an account.

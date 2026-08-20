@@ -4,10 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Publish each tagged Windows x64 installer to GitHub Pages as a direct, versioned package URL for Microsoft Partner Center.
+
 ### Fixed
 
 - Restored viewport-bounded catalogue scrolling, including wheel input over the docked video player and compact layouts.
-
 ## [0.5.5] - 2026-08-17
 
 ### Added
