@@ -1,6 +1,6 @@
 [package]
 name = "dhamma-echo"
-version = "0.5.5"
+version = "0.5.6"
 description = "A quiet desktop library for Dhamma talks"
 authors = ["Aung Myo Kyaw"]
 edition = "2024"

@@ -134,16 +134,14 @@ test("dynamic audio text uses unclipped Myanmar typography", async () => {
 });
 
 test("shared pill controls use Tailwind optical vertical centering", async () => {
-  const [explore, trackRow, teacherCard, videoPlayer] = await Promise.all([
+  const [explore, trackRow, videoPlayer] = await Promise.all([
     readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8"),
     readFile(new URL("../src/components/TrackRow.svelte", import.meta.url), "utf8"),
-    readFile(new URL("../src/components/TeacherCard.svelte", import.meta.url), "utf8"),
     readFile(new URL("../src/components/VideoPlayer.svelte", import.meta.url), "utf8")
   ]);
 
   assert.match(explore, /min-h-10[^"']*pt-0\.5/);
   assert.match(trackRow, /min-h-10[^"']*pt-0\.5/);
-  assert.match(teacherCard, /items-center[^"']*pt-0\.5/);
   const pills = videoPlayer.match(/class="[^"]*min-h-10[^"]*"/g) ?? [];
   const centered = pills.filter(
     (pill) => pill.includes("leading-none") && pill.includes("pt-0.5") && pill.includes("pb-0")

@@ -2,7 +2,6 @@
   import type { TeacherSummary } from "../types.js";
   import { isMyanmarText, truncateTeacherCardName } from "../ui.js";
   import { teacherAvatarDataUri } from "../teacherAvatar.js";
-  import Icon from "./Icon.svelte";
   let {
     teacher,
     carousel = false,
@@ -44,9 +43,6 @@
         {teacher.audioCount.toLocaleString("en-US")} talks
       </p>
     </div>
-    <span class="mt-auto inline-flex items-center gap-1 pt-0.5 text-xs font-bold text-app-primary"
-      >Browse talks <span class="size-4"><Icon name="chevron" /></span></span
-    >
   {:else}
     <div
       class="size-12 shrink-0 overflow-hidden rounded-full bg-app-soft ring-1 ring-app-border/60"
@@ -67,8 +63,5 @@
         {teacher.audioCount.toLocaleString("en-US")} talks
       </p>
     </div>
-    <span class="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-app-primary"
-      >Browse talks <span class="size-4"><Icon name="chevron" /></span></span
-    >
   {/if}
 </button>

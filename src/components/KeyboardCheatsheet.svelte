@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { onMount, tick } from "svelte";
-  import { focusTrapIndex } from "../a11y.js";
   import Icon from "./Icon.svelte";
   let { onclose }: { onclose: () => void } = $props();
-  let dialog: HTMLDivElement;
-  let closeButton: HTMLButtonElement;
+  let dialog: HTMLDialogElement;
   const shortcuts = [
     { keys: ["Space"], action: "Play or pause the current talk" },
     { keys: ["←"], action: "Jump back 15 seconds" },
@@ -12,51 +9,26 @@
     { keys: ["N"], action: "Play the next talk in the queue" },
     { keys: ["Esc"], action: "Clear the active search field" },
     { keys: ["?"], action: "Show or hide this list" }
-  ];
-  function focusableElements(): HTMLElement[] {
-    return Array.from(
-      dialog.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      )
-    ).filter((element) => element.getClientRects().length > 0);
-  }
-  function trapFocus(event: KeyboardEvent): void {
-    if (event.key !== "Tab") return;
-    const elements = focusableElements();
-    const currentIndex = elements.indexOf(globalThis.document.activeElement as HTMLElement);
-    const nextIndex = focusTrapIndex(currentIndex, elements.length, event.shiftKey);
-    if (nextIndex === null) return;
-    event.preventDefault();
-    elements[nextIndex]?.focus();
-  }
+  ] as const;
+  $effect(() => {
+    dialog.showModal();
+    return () => {
+      if (dialog.open) dialog.close();
+    };
+  });
   function backdrop(event: MouseEvent): void {
     if (event.target === event.currentTarget) onclose();
   }
-  function onWindowKeydown(event: KeyboardEvent): void {
-    if (event.key === "Escape") onclose();
+  function handleClose(): void {
+    onclose();
   }
-  onMount(() => {
-    const previousFocus =
-      globalThis.document.activeElement instanceof HTMLElement
-        ? globalThis.document.activeElement
-        : null;
-    void tick().then(() => closeButton?.focus());
-    return () => {
-      if (previousFocus?.isConnected) previousFocus.focus();
-    };
-  });
 </script>
 
-<svelte:window onkeydown={onWindowKeydown} />
-<div
+<dialog
   bind:this={dialog}
-  class="fixed inset-0 z-50 flex items-center justify-center bg-[color-mix(in_srgb,var(--color-app)_45%,transparent)] p-4"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="keyboard-shortcuts-title"
-  tabindex="-1"
+  class="m-0 max-h-full max-w-full border-0 bg-transparent p-4 backdrop:bg-[color-mix(in_srgb,var(--color-app)_45%,transparent)]"
   onclick={backdrop}
-  onkeydown={trapFocus}
+  onclose={handleClose}
 >
   <div
     class="w-full max-w-md rounded-card border border-app-border bg-app-surface p-6 shadow-[0_24px_60px_rgb(46_46_42_/_0.25)]"
@@ -69,8 +41,7 @@
         </p>
       </div>
       <button
-        bind:this={closeButton}
-        class="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
+        class="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
         type="button"
         onclick={onclose}
         aria-label="Close shortcuts"><span class="block size-4"><Icon name="close" /></span></button
@@ -90,4 +61,4 @@
       {/each}
     </dl>
   </div>
-</div>
+</dialog>

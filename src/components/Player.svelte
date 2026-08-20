@@ -64,7 +64,7 @@
       <div class="min-w-0 max-[1040px]:col-span-2 max-[1040px]:row-start-2">
         <div class="flex items-center justify-center gap-2" aria-label="Playback controls">
           <button
-            class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
+            class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
             type="button"
             onclick={() => app.seekBy(-15)}
             aria-label="Jump back 15 seconds"
@@ -83,7 +83,7 @@
             ></button
           >
           <button
-            class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
+            class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
             type="button"
             onclick={() => app.seekBy(15)}
             aria-label="Jump forward 15 seconds"
@@ -119,7 +119,7 @@
           ></label
         >
         <button
-          class="relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary aria-expanded:bg-app-soft aria-expanded:text-app-primary disabled:opacity-45 [&>span:first-child]:block [&>span:first-child]:size-[19px] [&_svg]:size-full"
+          class="relative inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary aria-expanded:bg-app-soft aria-expanded:text-app-primary disabled:opacity-45 [&>span:first-child]:block [&>span:first-child]:size-[19px] [&_svg]:size-full"
           type="button"
           onclick={() => app.dispatch({ type: "toggle-queue" })}
           aria-label="Show queue"

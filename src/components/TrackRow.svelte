@@ -84,7 +84,7 @@
   </button>
   <div class="flex items-center gap-2">
     <button
-      class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {favorite
+      class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {favorite
         ? 'bg-transparent text-app-primary'
         : ''} [&_svg]:block [&_svg]:size-full"
       type="button"
@@ -96,7 +96,7 @@
       </span>
     </button>
     <button
-      class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {downloaded
+      class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {downloaded
         ? 'bg-transparent text-app-primary'
         : ''} [&_svg]:block [&_svg]:size-full"
       type="button"

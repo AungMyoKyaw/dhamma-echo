@@ -32,7 +32,7 @@
 <aside
   class="fixed inset-y-0 left-0 z-20 flex {collapsed
     ? 'w-[72px] px-3'
-    : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface py-6 [scrollbar-gutter:stable] transition-[width,padding] duration-200 max-[1040px]:pt-4 max-[1040px]:pb-1"
+    : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface py-6 [scrollbar-gutter:stable] max-[1040px]:pt-4 max-[1040px]:pb-1"
   aria-label="Primary"
 >
   <div class="flex items-center {collapsed ? 'justify-center' : 'gap-3 px-2'}">
@@ -76,10 +76,9 @@
         </p>
       </div>{/if}
     <button
-      class="flex h-10 w-full items-center {collapsed
+      class="flex h-11 w-full items-center {collapsed
         ? 'justify-center'
         : 'gap-2 px-4'} rounded-control text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
-      type="button"
       onclick={toggle}
       aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       title={collapsed ? "Expand sidebar" : "Collapse sidebar"}

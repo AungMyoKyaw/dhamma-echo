@@ -101,7 +101,7 @@
     <div
       bind:this={contentScroller}
       data-content-scroller
-      class="ml-(--sidebar-offset) h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] transition-[margin] duration-200 {bottomPadding}"
+      class="ml-(--sidebar-offset) h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] {bottomPadding}"
     >
       <Header state={appState} />
       <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">

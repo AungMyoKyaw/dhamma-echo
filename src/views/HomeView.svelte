@@ -13,12 +13,11 @@
     state.homeRecent.status === "loading" ||
       (state.homeRecent.status === "ready" && state.homeRecent.tracks.length > 0)
   );
-  let stats = $derived([
-    { label: "Audio talks", value: state.summary.data.totalAudio, detail: "Ready to stream" },
-    { label: "Teachers", value: state.summary.data.totalTeachers, detail: "Across traditions" },
-    { label: "Myanmar", value: state.summary.data.myanmarAudio, detail: "Myanmar language" },
-    { label: "English", value: state.summary.data.englishAudio, detail: "English language" }
-  ]);
+  let totalAudio = $derived(state.summary.data.totalAudio);
+  let totalTeachers = $derived(state.summary.data.totalTeachers);
+  let catalogueSentence = $derived(
+    `Search by title, teacher, language, or format across ${totalAudio.toLocaleString("en-US")} talks and ${totalTeachers.toLocaleString("en-US")} teachers.`
+  );
   function openTeacher(teacher: TeacherSummary): void {
     void app.openTeacher(teacher.id, "home");
   }
@@ -93,24 +92,11 @@
       {/if}
     {/if}
     {#if !hasRecent}<section
-        class="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4 border-y border-app-border py-4"
-      >
-        {#each stats as stat (stat.label)}<article class="min-w-0 p-1">
-            <p class="text-xs font-semibold text-app-muted">{stat.label}</p>
-            <p class="mt-1 text-xl font-bold tracking-tight">
-              {stat.value.toLocaleString("en-US")}
-            </p>
-            <p class="mt-0.5 text-xs text-app-muted">{stat.detail}</p>
-          </article>{/each}
-      </section>
-      <section
         class="flex flex-wrap items-center justify-between gap-4 rounded-card border border-app-border bg-app-surface p-5"
       >
         <div>
           <h2 class="text-xl font-bold">Find something to listen to</h2>
-          <p class="mt-1 max-w-xl text-sm leading-6 text-app-muted">
-            Search the complete catalogue by title, teacher, language, or format.
-          </p>
+          <p class="mt-1 max-w-xl text-sm leading-6 text-app-muted">{catalogueSentence}</p>
         </div>
         <button
           class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"

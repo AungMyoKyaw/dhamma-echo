@@ -23,7 +23,7 @@
         <p class="text-xs text-app-muted">{state.player.queue.length} talks</p>
       </div>
       <button
-        class="inline-flex min-h-10 items-center rounded-full px-3 text-xs font-bold text-app-primary hover:bg-app-soft"
+        class="inline-flex min-h-11 items-center rounded-full px-3 text-xs font-bold text-app-primary hover:bg-app-soft"
         type="button"
         onclick={() => app.dispatch({ type: "clear-queue" })}>Clear</button
       >

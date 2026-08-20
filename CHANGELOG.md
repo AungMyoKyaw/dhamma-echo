@@ -4,9 +4,18 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-08-21
+
 ### Added
 
-- Publish each tagged Windows x64 installer to GitHub Pages as a direct, versioned package URL for Microsoft Partner Center.
+- Added GitHub Actions MSIX packaging for Microsoft Store submission without a customer code-signing certificate.
+- Published each tagged Windows x64 installer to GitHub Pages as a direct, versioned package URL for Microsoft Partner Center.
+
+### Changed
+
+- Increased interactive control targets to 44px for more reliable desktop pointer and touch interaction.
+- Replaced the custom keyboard-shortcuts focus trap with a native modal dialog.
+- Simplified the home catalogue summary into a single sentence that includes live talk and teacher totals.
 
 ### Fixed
 
