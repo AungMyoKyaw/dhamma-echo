@@ -123,8 +123,6 @@ jobs:
             ForEach-Object { Write-Host "  staged: $($_.FullName)" }
       - name: Pack MSIX (unsigned; Partner Center signs it)
         shell: pwsh
-        env:
-          WINAPP_NO_TELEMETRY: "1"
         run: |
           $version = "${{ steps.tauri-version.outputs.version }}"
           $msix = "Dhamma.Echo_${version}_x64.msix"
