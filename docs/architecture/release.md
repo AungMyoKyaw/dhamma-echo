@@ -46,11 +46,11 @@ development artifacts.
 
 ```mermaid
 flowchart LR
-    tag[Tag push v*] --> buildJ[Build matrix]
+    tag[Tag push v* or manual dispatch] --> buildJ[Build matrix]
     buildJ -->|windows-latest success| msixJ[build-msix job]
     msixJ --> check[bun run icons:msix:check]
     check --> tauriBuild[tauri build --no-bundle]
-    tauriBuild --> setup[setup-winapp@v1]
+    tauriBuild --> setup[setup-WinAppCli@v0.1]
     setup --> substitute[Substitute __APP_VERSION__ + __PUBLISHER__]
     substitute --> stage[Stage exe + DLLs + manifest + Assets]
     stage --> pack[winapp pack ./msix-staging --output Dhamma.Echo_<ver>_x64.msix]
@@ -64,6 +64,9 @@ workflow runs a separate `build-msix` job on `windows-latest` after
 the matrix completes. It rebuilds the Tauri binary without an
 installer, hands it to Microsoft's `winapp` CLI, and uploads the
 unsigned MSIX to the existing GitHub release.
+The workflow also exposes `workflow_dispatch` so a packaging-only
+fix can be applied to the release represented by the checked-out
+version without moving an existing tag.
 
 The MSIX is intentionally **unsigned**. Partner Center signs it with
 the publisher identity reserved for the Dhamma Echo app name, so no

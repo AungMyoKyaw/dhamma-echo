@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - "v*"
-
+  workflow_dispatch:
 permissions:
   contents: write
 
@@ -86,7 +86,7 @@ jobs:
         run: bun run icons:msix:check
       - name: Build Tauri Windows binary (no installer)
         run: bun run tauri -- build --no-bundle
-      - uses: microsoft/setup-winapp@v1
+      - uses: microsoft/setup-WinAppCli@v0.1
       - name: Read Tauri version
         id: tauri-version
         shell: pwsh
