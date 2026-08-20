@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Microsoft Store MSIX manifest template for Dhamma Echo.
+
+  This manifest is committed with placeholder tokens that the release
+  workflow substitutes before invoking `winapp pack`:
+
+    __APP_VERSION__  -> "<version from src-tauri/tauri.conf.json>.0"
+                        (Package.appxmanifest requires X.Y.Z.W format).
+    __PUBLISHER__    -> the bare common name to wrap inside the
+                        `CN=...` Publisher attribute. Set via the
+                        MSIX_PUBLISHER GitHub repository secret.
+                        Must match the publisher identity reserved
+                        in Partner Center for the Dhamma Echo app.
+
+  Example: set MSIX_PUBLISHER to "AungMyoKyaw" -> Publisher becomes
+  "CN=AungMyoKyaw" in the packed MSIX.
+-->
+
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+  <Identity
+    Name="AungMyoKyaw.DhammaEcho"
+    Publisher="CN=__PUBLISHER__"
+    Version="__APP_VERSION__"
+    ProcessorArchitecture="x64" />
+  <Properties>
+    <DisplayName>Dhamma Echo</DisplayName>
+    <PublisherDisplayName>Aung Myo Kyaw</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="en" />
+  </Resources>
+  <Applications>
+    <Application Id="DhammaEcho" Executable="dhamma-echo.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Dhamma Echo"
+        Description="A quiet desktop library for Dhamma talks"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile
+          Wide310x150Logo="Assets\Wide310x150Logo.png"
+          Square71x71Logo="Assets\Square71x71Logo.png"
+          Square310x310Logo="Assets\Square310x310Logo.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

@@ -42,6 +42,52 @@ without the GitHub Releases redirect. The artifact still excludes source
 files, the bundled SQLite catalogue, native build output, and local
 development artifacts.
 
+## Microsoft Store MSIX pipeline
+
+```mermaid
+flowchart LR
+    tag[Tag push v*] --> buildJ[Build matrix]
+    buildJ -->|windows-latest success| msixJ[build-msix job]
+    msixJ --> check[bun run icons:msix:check]
+    check --> tauriBuild[tauri build --no-bundle]
+    tauriBuild --> setup[setup-winapp@v1]
+    setup --> substitute[Substitute __APP_VERSION__ + __PUBLISHER__]
+    substitute --> stage[Stage exe + DLLs + manifest + Assets]
+    stage --> pack[winapp pack ./msix-staging --output Dhamma.Echo_<ver>_x64.msix]
+    pack --> attach[softprops/action-gh-release@v2]
+    attach --> partnerCenter[Partner Center manual upload]
+    partnerCenter --> storeSigned[Store signs MSIX and publishes]
+```
+
+The Tauri project does not bundle MSIX natively, so the release
+workflow runs a separate `build-msix` job on `windows-latest` after
+the matrix completes. It rebuilds the Tauri binary without an
+installer, hands it to Microsoft's `winapp` CLI, and uploads the
+unsigned MSIX to the existing GitHub release.
+
+The MSIX is intentionally **unsigned**. Partner Center signs it with
+the publisher identity reserved for the Dhamma Echo app name, so no
+EV/OV certificate or Azure Trusted Signing is required. The free
+individual Microsoft Store account is sufficient.
+
+### Required GitHub repository secret
+
+| Secret           | Purpose                                                                                                                                                | Example       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------- |
+| `MSIX_PUBLISHER` | Bare common name wrapped into `CN=...` in the packaged manifest. Must match the publisher identity reserved in Partner Center for the Dhamma Echo app. | `AungMyoKyaw` |
+
+The workflow fails fast if the secret is missing or empty. The
+manifest contains `__APP_VERSION__` and `__PUBLISHER__` placeholders
+that the workflow substitutes before invoking `winapp pack`.
+
+### Local validation
+
+Run `bun run icons:msix:check` to validate the placeholder manifest
+and the six Microsoft Store PNG tiles committed under
+`src-tauri/msix/Assets/`. Regenerate the assets with
+`bun run icons:msix:generate` (requires Pillow) after editing
+`src-tauri/icons/app-icon.png`.
+
 ## Release controls
 
 - Pull requests receive read-only workflow permissions.
