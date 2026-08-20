@@ -134,15 +134,21 @@ test("dynamic audio text uses unclipped Myanmar typography", async () => {
 });
 
 test("shared pill controls use Tailwind optical vertical centering", async () => {
-  const [explore, trackRow, teacherCard] = await Promise.all([
+  const [explore, trackRow, teacherCard, videoPlayer] = await Promise.all([
     readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8"),
     readFile(new URL("../src/components/TrackRow.svelte", import.meta.url), "utf8"),
-    readFile(new URL("../src/components/TeacherCard.svelte", import.meta.url), "utf8")
+    readFile(new URL("../src/components/TeacherCard.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/VideoPlayer.svelte", import.meta.url), "utf8")
   ]);
 
   assert.match(explore, /min-h-10[^"']*pt-0\.5/);
   assert.match(trackRow, /min-h-10[^"']*pt-0\.5/);
   assert.match(teacherCard, /items-center[^"']*pt-0\.5/);
+  const pills = videoPlayer.match(/class="[^"]*min-h-10[^"]*"/g) ?? [];
+  const centered = pills.filter(
+    (pill) => pill.includes("leading-none") && pill.includes("pt-0.5") && pill.includes("pb-0")
+  );
+  assert.ok(centered.length >= 3, "video player pills keep leading-none optical centering");
 });
 
 test("progressive loading controls use explicit batches without a row chooser", async () => {
@@ -359,11 +365,13 @@ test("desktop shell keeps compact-window layout contracts", async () => {
     readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8")
   ]);
 
-  assert.match(app, /data-layout-shell/);
-  assert.match(app, /ml-\[var\(--sidebar-offset\)\]/);
+  assert.match(app, /\[--sidebar-offset:16rem\]/);
+  assert.match(app, /max-\[1040px\]:\[--sidebar-offset:14rem\]/);
+  assert.match(app, /\[--sidebar-offset:72px\]/);
+  assert.match(app, /ml-\(--sidebar-offset\)/);
   assert.match(app, /@container/);
   assert.match(sidebar, /max-\[1040px\]:w-56/);
-  assert.match(player, /left-\[var\(--sidebar-offset\)\]/);
+  assert.match(player, /left-\(--sidebar-offset\)/);
   assert.match(player, /max-\[1040px\]:min-h-\[132px\]/);
   assert.match(player, /max-\[1040px\]:col-span-2 max-\[1040px\]:row-start-2/);
   assert.match(teachers, /repeat\(auto-fit,minmax\(280px,1fr\)\)/);

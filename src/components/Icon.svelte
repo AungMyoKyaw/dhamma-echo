@@ -86,7 +86,7 @@
       stroke="none"
     />
   {:else if name === "search"}<circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" />
-  {:else if name === "close"}<path d="m7 7 10 10M17 7 7 17" />
+  {:else if name === "close"}<path d="m6 6 12 12M18 6 6 18" />
   {:else if name === "fullscreen"}<path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4" />
   {:else if name === "exit-fullscreen"}<path d="M9 4v5H4M15 4v5h5M20 15h-5v5M9 20v-5H4" />
   {:else if name === "chevron"}<path d="m9 18 6-6-6-6" />

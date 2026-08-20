@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Restored viewport-bounded catalogue scrolling, including wheel input over the docked video player and compact layouts.
+
 ## [0.5.5] - 2026-08-17
 
 ### Added

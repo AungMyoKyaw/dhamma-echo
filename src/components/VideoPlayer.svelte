@@ -9,7 +9,15 @@
   import Icon from "./Icon.svelte";
   import QueuePanel from "./QueuePanel.svelte";
 
-  let { state: appState, app }: { state: AppState; app: DhammaApp } = $props();
+  let {
+    state: appState,
+    app,
+    onbackgroundwheel
+  }: {
+    state: AppState;
+    app: DhammaApp;
+    onbackgroundwheel: (event: WheelEvent) => void;
+  } = $props();
   const rates = [0.75, 1, 1.25, 1.5, 1.75, 2];
 
   let track = $derived(appState.player.current);
@@ -21,14 +29,13 @@
   let fullscreen = $state(false);
   let videoReady = $state(false);
   let dialog: HTMLElement;
-  let closeButton: HTMLButtonElement | undefined = $state();
   let exitFullscreenButton: HTMLButtonElement | undefined = $state();
   let previousFocus: HTMLElement | null = null;
 
   let asideClass = $derived(
     fullscreen
       ? "fixed inset-0 z-50 bg-black"
-      : "fixed right-0 bottom-0 z-30 left-[var(--sidebar-offset)] max-[640px]:left-0"
+      : "fixed right-0 bottom-0 z-30 left-(--sidebar-offset) max-[640px]:left-0"
   );
   let sectionClass = $derived(
     fullscreen
@@ -43,7 +50,7 @@
   let stageClass = $derived(
     fullscreen
       ? "relative h-full w-full bg-black"
-      : "relative aspect-video max-[1040px]:aspect-[2/1] max-[1040px]:max-h-[20rem] min-h-0 bg-black"
+      : "relative aspect-video min-h-0 bg-black max-[1040px]:h-[clamp(10rem,32vh,20rem)] max-[1040px]:aspect-auto"
   );
 
   $effect(() => {
@@ -100,12 +107,13 @@
   });
 
   $effect(() => {
-    if (!videoVisible) return;
+    if (!videoVisible || !fullscreen) return;
     previousFocus =
       globalThis.document.activeElement instanceof HTMLElement
         ? globalThis.document.activeElement
         : null;
-    void tick().then(() => closeButton?.focus());
+    void tick().then(() => exitFullscreenButton?.focus());
+
     return () => {
       const restore = previousFocus;
       previousFocus = null;
@@ -114,12 +122,11 @@
       });
     };
   });
-
   $effect(() => {
     if (!videoVisible) return;
-    const target = fullscreen ? exitFullscreenButton : closeButton;
-    if (target === undefined) return;
-    void tick().then(() => target.focus());
+    const element = dialog;
+    element.addEventListener("wheel", wheel, { passive: false });
+    return () => element.removeEventListener("wheel", wheel);
   });
 
   function focusableElements(): HTMLElement[] {
@@ -130,8 +137,33 @@
     ).filter((element) => element.getClientRects().length > 0);
   }
 
+  function scrollableDescendantCanConsume(event: WheelEvent): boolean {
+    if (!(event.target instanceof Element) || event.deltaY === 0) return false;
+    let element: Element | null = event.target;
+    while (element !== null && element !== dialog) {
+      if (element instanceof HTMLElement) {
+        const overflowY = globalThis.getComputedStyle(element).overflowY;
+        const maxScrollTop = element.scrollHeight - element.clientHeight;
+        if (
+          (overflowY === "auto" || overflowY === "scroll") &&
+          ((event.deltaY < 0 && element.scrollTop > 0) ||
+            (event.deltaY > 0 && element.scrollTop < maxScrollTop))
+        ) {
+          return true;
+        }
+      }
+      element = element.parentElement;
+    }
+    return false;
+  }
+
+  function wheel(event: WheelEvent): void {
+    if (fullscreen || scrollableDescendantCanConsume(event)) return;
+    onbackgroundwheel(event);
+  }
+
   function trapFocus(event: KeyboardEvent): void {
-    if (event.key !== "Tab") return;
+    if (!fullscreen || event.key !== "Tab") return;
     const elements = focusableElements();
     const currentIndex = elements.indexOf(globalThis.document.activeElement as HTMLElement);
     const nextIndex = focusTrapIndex(currentIndex, elements.length, event.shiftKey);
@@ -198,8 +230,8 @@
 <div
   bind:this={dialog}
   class="{asideClass} {videoVisible ? '' : 'hidden'}"
-  role="dialog"
-  aria-modal="true"
+  role={fullscreen ? "dialog" : undefined}
+  aria-modal={fullscreen ? "true" : undefined}
   aria-labelledby={fullscreen ? undefined : "video-player-title"}
   aria-label={fullscreen ? "Video player" : undefined}
   aria-hidden={!videoVisible}
@@ -222,7 +254,7 @@
             bind:this={exitFullscreenButton}
             type="button"
             onclick={() => void exitFullscreen()}
-            class="absolute top-4 right-4 z-10 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 text-xs font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
+            class="absolute top-4 right-4 z-10 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
             aria-label="Exit fullscreen"
             title="Exit fullscreen"
           >
@@ -272,10 +304,9 @@
               </p>
             </div>
             <button
-              bind:this={closeButton}
               type="button"
               onclick={() => void close()}
-              class="inline-flex h-9 min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
+              class="inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
               aria-label="Close video player"
               title="Close video player (Esc)"
             >
@@ -392,7 +423,7 @@
                 <button
                   type="button"
                   onclick={() => void toggleFullscreen()}
-                  class="inline-flex min-h-10 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
+                  class="inline-flex min-h-10 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
                   aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                   title={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                 >

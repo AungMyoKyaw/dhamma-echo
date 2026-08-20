@@ -19,7 +19,7 @@
 {#if track !== null}
   <QueuePanel {state} {app} />
   <footer
-    class="fixed right-0 bottom-0 left-[var(--sidebar-offset)] z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)] max-[1040px]:min-h-[132px] max-[1040px]:px-4"
+    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)] max-[1040px]:min-h-[132px] max-[1040px]:px-4"
     aria-label="Audio player"
   >
     <div

@@ -22,8 +22,6 @@
 
 :root {
   color-scheme: light;
-  font-family: var(--font-sans);
-  background: var(--color-app-bg);
 }
 
 [data-theme="dark"] {
@@ -62,50 +60,13 @@
   }
 }
 
-* {
-  box-sizing: border-box;
-}
-
 .myanmar-text.myanmar-text {
   line-height: 1.8;
   padding-block: 0.2em;
+  line-break: auto;
   word-break: keep-all;
   overflow-wrap: normal;
-  line-break: auto;
   text-wrap: balance;
-}
-
-html,
-body {
-  margin: 0;
-  background: var(--color-app-bg);
-  overflow: hidden;
-}
-
-@media (max-width: 1040px), (max-height: 620px) {
-  html,
-  body {
-    min-width: 0;
-    min-height: 0;
-  }
-}
-
-#app {
-  height: 100vh;
-}
-
-#app > [data-layout-shell] {
-  --sidebar-offset: 16rem;
-}
-
-@media (max-width: 1040px) {
-  #app > [data-layout-shell] {
-    --sidebar-offset: 14rem;
-  }
-}
-
-#app > [data-layout-shell][data-sidebar-collapsed="true"] {
-  --sidebar-offset: 72px;
 }
 
 h1,

@@ -21,6 +21,7 @@
   let { app, stateStore }: { app: DhammaApp; stateStore: Readable<AppState> } = $props();
   let appState = $derived($stateStore);
   let helpOpen = $state(false);
+  let contentScroller: HTMLDivElement;
 
   $effect(() => {
     const theme = appState.settings.theme;
@@ -67,6 +68,15 @@
     }
   }
 
+  function scrollContentFromPlayer(event: WheelEvent): void {
+    if (event.ctrlKey || event.deltaY === 0) return;
+    const scale =
+      event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? contentScroller.clientHeight : 1;
+    const previousScrollTop = contentScroller.scrollTop;
+    contentScroller.scrollTop += event.deltaY * scale;
+    if (contentScroller.scrollTop !== previousScrollTop) event.preventDefault();
+  }
+
   let showAudioFooter = $derived(
     appState.player.current !== null && appState.player.current.mediaType !== "video"
   );
@@ -82,18 +92,16 @@
 
 <svelte:window onkeydown={keydown} onbeforeunload={() => app.destroy()} />
 <div
-  class="h-screen min-h-screen overflow-hidden bg-app-bg text-app"
-  data-layout-shell
-  data-sidebar-collapsed={appState.ui.sidebarCollapsed ? "true" : undefined}
+  class="h-screen min-h-screen overflow-hidden bg-app-bg text-app {appState.ui.sidebarCollapsed
+    ? '[--sidebar-offset:72px]'
+    : '[--sidebar-offset:16rem] max-[1040px]:[--sidebar-offset:14rem]'}"
 >
-  <div
-    class="app-content-shell"
-    inert={videoPlayerOpen}
-    aria-hidden={videoPlayerOpen ? "true" : undefined}
-  >
+  <div class="h-full">
     <Sidebar state={appState} {app} />
     <div
-      class="ml-[var(--sidebar-offset)] h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] transition-[margin] duration-200 {bottomPadding}"
+      bind:this={contentScroller}
+      data-content-scroller
+      class="ml-(--sidebar-offset) h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] transition-[margin] duration-200 {bottomPadding}"
     >
       <Header state={appState} />
       <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
@@ -112,6 +120,6 @@
     </div>
     {#if showAudioFooter}<Player state={appState} {app} />{/if}
   </div>
-  <VideoPlayer state={appState} {app} />
+  <VideoPlayer state={appState} {app} onbackgroundwheel={scrollContentFromPlayer} />
   {#if helpOpen}<KeyboardCheatsheet onclose={() => (helpOpen = false)} />{/if}
 </div>
