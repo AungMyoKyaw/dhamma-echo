@@ -22,6 +22,7 @@
     "src/teacherAvatar.ts",
     "src/types.ts",
     "src/ui.ts",
+    "src/a11y.ts",
     "src/utils.ts"
   ]
 }

@@ -71,7 +71,7 @@
       ></label
     >
     <button
-      class="inline-flex h-12 min-h-10 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+      class="inline-flex h-12 min-h-10 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
       type="submit">Search</button
     >
     {#if state.categories.status === "ready"}<fieldset class="basis-full flex flex-wrap gap-2">
@@ -79,14 +79,14 @@
         <button
           class="inline-flex min-h-[40px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
             .search.categoryId === null
-            ? 'bg-app-primary text-white'
+            ? 'bg-app-primary text-app-primary-ink'
             : 'bg-app-soft text-app-muted'}"
           type="button"
           onclick={() => setCategory(null)}>All content</button
         >{#each state.categories.data as item (item.id)}<button
             class="inline-flex min-h-[40px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
               .search.categoryId === item.id
-              ? 'bg-app-primary text-white'
+              ? 'bg-app-primary text-app-primary-ink'
               : 'bg-app-soft text-app-muted'}"
             type="button"
             onclick={() => setCategory(item.id)}
@@ -143,7 +143,10 @@
       detail={state.catalogue.message}
       onretry={() => void app.search()}
     />
-  {:else if state.catalogue.status !== "ready"}<AsyncState kind="loading" />
+  {:else if state.catalogue.status !== "ready"}<AsyncState
+      kind="loading"
+      loadingLabel="Loading talks"
+    />
   {:else if state.catalogue.page.items.length === 0}<AsyncState
       kind="empty"
       title="No talks match these filters"

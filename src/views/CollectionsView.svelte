@@ -58,7 +58,7 @@
           >{/each}</select
       ></label
     ><button
-      class="inline-flex h-12 min-h-10 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+      class="inline-flex h-12 min-h-10 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
       type="submit">Search</button
     >
   </form>
@@ -67,7 +67,10 @@
       detail={state.collections.message}
       onretry={() => void app.searchCollections()}
     />
-  {:else if state.collections.status !== "ready"}<AsyncState kind="loading" />
+  {:else if state.collections.status !== "ready"}<AsyncState
+      kind="loading"
+      loadingLabel="Loading collections"
+    />
   {:else if state.collections.page.items.length === 0}<AsyncState
       kind="empty"
       title="No collections match"

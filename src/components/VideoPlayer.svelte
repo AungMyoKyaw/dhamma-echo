@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { tick } from "svelte";
   import type { DhammaApp } from "../app.js";
+  import { focusTrapIndex } from "../a11y.js";
   import { getNativeWindow } from "../runtime.js";
   import type { AppState } from "../types.js";
   import { isMyanmarText } from "../ui.js";
@@ -18,14 +20,15 @@
   let videoEl: HTMLVideoElement | undefined = $state();
   let fullscreen = $state(false);
   let videoReady = $state(false);
+  let dialog: HTMLElement;
+  let closeButton: HTMLButtonElement | undefined = $state();
+  let exitFullscreenButton: HTMLButtonElement | undefined = $state();
+  let previousFocus: HTMLElement | null = null;
 
-  let contentLeft = $derived(
-    appState.ui.sidebarCollapsed
-      ? "left-[72px] max-[640px]:left-0"
-      : "left-64 max-[1040px]:left-56 max-[640px]:left-0"
-  );
   let asideClass = $derived(
-    fullscreen ? "fixed inset-0 z-50 bg-black" : `fixed right-0 bottom-0 z-30 ${contentLeft}`
+    fullscreen
+      ? "fixed inset-0 z-50 bg-black"
+      : "fixed right-0 bottom-0 z-30 left-[var(--sidebar-offset)] max-[640px]:left-0"
   );
   let sectionClass = $derived(
     fullscreen
@@ -38,7 +41,9 @@
       : "grid min-h-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.65fr)]"
   );
   let stageClass = $derived(
-    fullscreen ? "relative h-full w-full bg-black" : "relative aspect-video min-h-0 bg-black"
+    fullscreen
+      ? "relative h-full w-full bg-black"
+      : "relative aspect-video max-[1040px]:aspect-[2/1] max-[1040px]:max-h-[20rem] min-h-0 bg-black"
   );
 
   $effect(() => {
@@ -93,6 +98,47 @@
   $effect(() => {
     if (!videoVisible) videoReady = false;
   });
+
+  $effect(() => {
+    if (!videoVisible) return;
+    previousFocus =
+      globalThis.document.activeElement instanceof HTMLElement
+        ? globalThis.document.activeElement
+        : null;
+    void tick().then(() => closeButton?.focus());
+    return () => {
+      const restore = previousFocus;
+      previousFocus = null;
+      void tick().then(() => {
+        if (restore?.isConnected) restore.focus();
+      });
+    };
+  });
+
+  $effect(() => {
+    if (!videoVisible) return;
+    const target = fullscreen ? exitFullscreenButton : closeButton;
+    if (target === undefined) return;
+    void tick().then(() => target.focus());
+  });
+
+  function focusableElements(): HTMLElement[] {
+    return Array.from(
+      dialog.querySelectorAll<HTMLElement>(
+        'video[controls], button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((element) => element.getClientRects().length > 0);
+  }
+
+  function trapFocus(event: KeyboardEvent): void {
+    if (event.key !== "Tab") return;
+    const elements = focusableElements();
+    const currentIndex = elements.indexOf(globalThis.document.activeElement as HTMLElement);
+    const nextIndex = focusTrapIndex(currentIndex, elements.length, event.shiftKey);
+    if (nextIndex === null) return;
+    event.preventDefault();
+    elements[nextIndex]?.focus();
+  }
 
   function numberFromControl(event: Event): number {
     return Number((event.currentTarget as HTMLInputElement | HTMLSelectElement).value);
@@ -149,10 +195,16 @@
   }
 </script>
 
-<aside
+<div
+  bind:this={dialog}
   class="{asideClass} {videoVisible ? '' : 'hidden'}"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby={fullscreen ? undefined : "video-player-title"}
+  aria-label={fullscreen ? "Video player" : undefined}
   aria-hidden={!videoVisible}
-  aria-label="Video player"
+  tabindex="-1"
+  onkeydown={trapFocus}
 >
   {#if !fullscreen}<QueuePanel state={appState} {app} placement="video" />{/if}
   <section class={sectionClass}>
@@ -167,6 +219,7 @@
           aria-label="Video player"
         ></video>
         {#if fullscreen}<button
+            bind:this={exitFullscreenButton}
             type="button"
             onclick={() => void exitFullscreen()}
             class="absolute top-4 right-4 z-10 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 text-xs font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
@@ -199,6 +252,7 @@
             <div class="min-w-0">
               <p class="text-xs font-semibold text-app-primary">Now playing · video</p>
               <h2
+                id="video-player-title"
                 class="mt-1 truncate text-base font-bold {isMyanmarText(track.title)
                   ? 'myanmar-text'
                   : ''}"
@@ -218,9 +272,10 @@
               </p>
             </div>
             <button
+              bind:this={closeButton}
               type="button"
               onclick={() => void close()}
-              class="inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
+              class="inline-flex h-9 min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
               aria-label="Close video player"
               title="Close video player (Esc)"
             >
@@ -262,7 +317,7 @@
               <button
                 type="button"
                 onclick={() => void app.togglePlayback()}
-                class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-white shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
+                class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
                 aria-label={loading
                   ? "Pause video loading"
                   : playing
@@ -330,7 +385,7 @@
                 >
                   <span class="block size-[18px] [&_svg]:size-full"><Icon name="queue" /></span>
                   {#if appState.player.queue.length > 0}<span
-                      class="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.55rem] font-extrabold text-white"
+                      class="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.55rem] font-extrabold text-app-primary-ink"
                       >{appState.player.queue.length}</span
                     >{/if}
                 </button>
@@ -353,4 +408,4 @@
       {/if}
     </div>
   </section>
-</aside>
+</div>

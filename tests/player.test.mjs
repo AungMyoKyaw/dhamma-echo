@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { MediaEngine } from "../.test-build/src/player.js";
-import { tracks } from "./test-data.mjs";
+import { tracks, videoTrack } from "./test-data.mjs";
 
 class FakeAudio {
   listeners = new Map();
@@ -163,6 +163,18 @@ test("MediaEngine rejects unsafe media and reports play failures", async () => {
   assert.equal(audio.playbackRate, 2);
 });
 
+test("MediaEngine reports video-specific final errors", async () => {
+  const audio = new FakeAudio();
+  const events = [];
+  audio.failPlay = true;
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  await engine.setTrack(videoTrack);
+  assert.deepEqual(events.at(-1), {
+    type: "error",
+    message: "The video is unavailable from Dhamma Download."
+  });
+});
+
 test("MediaEngine reports media events and non-finite metadata safely", async () => {
   const audio = new FakeAudio();
   const events = [];
@@ -188,6 +200,20 @@ test("MediaEngine reports media events and non-finite metadata safely", async ()
   audio.failPlay = true;
   await engine.toggle();
   assert.deepEqual(events.at(-1), { type: "error", message: "The audio stream could not start." });
+});
+
+test("MediaEngine reports video-specific resume failures", async () => {
+  const audio = new FakeAudio();
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  await engine.setTrack(videoTrack);
+  audio.pause();
+  audio.failPlay = true;
+  await engine.toggle();
+  assert.deepEqual(events.at(-1), {
+    type: "error",
+    message: "The video could not start."
+  });
 });
 
 test("MediaEngine waits for metadata, clamps resume, and retries the alternate approved host", async () => {

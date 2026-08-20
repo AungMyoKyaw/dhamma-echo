@@ -32,7 +32,7 @@
 <aside
   class="fixed inset-y-0 left-0 z-20 flex {collapsed
     ? 'w-[72px] px-3'
-    : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col border-r border-app-border bg-app-surface py-6 transition-[width,padding] duration-200"
+    : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface py-6 [scrollbar-gutter:stable] transition-[width,padding] duration-200 max-[1040px]:pt-4 max-[1040px]:pb-1"
   aria-label="Primary"
 >
   <div class="flex items-center {collapsed ? 'justify-center' : 'gap-3 px-2'}">
@@ -49,7 +49,7 @@
           : 'gap-3 px-4'} rounded-control py-0 text-left text-sm font-semibold leading-5 transition-[background-color,color,box-shadow] duration-150 {active(
           item.route
         )
-          ? 'bg-app-primary text-white shadow-sm'
+          ? 'bg-app-primary text-app-primary-ink shadow-sm'
           : 'text-app-muted hover:bg-app-soft hover:text-app'}"
         type="button"
         onclick={() => navigate(item.route)}
@@ -61,12 +61,12 @@
         >{#if !collapsed}<span>{item.label}</span>{/if}</button
       >{/each}
   </nav>
-  <div class="mt-auto space-y-3">
+  <div class="mt-auto space-y-3 max-[1040px]:space-y-1">
     {#if !collapsed}<div
-        class="rounded-card border border-app-border/70 bg-app-soft p-4 max-[1040px]:p-3.5"
+        class="rounded-card border border-app-border/70 bg-app-soft p-4 max-[1040px]:p-2.5"
       >
         <div
-          class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-secondary/15 text-app-secondary"
+          class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-secondary/15 text-app-secondary max-[1040px]:mb-2"
         >
           <span class="size-5"><Icon name="leaf" /></span>
         </div>

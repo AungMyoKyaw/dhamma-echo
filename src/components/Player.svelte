@@ -19,7 +19,7 @@
 {#if track !== null}
   <QueuePanel {state} {app} />
   <footer
-    class="fixed right-0 bottom-0 left-64 z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)] max-[1040px]:left-56 max-[1040px]:min-h-[132px] max-[1040px]:px-4"
+    class="fixed right-0 bottom-0 left-[var(--sidebar-offset)] z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)] max-[1040px]:min-h-[132px] max-[1040px]:px-4"
     aria-label="Audio player"
   >
     <div
@@ -71,7 +71,7 @@
             title="Jump back 15 seconds"><span><Icon name="backward15" /></span></button
           >
           <button
-            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-white shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_7px_18px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
+            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_7px_18px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
             type="button"
             onclick={() => void app.togglePlayback()}
             aria-label={loading ? "Connecting to audio" : playing ? "Pause" : "Play"}
@@ -126,7 +126,7 @@
           title="Show queue"
           aria-expanded={state.player.queueOpen}
           ><span><Icon name="queue" /></span>{#if state.player.queue.length > 0}<span
-              class="absolute -top-[3px] -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.58rem] font-extrabold text-white"
+              class="absolute -top-[3px] -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.58rem] font-extrabold text-app-primary-ink"
               >{state.player.queue.length}</span
             >{/if}</button
         >

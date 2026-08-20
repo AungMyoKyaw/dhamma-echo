@@ -56,7 +56,7 @@
             class="flex items-center gap-4 overflow-hidden rounded-card border border-app-primary/25 bg-app-primary/[0.04] p-5"
           >
             <button
-              class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-white transition hover:opacity-90 {latest.playable
+              class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-app-primary-ink transition hover:opacity-90 {latest.playable
                 ? ''
                 : 'cursor-not-allowed opacity-50'}"
               type="button"
@@ -113,7 +113,7 @@
           </p>
         </div>
         <button
-          class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+          class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
           type="button"
           onclick={() => app.dispatch({ type: "navigate", route: "explore" })}>Explore talks</button
         >
@@ -133,7 +133,7 @@
       <div
         class={hasRecent
           ? "-mx-2 flex gap-4 overflow-x-auto px-2 pt-2 pb-4 [scrollbar-color:var(--color-app-border)_transparent] [scrollbar-width:thin]"
-          : "grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"}
+          : "grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4"}
         data-featured-layout={hasRecent ? "carousel" : "grid"}
       >
         {#if state.teachers.status === "ready" && featured.length > 0}{#each featured as teacher (teacher.id)}<TeacherCard

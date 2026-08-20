@@ -39,6 +39,7 @@
     />
   {:else if state.teacherDetail.status !== "ready" || state.teacherDetail.data === null}<AsyncState
       kind="loading"
+      loadingLabel="Loading teacher"
     />
   {:else}{@const detail = state.teacherDetail.data}
     <div class="rounded-card border border-app-border bg-app-surface p-6">
@@ -52,7 +53,7 @@
         {detail.name}
       </h2>
       <button
-        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-white transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         onclick={() => void explore()}>Explore this teacher</button
       >
@@ -74,6 +75,7 @@
           onretry={() => void app.loadTeacherTalks()}
         />{:else if state.teacherTalks.status !== "ready"}<AsyncState
           kind="loading"
+          loadingLabel="Loading talks"
         />{:else if state.teacherTalks.page.items.length === 0}<AsyncState
           kind="empty"
           title="No talks found"

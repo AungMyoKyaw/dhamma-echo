@@ -25,7 +25,7 @@
 <div class="flex flex-col items-center gap-3" aria-label={`${noun} pagination`}>
   <div class="flex items-center justify-center">
     {#if remaining > 0 && !exhausted}<button
-        class="inline-flex min-h-10 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        class="inline-flex min-h-10 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         disabled={loading}
         onclick={() => void onloadmore()}

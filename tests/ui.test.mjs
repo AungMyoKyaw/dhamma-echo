@@ -14,6 +14,15 @@ import {
   teacherFilterName,
   truncateTeacherCardName
 } from "../.test-build/src/ui.js";
+import { focusTrapIndex } from "../.test-build/src/a11y.js";
+
+test("focusTrapIndex wraps only at the ends of a focus set", () => {
+  assert.equal(focusTrapIndex(0, 3, true), 2);
+  assert.equal(focusTrapIndex(2, 3, false), 0);
+  assert.equal(focusTrapIndex(1, 3, true), null);
+  assert.equal(focusTrapIndex(1, 3, false), null);
+  assert.equal(focusTrapIndex(0, 0, false), null);
+});
 
 const teachers = [
   { id: 900, name: "Regular A", audioCount: 1 },

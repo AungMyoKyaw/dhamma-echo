@@ -10,6 +10,7 @@
   --color-app-border: #d5d1c8;
   --color-app-primary: #8c3f08;
   --color-app-primary-strong: #6d2f00;
+  --color-app-primary-ink: #ffffff;
   --color-app-secondary: #485b37;
   --color-app-tertiary: #6e5014;
   --color-error: #8d3531;
@@ -34,6 +35,7 @@
   --color-app-border: #464138;
   --color-app-primary: #d8894d;
   --color-app-primary-strong: #bf7138;
+  --color-app-primary-ink: #181714;
   --color-app-secondary: #9bab82;
   --color-app-tertiary: #d0aa62;
   --color-error: #e2938c;
@@ -51,6 +53,7 @@
     --color-app-border: #464138;
     --color-app-primary: #d8894d;
     --color-app-primary-strong: #bf7138;
+    --color-app-primary-ink: #181714;
     --color-app-secondary: #9bab82;
     --color-app-tertiary: #d0aa62;
     --color-error: #e2938c;
@@ -89,6 +92,20 @@ body {
 
 #app {
   height: 100vh;
+}
+
+#app > [data-layout-shell] {
+  --sidebar-offset: 16rem;
+}
+
+@media (max-width: 1040px) {
+  #app > [data-layout-shell] {
+    --sidebar-offset: 14rem;
+  }
+}
+
+#app > [data-layout-shell][data-sidebar-collapsed="true"] {
+  --sidebar-offset: 72px;
 }
 
 h1,

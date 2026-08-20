@@ -4,14 +4,24 @@
     kind,
     title = "",
     detail = "",
+    loadingLabel = "Loading content",
     onretry
-  }: { kind: Kind; title?: string; detail?: string; onretry?: () => void } = $props();
+  }: {
+    kind: Kind;
+    title?: string;
+    detail?: string;
+    loadingLabel?: string;
+    onretry?: () => void;
+  } = $props();
 </script>
 
 {#if kind === "loading"}
   <div
     class="space-y-3 rounded-card border border-app-border bg-app-surface p-4"
-    aria-label="Loading talks"
+    role="status"
+    aria-live="polite"
+    aria-busy="true"
+    aria-label={loadingLabel}
   >
     {#each [0, 1, 2, 3, 4, 5] as row (row)}<div
         class="h-16 animate-pulse rounded-control bg-app-soft motion-reduce:animate-none"
@@ -32,7 +42,7 @@
     <h2 class="text-xl font-bold">This view needs another try</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
-        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-white transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         onclick={onretry}>Try again</button
       >{/if}

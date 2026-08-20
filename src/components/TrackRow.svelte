@@ -32,55 +32,55 @@
 </script>
 
 <article
-  class="group grid grid-cols-[auto_1fr_auto] items-center gap-3 border-b border-b-app-border px-4 py-3 last:border-b-0 {current
+  class="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-b-app-border px-4 py-3 last:border-b-0 {current
     ? 'bg-app-primary/5 ring-1 ring-inset ring-app-primary/20'
     : ''} {track.playable ? 'transition hover:bg-app-soft/60' : ''}"
 >
   <button
-    class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-soft text-app-muted shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-app-border)_70%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45 {track.playable
-      ? 'bg-[color-mix(in_srgb,var(--color-app-primary)_12%,var(--color-app-surface))] text-app-primary hover:bg-app-primary hover:text-white hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)] group-hover:bg-app-primary group-hover:text-white group-hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
-      : ''} {current && track.playable
-      ? 'bg-app-primary text-white shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
-      : ''} {loading ? 'cursor-wait opacity-72' : ''}"
+    class="group/track flex min-w-0 items-center gap-3 text-left {loading
+      ? 'cursor-wait opacity-72'
+      : ''} disabled:cursor-not-allowed"
     type="button"
     onclick={() => void play()}
     aria-label="{actionLabel} {track.title}"
     title="{actionLabel} {track.title}"
     aria-pressed={playing}
     disabled={!track.playable || loading}
-    ><span
-      class="block size-[18px] [&_svg]:block [&_svg]:size-full {playing
-        ? ''
-        : 'translate-x-[0.75px]'}"><Icon name={playing ? "pause" : "play"} /></span
-    ></button
   >
-  <button
-    class="min-w-0 text-left {track.playable ? 'cursor-pointer' : 'cursor-default'}"
-    type="button"
-    onclick={() => void play()}
-    disabled={!track.playable || loading}
-    aria-label="{actionLabel} {track.title}"
-  >
-    <span class="flex items-center gap-2"
-      ><span
-        class="truncate font-bold {myanmarTitle ? 'myanmar-text' : ''}"
-        lang={myanmarTitle ? "my" : undefined}>{track.title}</span
-      >{#if track.mediaType === "video"}<span
-          class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-primary/15 px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-primary uppercase"
-          >Video</span
-        >{/if}{#if !track.playable}<span
-          class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-soft px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-muted uppercase"
-          >{track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Source unavailable"}</span
-        >{/if}</span
-    >
     <span
-      class="mt-1 block truncate text-sm text-app-muted {myanmarTeacher ? 'myanmar-text' : ''}"
-      lang={myanmarTeacher ? "my" : undefined}
-      >{track.teacherName || "Unknown teacher"} · {track.language} · {track.format.toUpperCase()}{resume >
-      0
-        ? ` · Resume at ${formatDuration(resume)}`
-        : ""}</span
+      class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border-0 bg-app-soft text-app-muted shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-app-border)_70%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 {track.playable
+        ? 'bg-[color-mix(in_srgb,var(--color-app-primary)_12%,var(--color-app-surface))] text-app-primary group-hover:bg-app-primary group-hover:text-app-primary-ink group-hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
+        : ''} {current && track.playable
+        ? 'bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
+        : ''}"
+      ><span
+        class="block size-[18px] [&_svg]:block [&_svg]:size-full {playing
+          ? ''
+          : 'translate-x-[0.75px]'}"><Icon name={playing ? "pause" : "play"} /></span
+      ></span
     >
+    <span class="min-w-0 flex-1">
+      <span class="flex items-center gap-2"
+        ><span
+          class="truncate font-bold {myanmarTitle ? 'myanmar-text' : ''}"
+          lang={myanmarTitle ? "my" : undefined}>{track.title}</span
+        >{#if track.mediaType === "video"}<span
+            class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-primary/15 px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-primary uppercase"
+            >Video</span
+          >{/if}{#if !track.playable}<span
+            class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-soft px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-muted uppercase"
+            >{track.format.toLowerCase() === "wma" ? "WMA unavailable" : "Source unavailable"}</span
+          >{/if}</span
+      >
+      <span
+        class="mt-1 block truncate text-sm text-app-muted {myanmarTeacher ? 'myanmar-text' : ''}"
+        lang={myanmarTeacher ? "my" : undefined}
+        >{track.teacherName || "Unknown teacher"} · {track.language} · {track.format.toUpperCase()}{resume >
+        0
+          ? ` · Resume at ${formatDuration(resume)}`
+          : ""}</span
+      >
+    </span>
   </button>
   <div class="flex items-center gap-2">
     <button
@@ -116,7 +116,14 @@
     </button>
     {#if progress !== null}<span
         class="h-[3px] w-7 overflow-hidden rounded-full bg-app-border"
+        role="progressbar"
         aria-label={progress.total === null
+          ? "Download in progress"
+          : `${Math.round((progress.downloaded / progress.total) * 100)} percent downloaded`}
+        aria-valuemin="0"
+        aria-valuemax={progress.total ?? undefined}
+        aria-valuenow={progress.total === null ? undefined : progress.downloaded}
+        aria-valuetext={progress.total === null
           ? "Download in progress"
           : `${Math.round((progress.downloaded / progress.total) * 100)} percent downloaded`}
       >

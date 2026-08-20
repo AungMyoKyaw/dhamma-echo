@@ -78,33 +78,40 @@
         ? "pb-28 max-[1040px]:pb-40"
         : "pb-8"
   );
-  let marginLeft = $derived(
-    appState.ui.sidebarCollapsed ? "ml-[72px]" : "ml-64 max-[1040px]:ml-56"
-  );
 </script>
 
 <svelte:window onkeydown={keydown} onbeforeunload={() => app.destroy()} />
-<div class="h-screen min-h-screen overflow-hidden bg-app-bg text-app">
-  <Sidebar state={appState} {app} />
+<div
+  class="h-screen min-h-screen overflow-hidden bg-app-bg text-app"
+  data-layout-shell
+  data-sidebar-collapsed={appState.ui.sidebarCollapsed ? "true" : undefined}
+>
   <div
-    class="{marginLeft} h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] transition-[margin] duration-200 {bottomPadding}"
+    class="app-content-shell"
+    inert={videoPlayerOpen}
+    aria-hidden={videoPlayerOpen ? "true" : undefined}
   >
-    <Header state={appState} />
-    <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
-      {#if appState.route === "home"}<HomeView state={appState} {app} />
-      {:else if appState.route === "explore"}<ExploreView state={appState} {app} />
-      {:else if appState.route === "collections"}<CollectionsView state={appState} {app} />
-      {:else if appState.route === "collection-detail"}<CollectionDetailView
-          state={appState}
-          {app}
-        />
-      {:else if appState.route === "teachers"}<TeachersView state={appState} {app} />
-      {:else if appState.route === "teacher-detail"}<TeacherDetailView state={appState} {app} />
-      {:else if appState.route === "library"}<LibraryView state={appState} {app} />
-      {:else}<SettingsView state={appState} {app} />{/if}
-    </main>
+    <Sidebar state={appState} {app} />
+    <div
+      class="ml-[var(--sidebar-offset)] h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] transition-[margin] duration-200 {bottomPadding}"
+    >
+      <Header state={appState} />
+      <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
+        {#if appState.route === "home"}<HomeView state={appState} {app} />
+        {:else if appState.route === "explore"}<ExploreView state={appState} {app} />
+        {:else if appState.route === "collections"}<CollectionsView state={appState} {app} />
+        {:else if appState.route === "collection-detail"}<CollectionDetailView
+            state={appState}
+            {app}
+          />
+        {:else if appState.route === "teachers"}<TeachersView state={appState} {app} />
+        {:else if appState.route === "teacher-detail"}<TeacherDetailView state={appState} {app} />
+        {:else if appState.route === "library"}<LibraryView state={appState} {app} />
+        {:else}<SettingsView state={appState} {app} />{/if}
+      </main>
+    </div>
+    {#if showAudioFooter}<Player state={appState} {app} />{/if}
   </div>
-  {#if showAudioFooter}<Player state={appState} {app} />{/if}
   <VideoPlayer state={appState} {app} />
   {#if helpOpen}<KeyboardCheatsheet onclose={() => (helpOpen = false)} />{/if}
 </div>

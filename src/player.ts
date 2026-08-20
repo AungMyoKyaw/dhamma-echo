@@ -30,6 +30,7 @@ export class MediaEngine {
   private candidateIndex = -1;
   private resumeAt = 0;
   private finalErrorEmitted = false;
+  private mediaType: AudioTrack["mediaType"] = "audio";
   private activeAttempt = 0;
   private startedAttempt = 0;
   private playPending = false;
@@ -113,6 +114,7 @@ export class MediaEngine {
 
   async setTrack(track: AudioTrack, resumeAt = 0, localUrl?: string): Promise<boolean> {
     this.invalidateAttempt();
+    this.mediaType = track.mediaType;
     this.candidates =
       localUrl === undefined ? mediaUrlCandidates(track.url, track.format) : [localUrl];
     this.candidateIndex = -1;
@@ -144,7 +146,13 @@ export class MediaEngine {
       try {
         await this.audio.play();
       } catch {
-        this.emit({ type: "error", message: "The audio stream could not start." });
+        this.emit({
+          type: "error",
+          message:
+            this.mediaType === "video"
+              ? "The video could not start."
+              : "The audio stream could not start."
+        });
       }
     } else {
       this.audio.pause();
@@ -244,7 +252,10 @@ export class MediaEngine {
     this.finalErrorEmitted = true;
     this.emit({
       type: "error",
-      message: "The audio stream is unavailable from Dhamma Download."
+      message:
+        this.mediaType === "video"
+          ? "The video is unavailable from Dhamma Download."
+          : "The audio stream is unavailable from Dhamma Download."
     });
   }
 }

@@ -27,6 +27,7 @@
     />
   {:else if state.collectionDetail.status !== "ready" || state.collectionDetail.data === null}<AsyncState
       kind="loading"
+      loadingLabel="Loading collection"
     />
   {:else}{@const detail = state.collectionDetail.data}
     <div class="rounded-card border border-app-border bg-app-surface p-6">
