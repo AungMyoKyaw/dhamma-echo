@@ -7,14 +7,15 @@
 
     __APP_VERSION__  -> "<version from src-tauri/tauri.conf.json>.0"
                         (Package.appxmanifest requires X.Y.Z.W format).
-    __PUBLISHER__    -> the bare common name to wrap inside the
-                        `CN=...` Publisher attribute. Set via the
-                        MSIX_PUBLISHER GitHub repository secret.
-                        Must match the publisher identity reserved
-                        in Partner Center for the Dhamma Echo app.
+    __PUBLISHER__    -> the exact Package/Identity/Publisher value
+                        shown in Partner Center → Product management
+                        → Product identity, including the `CN=` prefix.
+                        Set via the MSIX_PUBLISHER GitHub repository
+                        secret. Values are case-sensitive.
 
-  Example: set MSIX_PUBLISHER to "AungMyoKyaw" -> Publisher becomes
-  "CN=AungMyoKyaw" in the packed MSIX.
+  Do not use the account's public "Publisher name" here. For example,
+  `AungMyoKyaw` is a display name, not necessarily the package
+  identity publisher. Copy the exact Product identity value instead.
 -->
 
 
@@ -25,7 +26,7 @@
   IgnorableNamespaces="uap rescap">
   <Identity
     Name="AungMyoKyaw.DhammaEcho"
-    Publisher="CN=__PUBLISHER__"
+    Publisher="__PUBLISHER__"
     Version="__APP_VERSION__"
     ProcessorArchitecture="x64" />
   <Properties>

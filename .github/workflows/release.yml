@@ -99,7 +99,7 @@ jobs:
         shell: pwsh
         run: |
           if (-not $env:MSIX_PUBLISHER) {
-            throw "MSIX_PUBLISHER secret is required (e.g. CN=YourName from Partner Center)"
+            throw "MSIX_PUBLISHER secret is required; copy Package/Identity/Publisher exactly from Partner Center → Product management → Product identity"
           }
           $version = "${{ steps.tauri-version.outputs.version }}.0"
           if ($version -notmatch '^\d+\.\d+\.\d+\.\d+$') {

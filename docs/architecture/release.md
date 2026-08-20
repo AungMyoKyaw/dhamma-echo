@@ -72,9 +72,15 @@ individual Microsoft Store account is sufficient.
 
 ### Required GitHub repository secret
 
-| Secret           | Purpose                                                                                                                                                | Example       |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------- |
-| `MSIX_PUBLISHER` | Bare common name wrapped into `CN=...` in the packaged manifest. Must match the publisher identity reserved in Partner Center for the Dhamma Echo app. | `AungMyoKyaw` |
+| Secret           | Purpose                                                                                                                                                                                      | Example                                   |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `MSIX_PUBLISHER` | The exact `Package/Identity/Publisher` value from Partner Center → Product management → Product identity. Copy the complete value, including `CN=`, capitalization, punctuation, and spaces. | `CN=12345678-90AB-CDEF-1234-567890ABCDEF` |
+
+The account-settings **Publisher name** (`AungMyoKyaw`) is the
+public display name. It is not necessarily the package identity
+publisher and must not be guessed or transformed into `CN=...`.
+Reserve the app first, then copy the exact identity value from the
+product's **Product identity** page.
 
 The workflow fails fast if the secret is missing or empty. The
 manifest contains `__APP_VERSION__` and `__PUBLISHER__` placeholders
