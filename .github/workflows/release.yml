@@ -138,11 +138,13 @@ jobs:
           }
           Get-Item $msix | Format-List Name, Length, LastWriteTime
       - name: Attach MSIX to GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.tauri-version.outputs.version }}
-          files: Dhamma.Echo_${{ steps.tauri-version.outputs.version }}_x64.msix
-          fail_on_unmatched_files: true
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ steps.tauri-version.outputs.version }}"
+          $msix = "Dhamma.Echo_${version}_x64.msix"
+          gh release upload "v${version}" $msix --repo $env:GITHUB_REPOSITORY --clobber
       - name: Remove temporary MSIX files
         if: always()
         shell: pwsh

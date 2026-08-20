@@ -54,7 +54,7 @@ flowchart LR
     setup --> substitute[Substitute __APP_VERSION__ + __PUBLISHER__]
     substitute --> stage[Stage exe + DLLs + manifest + Assets]
     stage --> pack[winapp pack ./msix-staging --output Dhamma.Echo_<ver>_x64.msix]
-    pack --> attach[softprops/action-gh-release@v2]
+    pack --> attach[gh release upload --clobber]
     attach --> partnerCenter[Partner Center manual upload]
     partnerCenter --> storeSigned[Store signs MSIX and publishes]
 ```
