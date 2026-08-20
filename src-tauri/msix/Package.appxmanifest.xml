@@ -31,7 +31,7 @@
     ProcessorArchitecture="x64" />
   <Properties>
     <DisplayName>Dhamma Echo</DisplayName>
-    <PublisherDisplayName>Aung Myo Kyaw</PublisherDisplayName>
+    <PublisherDisplayName>AungMyoKyaw</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
