@@ -119,7 +119,7 @@ jobs:
           Copy-Item -Path "src-tauri/target/release/dhamma-echo.exe" -Destination $staging/
           Get-ChildItem -Path "src-tauri/target/release" -Filter "*.dll" |
             Copy-Item -Destination $staging/
-          Copy-Item -Path $env:MSIX_MANIFEST_PATH -Destination "$staging/Package.appxmanifest.xml" -Force
+          Copy-Item -Path $env:MSIX_MANIFEST_PATH -Destination "$staging/Package.appxmanifest" -Force
           Copy-Item -Path "src-tauri/msix/Assets" -Destination $staging/ -Recurse -Force
           Get-ChildItem -Path $staging -Recurse |
             ForEach-Object { Write-Host "  staged: $($_.FullName)" }
@@ -132,7 +132,7 @@ jobs:
         run: |
           $version = "${{ steps.tauri-version.outputs.version }}"
           $msix = "Dhamma.Echo_${version}_x64.msix"
-          winapp pack ./msix-staging --output $msix --quiet
+          winapp pack ./msix-staging --manifest ./msix-staging/Package.appxmanifest --output $msix --quiet
           if (-not (Test-Path $msix)) {
             throw "winapp pack did not produce ${msix}"
           }
@@ -140,7 +140,7 @@ jobs:
       - name: Attach MSIX to GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: v${{ steps.tauri-version.outputs.version }}
           files: Dhamma.Echo_${{ steps.tauri-version.outputs.version }}_x64.msix
           fail_on_unmatched_files: true
       - name: Remove temporary MSIX files
@@ -180,13 +180,19 @@ jobs:
           enablement: true
       - name: Verify product site
         run: bun run site:verify
+      - name: Read release tag
+        id: release-version
+        shell: bash
+        run: |
+          version="$(node -p "require('./src-tauri/tauri.conf.json').version")"
+          echo "tag=v${version}" >> "$GITHUB_OUTPUT"
       - name: Download Windows installer
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           rm -rf docs/downloads
           mkdir -p docs/downloads
-          gh release download "${GITHUB_REF_NAME}" \
+          gh release download "${{ steps.release-version.outputs.tag }}" \
             --repo "$GITHUB_REPOSITORY" \
             --pattern '*_x64-setup.exe' \
             --dir docs/downloads \
