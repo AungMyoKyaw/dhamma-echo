@@ -72,9 +72,9 @@ individual Microsoft Store account is sufficient.
 
 ### Required GitHub repository secret
 
-| Secret           | Purpose                                                                                                                                                                                      | Example                                   |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
-| `MSIX_PUBLISHER` | The exact `Package/Identity/Publisher` value from Partner Center → Product management → Product identity. Copy the complete value, including `CN=`, capitalization, punctuation, and spaces. | `CN=12345678-90AB-CDEF-1234-567890ABCDEF` |
+| Secret           | Purpose                                                                                                                                                                                      | Example                       |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `MSIX_PUBLISHER` | The exact `Package/Identity/Publisher` value from Partner Center → Product management → Product identity. Copy the complete value, including `CN=`, capitalization, punctuation, and spaces. | `CN=REPLACE_WITH_EXACT_VALUE` |
 
 The account-settings **Publisher name** (`AungMyoKyaw`) is the
 public display name. It is not necessarily the package identity

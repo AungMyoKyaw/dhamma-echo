@@ -108,7 +108,9 @@ jobs:
           $manifest = Get-Content -Raw src-tauri/msix/Package.appxmanifest.xml
           $manifest = $manifest.Replace('__APP_VERSION__', $version)
           $manifest = $manifest.Replace('__PUBLISHER__', $env:MSIX_PUBLISHER)
-          Set-Content -Path src-tauri/msix/Package.appxmanifest.xml -Value $manifest -NoNewline
+          $resolvedManifest = Join-Path $env:RUNNER_TEMP "DhammaEcho.Package.appxmanifest.xml"
+          Set-Content -Path $resolvedManifest -Value $manifest -NoNewline
+          "MSIX_MANIFEST_PATH=$resolvedManifest" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Stage MSIX inputs
         shell: pwsh
         run: |
@@ -117,10 +119,14 @@ jobs:
           Copy-Item -Path "src-tauri/target/release/dhamma-echo.exe" -Destination $staging/
           Get-ChildItem -Path "src-tauri/target/release" -Filter "*.dll" |
             Copy-Item -Destination $staging/
-          Copy-Item -Path "src-tauri/msix/Package.appxmanifest.xml" -Destination $staging/ -Force
+          Copy-Item -Path $env:MSIX_MANIFEST_PATH -Destination "$staging/Package.appxmanifest.xml" -Force
           Copy-Item -Path "src-tauri/msix/Assets" -Destination $staging/ -Recurse -Force
           Get-ChildItem -Path $staging -Recurse |
             ForEach-Object { Write-Host "  staged: $($_.FullName)" }
+      - name: Assert source manifest remains a template
+        shell: pwsh
+        run: |
+          git diff --exit-code -- src-tauri/msix/Package.appxmanifest.xml
       - name: Pack MSIX (unsigned; Partner Center signs it)
         shell: pwsh
         run: |
@@ -137,6 +143,16 @@ jobs:
           tag_name: ${{ github.ref_name }}
           files: Dhamma.Echo_${{ steps.tauri-version.outputs.version }}_x64.msix
           fail_on_unmatched_files: true
+      - name: Remove temporary MSIX files
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:MSIX_MANIFEST_PATH -and (Test-Path $env:MSIX_MANIFEST_PATH)) {
+            Remove-Item -Path $env:MSIX_MANIFEST_PATH -Force
+          }
+          if (Test-Path "msix-staging") {
+            Remove-Item -Path "msix-staging" -Recurse -Force
+          }
   publish-pages:
     name: Publish Windows installer to GitHub Pages
     needs: build
