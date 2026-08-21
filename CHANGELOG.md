@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-08-21
+
+### Changed
+
+- Removed the Microsoft Store `runFullTrust` restricted capability and the matching `Windows.FullTrustApplication` entry point from the MSIX manifest so the desktop submission no longer requires Partner Center's restricted-capability approval queue while download behavior stays unchanged.
+
 ## [0.5.6] - 2026-08-21
 
 ### Added
