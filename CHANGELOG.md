@@ -10,6 +10,12 @@ All notable changes to this project are documented here.
 
 - Removed the Microsoft Store `runFullTrust` restricted capability and the matching `Windows.FullTrustApplication` entry point from the MSIX manifest so the desktop submission no longer requires Partner Center's restricted-capability approval queue while download behavior stays unchanged.
 
+## [0.5.8] - 2026-08-21
+
+### Fixed
+
+- Restored the MSIX `Windows.FullTrustApplication` entry point on the `<Application>` element. MakeAppx rejects packages that set `Executable` without `EntryPoint`; the `runFullTrust` capability itself stays removed.
+
 ## [0.5.6] - 2026-08-21
 
 ### Added

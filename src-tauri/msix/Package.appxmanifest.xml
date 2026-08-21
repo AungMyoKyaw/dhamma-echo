@@ -40,7 +40,7 @@
     <Resource Language="en" />
   </Resources>
   <Applications>
-    <Application Id="DhammaEcho" Executable="dhamma-echo.exe">
+    <Application Id="DhammaEcho" Executable="dhamma-echo.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
         DisplayName="Dhamma Echo"
         Description="A quiet desktop library for Dhamma talks"
