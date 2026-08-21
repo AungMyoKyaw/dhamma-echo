@@ -70,6 +70,7 @@
   {:else if state.collections.status !== "ready"}<AsyncState
       kind="loading"
       loadingLabel="Loading collections"
+      shape="cards"
     />
   {:else if state.collections.page.items.length === 0}<AsyncState
       kind="empty"

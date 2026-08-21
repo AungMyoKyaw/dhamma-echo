@@ -40,6 +40,7 @@
   {:else if state.teacherDetail.status !== "ready" || state.teacherDetail.data === null}<AsyncState
       kind="loading"
       loadingLabel="Loading teacher"
+      shape="detail"
     />
   {:else}{@const detail = state.teacherDetail.data}
     <div class="rounded-card border border-app-border bg-app-surface p-6">
@@ -76,6 +77,7 @@
         />{:else if state.teacherTalks.status !== "ready"}<AsyncState
           kind="loading"
           loadingLabel="Loading talks"
+          shape="rows"
         />{:else if state.teacherTalks.page.items.length === 0}<AsyncState
           kind="empty"
           title="No talks found"

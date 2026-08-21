@@ -1,31 +1,55 @@
 <script lang="ts">
   type Kind = "loading" | "empty" | "error";
+  type Shape = "rows" | "cards" | "detail";
   let {
     kind,
     title = "",
     detail = "",
     loadingLabel = "Loading content",
+    shape = "rows",
     onretry
   }: {
     kind: Kind;
     title?: string;
     detail?: string;
     loadingLabel?: string;
+    shape?: Shape;
     onretry?: () => void;
   } = $props();
+  let rowCount = $derived(shape === "detail" ? 4 : 6);
+  let cardCount = $derived(shape === "cards" ? 6 : 0);
+  let rowSlots = $derived(Array.from({ length: rowCount }, (_, index) => index));
+  let cardSlots = $derived(Array.from({ length: cardCount }, (_, index) => index));
 </script>
 
 {#if kind === "loading"}
   <div
-    class="space-y-3 rounded-card border border-app-border bg-app-surface p-4"
+    class="rounded-card border border-app-border bg-app-surface p-4 motion-reduce:animate-none"
     role="status"
     aria-live="polite"
     aria-busy="true"
     aria-label={loadingLabel}
   >
-    {#each [0, 1, 2, 3, 4, 5] as row (row)}<div
-        class="h-16 animate-pulse rounded-control bg-app-soft motion-reduce:animate-none"
-      ></div>{/each}
+    {#if shape === "detail"}
+      <div class="space-y-3">
+        <div class="h-3 w-24 animate-pulse rounded-control bg-app-soft"></div>
+        <div class="h-7 w-2/3 animate-pulse rounded-control bg-app-soft"></div>
+        <div class="h-3 w-full max-w-md animate-pulse rounded-control bg-app-soft"></div>
+        <div class="h-3 w-5/6 max-w-md animate-pulse rounded-control bg-app-soft"></div>
+      </div>
+    {:else if shape === "cards"}
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+        {#each cardSlots as index (index)}<div
+            class="h-32 animate-pulse rounded-card bg-app-soft"
+          ></div>{/each}
+      </div>
+    {:else}
+      <div class="space-y-3">
+        {#each rowSlots as index (index)}<div
+            class="h-16 animate-pulse rounded-control bg-app-soft"
+          ></div>{/each}
+      </div>
+    {/if}
   </div>
 {:else if kind === "empty"}
   <div

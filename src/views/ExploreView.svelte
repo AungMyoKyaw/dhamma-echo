@@ -146,6 +146,7 @@
   {:else if state.catalogue.status !== "ready"}<AsyncState
       kind="loading"
       loadingLabel="Loading talks"
+      shape="rows"
     />
   {:else if state.catalogue.page.items.length === 0}<AsyncState
       kind="empty"

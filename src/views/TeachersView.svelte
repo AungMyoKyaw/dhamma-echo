@@ -32,6 +32,7 @@
 {:else if state.teachers.status !== "ready"}<AsyncState
     kind="loading"
     loadingLabel="Loading teachers"
+    shape="cards"
   />
 {:else if state.teachers.data.length === 0}<AsyncState
     kind="empty"
