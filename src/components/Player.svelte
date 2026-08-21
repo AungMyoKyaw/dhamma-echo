@@ -42,21 +42,21 @@
         </p>
         <div class="mt-1 min-h-4">
           {#if state.player.error}<span
-              class="inline-flex max-w-full items-center gap-2 text-[0.68rem] font-semibold text-error"
+              class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-error"
               role="alert"
               ><span class="truncate">{state.player.error}</span><button
-                class="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-[0.65rem] font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
+                class="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
                 type="button"
                 onclick={() => void app.retryPlayback()}>Retry</button
               ></span
             >{:else if loading}<span
-              class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-app-primary"
+              class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-app-primary"
               role="status"
               ><span
                 class="size-2 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
               ></span>Connecting…</span
             >{:else}<span
-              class="inline-flex max-w-full items-center gap-[0.4rem] text-[0.68rem] font-semibold text-app-muted max-[980px]:truncate"
+              class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-app-muted max-[980px]:truncate"
               >Space: play/pause · ←/→: seek · ?: help</span
             >{/if}
         </div>
@@ -91,7 +91,7 @@
           >
         </div>
         <div
-          class="mt-[0.3rem] grid grid-cols-[3.4rem_minmax(90px,1fr)_3.4rem] items-center gap-[0.55rem] text-[0.68rem] text-app-muted tabular-nums max-[1040px]:grid-cols-[3rem_minmax(120px,1fr)_3rem] max-[1040px]:gap-2 [&>span:first-child]:text-right"
+          class="mt-[0.3rem] grid grid-cols-[3.4rem_minmax(90px,1fr)_3.4rem] items-center gap-[0.55rem] text-xs text-app-muted tabular-nums max-[1040px]:grid-cols-[3rem_minmax(120px,1fr)_3rem] max-[1040px]:gap-2 [&>span:first-child]:text-right"
         >
           <span>{formatDuration(state.player.currentTime)}</span><input
             class="w-full min-w-0 accent-app-primary"

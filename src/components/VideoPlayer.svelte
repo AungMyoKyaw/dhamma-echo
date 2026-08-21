@@ -273,8 +273,8 @@
                 class="size-3 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
               ></span>
             </span>
-            <span class="mt-5 text-xs font-bold text-white">Preparing the video</span>
-            <span class="mt-1 text-[0.7rem] text-white/65">A moment of quiet before playback</span>
+            <span class="mt-5 text-sm font-bold text-white">Preparing the video</span>
+            <span class="mt-1 text-xs text-white/70">A moment of quiet before playback</span>
           </div>{/if}
       </div>
 
@@ -316,19 +316,14 @@
           </header>
 
           <div class="min-h-5 px-5">
-            {#if appState.player.error}<p
-                class="text-[0.7rem] font-semibold text-error"
-                role="alert"
-              >
+            {#if appState.player.error}<p class="text-xs font-semibold text-error" role="alert">
                 {appState.player.error}
               </p>{:else if loading}<p
-                class="inline-flex items-center gap-2 text-[0.7rem] font-semibold text-app-primary"
+                class="inline-flex items-center gap-2 text-xs font-semibold text-app-primary"
                 role="status"
               >
                 Loading video…
-              </p>{:else}<p class="text-[0.7rem] text-app-muted">
-                Space to pause · ←/→ to seek
-              </p>{/if}
+              </p>{:else}<p class="text-xs text-app-muted">Space to pause · ←/→ to seek</p>{/if}
           </div>
 
           <div class="mt-auto border-t border-app-border px-5 py-4">
@@ -373,7 +368,7 @@
             </div>
 
             <div
-              class="mt-3 grid grid-cols-[3.2rem_minmax(70px,1fr)_3.2rem] items-center gap-2 text-[0.68rem] text-app-muted tabular-nums [&>span:first-child]:text-right"
+              class="mt-3 grid grid-cols-[3.2rem_minmax(70px,1fr)_3.2rem] items-center gap-2 text-xs text-app-muted tabular-nums [&>span:first-child]:text-right"
             >
               <span>{formatDuration(appState.player.currentTime)}</span>
               <input
