@@ -16,6 +16,12 @@ All notable changes to this project are documented here.
 
 - Restored the MSIX `Windows.FullTrustApplication` entry point on the `<Application>` element. MakeAppx rejects packages that set `Executable` without `EntryPoint`; the `runFullTrust` capability itself stays removed.
 
+## [0.5.9] - 2026-08-21
+
+### Fixed
+
+- Restored the `<rescap:Capability Name="runFullTrust" />` declaration and the `rescap` namespace on the MSIX manifest. MakeAppx schema validation requires `runFullTrust` whenever `EntryPoint="Windows.FullTrustApplication"` is set on a packaged desktop application; removing the capability broke package creation. The Store submission will continue to require Partner Center's restricted-capability approval, which is the standard path for packaged desktop apps.
+
 ## [0.5.6] - 2026-08-21
 
 ### Added
