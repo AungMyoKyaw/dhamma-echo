@@ -23,7 +23,7 @@
       aria-label="Color theme"
     >
       {#each themes as theme (theme.value)}<button
-          class="inline-flex min-h-11 items-center justify-center rounded-xl px-5 pt-0.5 pb-0 text-sm leading-none font-bold transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {state
+          class="inline-flex min-h-11 items-center justify-center rounded-control px-5 pt-0.5 pb-0 text-sm leading-none font-bold transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {state
             .settings.theme === theme.value
             ? 'bg-app-surface text-app-primary shadow-sm'
             : 'text-app-muted'}"

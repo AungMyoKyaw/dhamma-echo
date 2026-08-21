@@ -117,14 +117,11 @@
         >
       </div>
       <div
-        class={hasRecent
-          ? "-mx-2 flex gap-4 overflow-x-auto px-2 pt-2 pb-4 [scrollbar-color:var(--color-app-border)_transparent] [scrollbar-width:thin]"
-          : "grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4"}
-        data-featured-layout={hasRecent ? "carousel" : "grid"}
+        class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4"
+        data-featured-layout="grid"
       >
         {#if state.teachers.status === "ready" && featured.length > 0}{#each featured as teacher (teacher.id)}<TeacherCard
               {teacher}
-              carousel={hasRecent}
               onselect={openTeacher}
             />{/each}{:else}<div
             class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted"

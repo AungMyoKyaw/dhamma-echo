@@ -30,9 +30,7 @@
   onclick={backdrop}
   onclose={handleClose}
 >
-  <div
-    class="w-full max-w-md rounded-card border border-app-border bg-app-surface p-6 shadow-[0_24px_60px_rgb(46_46_42_/_0.25)]"
-  >
+  <div class="w-full max-w-md rounded-card border border-app-border bg-app-surface p-6">
     <div class="flex items-start justify-between gap-3">
       <div>
         <h2 id="keyboard-shortcuts-title" class="text-lg font-bold">Keyboard shortcuts</h2>
