@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.10] - 2026-08-22
+
 ### Fixed
 
 - Included `resources/dhamma.db` in the MSIX package so the Windows app can open its runtime catalogue at startup.
