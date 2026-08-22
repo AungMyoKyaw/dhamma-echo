@@ -24,16 +24,10 @@ flowchart LR
     siteTests --> latest[Download latest Windows x64 setup asset]
     latest --> siteArtifact[Upload docs + installer Pages artifact]
     siteArtifact --> pagesDeploy[Deploy to github-pages environment]
-    release[Successful tagged release] --> releasePages[Release Pages job]
-    releasePages --> tagged[Download tagged Windows x64 setup asset]
-    tagged --> siteArtifact
 ```
 
 The Pages workflow validates the static site, downloads the latest release's
 Windows x64 `-setup.exe` with the GitHub CLI, and uploads it alongside `docs/`.
-The release workflow has a dependent Pages job that downloads the installer
-from the exact tag it just published, so a new release updates the direct
-package URL without a second manual workflow run.
 
 The published package keeps its release filename under
 `downloads/`, for example:
