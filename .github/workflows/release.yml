@@ -112,17 +112,7 @@ jobs:
           Set-Content -Path $resolvedManifest -Value $manifest -NoNewline
           "MSIX_MANIFEST_PATH=$resolvedManifest" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Stage MSIX inputs
-        shell: pwsh
-        run: |
-          $staging = "msix-staging"
-          New-Item -ItemType Directory -Path $staging -Force | Out-Null
-          Copy-Item -Path "src-tauri/target/release/dhamma-echo.exe" -Destination $staging/
-          Get-ChildItem -Path "src-tauri/target/release" -Filter "*.dll" |
-            Copy-Item -Destination $staging/
-          Copy-Item -Path $env:MSIX_MANIFEST_PATH -Destination "$staging/Package.appxmanifest" -Force
-          Copy-Item -Path "src-tauri/msix/Assets" -Destination $staging/ -Recurse -Force
-          Get-ChildItem -Path $staging -Recurse |
-            ForEach-Object { Write-Host "  staged: $($_.FullName)" }
+        run: bun scripts/stage-msix.mjs
       - name: Assert source manifest remains a template
         shell: pwsh
         run: |

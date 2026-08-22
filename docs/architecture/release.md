@@ -52,7 +52,7 @@ flowchart LR
     check --> tauriBuild[tauri build --no-bundle]
     tauriBuild --> setup[setup-WinAppCli@v0.1]
     setup --> substitute[Substitute __APP_VERSION__ + __PUBLISHER__]
-    substitute --> stage[Stage exe + DLLs + manifest + Assets]
+    substitute --> stage[Stage exe + DLLs + resources/dhamma.db + manifest + Assets]
     stage --> pack[winapp pack ./msix-staging --output Dhamma.Echo_<ver>_x64.msix]
     pack --> attach[gh release upload --clobber]
     attach --> partnerCenter[Partner Center manual upload]
@@ -64,6 +64,10 @@ workflow runs a separate `build-msix` job on `windows-latest` after
 the matrix completes. It rebuilds the Tauri binary without an
 installer, hands it to Microsoft's `winapp` CLI, and uploads the
 unsigned MSIX to the existing GitHub release.
+
+The staging helper copies the complete `src-tauri/resources` directory into
+the package root as `resources/`, including the required `resources/dhamma.db`
+runtime catalogue opened by the Windows application at startup.
 The workflow also exposes `workflow_dispatch` so a packaging-only
 fix can be applied to the release represented by the checked-out
 version without moving an existing tag.
