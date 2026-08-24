@@ -6,6 +6,7 @@ dist/
 # Tooling caches
 .impeccable/
 .playwright-mcp/
+.playwright-cli/
 .superpowers/
 .claude/worktrees/
 
