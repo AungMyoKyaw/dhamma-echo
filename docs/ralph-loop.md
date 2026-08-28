@@ -9,7 +9,7 @@ Ship a production-ready Dhamma Echo desktop build with materially improved UI/UX
 - Svelte 5 + TypeScript + Vite + Tailwind CSS v4 frontend in Tauri 2.
 - Bun lockfile and Rust lockfile are committed.
 - Strict TypeScript and ESLint are already configured.
-- Open-source README/policies, CI/release workflows, and architecture diagrams already exist.
+- Public README/policies, CI/release workflows, and architecture diagrams already exist.
 - UI recently migrated to Tailwind utilities but still contains viewport/layout assumptions that crowd the 860px minimum window.
 - CI/release workflows currently use Bun `canary` or `latest` instead of one reproducible stable version.
 - Coverage currently permits 99% branches and covers core TypeScript modules, not Svelte component source.

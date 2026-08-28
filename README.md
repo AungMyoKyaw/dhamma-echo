@@ -2,7 +2,7 @@
 
 **Dhamma, without the noise.** A private desktop library for discovering, listening to, and resuming Dhamma audio and video teachings.
 
-[![MIT License](https://img.shields.io/badge/license-MIT-2f342d.svg?style=flat-square)](LICENSE)
+[![PolyForm Noncommercial 1.0.0 License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-2f342d.svg?style=flat)](LICENSE)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-d66d31.svg?style=flat-square)](https://tauri.app)
 [![Svelte 5](https://img.shields.io/badge/Svelte-5-ff3e00.svg?style=flat-square)](https://svelte.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6.svg?style=flat-square)](https://www.typescriptlang.org)
@@ -220,7 +220,7 @@ bun run site:verify
 
 ## Data and licensing
 
-The source code and original project assets are licensed under MIT. The bundled `dhamma.db`, catalogue metadata, remote media, teacher names, and teachings are **not relicensed by this repository**.
+The source code and original project assets are licensed under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0). The bundled `dhamma.db`, catalogue metadata, remote media, teacher names, and teachings are **not relicensed by this repository**.
 
 Read [DATA_LICENSE.md](DATA_LICENSE.md) before public redistribution. Source media and catalogue records originate from [Dhamma Download](https://www.dhammadownload.com/); availability and rights remain with their respective source/rights holders.
 
@@ -250,4 +250,6 @@ For release history, see [CHANGELOG.md](CHANGELOG.md). For security reporting, s
 
 ## License
 
-MIT for the source code and original project assets. See [LICENSE](LICENSE) and [DATA_LICENSE.md](DATA_LICENSE.md).
+**License:** PolyForm Noncommercial 1.0.0 — free for personal and noncommercial use. Commercial use requires separate permission.
+
+The [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0) applies to the source code and original project assets. See [LICENSE](LICENSE) and [DATA_LICENSE.md](DATA_LICENSE.md).

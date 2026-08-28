@@ -1,6 +1,6 @@
 # Catalogue and media rights
 
-The MIT license applies only to Dhamma Echo's source code and original project assets.
+The PolyForm Noncommercial License 1.0.0 applies only to Dhamma Echo's source code and original project assets.
 
 It does not grant rights to:
 

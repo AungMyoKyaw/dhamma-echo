@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- Replaced the MIT source and asset license with PolyForm Noncommercial License 1.0.0; catalogue and media rights remain separately documented.
+
 ## [0.5.10] - 2026-08-22
 
 ### Fixed
