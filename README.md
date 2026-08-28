@@ -252,4 +252,6 @@ For release history, see [CHANGELOG.md](CHANGELOG.md). For security reporting, s
 
 **License:** PolyForm Noncommercial 1.0.0 — free for personal and noncommercial use. Commercial use requires separate permission.
 
+Copyright (c) 2026 Aung Myo Kyaw.
+
 The [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0) applies to the source code and original project assets. See [LICENSE](LICENSE) and [DATA_LICENSE.md](DATA_LICENSE.md).
