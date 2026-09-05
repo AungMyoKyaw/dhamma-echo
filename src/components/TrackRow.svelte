@@ -49,9 +49,9 @@
   >
     <span
       class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border-0 bg-app-soft text-app-muted shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-app-border)_70%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 {track.playable
-        ? 'bg-[color-mix(in_srgb,var(--color-app-primary)_12%,var(--color-app-surface))] text-app-primary group-hover:bg-app-primary group-hover:text-app-primary-ink group-hover:shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
+        ? 'bg-[color-mix(in_srgb,var(--color-app-primary)_12%,var(--color-app-surface))] text-app-primary group-hover:bg-app-primary group-hover:text-app-primary-ink'
         : ''} {current && track.playable
-        ? 'bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_22%,transparent)]'
+        ? 'bg-app-primary text-app-primary-ink'
         : ''}"
       ><span
         class="block size-[18px] [&_svg]:block [&_svg]:size-full {playing

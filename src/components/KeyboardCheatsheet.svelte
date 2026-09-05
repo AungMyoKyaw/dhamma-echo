@@ -51,7 +51,7 @@
           <dt class="text-sm text-app">{shortcut.action}</dt>
           <dd class="flex shrink-0 items-center gap-1">
             {#each shortcut.keys as key (key)}<kbd
-                class="inline-flex h-7 min-w-7 items-center justify-center rounded-md border border-app-border bg-app-soft px-2 font-mono text-xs font-bold text-app"
+                class="inline-flex h-7 min-w-7 items-center justify-center rounded-control border border-app-border bg-app-soft px-2 font-mono text-xs font-bold text-app"
                 >{key}</kbd
               >{/each}
           </dd>
