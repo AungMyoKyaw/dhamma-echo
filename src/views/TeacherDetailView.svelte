@@ -6,6 +6,8 @@
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, CollectionSummary } from "../types.js";
   import { isMyanmarText } from "../ui.js";
+  import { pluralize } from "../utils.js";
+  import { teacherAvatarDataUri } from "../teacherAvatar.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   function retry(): void {
     if (state.selectedTeacherId !== null)
@@ -30,7 +32,7 @@
   <button
     class="inline-flex min-h-11 items-center justify-center rounded-full border border-app-border px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
     type="button"
-    onclick={() => app.dispatch({ type: "return-to-list" })}>Back</button
+    onclick={() => app.dispatch({ type: "return-to-list" })}>← Back to Teachers</button
   >
   {#if state.teacherDetail.status === "error"}<AsyncState
       kind="error"
@@ -43,27 +45,37 @@
       shape="detail"
     />
   {:else}{@const detail = state.teacherDetail.data}
-    <div class="rounded-card border border-app-border bg-app-surface p-6">
-      <p class="text-sm font-semibold text-app-muted">
-        {detail.audioCount.toLocaleString("en-US")} talks
-      </p>
-      <h2
-        class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
-        lang={isMyanmarText(detail.name) ? "my" : undefined}
+    {@const avatar = teacherAvatarDataUri(detail.id)}
+    <div class="flex items-start gap-5 rounded-card border border-app-border bg-app-surface p-6">
+      <div
+        class="size-20 shrink-0 overflow-hidden rounded-full bg-app-soft ring-1 ring-app-border/60"
+        aria-hidden="true"
       >
-        {detail.name}
-      </h2>
-      <button
-        class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
-        type="button"
-        onclick={() => void explore()}>Explore this teacher</button
-      >
+        <img src={avatar} alt="" class="block size-full object-cover" />
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-semibold text-app-muted tabular-nums">
+          {pluralize(detail.audioCount, "talk", undefined, state.settings.locale)}
+        </p>
+        <h2
+          class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
+          lang={isMyanmarText(detail.name) ? "my" : undefined}
+        >
+          {detail.name}
+        </h2>
+        <button
+          class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+          type="button"
+          onclick={() => void explore()}>Explore this teacher's talks</button
+        >
+      </div>
     </div>
     {#if detail.collections.length > 0}<div>
         <h3 class="mb-3 text-lg font-bold">Collections</h3>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           {#each detail.collections as collection (collection.id)}<CollectionCard
               {collection}
+              {state}
               onselect={open}
             />{/each}
         </div>
@@ -80,8 +92,10 @@
           shape="rows"
         />{:else if state.teacherTalks.page.items.length === 0}<AsyncState
           kind="empty"
-          title="No talks found"
-          detail="This teacher has no talks in the catalogue."
+          title={detail.audioCount > 0 ? "Loading more talks" : "No talks found"}
+          detail={detail.audioCount > 0
+            ? `This teacher has ${detail.audioCount} talks on file. Load more below to see them.`
+            : "This teacher has no talks in the catalogue."}
         />{:else}<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
           {#each state.teacherTalks.page.items as track (track.id)}<TrackRow
               {track}
@@ -97,6 +111,7 @@
             message={state.teacherTalks.loadMoreMessage}
             exhausted={state.teacherTalks.exhausted}
             noun="talks"
+            locale={state.settings.locale}
             onloadmore={() => app.loadMoreTeacherTalks()}
           />
         </div>{/if}

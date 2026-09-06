@@ -53,7 +53,8 @@ test("settings storage uses safe defaults and accepted values", () => {
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
     browseLimit: 50,
-    theme: "system"
+    theme: "system",
+    locale: "en-US"
   });
   storage.setItem(
     "dhamma-echo:settings",
@@ -62,7 +63,8 @@ test("settings storage uses safe defaults and accepted values", () => {
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1.5,
     browseLimit: 25,
-    theme: "dark"
+    theme: "dark",
+    locale: "en-US"
   });
   storage.setItem(
     "dhamma-echo:settings",
@@ -73,11 +75,17 @@ test("settings storage uses safe defaults and accepted values", () => {
 
 test("settings can be saved and loaded", () => {
   const storage = new MemoryStorage();
-  saveSettings(storage, { playbackRate: 0.75, browseLimit: 100, theme: "dark" });
+  saveSettings(storage, {
+    playbackRate: 0.75,
+    browseLimit: 100,
+    theme: "dark",
+    locale: "my-MM"
+  });
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 0.75,
     browseLimit: 100,
-    theme: "dark"
+    theme: "dark",
+    locale: "my-MM"
   });
   assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"dark"/);
   assert.equal(Object.hasOwn(JSON.parse(storage.getItem("dhamma-echo:settings")), "volume"), false);
@@ -171,7 +179,8 @@ test("settings keep valid playback values while defaulting unknown optional pref
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
     browseLimit: 50,
-    theme: "system"
+    theme: "system",
+    locale: "en-US"
   });
 });
 
@@ -196,7 +205,8 @@ test("settings normalize an invalid playback rate to the safe default", () => {
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1.75,
     browseLimit: 50,
-    theme: "system"
+    theme: "system",
+    locale: "en-US"
   });
 });
 

@@ -4,6 +4,7 @@
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState } from "../types.js";
   import { isMyanmarText } from "../ui.js";
+  import { pluralize } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   function retry(): void {
     if (state.selectedCollectionId !== null)
@@ -18,7 +19,7 @@
   <button
     class="inline-flex min-h-11 items-center justify-center rounded-full border border-app-border px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
     type="button"
-    onclick={() => app.dispatch({ type: "return-to-list" })}>Back</button
+    onclick={() => app.dispatch({ type: "return-to-list" })}>← Back to Collections</button
   >
   {#if state.collectionDetail.status === "error"}<AsyncState
       kind="error"
@@ -31,27 +32,38 @@
       shape="detail"
     />
   {:else}{@const detail = state.collectionDetail.data}
-    <div class="rounded-card border border-app-border bg-app-surface p-6">
-      <p class="text-sm font-semibold text-app-muted">
-        {detail.audioCount.toLocaleString("en-US")} talks
-      </p>
-      <h2
-        class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
-        lang={isMyanmarText(detail.name) ? "my" : undefined}
+    <div class="flex items-start gap-5 rounded-card border border-app-border bg-app-surface p-6">
+      <div
+        class="flex size-16 shrink-0 items-center justify-center rounded-control bg-app-secondary/15 text-app-secondary"
+        aria-hidden="true"
       >
-        {detail.name}
-      </h2>
-      <p
-        class="mt-2 text-sm text-app-muted {isMyanmarText(detail.teacherName)
-          ? 'myanmar-text'
-          : ''}"
-        lang={isMyanmarText(detail.teacherName) ? "my" : undefined}
-      >
-        {detail.teacherName || "Unknown teacher"}
-      </p>
-      {#if detail.description !== null}<p class="mt-4 text-sm leading-6 text-app-muted">
-          {detail.description}
-        </p>{/if}
+        <svg viewBox="0 0 24 24" class="size-8" fill="none" stroke="currentColor" stroke-width="2"
+          ><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"
+          ></path></svg
+        >
+      </div>
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-semibold text-app-muted tabular-nums">
+          {pluralize(detail.audioCount, "talk", undefined, state.settings.locale)}
+        </p>
+        <h2
+          class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
+          lang={isMyanmarText(detail.name) ? "my" : undefined}
+        >
+          {detail.name}
+        </h2>
+        <p
+          class="mt-2 text-sm text-app-muted {isMyanmarText(detail.teacherName)
+            ? 'myanmar-text'
+            : ''}"
+          lang={isMyanmarText(detail.teacherName) ? "my" : undefined}
+        >
+          {detail.teacherName || "Unknown teacher"}
+        </p>
+        {#if detail.description !== null}<p class="mt-4 text-sm leading-6 text-app-muted">
+            {detail.description}
+          </p>{/if}
+      </div>
     </div>
     {#if detail.tracks.length === 0}<AsyncState
         kind="empty"

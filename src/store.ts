@@ -88,6 +88,7 @@ export type AppAction =
   | { type: "set-rate"; rate: number }
   | { type: "set-browse-limit"; limit: 25 | 50 | 100 }
   | { type: "set-theme"; theme: "light" | "dark" | "system" }
+  | { type: "set-locale"; locale: "en-US" | "my-MM" }
   | { type: "set-sidebar-collapsed"; collapsed: boolean };
 
 const emptyPage: AudioSearchPage = { items: [], total: 0, limit: 50, offset: 0 };
@@ -687,6 +688,8 @@ export function reduce(state: AppState, action: AppAction): AppState {
       };
     case "set-theme":
       return { ...state, settings: { ...state.settings, theme: action.theme } };
+    case "set-locale":
+      return { ...state, settings: { ...state.settings, locale: action.locale } };
     case "set-sidebar-collapsed":
       return { ...state, ui: { ...state.ui, sidebarCollapsed: action.collapsed } };
   }

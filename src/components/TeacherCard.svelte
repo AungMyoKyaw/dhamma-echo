@@ -1,17 +1,22 @@
 <script lang="ts">
-  import type { TeacherSummary } from "../types.js";
-  import { isMyanmarText, truncateTeacherCardName } from "../ui.js";
+  import type { AppState, TeacherSummary } from "../types.js";
+  import { isCuratedFeaturedTeacher, isMyanmarText, truncateTeacherCardName } from "../ui.js";
   import { teacherAvatarDataUri } from "../teacherAvatar.js";
+  import { pluralize } from "../utils.js";
   let {
     teacher,
+    state,
     onselect
   }: {
     teacher: TeacherSummary;
+    state: AppState;
     onselect: (teacher: TeacherSummary) => void | Promise<void>;
   } = $props();
   let myanmar = $derived(isMyanmarText(teacher.name));
   let avatar = $derived(teacherAvatarDataUri(teacher.id));
   let displayName = $derived(truncateTeacherCardName(teacher.name));
+  let featured = $derived(isCuratedFeaturedTeacher(teacher.id));
+  let locale = $derived(state.settings.locale);
 </script>
 
 <button
@@ -26,6 +31,9 @@
     <img src={avatar} alt="" class="block size-full object-cover" />
   </div>
   <div class="min-w-0">
+    {#if featured}<p class="text-[10px] font-bold tracking-wide text-app-secondary uppercase">
+        Featured teacher
+      </p>{/if}
     <p
       class="break-words font-bold leading-6 {myanmar ? 'myanmar-text' : ''}"
       lang={myanmar ? "my" : undefined}
@@ -35,7 +43,7 @@
       {displayName}
     </p>
     <p class="mt-1 text-sm text-app-muted tabular-nums">
-      {teacher.audioCount.toLocaleString("en-US")} talks
+      {pluralize(teacher.audioCount, "talk", undefined, locale)}
     </p>
   </div>
 </button>

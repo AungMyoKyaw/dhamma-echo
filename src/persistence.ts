@@ -13,7 +13,7 @@ export function createDefaultLibrary(): LibraryState {
 }
 
 export function createDefaultSettings(): SettingsState {
-  return { playbackRate: 1, browseLimit: 50, theme: "system" };
+  return { playbackRate: 1, browseLimit: 50, theme: "system", locale: "en-US" };
 }
 
 function positiveInteger(value: unknown): value is number {
@@ -124,7 +124,8 @@ export function loadSettings(storage: StorageLike): SettingsState {
         typeof record.browseLimit === "number" && BROWSE_LIMITS.has(record.browseLimit)
           ? (record.browseLimit as 25 | 50 | 100)
           : 50,
-      theme: isTheme(record.theme) ? record.theme : "system"
+      theme: isTheme(record.theme) ? record.theme : "system",
+      locale: record.locale === "my-MM" ? "my-MM" : "en-US"
     };
   } catch {
     return createDefaultSettings();
@@ -138,7 +139,8 @@ export function saveSettings(storage: StorageLike, settings: SettingsState): voi
       version: VERSION,
       playbackRate: settings.playbackRate,
       browseLimit: settings.browseLimit,
-      theme: settings.theme
+      theme: settings.theme,
+      locale: settings.locale
     })
   );
 }

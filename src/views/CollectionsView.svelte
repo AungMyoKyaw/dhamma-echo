@@ -29,6 +29,14 @@
     app.dispatch({ type: "set-collection-query", query: "" });
     await app.searchCollections();
   }
+  async function clearAll(): Promise<void> {
+    app.dispatch({ type: "set-collection-query", query: "" });
+    app.dispatch({ type: "set-collection-teacher", teacherId: null });
+    await app.searchCollections();
+  }
+  let hasFilters = $derived(
+    state.collectionSearch.query.length > 0 || state.collectionSearch.teacherId !== null
+  );
   function open(collection: CollectionSummary): void {
     void app.openCollection(collection.id, "collections");
   }
@@ -36,17 +44,20 @@
 
 <section class="space-y-5">
   <form
-    class="flex flex-wrap gap-3 rounded-card border border-app-border bg-app-surface p-4"
+    class="flex flex-wrap items-end gap-3 rounded-card border border-app-border bg-app-surface p-4"
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
       label="Search collections"
       placeholder="Search collection name"
       value={state.collectionSearch.query}
+      visibleLabel
       className="min-w-[260px] flex-[1_1_360px]"
       onclear={clear}
     /><label class="min-w-[190px] flex-[0_1_240px]"
-      ><span class="sr-only">Collection teacher</span><select
+      ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
+        >Collection teacher</span
+      ><select
         class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="teacherId"
         value={state.collectionSearch.teacherId === null
@@ -58,10 +69,18 @@
           >{/each}</select
       ></label
     ><button
-      class="inline-flex h-12 min-h-10 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+      class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
       type="submit">Search</button
     >
   </form>
+  {#if hasFilters}<div class="flex items-center gap-2">
+      <button
+        type="button"
+        onclick={() => void clearAll()}
+        class="inline-flex min-h-10 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted hover:bg-app-soft hover:text-app"
+        >Clear filters</button
+      >
+    </div>{/if}
   {#if state.collections.status === "error"}<AsyncState
       kind="error"
       detail={state.collections.message}
@@ -74,14 +93,19 @@
     />
   {:else if state.collections.page.items.length === 0}<AsyncState
       kind="empty"
-      title="No collections match"
+      title={state.collectionSearch.query.length > 0
+        ? `No collections match “${state.collectionSearch.query}”`
+        : "No collections match"}
       detail="Try a shorter collection name or clear the teacher filter."
+      actionLabel={hasFilters ? "Clear filters" : undefined}
+      onaction={hasFilters ? () => void clearAll() : undefined}
     />
   {:else if state.collectionSearch.teacherId !== null}<div
       class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"
     >
       {#each state.collections.page.items as collection (collection.id)}<CollectionCard
           {collection}
+          {state}
           showTeacher={false}
           onselect={open}
         />{/each}
@@ -92,6 +116,7 @@
           <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
             {#each group.items as collection (collection.id)}<CollectionCard
                 {collection}
+                {state}
                 showTeacher={false}
                 onselect={open}
               />{/each}
@@ -106,6 +131,7 @@
       message={state.collections.loadMoreMessage}
       exhausted={state.collections.exhausted}
       noun="collections"
+      locale={state.settings.locale}
       onloadmore={() => app.loadMoreCollections()}
     />{/if}
 </section>

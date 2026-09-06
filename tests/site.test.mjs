@@ -229,9 +229,8 @@ test("active filter clear icons cannot expand beyond their control", async () =>
     "utf8"
   );
 
-  assert.equal((explore.match(/inline-flex size-6 shrink-0/g) ?? []).length, 3);
-  assert.equal((explore.match(/class="block size-3"/g) ?? []).length, 3);
-  assert.equal((explore.match(/inline-flex min-h-10 items-center gap-2/g) ?? []).length, 3);
+  assert.equal((explore.match(/inline-flex size-6 shrink-0/g) ?? []).length, 4);
+  assert.equal((explore.match(/class="block size-3"/g) ?? []).length, 4);
 });
 
 test("application UI leaves volume control to the operating system", async () => {

@@ -472,7 +472,7 @@ test("hydrate applies persisted UI preferences alongside settings", () => {
   const next = reduce(state, {
     type: "hydrate",
     library: state.library,
-    settings: { playbackRate: 1.5, browseLimit: 25, theme: "dark" },
+    settings: { playbackRate: 1.5, browseLimit: 25, theme: "dark", locale: "en-US" },
     ui: { sidebarCollapsed: true }
   });
   assert.equal(next.ui.sidebarCollapsed, true);

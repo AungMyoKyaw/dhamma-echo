@@ -57,12 +57,16 @@ export function formatLocaleNumber(value: number, locale: string): string {
   return isBurmeseLocale(locale) ? toBurmeseDigits(formatted) : formatted;
 }
 
-export function pluralize(count: number, singular: string, plural?: string): string {
+export function pluralize(
+  count: number,
+  singular: string,
+  plural?: string,
+  locale: string = "en-US"
+): string {
   const safe = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
   const noun = safe === 1 ? singular : (plural ?? `${singular}s`);
-  const hasMyanmar = /[\u1000-\u109F]/u.test(noun);
-  const numberPart = formatLocaleNumber(safe, hasMyanmar ? "my-MM" : "en-US");
-  return `${numberPart} ${noun}`;
+  const effectiveLocale = locale === "en-US" && /[\u1000-\u109F]/u.test(noun) ? "my-MM" : locale;
+  return `${formatLocaleNumber(safe, effectiveLocale)} ${noun}`;
 }
 
 export function mediaUrlCandidates(value: string, format: string): string[] {

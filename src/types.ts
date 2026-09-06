@@ -126,10 +126,13 @@ export interface DownloadProgress {
   total: number | null;
 }
 
+export type AppLocale = "en-US" | "my-MM";
+
 export interface SettingsState {
   playbackRate: number;
   browseLimit: 25 | 50 | 100;
   theme: "light" | "dark" | "system";
+  locale: AppLocale;
 }
 
 interface SearchState {

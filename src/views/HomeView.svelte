@@ -5,8 +5,8 @@
   import TeacherCard from "../components/TeacherCard.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, AudioTrack, TeacherSummary } from "../types.js";
-  import { featuredTeachers, isMyanmarText } from "../ui.js";
-  import { formatDuration } from "../utils.js";
+  import { featuredTeachers, isMyanmarText, truncateTrackTitle } from "../ui.js";
+  import { formatLocaleDuration, formatLocaleNumber, pluralize } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   let featured = $derived(featuredTeachers(state.teachers.data));
   let hasRecent = $derived(
@@ -15,8 +15,9 @@
   );
   let totalAudio = $derived(state.summary.data.totalAudio);
   let totalTeachers = $derived(state.summary.data.totalTeachers);
+  let locale = $derived(state.settings.locale);
   let catalogueSentence = $derived(
-    `Search by title, teacher, language, or format across ${totalAudio.toLocaleString("en-US")} talks and ${totalTeachers.toLocaleString("en-US")} teachers.`
+    `Search by title, teacher, language, or format across ${pluralize(totalAudio, "talk", undefined, locale)} and ${formatLocaleNumber(totalTeachers, locale)} teachers.`
   );
   function openTeacher(teacher: TeacherSummary): void {
     void app.openTeacher(teacher.id, "home");
@@ -46,6 +47,7 @@
         {@const resume = state.library.resume[String(latest.id)] ?? 0}
         {@const playing =
           state.player.current?.id === latest.id && state.player.status === "playing"}
+        {@const resumeLabel = resume > 0 ? formatLocaleDuration(resume, locale) : ""}
         <section class="space-y-4">
           <div>
             <h2 class="text-2xl font-bold">Continue listening</h2>
@@ -55,21 +57,22 @@
             class="flex items-center gap-4 overflow-hidden rounded-card border border-app-primary/25 bg-app-primary/[0.04] p-5"
           >
             <button
-              class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-app-primary-ink transition hover:opacity-90 {latest.playable
-                ? ''
-                : 'cursor-not-allowed opacity-50'}"
+              class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-app-primary-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
               disabled={!latest.playable}
               onclick={() => void play(latest)}
-              aria-label="Resume {latest.title}"
+              aria-label={playing
+                ? `Pause ${latest.title}`
+                : `Resume ${latest.title}`}
+              aria-pressed={playing}
               ><span class="ml-0.5 size-6"><Icon name={playing ? "pause" : "play"} /></span></button
             >
             <div class="min-w-0">
               <h3
-                class="truncate font-bold {isMyanmarText(latest.title) ? 'myanmar-text' : ''}"
+                class="line-clamp-2 break-words font-bold {isMyanmarText(latest.title) ? 'myanmar-text' : ''}"
                 lang={isMyanmarText(latest.title) ? "my" : undefined}
               >
-                {latest.title}
+                {truncateTrackTitle(latest.title)}
               </h3>
               <p
                 class="mt-1 truncate text-sm text-app-muted {isMyanmarText(latest.teacherName)
@@ -78,7 +81,7 @@
                 lang={isMyanmarText(latest.teacherName) ? "my" : undefined}
               >
                 {latest.teacherName || "Unknown teacher"}{resume > 0
-                  ? ` · Resume at ${formatDuration(resume)}`
+                  ? ` · Resume at ${resumeLabel}`
                   : ""}
               </p>
             </div>
@@ -118,10 +121,10 @@
       </div>
       <div
         class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4"
-        data-featured-layout="grid"
       >
         {#if state.teachers.status === "ready" && featured.length > 0}{#each featured as teacher (teacher.id)}<TeacherCard
               {teacher}
+              {state}
               onselect={openTeacher}
             />{/each}{:else}<div
             class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted"

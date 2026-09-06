@@ -325,6 +325,10 @@ export class DhammaApp {
     this.dispatch({ type: "set-theme", theme });
   }
 
+  setLocale(locale: "en-US" | "my-MM"): void {
+    this.dispatch({ type: "set-locale", locale });
+  }
+
   setSidebarCollapsed(collapsed: boolean): void {
     this.dispatch({ type: "set-sidebar-collapsed", collapsed });
   }

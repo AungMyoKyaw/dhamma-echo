@@ -1,13 +1,16 @@
 <script lang="ts">
-  import type { CollectionSummary } from "../types.js";
+  import type { AppState, CollectionSummary } from "../types.js";
   import { isMyanmarText } from "../ui.js";
+  import { pluralize } from "../utils.js";
   let {
     collection,
     showTeacher = true,
+    state,
     onselect
   }: {
     collection: CollectionSummary;
     showTeacher?: boolean;
+    state: AppState;
     onselect: (collection: CollectionSummary) => void | Promise<void>;
   } = $props();
   let myanmar = $derived(isMyanmarText(collection.name));
@@ -18,7 +21,10 @@
   type="button"
   onclick={() => void onselect(collection)}
 >
-  <p class="font-bold leading-7 {myanmar ? 'myanmar-text' : ''}" lang={myanmar ? "my" : undefined}>
+  <p
+    class="break-words font-bold leading-7 {myanmar ? 'myanmar-text' : ''}"
+    lang={myanmar ? "my" : undefined}
+  >
     {collection.name}
   </p>
   {#if showTeacher}<p
@@ -30,6 +36,6 @@
       {collection.teacherName || "Unknown teacher"}
     </p>{/if}
   <p class="mt-auto pt-3 text-xs font-bold text-app-primary tabular-nums">
-    {collection.audioCount.toLocaleString("en-US")} talks
+    {pluralize(collection.audioCount, "talk", undefined, state.settings.locale)}
   </p>
 </button>
