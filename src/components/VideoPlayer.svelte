@@ -307,7 +307,7 @@
             <button
               type="button"
               onclick={() => void close()}
-              class="inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
+              class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
               aria-label="Close video player"
               title="Close video player (Esc)"
             >
@@ -335,7 +335,7 @@
               <button
                 type="button"
                 onclick={() => app.seekBy(-15)}
-                class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
+                class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
                 aria-label="Jump back 15 seconds"
                 title="Jump back 15 seconds"
               >
@@ -360,7 +360,7 @@
               <button
                 type="button"
                 onclick={() => app.seekBy(15)}
-                class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
+                class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
                 aria-label="Jump forward 15 seconds"
                 title="Jump forward 15 seconds"
               >
@@ -393,8 +393,7 @@
                 <select
                   value={String(appState.settings.playbackRate)}
                   onchange={(event) => app.setRate(numberFromControl(event))}
-                  class="h-10 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app"
-                  aria-label="Playback speed"
+                  class="h-11 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app"
                 >
                   {#each rates as rate (rate)}
                     <option value={String(rate)}>{rate}×</option>
@@ -405,7 +404,7 @@
                 <button
                   type="button"
                   onclick={() => app.dispatch({ type: "toggle-queue" })}
-                  class="relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-app-border bg-transparent text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
+                  class="relative inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-app-border bg-transparent text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
                   aria-label="Show queue"
                   title="Show queue"
                   aria-expanded={appState.player.queueOpen}
@@ -419,7 +418,7 @@
                 <button
                   type="button"
                   onclick={() => void toggleFullscreen()}
-                  class="inline-flex min-h-10 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
+                  class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
                   aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                   title={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
                 >
