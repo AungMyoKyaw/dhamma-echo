@@ -72,7 +72,7 @@
         </div>
         <p class="text-sm font-bold">A quiet library</p>
         <p class="mt-1 text-xs leading-5 text-app-muted">
-          Your catalogue remains on this device. Audio streams only when you press play.
+          Your catalogue stays on this device. Audio streams only when you press play; downloads stay until you remove them.
         </p>
       </div>{/if}
     <button

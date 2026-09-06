@@ -9,6 +9,7 @@
     { keys: ["N"], action: "Play the next talk in the queue" },
     { keys: ["?"], action: "Show or hide this list" },
     { keys: ["Shift", "/"], action: "Same as ? — open or close this list" },
+    { keys: ["["], action: "Collapse or expand the sidebar" },
     { keys: ["Esc"], action: "Close this dialog or the active overlay" }
   ] as const;
   $effect(() => {

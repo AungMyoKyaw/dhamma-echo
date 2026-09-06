@@ -4,8 +4,8 @@
   import { focusTrapIndex } from "../a11y.js";
   import { getNativeWindow } from "../runtime.js";
   import type { AppState } from "../types.js";
-  import { isMyanmarText } from "../ui.js";
-  import { formatDuration } from "../utils.js";
+  import { isMyanmarText, truncateTrackTitle } from "../ui.js";
+  import { formatLocaleDuration } from "../utils.js";
   import Icon from "./Icon.svelte";
   import QueuePanel from "./QueuePanel.svelte";
 
@@ -25,6 +25,7 @@
   let playing = $derived(appState.player.status === "playing");
   let loading = $derived(appState.player.status === "loading");
   let max = $derived(appState.player.duration > 0 ? appState.player.duration : 1);
+  let locale = $derived(appState.settings.locale);
   let videoEl: HTMLVideoElement | undefined = $state();
   let fullscreen = $state(false);
   let videoReady = $state(false);
@@ -285,13 +286,13 @@
               <p class="text-xs font-semibold text-app-primary">Now playing · video</p>
               <h2
                 id="video-player-title"
-                class="mt-1 truncate text-base font-bold {isMyanmarText(track.title)
+                class="mt-1 line-clamp-2 break-words text-base font-bold {isMyanmarText(track.title)
                   ? 'myanmar-text'
                   : ''}"
                 lang={isMyanmarText(track.title) ? "my" : undefined}
                 title={track.title}
               >
-                {track.title}
+                {truncateTrackTitle(track.title)}
               </h2>
               <p
                 class="mt-0.5 truncate text-xs text-app-muted {isMyanmarText(track.teacherName)
@@ -370,7 +371,7 @@
             <div
               class="mt-3 grid grid-cols-[3.2rem_minmax(70px,1fr)_3.2rem] items-center gap-2 text-xs text-app-muted tabular-nums [&>span:first-child]:text-right"
             >
-              <span>{formatDuration(appState.player.currentTime)}</span>
+              <span>{formatLocaleDuration(appState.player.currentTime, locale)}</span>
               <input
                 class="w-full min-w-0 accent-app-primary"
                 type="range"
@@ -381,7 +382,7 @@
                 oninput={(event) => app.seek(numberFromControl(event))}
                 aria-label="Playback position"
               />
-              <span>{formatDuration(appState.player.duration)}</span>
+              <span>{formatLocaleDuration(appState.player.duration, locale)}</span>
             </div>
 
             <div

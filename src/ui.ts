@@ -94,8 +94,8 @@ export function routeLabel(route: Route): { eyebrow: string; title: string; deta
     },
     library: {
       eyebrow: "Your space",
-      title: "Continue listening",
-      detail: "Resume, revisit favorites, and manage downloaded talks."
+      title: "Your library",
+      detail: "Downloads, favorites, and recently played talks."
     },
     settings: {
       eyebrow: "Preferences",

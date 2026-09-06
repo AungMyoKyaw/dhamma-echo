@@ -72,6 +72,10 @@
       event.preventDefault();
       void app.playNext();
     }
+    if (event.key === "[") {
+      event.preventDefault();
+      app.setSidebarCollapsed(!appState.ui.sidebarCollapsed);
+    }
   }
 
   function scrollContentFromPlayer(event: WheelEvent): void {
