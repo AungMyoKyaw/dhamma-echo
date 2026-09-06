@@ -480,3 +480,16 @@ test("hydrate applies persisted UI preferences alongside settings", () => {
   assert.equal(next.search.limit, 25);
   assert.equal(next.collectionSearch.limit, 25);
 });
+
+test("reducer set-locale updates settings", () => {
+  const state = createInitialState();
+  const next = reduce(state, { type: "set-locale", locale: "my-MM" });
+  assert.equal(next.settings.locale, "my-MM");
+});
+
+test("reducer remove-download clears the downloads map", () => {
+  const state = createInitialState();
+  state.library.downloads = { 5: "/tmp/a.mp3" };
+  const next = reduce(state, { type: "remove-download", id: 5 });
+  assert.equal(next.library.downloads?.["5"], undefined);
+});

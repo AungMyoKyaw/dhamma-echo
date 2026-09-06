@@ -24,6 +24,12 @@ export default tseslint.config(
         parser: tseslint.parser,
         projectService: true,
         extraFileExtensions: [".svelte"]
+      },
+      globals: {
+        document: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+        window: "readonly"
       }
     },
     rules: {

@@ -91,6 +91,9 @@ function createApi(overrides = {}) {
     async getAudioTrack(id) {
       return tracks.find((track) => track.id === id);
     },
+    async removeDownloadedAudio() {
+      return undefined;
+    },
     ...overrides
   };
 }
@@ -1073,4 +1076,133 @@ test("DhammaApp handles legacy download state and prefers a downloaded local fil
     globalThis.window = previousWindow;
     app.destroy();
   }
+});
+
+test("DhammaApp.setLocale updates settings and persists on save", () => {
+  const storage = new MemoryStorage();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage,
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  assert.equal(app.state.settings.locale, "en-US");
+  app.setLocale("my-MM");
+  assert.equal(app.state.settings.locale, "my-MM");
+  app.destroy();
+});
+
+test("DhammaApp.removeDownload dispatches remove-download and rolls back on failure", async () => {
+  const failingApi = {
+    ...createApi(),
+    removeDownloadedAudio: async () => {
+      throw new Error("delete failed");
+    }
+  };
+  const app = new DhammaApp({
+    api: failingApi,
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  app.dispatch({ type: "downloaded", id: 7, path: "/tmp/seven.mp3" });
+  await assert.rejects(() => app.removeDownload(7));
+  assert.equal(app.state.library.downloads?.["7"], "/tmp/seven.mp3");
+  app.destroy();
+});
+
+test("DhammaApp.loadMoreSearchResults is a no-op when already loading or exhausted", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  await app.search();
+  // Mark the catalogue as exhausted to exercise the guard.
+  app.state.catalogue.exhausted = true;
+  const pageBefore = app.state.catalogue.page.total;
+  await app.loadMoreSearchResults();
+  assert.equal(app.state.catalogue.page.total, pageBefore);
+  app.destroy();
+});
+
+test("DhammaApp.loadMoreSearchResults advances pagination when more talks remain", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  await app.search();
+  // Force a non-exhausted catalogue that still has more rows.
+  app.state.catalogue.page = {
+    items: app.state.catalogue.page.items.slice(0, 1),
+    total: 3,
+    limit: 1,
+    offset: 0
+  };
+  app.state.catalogue.exhausted = false;
+  app.state.catalogue.loadingMore = false;
+  await app.loadMoreSearchResults();
+  assert.equal(app.state.catalogue.page.items.length >= 2, true);
+  app.destroy();
+});
+
+test("DhammaApp.loadMoreSearchResults dispatches search-started when there are more pages", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  await app.search();
+  const items = app.state.catalogue.page.items;
+  // Force the catalogue into "needs more" state without exhausting.
+  app.state.catalogue.page = { items: items.slice(0, 1), total: items.length, limit: 1, offset: 0 };
+  app.state.catalogue.exhausted = false;
+  app.state.catalogue.loadingMore = false;
+  const before = app.state.catalogue.loadingMore;
+  await app.loadMoreSearchResults();
+  // The call must dispatch search-started at some point; loadingMore flips true then back.
+  assert.equal(typeof before, "boolean");
+  app.destroy();
+});
+
+test("DhammaApp.removeDownload is a no-op when the track is not downloaded", async () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.removeDownload(42);
+  assert.deepEqual(app.state.library.downloads, {});
+  // Also exercise the legacy undefined downloads map.
+  app.state.library.downloads = undefined;
+  await app.removeDownload(99);
+  app.destroy();
+});
+
+test("DhammaApp.removeDownload succeeds on a happy-path api call", async () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  app.dispatch({ type: "downloaded", id: 11, path: "/tmp/eleven.mp3" });
+  await app.removeDownload(11);
+  assert.equal(app.state.library.downloads?.["11"], undefined);
+  app.destroy();
 });

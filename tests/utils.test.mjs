@@ -48,6 +48,21 @@ test("formatLocaleNumber accepts an explicit Intl locale tag", () => {
   assert.equal(formatLocaleNumber(1234567, "de-DE"), "1.234.567");
 });
 
+test("formatLocaleNumber falls back to ASCII digits when Intl rejects the locale", () => {
+  // Constructed locale tag that Intl will reject; safe fallback path.
+  assert.equal(formatLocaleNumber(42, "this-is-not-a-locale"), "42");
+});
+
+test("formatLocaleNumber treats non-finite input as zero", () => {
+  assert.equal(formatLocaleNumber(Number.NaN, "en-US"), "0");
+  assert.equal(formatLocaleNumber(-3, "en-US"), "0");
+});
+
+test("formatLocaleDuration passes through non-Burmese locales unchanged", () => {
+  // Forces the isBurmeseLocale false branch.
+  assert.equal(formatLocaleDuration(3725, "de-DE"), "1:02:05");
+});
+
 test("pluralize returns singular or plural based on count and locale", () => {
   assert.equal(pluralize(0, "talk"), "0 talks");
   assert.equal(pluralize(1, "talk"), "1 talk");

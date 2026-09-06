@@ -6,17 +6,17 @@
   import { downloadedTracks, favoriteTracks } from "../ui.js";
   import { pluralize } from "../utils.js";
 
-  let { state, app }: { state: AppState; app: DhammaApp } = $props();
-  let favorites = $derived(favoriteTracks(state));
-  let downloads = $derived(downloadedTracks(state));
-  let hasDownloads = $derived(Object.keys(state.library.downloads ?? {}).length > 0);
+  let { state: appState, app }: { state: AppState; app: DhammaApp } = $props();
+  let favorites = $derived(favoriteTracks(appState));
+  let downloads = $derived(downloadedTracks(appState));
+  let hasDownloads = $derived(Object.keys(appState.library.downloads ?? {}).length > 0);
   let favoriteOnly = $derived(
-    favorites.filter((track) => state.library.downloads?.[String(track.id)] === undefined)
+    favorites.filter((track) => appState.library.downloads?.[String(track.id)] === undefined)
   );
-  let unresolvedFavorites = $derived(state.library.favorites.length - favorites.length);
-  let historyTracks = $derived(state.homeRecent.tracks);
+  let unresolvedFavorites = $derived(appState.library.favorites.length - favorites.length);
+  let historyTracks = $derived(appState.homeRecent.tracks);
   type Tab = "downloads" | "favorites" | "history";
-  let activeTab = $state<Tab>("downloads");
+  let activeTab: Tab = $state("downloads");
   function setTab(tab: Tab): void {
     activeTab = tab;
   }
@@ -25,7 +25,7 @@
   }
 </script>
 
-{#if state.library.favorites.length === 0 && !hasDownloads}
+{#if appState.library.favorites.length === 0 && !hasDownloads}
   <AsyncState
     kind="empty"
     title="Find a talk to start your library"
@@ -61,9 +61,9 @@
         type="button"
         onclick={() => setTab("favorites")}
         >Favorites
-        {#if state.library.favorites.length > 0}<span
+        {#if appState.library.favorites.length > 0}<span
             class="inline-flex min-h-[20px] items-center justify-center rounded-full bg-app-primary/15 px-2 pt-0.5 pb-0 align-middle text-[11px] leading-none font-bold text-app-primary"
-            >{state.library.favorites.length}</span
+            >{appState.library.favorites.length}</span
           >{/if}
       </button>
       <button
@@ -84,15 +84,15 @@
     </div>
 
     {#if activeTab === "downloads"}
-      <section class="space-y-3" role="tabpanel" aria-label="Downloads">
+      <div class="space-y-3" role="tabpanel" aria-label="Downloads">
         <h2 class="text-xl font-bold">Downloads</h2>
         <p class="text-sm text-app-muted tabular-nums">
-          {pluralize(downloads.length, "downloaded talk", undefined, state.settings.locale)}
+          {pluralize(downloads.length, "downloaded talk", undefined, appState.settings.locale)}
         </p>
         {#if hasDownloads}
           {#if downloads.length > 0}
             <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
-              {#each downloads as track (track.id)}<TrackRow {track} {state} {app} />{/each}
+              {#each downloads as track (track.id)}<TrackRow {track} state={appState} {app} />{/each}
             </div>
           {:else}
             <AsyncState
@@ -110,12 +110,12 @@
             onaction={() => explore("explore")}
           />
         {/if}
-      </section>
+      </div>
     {:else if activeTab === "favorites"}
-      <section class="space-y-3" role="tabpanel" aria-label="Favorites">
+      <div class="space-y-3" role="tabpanel" aria-label="Favorites">
         <h2 class="text-xl font-bold">Favorites</h2>
         <p class="text-sm text-app-muted tabular-nums">
-          {pluralize(favoriteOnly.length, "saved talk", undefined, state.settings.locale)}
+          {pluralize(favoriteOnly.length, "saved talk", undefined, appState.settings.locale)}
         </p>
         {#if unresolvedFavorites > 0}
           <p class="text-xs text-app-muted">
@@ -125,9 +125,9 @@
         {/if}
         {#if favoriteOnly.length > 0}
           <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
-            {#each favoriteOnly as track (track.id)}<TrackRow {track} {state} {app} />{/each}
+            {#each favoriteOnly as track (track.id)}<TrackRow {track} state={appState} {app} />{/each}
           </div>
-        {:else if state.library.favorites.length > 0}
+        {:else if appState.library.favorites.length > 0}
           <AsyncState
             kind="empty"
             title="Favorites saved"
@@ -142,16 +142,16 @@
             onaction={() => explore("explore")}
           />
         {/if}
-      </section>
+      </div>
     {:else}
-      <section class="space-y-3" role="tabpanel" aria-label="History">
+      <div class="space-y-3" role="tabpanel" aria-label="History">
         <h2 class="text-xl font-bold">Recently played</h2>
         <p class="text-sm text-app-muted tabular-nums">
-          {pluralize(historyTracks.length, "talk", undefined, state.settings.locale)} played recently.
+          {pluralize(historyTracks.length, "talk", undefined, appState.settings.locale)} played recently.
         </p>
         {#if historyTracks.length > 0}
           <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
-            {#each historyTracks as track (track.id)}<TrackRow {track} {state} {app} />{/each}
+            {#each historyTracks as track (track.id)}<TrackRow {track} state={appState} {app} />{/each}
           </div>
         {:else}
           <AsyncState
@@ -162,7 +162,7 @@
             onaction={() => explore("teachers")}
           />
         {/if}
-      </section>
+      </div>
     {/if}
   </section>
 {/if}

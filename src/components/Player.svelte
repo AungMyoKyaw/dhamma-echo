@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
   import type { AppState } from "../types.js";
-  import { isMyanmarText } from "../ui.js";
-  import { formatDuration } from "../utils.js";
+  import { isMyanmarText, truncateTrackTitle } from "../ui.js";
+  import { formatLocaleDuration } from "../utils.js";
   import Icon from "./Icon.svelte";
   import QueuePanel from "./QueuePanel.svelte";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
@@ -11,8 +11,17 @@
   let playing = $derived(state.player.status === "playing");
   let loading = $derived(state.player.status === "loading");
   let max = $derived(state.player.duration > 0 ? state.player.duration : 1);
+  let locale = $derived(state.settings.locale);
+  let queueLabel = $derived(
+    state.player.queue.length === 0
+      ? "Show queue"
+      : `Show queue with ${state.player.queue.length} talk${state.player.queue.length === 1 ? "" : "s"}`
+  );
   function numberFromControl(event: Event): number {
     return Number((event.currentTarget as HTMLInputElement | HTMLSelectElement).value);
+  }
+  function clearError(): void {
+    app.dispatch({ type: "set-player-error", message: "" });
   }
 </script>
 
@@ -27,10 +36,10 @@
     >
       <div class="player-track min-w-0" aria-live="polite">
         <p
-          class="truncate text-sm font-bold {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
+          class="line-clamp-2 break-words text-sm font-bold {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
           lang={isMyanmarText(track.title) ? "my" : undefined}
         >
-          {track.title}
+          {truncateTrackTitle(track.title)}
         </p>
         <p
           class="truncate text-xs text-app-muted {isMyanmarText(track.teacherName)
@@ -48,6 +57,12 @@
                 class="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
                 type="button"
                 onclick={() => void app.retryPlayback()}>Retry</button
+              ><button
+                class="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
+                type="button"
+                onclick={clearError}
+                aria-label="Dismiss error"
+                >Dismiss</button
               ></span
             >{:else if loading}<span
               class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-app-primary"
@@ -56,8 +71,11 @@
                 class="size-2 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
               ></span>Connecting…</span
             >{:else}<span
-              class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-app-muted max-[980px]:truncate"
+              class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-app-muted max-[980px]:hidden"
               >Space: play/pause · ←/→: seek · ?: help</span
+            ><span
+              class="hidden max-[980px]:inline-flex min-h-10 items-center rounded-full border border-app-border bg-transparent px-3 text-xs leading-none font-bold text-app-muted"
+              aria-hidden="true">Press ?</span
             >{/if}
         </div>
       </div>
@@ -68,14 +86,16 @@
             type="button"
             onclick={() => app.seekBy(-15)}
             aria-label="Jump back 15 seconds"
-            title="Jump back 15 seconds"><span><Icon name="backward15" /></span></button
+            aria-keyshortcuts="ArrowLeft"
+            title="Jump back 15 seconds (←)"><span><Icon name="backward15" /></span></button
           >
           <button
             class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_7px_18px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
             type="button"
             onclick={() => void app.togglePlayback()}
             aria-label={loading ? "Connecting to audio" : playing ? "Pause" : "Play"}
-            title={loading ? "Connecting to audio" : playing ? "Pause" : "Play"}
+            aria-keyshortcuts="Space"
+            title={loading ? "Connecting to audio" : playing ? "Pause (Space)" : "Play (Space)"}
             aria-pressed={playing}
             disabled={loading}
             ><span class="block size-[21px] {playing ? '' : 'translate-x-px'}"
@@ -87,13 +107,14 @@
             type="button"
             onclick={() => app.seekBy(15)}
             aria-label="Jump forward 15 seconds"
-            title="Jump forward 15 seconds"><span><Icon name="forward15" /></span></button
+            aria-keyshortcuts="ArrowRight"
+            title="Jump forward 15 seconds (→)"><span><Icon name="forward15" /></span></button
           >
         </div>
         <div
           class="mt-[0.3rem] grid grid-cols-[3.4rem_minmax(90px,1fr)_3.4rem] items-center gap-[0.55rem] text-xs text-app-muted tabular-nums max-[1040px]:grid-cols-[3rem_minmax(120px,1fr)_3rem] max-[1040px]:gap-2 [&>span:first-child]:text-right"
         >
-          <span>{formatDuration(state.player.currentTime)}</span><input
+          <span>{formatLocaleDuration(state.player.currentTime, locale)}</span><input
             class="w-full min-w-0 accent-app-primary"
             type="range"
             min="0"
@@ -102,7 +123,7 @@
             value={Math.min(state.player.currentTime, max)}
             oninput={(event) => app.seek(numberFromControl(event))}
             aria-label="Playback position"
-          /><span>{formatDuration(state.player.duration)}</span>
+          /><span>{formatLocaleDuration(state.player.duration, locale)}</span>
         </div>
       </div>
       <div
@@ -112,8 +133,7 @@
           ><span class="sr-only">Playback speed</span><select
             value={String(state.settings.playbackRate)}
             onchange={(event) => app.setRate(numberFromControl(event))}
-            class="h-10 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app max-[1040px]:min-w-[58px] max-[1040px]:pr-[1.3rem] max-[1040px]:pl-2"
-            aria-label="Playback speed"
+            class="h-11 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app max-[1040px]:min-w-[58px] max-[1040px]:pr-[1.3rem] max-[1040px]:pl-2"
             >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
               >{/each}</select
           ></label
@@ -122,11 +142,12 @@
           class="relative inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary aria-expanded:bg-app-soft aria-expanded:text-app-primary disabled:opacity-45 [&>span:first-child]:block [&>span:first-child]:size-[19px] [&_svg]:size-full"
           type="button"
           onclick={() => app.dispatch({ type: "toggle-queue" })}
-          aria-label="Show queue"
-          title="Show queue"
+          aria-label={queueLabel}
+          title={queueLabel}
           aria-expanded={state.player.queueOpen}
           ><span><Icon name="queue" /></span>{#if state.player.queue.length > 0}<span
               class="absolute -top-[3px] -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.58rem] font-extrabold text-app-primary-ink"
+              aria-hidden="true"
               >{state.player.queue.length}</span
             >{/if}</button
         >

@@ -51,16 +51,22 @@
       return;
     }
     if (event.code === "Space") {
+      const active = globalThis.document?.activeElement as HTMLElement | null;
+      if (active?.getAttribute("aria-keyshortcuts")?.includes("Space")) return;
+      if (active?.tagName === "BUTTON" && active.getAttribute("disabled") !== null) return;
       event.preventDefault();
       void app.togglePlayback();
+      return;
     }
     if (event.code === "ArrowLeft" && !event.shiftKey) {
       event.preventDefault();
       app.seekBy(-15);
+      return;
     }
     if (event.code === "ArrowRight" && !event.shiftKey) {
       event.preventDefault();
       app.seekBy(15);
+      return;
     }
     if (event.key.toLowerCase() === "n") {
       event.preventDefault();

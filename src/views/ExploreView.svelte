@@ -7,7 +7,7 @@
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, FormatFilter, LanguageFilter } from "../types.js";
   import { teacherFilterName } from "../ui.js";
-  import { formatLocaleNumber, pluralize } from "../utils.js";
+  import { formatLocaleNumber } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   let category = $derived(
     state.categories.data.find((item) => item.id === state.search.categoryId)
@@ -194,8 +194,8 @@
       detail={hasFilters
         ? "Try clearing a filter, broadening the language, or removing the search terms."
         : "The catalogue has no talks in this combination. Try resetting the filters."}
-      actionLabel={hasFilters ? "Clear all filters" : undefined}
-      onaction={hasFilters ? () => void clearAll() : undefined}
+      actionLabel={hasFilters ? "Clear all filters" : ""}
+      onaction={hasFilters ? () => { void clearAll(); } : undefined}
     />
   {:else}<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
       {#each state.catalogue.page.items as track (track.id)}<TrackRow

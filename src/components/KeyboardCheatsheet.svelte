@@ -7,8 +7,9 @@
     { keys: ["←"], action: "Jump back 15 seconds" },
     { keys: ["→"], action: "Jump forward 15 seconds" },
     { keys: ["N"], action: "Play the next talk in the queue" },
-    { keys: ["Esc"], action: "Clear the active search field" },
-    { keys: ["?"], action: "Show or hide this list" }
+    { keys: ["?"], action: "Show or hide this list" },
+    { keys: ["Shift", "/"], action: "Same as ? — open or close this list" },
+    { keys: ["Esc"], action: "Close this dialog or the active overlay" }
   ] as const;
   $effect(() => {
     dialog.showModal();
@@ -58,5 +59,12 @@
         </div>
       {/each}
     </dl>
+    <p class="mt-5 border-t border-app-border pt-4 text-xs text-app-muted">
+      Search fields keep the keyboard for editing. Press <kbd
+        class="mx-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-control border border-app-border bg-app-soft px-1.5 font-mono text-[11px] font-bold"
+        >Esc</kbd
+      >
+      inside a search field to clear what you typed.
+    </p>
   </div>
 </dialog>

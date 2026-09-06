@@ -132,3 +132,30 @@ test("CatalogueApi exposes audio category, collection, and teacher detail comman
     { command: "get_teacher", args: { id: 3 } }
   ]);
 });
+
+test("CatalogueApi.downloadAudio forwards id and url", async () => {
+  const calls = [];
+  const api = new CatalogueApi(async (command, args) => {
+    calls.push({ command, args });
+    return "/tmp/audio.mp3";
+  });
+
+  const path = await api.downloadAudio(7, "https://www.dhammadownload.com/x.mp3");
+  assert.equal(path, "/tmp/audio.mp3");
+  assert.deepEqual(calls, [
+    { command: "download_audio", args: { id: 7, url: "https://www.dhammadownload.com/x.mp3" } }
+  ]);
+});
+
+test("CatalogueApi.removeDownloadedAudio forwards id and path", async () => {
+  const calls = [];
+  const api = new CatalogueApi(async (command, args) => {
+    calls.push({ command, args });
+    return undefined;
+  });
+
+  await api.removeDownloadedAudio(7, "/tmp/audio.mp3");
+  assert.deepEqual(calls, [
+    { command: "remove_downloaded_audio", args: { id: 7, path: "/tmp/audio.mp3" } }
+  ]);
+});

@@ -9,9 +9,9 @@
     shape = "rows",
     errorTitle = "This view needs another try",
     illustration = "./empty-library.svg",
-    actionLabel,
-    onaction,
-    onretry
+    actionLabel = undefined as string | undefined,
+    onaction = undefined as (() => void) | undefined,
+    onretry = undefined as (() => void) | undefined
   }: {
     kind: Kind;
     title?: string;
@@ -20,9 +20,9 @@
     shape?: Shape;
     errorTitle?: string;
     illustration?: string;
-    actionLabel?: string;
-    onaction?: () => void;
-    onretry?: () => void;
+    actionLabel?: string | undefined;
+    onaction?: (() => void) | undefined;
+    onretry?: (() => void) | undefined;
   } = $props();
   let rowCount = $derived(shape === "detail" ? 4 : 6);
   let cardCount = $derived(shape === "cards" ? 6 : 0);

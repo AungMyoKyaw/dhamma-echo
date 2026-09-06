@@ -97,8 +97,8 @@
         ? `No collections match “${state.collectionSearch.query}”`
         : "No collections match"}
       detail="Try a shorter collection name or clear the teacher filter."
-      actionLabel={hasFilters ? "Clear filters" : undefined}
-      onaction={hasFilters ? () => void clearAll() : undefined}
+      actionLabel={hasFilters ? "Clear filters" : ""}
+      onaction={hasFilters ? () => { void clearAll(); } : undefined}
     />
   {:else if state.collectionSearch.teacherId !== null}<div
       class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"

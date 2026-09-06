@@ -139,3 +139,11 @@ test("mock invoke supports categories, collections, and detail records", async (
   await assert.rejects(invoke("get_collection", { id: 999 }), /Unsupported command/);
   await assert.rejects(invoke("get_teacher", { id: 999 }), /Unsupported command/);
 });
+
+test("createMockInvoke supports download_audio and remove_downloaded_audio", async () => {
+  const invoke = createMockInvoke();
+  const path = await invoke("download_audio", { id: 7, url: "https://x.mp3" });
+  assert.match(path, /\/7\.mp3$/);
+  const remove = await invoke("remove_downloaded_audio", { id: 7, path });
+  assert.equal(remove, undefined);
+});
