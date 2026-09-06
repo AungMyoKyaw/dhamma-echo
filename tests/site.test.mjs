@@ -140,9 +140,9 @@ test("shared pill controls use Tailwind optical vertical centering", async () =>
     readFile(new URL("../src/components/VideoPlayer.svelte", import.meta.url), "utf8")
   ]);
 
-  assert.match(explore, /min-h-10[^"']*pt-0\.5/);
-  assert.match(trackRow, /min-h-10[^"']*pt-0\.5/);
-  const pills = videoPlayer.match(/class="[^"]*min-h-10[^"]*"/g) ?? [];
+  assert.match(explore, /min-h-(?:10|11)[^"']*pt-0\.5/);
+  assert.match(trackRow, /min-h-(?:10|11)[^"']*pt-0\.5/);
+  const pills = videoPlayer.match(/class="[^"]*min-h-(?:10|11)[^"]*"/g) ?? [];
   const centered = pills.filter(
     (pill) => pill.includes("leading-none") && pill.includes("pt-0.5") && pill.includes("pb-0")
   );

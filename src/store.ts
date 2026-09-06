@@ -72,6 +72,7 @@ export type AppAction =
   | { type: "downloaded"; id: number; path: string }
   | { type: "download-progress"; id: number; progress: AppState["downloadProgress"][string] }
   | { type: "download-failed"; id: number }
+  | { type: "remove-download"; id: number }
   | { type: "toggle-favorite"; id: number }
   | { type: "record-history"; id: number; playedAt: number }
   | { type: "save-resume"; id: number; currentTime: number }
@@ -565,6 +566,11 @@ export function reduce(state: AppState, action: AppAction): AppState {
       const downloadProgress = { ...state.downloadProgress };
       delete downloadProgress[String(action.id)];
       return { ...state, downloadProgress };
+    }
+    case "remove-download": {
+      const downloads = { ...(state.library.downloads ?? {}) };
+      delete downloads[String(action.id)];
+      return { ...state, library: { ...state.library, downloads } };
     }
     case "toggle-favorite": {
       const exists = state.library.favorites.includes(action.id);

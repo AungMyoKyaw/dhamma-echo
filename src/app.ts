@@ -26,6 +26,7 @@ interface CatalogueClient {
   searchAudio: CatalogueApi["searchAudio"];
   getAudioTrack: CatalogueApi["getAudioTrack"];
   downloadAudio: CatalogueApi["downloadAudio"];
+  removeDownloadedAudio: CatalogueApi["removeDownloadedAudio"];
   listContentCategories: CatalogueApi["listContentCategories"];
   searchCollections: CatalogueApi["searchCollections"];
   getCollection: CatalogueApi["getCollection"];
@@ -497,6 +498,19 @@ export class DhammaApp {
 
   setDownloadProgress(id: number, downloaded: number, total: number | null): void {
     this.dispatch({ type: "download-progress", id, progress: { downloaded, total } });
+  }
+
+  async removeDownload(id: number): Promise<void> {
+    const path = this.state.library.downloads?.[String(id)];
+    if (path === undefined) return;
+    this.dispatch({ type: "remove-download", id });
+    try {
+      await this.dependencies.api.removeDownloadedAudio(id, path);
+    } catch (error) {
+      // Re-add the download on failure so the UI returns to truth.
+      this.dispatch({ type: "downloaded", id, path });
+      throw error;
+    }
   }
 
   private localUrlFor(id: number): string | undefined {

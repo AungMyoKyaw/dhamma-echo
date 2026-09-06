@@ -7,6 +7,10 @@
     detail = "",
     loadingLabel = "Loading content",
     shape = "rows",
+    errorTitle = "This view needs another try",
+    illustration = "./empty-library.svg",
+    actionLabel,
+    onaction,
     onretry
   }: {
     kind: Kind;
@@ -14,12 +18,17 @@
     detail?: string;
     loadingLabel?: string;
     shape?: Shape;
+    errorTitle?: string;
+    illustration?: string;
+    actionLabel?: string;
+    onaction?: () => void;
     onretry?: () => void;
   } = $props();
   let rowCount = $derived(shape === "detail" ? 4 : 6);
   let cardCount = $derived(shape === "cards" ? 6 : 0);
   let rowSlots = $derived(Array.from({ length: rowCount }, (_, index) => index));
   let cardSlots = $derived(Array.from({ length: cardCount }, (_, index) => index));
+  let showAction = $derived(kind === "empty" && actionLabel !== undefined && onaction !== undefined);
 </script>
 
 {#if kind === "loading"}
@@ -55,15 +64,23 @@
   <div
     class="flex min-h-80 flex-col items-center justify-center rounded-card border border-dashed border-app-border bg-app-surface p-8 text-center"
   >
-    <img src="./empty-library.svg" alt="" class="h-32 w-40" />
+    <img src={illustration} alt="" class="h-32 w-40" />
     <h2 class="mt-4 text-xl font-bold">{title}</h2>
     <p class="mt-2 max-w-sm text-sm leading-6 text-app-muted">{detail}</p>
+    {#if showAction}
+      {@const label = actionLabel ?? ""}
+      <button
+        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+        type="button"
+        onclick={() => onaction?.()}>{label}</button
+      >
+    {/if}
   </div>
 {:else}
   <div
     class="flex min-h-64 flex-col items-center justify-center rounded-card border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-app-border))] bg-error-soft p-8 text-center"
   >
-    <h2 class="text-xl font-bold">This view needs another try</h2>
+    <h2 class="text-xl font-bold">{errorTitle}</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
         class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"

@@ -82,4 +82,8 @@ export class CatalogueApi {
   downloadAudio(id: number, url: string): Promise<string> {
     return this.call("download_audio", { id, url });
   }
+
+  removeDownloadedAudio(id: number, path: string): Promise<void> {
+    return this.call("remove_downloaded_audio", { id, path });
+  }
 }

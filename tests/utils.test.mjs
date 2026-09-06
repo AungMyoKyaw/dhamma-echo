@@ -3,8 +3,11 @@ import assert from "node:assert/strict";
 import {
   clamp,
   formatDuration,
+  formatLocaleDuration,
+  formatLocaleNumber,
   mediaUrlCandidates,
-  normalizeWhitespace
+  normalizeWhitespace,
+  pluralize
 } from "../.test-build/src/utils.js";
 
 test("normalizeWhitespace collapses scraped whitespace", () => {
@@ -20,6 +23,42 @@ test("formatDuration formats unknown, minute, and hour durations", () => {
   assert.equal(formatDuration(3661), "1:01:01");
 });
 
+test("formatLocaleDuration respects English and Burmese locales", () => {
+  assert.equal(formatLocaleDuration(0, "en-US"), "0:00");
+  assert.equal(formatLocaleDuration(65.9, "en-US"), "1:05");
+  assert.equal(formatLocaleDuration(3661, "en-US"), "1:01:01");
+  // Burmese numerals: 0=၀, 1=၁, 2=၂, 3=၃, 4=၄, 5=၅, 6=၆, 7=၇, 8=၈, 9=၉
+  assert.equal(formatLocaleDuration(0, "my-MM"), "၀:၀၀");
+  assert.equal(formatLocaleDuration(65.9, "my-MM"), "၁:၀၅");
+  assert.equal(formatLocaleDuration(3661, "my-MM"), "၁:၀၁:၀၁");
+  assert.equal(formatLocaleDuration(Number.NaN, "my-MM"), "၀:၀၀");
+});
+
+test("formatLocaleNumber respects English and Burmese locales", () => {
+  assert.equal(formatLocaleNumber(0, "en-US"), "0");
+  assert.equal(formatLocaleNumber(1234, "en-US"), "1,234");
+  assert.equal(formatLocaleNumber(30563, "en-US"), "30,563");
+  assert.equal(formatLocaleNumber(0, "my-MM"), "၀");
+  assert.equal(formatLocaleNumber(1234, "my-MM"), "၁,၂၃၄");
+  assert.equal(formatLocaleNumber(30563, "my-MM"), "၃၀,၅၆၃");
+});
+
+test("formatLocaleNumber accepts an explicit Intl locale tag", () => {
+  // De-DE uses "." for thousands and "," for decimals
+  assert.equal(formatLocaleNumber(1234567, "de-DE"), "1.234.567");
+});
+
+test("pluralize returns singular or plural based on count and locale", () => {
+  assert.equal(pluralize(0, "talk"), "0 talks");
+  assert.equal(pluralize(1, "talk"), "1 talk");
+  assert.equal(pluralize(2, "talk"), "2 talks");
+  assert.equal(pluralize(1, "talk", "talks"), "1 talk");
+  assert.equal(pluralize(5, "talk", "talks"), "5 talks");
+  // Burmese pluralizes like English in practice for this UI's phrasing.
+  assert.equal(pluralize(1, "တရား", "တရားများ"), "၁ တရား");
+  assert.equal(pluralize(5, "တရား", "တရားများ"), "၅ တရားများ");
+});
+
 test("clamp constrains finite and non-finite values", () => {
   assert.equal(clamp(5, 0, 10), 5);
   assert.equal(clamp(-1, 0, 10), 0);
@@ -28,6 +67,7 @@ test("clamp constrains finite and non-finite values", () => {
 });
 
 test("mediaUrlCandidates normalizes approved MP3 and MP4 sources and blocks unsupported media", () => {
+  // 'တရား တော်' → 'တ'(U+1050) ရ(U+109B) ာ(U+102C) း(U+1038) ' '(U+0020) တ(U+1050) ေ(U+1031) ာ(U+102C) ်(U+103A)
   assert.deepEqual(
     mediaUrlCandidates("http://dhammadownload.com/MP3Library/Myanmar/တရား တော်.mp3", "MP3"),
     [

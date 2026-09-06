@@ -304,6 +304,13 @@ export function createMockInvoke(): InvokeFn {
       const track = tracks.find((item) => item.id === id);
       if (track !== undefined) return track as T;
     }
+    if (command === "download_audio") {
+      const id = readNumber(args?.id, 0);
+      return `mock://downloads/${id}.mp3` as T;
+    }
+    if (command === "remove_downloaded_audio") {
+      return undefined as T;
+    }
     throw new Error(`Unsupported command: ${command}`);
   };
 }

@@ -12,7 +12,8 @@ import {
   orderTeachersFeaturedFirst,
   routeLabel,
   teacherFilterName,
-  truncateTeacherCardName
+  truncateTeacherCardName,
+  truncateTrackTitle
 } from "../.test-build/src/ui.js";
 import { focusTrapIndex } from "../.test-build/src/a11y.js";
 
@@ -57,6 +58,26 @@ test("teacher card names use grapheme-safe middle ellipsis only when long", () =
   const cluster = "ကြီး";
   const longName = cluster.repeat(40);
   assert.equal(truncateTeacherCardName(longName), `${cluster.repeat(24)}…${cluster.repeat(11)}`);
+});
+test("track titles truncate at the cluster boundary with middle ellipsis", () => {
+  // English: short titles pass through.
+  assert.equal(truncateTrackTitle("Short talk"), "Short talk");
+  assert.equal(truncateTrackTitle("A"), "A");
+  // English: long titles clip at the boundary.
+  const longEnglish =
+    "The greatest obstacle to discovering the shape of the world is the familiar";
+  const truncatedEnglish = truncateTrackTitle(longEnglish);
+  assert.ok(truncatedEnglish.endsWith("…"));
+  assert.ok(truncatedEnglish.length < longEnglish.length);
+  // English boundary: ellipsis replaces a single character.
+  assert.equal(truncatedEnglish, "The greatest obstacle to discovering the shape of the world…");
+  // Burmese: cluster-aware — never splits a virama stack.
+  assert.equal(truncateTrackTitle("တရားတော်နှင့်တကွ သီတင်းသုံးရန်"), "တရားတော်နှင့်တကွ သီတင်းသုံးရန်");
+  const longBurmese = "တရားတော်".repeat(40);
+  const truncatedBurmese = truncateTrackTitle(longBurmese);
+  assert.ok(truncatedBurmese.includes("…"));
+  // No orphan virama (္) immediately before or after the ellipsis.
+  assert.ok(!truncatedBurmese.includes("္…") && !truncatedBurmese.includes("…္"));
 });
 test("route labels cover every route", () => {
   assert.deepEqual(routeLabel("home", 30563), {

@@ -1,6 +1,27 @@
 const DHAMMA_DOWNLOAD_HOSTS = ["www.dhammadownload.com", "dhammadownload.com"] as const;
 const DHAMMA_DOWNLOAD_HOST_SET = new Set<string>(DHAMMA_DOWNLOAD_HOSTS);
 
+const BURMESE_DIGITS: Record<number, string> = {
+  0: "၀",
+  1: "၁",
+  2: "၂",
+  3: "၃",
+  4: "၄",
+  5: "၅",
+  6: "၆",
+  7: "၇",
+  8: "၈",
+  9: "၉"
+};
+
+function toBurmeseDigits(input: string): string {
+  return input.replace(/\d/gu, (digit) => BURMESE_DIGITS[Number(digit)] ?? digit);
+}
+
+function isBurmeseLocale(locale: string): boolean {
+  return locale.toLowerCase().startsWith("my");
+}
+
 export function normalizeWhitespace(value: string): string {
   return value.replace(/\s+/gu, " ").trim();
 }
@@ -18,6 +39,30 @@ export function formatDuration(value: number): string {
   return hours > 0
     ? `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
     : `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+export function formatLocaleDuration(value: number, locale: string): string {
+  const formatted = formatDuration(value);
+  return isBurmeseLocale(locale) ? toBurmeseDigits(formatted) : formatted;
+}
+
+export function formatLocaleNumber(value: number, locale: string): string {
+  const safe = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+  let formatted: string;
+  try {
+    formatted = new Intl.NumberFormat(locale).format(safe);
+  } catch {
+    formatted = String(safe);
+  }
+  return isBurmeseLocale(locale) ? toBurmeseDigits(formatted) : formatted;
+}
+
+export function pluralize(count: number, singular: string, plural?: string): string {
+  const safe = Number.isFinite(count) ? Math.max(0, Math.floor(count)) : 0;
+  const noun = safe === 1 ? singular : (plural ?? `${singular}s`);
+  const hasMyanmar = /[\u1000-\u109F]/u.test(noun);
+  const numberPart = formatLocaleNumber(safe, hasMyanmar ? "my-MM" : "en-US");
+  return `${numberPart} ${noun}`;
 }
 
 export function mediaUrlCandidates(value: string, format: string): string[] {

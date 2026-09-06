@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
   import type { AppState, AudioTrack } from "../types.js";
-  import { isMyanmarText } from "../ui.js";
-  import { formatDuration } from "../utils.js";
+  import { isMyanmarText, truncateTrackTitle } from "../ui.js";
+  import { formatLocaleDuration } from "../utils.js";
   import Icon from "./Icon.svelte";
   let { track, state, app }: { track: AudioTrack; state: AppState; app: DhammaApp } = $props();
   let favorite = $derived(state.library.favorites.includes(track.id));
@@ -16,6 +16,8 @@
   let downloading = $derived(progress !== null);
   let myanmarTitle = $derived(isMyanmarText(track.title));
   let myanmarTeacher = $derived(isMyanmarText(track.teacherName));
+  let displayTitle = $derived(truncateTrackTitle(track.title));
+  let resumeLabel = $derived(resume > 0 ? formatLocaleDuration(resume, "my-MM") : "");
   async function play(): Promise<void> {
     if (!track.playable || loading) return;
     if (current) await app.togglePlayback();
@@ -28,6 +30,10 @@
     } catch {
       // The player remains usable; the next click retries the download.
     }
+  }
+  async function removeDownload(): Promise<void> {
+    if (!downloaded) return;
+    await app.removeDownload(track.id);
   }
 </script>
 
@@ -62,8 +68,9 @@
     <span class="min-w-0 flex-1">
       <span class="flex items-center gap-2"
         ><span
-          class="truncate font-bold {myanmarTitle ? 'myanmar-text' : ''}"
-          lang={myanmarTitle ? "my" : undefined}>{track.title}</span
+          class="break-words font-bold leading-6 {myanmarTitle ? 'myanmar-text' : ''}"
+          lang={myanmarTitle ? "my" : undefined}
+          >{displayTitle}</span
         >{#if track.mediaType === "video"}<span
             class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-primary/15 px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-primary uppercase"
             >Video</span
@@ -77,7 +84,7 @@
         lang={myanmarTeacher ? "my" : undefined}
         >{track.teacherName || "Unknown teacher"} · {track.language} · {track.format.toUpperCase()}{resume >
         0
-          ? ` · Resume at ${formatDuration(resume)}`
+          ? ` · Resume at ${resumeLabel}`
           : ""}</span
       >
     </span>
@@ -95,47 +102,50 @@
         <Icon name="heart" filled={favorite} />
       </span>
     </button>
-    <button
-      class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45 {downloaded
-        ? 'bg-transparent text-app-primary'
-        : ''} [&_svg]:block [&_svg]:size-full"
-      type="button"
-      onclick={() => void download()}
-      aria-label={downloaded
-        ? "Downloaded for offline listening"
-        : downloading
-          ? "Downloading"
-          : "Download for offline listening"}
-      title={downloaded
-        ? "Downloaded for offline listening"
-        : downloading
-          ? "Downloading"
-          : "Download for offline listening"}
-      disabled={downloading || downloaded || !track.playable}
-      ><span class="size-5"><Icon name="download" /></span>
-    </button>
-    {#if progress !== null}<span
-        class="h-[3px] w-7 overflow-hidden rounded-full bg-app-border"
-        role="progressbar"
-        aria-label={progress.total === null
-          ? "Download in progress"
-          : `${Math.round((progress.downloaded / progress.total) * 100)} percent downloaded`}
-        aria-valuemin="0"
-        aria-valuemax={progress.total ?? undefined}
-        aria-valuenow={progress.total === null ? undefined : progress.downloaded}
-        aria-valuetext={progress.total === null
-          ? "Download in progress"
-          : `${Math.round((progress.downloaded / progress.total) * 100)} percent downloaded`}
+    {#if downloaded}
+      <button
+        class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-primary transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft"
+        type="button"
+        onclick={() => void removeDownload()}
+        aria-label="Remove from downloads"
+        title="Remove from downloads"
+        ><span class="size-5"><Icon name="download" filled /></span></button
       >
-        <span
-          class="block h-full rounded-[inherit] bg-app-primary transition-[width] duration-150"
-          style:width={progress.total === null
-            ? "35%"
-            : `${Math.min(100, (progress.downloaded / progress.total) * 100)}%`}
-        ></span>
-      </span>{/if}
+    {:else}
+      <button
+        class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45"
+        type="button"
+        onclick={() => void download()}
+        aria-label={downloading
+          ? "Downloading"
+          : "Download for offline listening"}
+        title={downloading ? "Downloading" : "Download for offline listening"}
+        disabled={downloading || !track.playable}
+        ><span class="size-5"><Icon name="download" /></span></button
+      >
+      {#if progress !== null}<span
+          class="h-[3px] w-7 overflow-hidden rounded-full bg-app-border"
+          role="progressbar"
+          aria-label={progress.total === null
+            ? "Download in progress"
+            : `${Math.round((progress.downloaded / progress.total) * 100)} percent downloaded`}
+          aria-valuemin="0"
+          aria-valuemax={progress.total ?? undefined}
+          aria-valuenow={progress.total === null ? undefined : progress.downloaded}
+          aria-valuetext={progress.total === null
+            ? "Download in progress"
+            : `${Math.round((progress.downloaded / progress.total) * 100)} percent downloaded`}
+        >
+          <span
+            class="block h-full rounded-[inherit] bg-app-primary transition-[width] duration-150"
+            style:width={progress.total === null
+              ? "35%"
+              : `${Math.min(100, (progress.downloaded / progress.total) * 100)}%`}
+          ></span>
+        </span>{/if}
+    {/if}
     <button
-      class="inline-flex min-h-10 items-center justify-center rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-5 font-bold text-app-muted transition-[border-color,background-color,color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] hover:bg-app-soft hover:text-app"
+      class="inline-flex min-h-11 items-center justify-center rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-5 font-bold text-app-muted transition-[border-color,background-color,color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] hover:bg-app-soft hover:text-app"
       type="button"
       onclick={() => app.dispatch({ type: "enqueue", track })}>Queue</button
     >

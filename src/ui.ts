@@ -38,6 +38,28 @@ export function truncateTeacherCardName(value: string): string {
   return `${clusters.slice(0, 24).join("")}…${clusters.slice(-11).join("")}`;
 }
 
+function clusterGraphemes(value: string): string[] {
+  const clusters: string[] = [];
+  for (const character of value) {
+    const previous = clusters.at(-1);
+    if (previous !== undefined && (/\p{Mark}/u.test(character) || previous.endsWith("္"))) {
+      clusters[clusters.length - 1] += character;
+    } else {
+      clusters.push(character);
+    }
+  }
+  return clusters;
+}
+
+export function truncateTrackTitle(value: string, maxClusters = 60): string {
+  const clusters = clusterGraphemes(value);
+  if (clusters.length <= maxClusters) return value;
+  // Trim trailing whitespace before appending the ellipsis so we don't render "  …".
+  const head = clusters.slice(0, maxClusters);
+  while (head.length > 0 && /\s/u.test(head.at(-1) ?? "")) head.pop();
+  return `${head.join("")}…`;
+}
+
 export function routeLabel(route: Route): { eyebrow: string; title: string; detail: string } {
   const labels: Record<Route, { eyebrow: string; title: string; detail: string }> = {
     home: {
