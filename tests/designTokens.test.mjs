@@ -314,8 +314,10 @@ test("loadCssTokens returns empty when the opener block is never closed", () => 
 
 test("loadCssTokens handles nested blocks inside the opener scope", () => {
   const css = loadCssTokens(
-    "@theme { --color-canvas: red; @media (min-width: 800px) { --color-canvas: blue; } }"
+    "@theme { --color-canvas: red; @media (min-width: 800px) { --radius-control: 6px; } }"
   );
+  // Nested rule inside a @theme block must not be misread as a top-level
+  // property; the depth counter advances past the inner `{`.
   assert.equal(css.tokens.colors?.canvas, "red");
 });
 
