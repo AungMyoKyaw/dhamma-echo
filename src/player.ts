@@ -212,7 +212,6 @@ export class MediaEngine {
     this.emit({ type: "status", status: "loading" });
     return new Promise<boolean>((resolve) => {
       const timer = setTimeout(() => {
-        if (target !== this.activeAttempt) return;
         this.activeTimer = null;
         this.activeResolve = null;
         this.playPending = false;

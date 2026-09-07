@@ -493,3 +493,16 @@ test("reducer remove-download clears the downloads map", () => {
   const next = reduce(state, { type: "remove-download", id: 5 });
   assert.equal(next.library.downloads?.["5"], undefined);
 });
+
+test("reducer covers summary, teachers, and teacher-query cases", () => {
+  const state = createInitialState();
+  const afterSummary = reduce(state, {
+    type: "summary-loaded",
+    summary: { talks: 1, teachers: 1, collections: 1, languages: 1, formats: 1 }
+  });
+  assert.equal(afterSummary.summary.status, "ready");
+  const afterTeachers = reduce(state, { type: "teachers-loaded", teachers: [] });
+  assert.equal(afterTeachers.teachers.status, "ready");
+  const afterQuery = reduce(state, { type: "set-teacher-query", query: "abc" });
+  assert.equal(afterQuery.teacherQuery, "abc");
+});

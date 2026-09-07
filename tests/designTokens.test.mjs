@@ -312,6 +312,13 @@ test("loadCssTokens returns empty when the opener block is never closed", () => 
   assert.deepEqual(css.tokens, {});
 });
 
+test("loadCssTokens handles nested blocks inside the opener scope", () => {
+  const css = loadCssTokens(
+    "@theme { --color-canvas: red; @media (min-width: 800px) { --color-canvas: blue; } }"
+  );
+  assert.equal(css.tokens.colors?.canvas, "red");
+});
+
 test("parseDesignFrontmatter throws when a line is not a mapping", () => {
   assert.throws(
     () => parseDesignFrontmatter("---\nname: bad\n[unrelated]\n---\nbody\n"),

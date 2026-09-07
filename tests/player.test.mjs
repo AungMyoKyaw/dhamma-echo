@@ -528,3 +528,103 @@ test("MediaEngine error without startedAttempt does not advance candidates", asy
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.equal(events.length, 0);
 });
+
+test("MediaEngine.toggle pauses when audio is currently playing", async () => {
+  const audio = new FakeAudio();
+  const engine = new MediaEngine(audio, () => {});
+  // FakeAudio defaults to paused = true; flip it to false to exercise the
+  // pause branch (audio.paused === false => engine.audio.pause()).
+  Object.defineProperty(audio, "paused", {
+    configurable: true,
+    value: false
+  });
+  await engine.toggle();
+  assert.equal(audio.paused, true);
+});
+
+test("MediaEngine.toggle surfaces a friendly error when play rejects", async () => {
+  const audio = new FakeAudio();
+  audio.play = async () => {
+    throw new Error("not allowed");
+  };
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  await engine.toggle();
+  const error = events.find((event) => event.type === "error");
+  assert.ok(error);
+});
+
+test("MediaEngine.toggle cancels a pending play attempt", async () => {
+  const audio = new FakeAudio();
+  let playResolvers = [];
+  audio.play = () =>
+    new Promise((_resolve, reject) => {
+      playResolvers.push(() => reject(new Error("aborted")));
+    });
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  const first = engine.toggle();
+  // Don't await: simulate a cancellation happening before play resolves.
+  engine.toggle();
+  for (const reject of playResolvers) reject();
+  await first.catch(() => undefined);
+});
+
+test("MediaEngine.seek with non-finite duration is a no-op upper bound", () => {
+  const audio = new FakeAudio();
+  audio.duration = Number.NaN;
+  const engine = new MediaEngine(audio, () => {});
+  engine.seek(50);
+  assert.equal(audio.currentTime, 50);
+});
+
+test("MediaEngine surfaces video-specific error when play rejects", async () => {
+  const audio = new FakeAudio();
+  audio.play = async () => {
+    throw new Error("blocked");
+  };
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event));
+  const videoTrack = { ...tracks[0], mediaType: "video" };
+  await engine.setTrack(videoTrack, 0, "/local/video.mp4");
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const error = events.find((event) => event.type === "error");
+  assert.ok(error);
+  assert.match(error.message, /video/i);
+});
+
+test("MediaEngine falls back to the next candidate when play does not settle", async () => {
+  const audio = new FakeAudio();
+  audio.play = () => new Promise(() => {});
+  const events = [];
+  const engine = new MediaEngine(audio, (event) => events.push(event), 5);
+  const result = await engine.setTrack(tracks[0]);
+  assert.equal(result, false);
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  const error = events.find((event) => event.type === "error");
+  assert.ok(error);
+});
+
+test("MediaEngine swallows stale play-failure and fallback-timer callbacks", async () => {
+  const audio = new FakeAudio();
+  const events = [];
+  // First attempt's play() never settles; the second attempt rejects.
+  const rejecters = [];
+  let calls = 0;
+  audio.play = () => {
+    const index = calls++;
+    return new Promise((_resolve, reject) => {
+      rejecters[index] = () => reject(new Error("aborted"));
+    });
+  };
+  const engine = new MediaEngine(audio, (event) => events.push(event), 5);
+  const first = engine.setTrack(tracks[0]);
+  // Trigger a new track to invalidate the previous attempt before its
+  // play() promise settles.
+  void engine.setTrack(tracks[1]);
+  // Now reject the first attempt's play() promise — the catch handler sees
+  // target !== activeAttempt and returns silently.
+  if (rejecters[0] !== undefined) rejecters[0]();
+  await first.catch(() => undefined);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+});

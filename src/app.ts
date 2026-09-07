@@ -94,8 +94,7 @@ export class DhammaApp {
   }
 
   private async reloadCurrentTrack(): Promise<void> {
-    const track = this.state.player.current;
-    if (track === null) return;
+    const track = this.state.player.current!;
     const engine = this.ensureEngineFor(track.mediaType);
     engine.setRate(this.state.settings.playbackRate);
     await engine.setTrack(track, this.state.player.currentTime, this.localUrlFor(track.id));

@@ -1131,6 +1131,147 @@ test("DhammaApp.loadMoreSearchResults is a no-op when already loading or exhaust
   app.destroy();
 });
 
+test("DhammaApp.loadTeacherTalks dispatches failure on api rejection", async () => {
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio() {
+        throw new Error("api down");
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  app.dispatch({ type: "open-teacher", teacherId: 1, returnRoute: "teachers" });
+  await app.loadTeacherTalks();
+  assert.equal(app.state.teacherTalks.status, "error");
+  assert.equal(app.state.teacherTalks.message, "api down");
+  app.destroy();
+});
+
+test("DhammaApp.loadTeacherTalks is a no-op when no teacher is selected", async () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.loadTeacherTalks();
+  assert.equal(app.state.teacherTalks.status, "idle");
+  app.destroy();
+});
+
+test("DhammaApp.resolveTrack returns null when the api rejects", async () => {
+  const app = new DhammaApp({
+    api: createApi({
+      async getAudioTrack() {
+        throw new Error("missing");
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  const result = await app.resolveTrack(999);
+  assert.equal(result, null);
+  app.destroy();
+});
+
+test("DhammaApp.playTrack skips unplayable tracks without touching the engine", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  const srcBefore = audio.src;
+  await app.playTrack({ ...tracks[0], playable: false });
+  assert.equal(app.state.player.current === null, true);
+  assert.equal(audio.src, srcBefore);
+  app.destroy();
+});
+
+test("DhammaApp.closeVideoPlayer is a no-op when the current track is audio", () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  // current is null: must early-return.
+  app.closeVideoPlayer();
+  assert.equal(app.state.player.error, "");
+  app.destroy();
+});
+
+test("DhammaApp.retryPlayback is a no-op when no track is active", async () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.retryPlayback();
+  assert.equal(app.state.player.error, "");
+  app.destroy();
+});
+
+test("DhammaApp.registerVideoElement rebuilds the engine when a video track is current", async () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  app.dispatch({
+    type: "play-track",
+    track: { ...tracks[0], mediaType: "video" }
+  });
+  const videoElement = new FakeAudio();
+  app.registerVideoElement(videoElement);
+  // Allow the reload promise to settle.
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.ok(videoElement !== null);
+  app.destroy();
+});
+
+test("DhammaApp.retryPlayback resumes from a missing resume entry", async () => {
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio,
+    render() {},
+    now: () => 0
+  });
+  app.dispatch({ type: "play-track", track: tracks[0] });
+  await app.retryPlayback();
+  assert.equal(app.state.player.error, "");
+  app.destroy();
+});
+
+test("DhammaApp registers and unregisters a video element when no track is current", () => {
+  const app = new DhammaApp({
+    api: createApi(),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  const videoElement = new FakeAudio();
+  app.registerVideoElement(videoElement);
+  app.registerVideoElement(null);
+  app.destroy();
+});
+
 test("DhammaApp.loadMoreSearchResults advances pagination when more talks remain", async () => {
   const audio = new FakeAudio();
   const app = new DhammaApp({

@@ -272,8 +272,7 @@ function collapseYaml(root: YamlGroup): TokenMap {
 
 function flattenInto(target: { [name: string]: string }, prefix: string, value: YamlValue): void {
   if (typeof value === "string") {
-    const key = prefix === "" ? "" : prefix;
-    if (value.trim() !== "") target[key] = value;
+    if (value.trim() !== "") target[prefix] = value;
     return;
   }
   for (const [name, child] of Object.entries(value)) {

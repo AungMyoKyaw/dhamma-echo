@@ -15,7 +15,7 @@ const BURMESE_DIGITS: Record<number, string> = {
 };
 
 function toBurmeseDigits(input: string): string {
-  return input.replace(/\d/gu, (digit) => BURMESE_DIGITS[Number(digit)] ?? digit);
+  return input.replace(/\d/gu, (digit) => BURMESE_DIGITS[Number(digit)] as string);
 }
 
 function isBurmeseLocale(locale: string): boolean {

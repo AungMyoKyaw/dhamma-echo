@@ -72,6 +72,8 @@ test("pluralize returns singular or plural based on count and locale", () => {
   // Burmese pluralizes like English in practice for this UI's phrasing.
   assert.equal(pluralize(1, "တရား", "တရားများ"), "၁ တရား");
   assert.equal(pluralize(5, "တရား", "တရားများ"), "၅ တရားများ");
+  assert.equal(pluralize(Number.NaN, "talk"), "0 talks");
+  assert.equal(pluralize(Number.POSITIVE_INFINITY, "talk"), "0 talks");
 });
 
 test("clamp constrains finite and non-finite values", () => {

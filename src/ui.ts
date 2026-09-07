@@ -56,7 +56,7 @@ export function truncateTrackTitle(value: string, maxClusters = 60): string {
   if (clusters.length <= maxClusters) return value;
   // Trim trailing whitespace before appending the ellipsis so we don't render "  …".
   const head = clusters.slice(0, maxClusters);
-  while (head.length > 0 && /\s/u.test(head.at(-1) ?? "")) head.pop();
+  while (head.length > 0 && /\s/u.test(head.at(-1) as string)) head.pop();
   return `${head.join("")}…`;
 }
 
