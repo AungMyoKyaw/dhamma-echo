@@ -110,7 +110,7 @@
           <AsyncState
             kind="empty"
             title="No downloads yet"
-            detail="Tap the download icon on a talk to keep it available offline."
+            detail="Tap the download icon on a talk to keep it saved for offline listening."
             actionLabel="Explore talks"
             onaction={() => explore("explore")}
           />

@@ -97,14 +97,14 @@
           <button
             type="button"
             onclick={restore}
-            class="inline-flex min-h-10 items-center rounded-full bg-app-primary px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary-ink hover:bg-app-primary-strong"
+            class="inline-flex min-h-11 items-center rounded-full bg-app-primary px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary-ink hover:bg-app-primary-strong"
             >Undo</button
           >
           <button
             type="button"
             onclick={dismissUndo}
             aria-label="Dismiss undo notification"
-            class="inline-flex size-10 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
+            class="inline-flex size-11 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
             ><span class="size-3"><Icon name="close" /></span></button
           >
         </div>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
+  import Icon from "../components/Icon.svelte";
   import KeyboardCheatsheet from "../components/KeyboardCheatsheet.svelte";
   import type { AppLocale, AppState } from "../types.js";
   let { state: appState, app }: { state: AppState; app: DhammaApp } = $props();
@@ -115,7 +116,12 @@
       >View shortcuts</button
     >
   </div>
-  <div class="rounded-card border border-app-border bg-app-soft p-6">
+  <div class="rounded-card border border-app-border/70 bg-app-soft p-6">
+    <div
+      class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-secondary/15 text-app-secondary"
+    >
+      <span class="size-5"><Icon name="leaf" /></span>
+    </div>
     <h2 class="text-sm font-bold">Privacy</h2>
     <p class="mt-2 text-sm leading-6 text-app-muted">
       Favorites, history, playback position, and settings are stored locally on this device. The

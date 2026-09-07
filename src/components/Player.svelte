@@ -56,11 +56,11 @@
               class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-error"
               role="alert"
               ><span class="truncate">{state.player.error}</span><button
-                class="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
+                class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
                 type="button"
                 onclick={() => void app.retryPlayback()}>Retry</button
               ><button
-                class="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
+                class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
                 type="button"
                 onclick={clearError}
                 aria-label="Dismiss error">Dismiss</button

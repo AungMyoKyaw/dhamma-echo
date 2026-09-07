@@ -131,18 +131,18 @@
       aria-label="Active filters"
     >
       {#if state.search.query.length > 0}<div
-          class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
         >
           Search: "{state.search.query}"<button
             type="button"
             onclick={() => void clearQuery()}
-            class="inline-flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
             aria-label="Clear search query"
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if state.search.teacherId !== null}<div
-          class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
         >
           Teacher: {teacherFilterName(state)}<button
             type="button"
@@ -150,13 +150,13 @@
               app.dispatch({ type: "set-teacher", teacherId: null });
               void app.search();
             }}
-            class="inline-flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
             aria-label="Clear teacher filter"
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if category !== undefined}<div
-          class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
         >
           Category: {category.name}<button
             type="button"
@@ -164,13 +164,13 @@
               app.dispatch({ type: "clear-category" });
               void app.search();
             }}
-            class="inline-flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
             aria-label="Clear category filter"
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if state.search.collectionId !== null}<div
-          class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
         >
           Collection filter<button
             type="button"
@@ -178,7 +178,7 @@
               app.dispatch({ type: "clear-collection" });
               void app.search();
             }}
-            class="inline-flex size-6 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
             aria-label="Clear collection filter"
             ><span class="block size-3"><Icon name="close" /></span></button
           >
@@ -186,7 +186,7 @@
       <button
         type="button"
         onclick={() => void clearAll()}
-        class="inline-flex min-h-10 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted hover:bg-app-soft hover:text-app"
+        class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted hover:bg-app-soft hover:text-app"
         >Clear all filters</button
       >
     </div>{/if}

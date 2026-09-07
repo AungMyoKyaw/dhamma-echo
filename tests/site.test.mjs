@@ -230,7 +230,7 @@ test("active filter clear icons cannot expand beyond their control", async () =>
     "utf8"
   );
 
-  assert.equal((explore.match(/inline-flex size-6 shrink-0/g) ?? []).length, 4);
+  assert.equal((explore.match(/inline-flex size-11 shrink-0/g) ?? []).length, 4);
   assert.equal((explore.match(/class="block size-3"/g) ?? []).length, 4);
 });
 

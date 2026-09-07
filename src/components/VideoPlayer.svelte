@@ -255,7 +255,7 @@
             bind:this={exitFullscreenButton}
             type="button"
             onclick={() => void exitFullscreen()}
-            class="absolute top-4 right-4 z-10 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
+            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
             aria-label="Exit fullscreen"
             title="Exit fullscreen"
           >
