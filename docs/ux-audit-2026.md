@@ -9,14 +9,14 @@
 
 ## 1. Scope & posture
 
-| Aspect | Decision | Rationale |
-| --- | --- | --- |
-| Scope | **Moderate redesign** of problematic views | Worst-2-stars pain outweighs cost of conservative patch |
-| Surface | Webview views, components, and copy | Trust boundary (Tauri IPC, Rust, SQLite) stays as-is |
-| Shell | **Preserve** — `Sidebar`, `Player`, `QueuePanel`, `VideoPlayer`, `Header` | Container, navigation, and trust perimeter are sound |
-| Design language | Open to revision where evidence demands | `DESIGN.md` is a hypothesis; we can rewrite any non-token rule |
-| Tokens | Locked unless drift is the bug | Tokens are the only place code references "design" |
-| Severity | `Impact × Frequency × Confidence ÷ Effort` (1–5 each → score 0.125–125) | Forces trade-offs to be explicit |
+| Aspect          | Decision                                                                  | Rationale                                                      |
+| --------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Scope           | **Moderate redesign** of problematic views                                | Worst-2-stars pain outweighs cost of conservative patch        |
+| Surface         | Webview views, components, and copy                                       | Trust boundary (Tauri IPC, Rust, SQLite) stays as-is           |
+| Shell           | **Preserve** — `Sidebar`, `Player`, `QueuePanel`, `VideoPlayer`, `Header` | Container, navigation, and trust perimeter are sound           |
+| Design language | Open to revision where evidence demands                                   | `DESIGN.md` is a hypothesis; we can rewrite any non-token rule |
+| Tokens          | Locked unless drift is the bug                                            | Tokens are the only place code references "design"             |
+| Severity        | `Impact × Frequency × Confidence ÷ Effort` (1–5 each → score 0.125–125)   | Forces trade-offs to be explicit                               |
 
 ## 2. Non-negotiables (preserved)
 
@@ -61,6 +61,7 @@ Audit pass: code read of `HomeView.svelte`, `App.svelte`, `ui.ts`; cross-referen
 **Surface**: resume hero, recent-talks list, "Find something to listen to" empty hero, featured-teachers grid.
 
 **Observed states** (screenshot):
+
 - "Continue listening" hero shows a Myanmar-script title with `Resume at 0:20`, orange play button, soft-orange tint (`bg-app-primary/[0.04]`).
 - 4 recent rows in a `bg-app-surface` bordered card; each row uses `TrackRow` (play/pause, favorite, download, queue).
 - Featured teachers section is empty in the screenshot — only the section heading "Featured teachers" is visible (catalogue is loading or featured IDs aren't in the loaded subset).
@@ -86,6 +87,7 @@ Audit pass: code read of `ExploreView.svelte`, `ProgressiveControls.svelte`, `Te
 **Surface**: search input + language select + format select + content category chips + active filter chips + results list + pagination + empty/loading/error states.
 
 **Observed states** (screenshot):
+
 - Search input (empty), language select ("All languages"), format select ("All formats"), orange Search button — all on one row that wraps.
 - Category chips: All content (selected, orange) | Audio in Myanmar · 29,938 (orange) | Abhidhamma in Myanmar · 956 | Abhidhamma in English · 219 | Video in English · 233 | Audio in English · 327 | Video in Myanmar · 13,107.
 - Active filter pill: `Category: Audio in Myanmar` with × close button.
@@ -112,6 +114,7 @@ Audit pass: code read of `Player.svelte`, `QueuePanel.svelte`, `KeyboardCheatshe
 **Surface**: 3-zone footer (track info | playback controls | speed + queue toggle), QueuePanel overlay, KeyboardCheatsheet modal.
 
 **Observed states** (home.png):
+
 - Player visible at the bottom: track info | controls | speed selector + queue toggle.
 - "Up next" hint not open; queue badge not visible (queue empty).
 - Hint text "Space: play/pause · ←/→: seek · ?: help" visible above the seek slider.
@@ -119,12 +122,12 @@ Audit pass: code read of `Player.svelte`, `QueuePanel.svelte`, `KeyboardCheatshe
 
 **Findings**
 
-- **DHP-01 · P1 · score 60** — Hint text is hidden at <980px via `max-[980px]:truncate`. The discoverability for keyboard shortcuts is *worse* on compact viewports, where the player reflows into a less-familiar 2-row layout. **Fix (Wave 3)**: replace truncation with a smaller variant ("ⓘ Keys" link) or keep the full hint but at smaller font; keep `?` button discoverable.
+- **DHP-01 · P1 · score 60** — Hint text is hidden at <980px via `max-[980px]:truncate`. The discoverability for keyboard shortcuts is _worse_ on compact viewports, where the player reflows into a less-familiar 2-row layout. **Fix (Wave 3)**: replace truncation with a smaller variant ("ⓘ Keys" link) or keep the full hint but at smaller font; keep `?` button discoverable.
 - **DHP-03 · P2 · score 20** — "Clear queue" is destructive, instant, and unrecoverable. **Fix (Wave 2)**: add undo toast with 5-second window (or a 2-step confirm pattern for ≥5 items).
 - **DHP-04 · P1 · score 75** — Queue button's `aria-label="Show queue"` does not include the queue count. Screen-reader users hear "Show queue" repeatedly without knowing whether there are items. **Fix (Wave 2)**: when `state.player.queue.length > 0`, append "with N talks" to `aria-label`.
 - **DHP-05 · P1 · score 40** — Per-row remove button uses `size-10` (40px), below DESIGN.md's 44px minimum. **Fix (Wave 3)**: change to `size-11` (44px).
 - **DHP-08 · P2 · score 30** — Cheatsheet doesn't document the `/` (with Shift) alternative to `?`. **Fix (Wave 2)**: list both `?` and `Shift+/` rows for "Show or hide this list".
-- **DHP-09 · P1 · score 60** — Cheatsheet lists Esc as "Clear the active search field" — Esc's *primary* meaning is "close the cheatsheet itself", which the cheatsheet fails to mention. **Fix (Wave 2)**: rename Esc row to "Close this dialog" and add a contextual row "Esc clears the focused search field" (e.g., on Explore page only).
+- **DHP-09 · P1 · score 60** — Cheatsheet lists Esc as "Clear the active search field" — Esc's _primary_ meaning is "close the cheatsheet itself", which the cheatsheet fails to mention. **Fix (Wave 2)**: rename Esc row to "Close this dialog" and add a contextual row "Esc clears the focused search field" (e.g., on Explore page only).
 - **DHP-12 · P3 · score 12** — Player error state shows Retry but no dismiss. After a fatal error, the player footer stays visible with the error message; user can't collapse it. **Fix (Wave 2)**: when `state.player.error` is set and `state.player.status === "paused"` and `state.player.current !== null`, show a small dismiss × that clears the error and stops the player.
 - **DHP-13 · P3 · score 12** — Slider's `step="1"` creates thousands of stops for long talks; keyboard arrow keys seek 1 second at a time. **Fix (Wave 4)**: `step="5"` or `step="10"` for keyboard ergonomics; mouse drag remains 1-second precision.
 - **DHP-14 · P3 · score 15** — Player UI doesn't expose `aria-keyshortcuts` for keyboard discoverability. **Fix (Wave 4)**: add `aria-keyshortcuts="Space ArrowLeft ArrowRight"` to the play button and `?` discoverable label somewhere.
@@ -137,6 +140,7 @@ Audit pass: code read of `Player.svelte`, `QueuePanel.svelte`, `KeyboardCheatshe
 Audit pass: code read of `TeachersView.svelte`, `TeacherDetailView.svelte`, `TeacherCard.svelte`; cross-reference with `docs/images/teachers.png` (8-card grid in 2 rows of 4 — note: screenshot shows "Browse talks →" affordance and a player-loop icon that are **not in the current source**. Screenshot appears to be a planned/future state from `docs/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`. Audit reflects current source as truth.)
 
 **Observed states** (screenshot, future-state divergence noted):
+
 - 8 teacher cards in 2 rows × 4 cols, all with Burmese names and a circular avatar (placeholder/solid color).
 - "Browse talks →" link on each card.
 - Search input empty, button "Search" present.
@@ -144,10 +148,10 @@ Audit pass: code read of `TeachersView.svelte`, `TeacherDetailView.svelte`, `Tea
 
 **Findings**
 
-- **DHT-01 · P0 · score 100** — Featured teachers are *curated in data* (`orderTeachersFeaturedFirst` puts them first) but have **no visual distinction** in the list. The user has no way to tell which teachers are "featured by us" vs. just listed first alphabetically/ID-wise. **Fix (Wave 3)**: add a small "Featured" eyebrow badge above the teacher name in the card; optionally tint the card border with `--color-app-secondary` (secondary olive) to set them apart.
+- **DHT-01 · P0 · score 100** — Featured teachers are _curated in data_ (`orderTeachersFeaturedFirst` puts them first) but have **no visual distinction** in the list. The user has no way to tell which teachers are "featured by us" vs. just listed first alphabetically/ID-wise. **Fix (Wave 3)**: add a small "Featured" eyebrow badge above the teacher name in the card; optionally tint the card border with `--color-app-secondary` (secondary olive) to set them apart.
 - **DHT-03 · P1 · score 50** — `audioCount.toLocaleString("en-US")` hardcoded English locale (same as DHH-04). **Fix (Wave 2)**: locale-aware formatting.
 - **DHT-04 · P1 · score 40** — "Back" button on TeacherDetail is generic; user loses breadcrumb context. **Fix (Wave 3)**: change to `← Back to Teachers` (or `← Back to {previous-context}` when opened via Explore's teacher chip).
-- **DHT-06 · P1 · score 32** — Empty state "This teacher has no talks in the catalogue" can appear *under* the header `{audioCount} talks`. Contradiction if `audioCount > 0` but the page returns 0. **Fix (Wave 2)**: when `state.teacherTalks.page.total === 0 && audioCount > 0`, show "0 talks match the current page — try loading more." Or hide the empty state when `audioCount > 0` and show a "Loading more…" hint.
+- **DHT-06 · P1 · score 32** — Empty state "This teacher has no talks in the catalogue" can appear _under_ the header `{audioCount} talks`. Contradiction if `audioCount > 0` but the page returns 0. **Fix (Wave 2)**: when `state.teacherTalks.page.total === 0 && audioCount > 0`, show "0 talks match the current page — try loading more." Or hide the empty state when `audioCount > 0` and show a "Loading more…" hint.
 - **DHT-09 · P1 · score 75** — Teacher detail header is text-only; avatar present in list card is absent. **Fix (Wave 3)**: render the avatar (`teacherAvatarDataUri(detail.id)`) in the detail header at 64-80px, alongside the name and audioCount.
 - **DHT-12 · P1 · score 60** — `teacherAvatar.ts` data URI fallback (when avatar file missing) — confirm the fallback uses `--color-app-tertiary` (hypothesis A6). **Fix (Wave 1)**: verify the fallback palette matches the design token; if not, point it at `color-mix(in srgb, var(--color-app-tertiary) X%, var(--color-app-surface))`.
 - **DHT-14 · P1 · score 32** — Search input lacks visible label (same as DHE-12). **Fix (Wave 3)**: add a visible label.
@@ -162,7 +166,7 @@ Audit pass: code read of `CollectionsView.svelte`, `CollectionDetailView.svelte`
 
 **Findings**
 
-- **DHC-01 · P2 · score 22.5** — Filtering by teacher *removes* grouping; user loses structure as they narrow scope. **Fix (Wave 3)**: when teacher filter is active, group by language or series name (data permitting); or simply sort alphabetically within the filtered set.
+- **DHC-01 · P2 · score 22.5** — Filtering by teacher _removes_ grouping; user loses structure as they narrow scope. **Fix (Wave 3)**: when teacher filter is active, group by language or series name (data permitting); or simply sort alphabetically within the filtered set.
 - **DHC-04 · P1 · score 50** — CollectionDetail header is text-only (same as DHT-09). **Fix (Wave 3)**: render a small icon/glyph for the collection (e.g., a stacked-bars icon representing a collection), 32-48px square, in `--color-app-secondary` soft background.
 - **DHC-05 · P1 · score 50** — `audioCount.toLocaleString("en-US")` hardcoded (same as DHH-04, DHT-03). **Fix (Wave 2)**: locale-aware helper.
 - **DHC-06 · P1 · score 40** — Back button generic (same as DHT-04). **Fix (Wave 3)**: contextual `← Back to Collections`.
@@ -237,99 +241,101 @@ Audit pass: code read of `App.svelte`, `Sidebar.svelte`, `Header.svelte`, `Track
 > Severity bands: **P0** (≥40, ships same wave), **P1** (≥20), **P2** (≥10), **P3** (<10 or polish).
 > Each item: `id` · title · severity · files · effort (S/M/L) · wave.
 
-| ID | Title | Severity | Effort | Wave |
-| --- | --- | --- | --- | --- |
-| DHH-01 | First-launch empty state on Home | P0 | S | 2 |
-| DHH-02 | Resume hero / row list visual relationship | P1 | M | 3 |
-| DHH-03 | Dead `data-featured-layout` attribute | P1 | XS | 2 |
-| DHH-04 | Hardcoded `en-US` locale for catalogue numbers | P1 | XS | 2 |
-| DHH-05 | Unplayable hero: no accessible explanation | P1 | S | 2 |
-| DHH-06 | Heading size inconsistency on Continue listening | P3 | XS | 3 |
-| DHH-07 | Resume migration in `persistence.ts` not verified | P2 | S | 1 |
-| DHH-08 | Hero `aria-label` doesn't switch play/pause | P1 | XS | 2 |
-| DHH-09 | Resume hero vs player-bar resume mismatch | P1 | S | 2 |
-| DHE-01 | Search clear only resets text query | P1 | XS | 2 |
-| DHE-02 | No "Clear all filters" affordance | P1 | XS | 2 |
-| DHE-05 | Verify `app.search()` debounce behaviour | P1 | S | 1 |
-| DHE-07 | Search query not shown as filter chip | P1 | XS | 2 |
-| DHE-08 | Pagination `exhausted` lag | P2 | XS | 1 |
-| DHE-09 | `list_audio_categories` returns video categories | P1 | S | 1 |
-| DHE-12 | Search input lacks visible label | P1 | XS | 3 |
-| DHE-13 | Empty state doesn't echo query | P1 | XS | 2 |
-| DHE-14 | Clear-query failure path | P2 | S | 1 |
-| DHE-15 | Category chips below 44px touch target | P1 | XS | 3 |
-| DHP-01 | Player hint text hidden below 980px | P1 | XS | 3 |
-| DHP-03 | Clear queue: destructive, no undo | P2 | M | 2 |
-| DHP-04 | Queue badge count missing from `aria-label` | P1 | XS | 2 |
-| DHP-05 | Queue row remove: 40px (below 44) | P1 | XS | 3 |
-| DHP-08 | Cheatsheet doesn't document `/` alt for `?` | P2 | XS | 2 |
-| DHP-09 | Cheatsheet lists Esc wrongly | P1 | XS | 2 |
-| DHP-12 | Player error: no dismiss affordance | P3 | S | 2 |
-| DHP-13 | Slider step too granular for keyboard | P3 | XS | 4 |
-| DHP-14 | Player lacks `aria-keyshortcuts` | P3 | XS | 4 |
-| DHP-15 | Speed selector duplicate `aria-label` | P2 | XS | 3 |
-| DHP-16 | QueuePanel hardcoded `bottom-*` offsets | P3 | M | 3 |
-| DHP-17 | Player show/hide lacks transition | P3 | XS | 4 |
-| DHT-01 | Featured teachers: no visual distinction | P0 | XS | 3 |
-| DHT-03 | TeacherDetail `audioCount` hardcoded locale | P1 | XS | 2 |
-| DHT-04 | TeacherDetail Back: no context breadcrumb | P1 | XS | 3 |
-| DHT-06 | TeacherDetail talks empty state contradiction | P1 | S | 2 |
-| DHT-09 | TeacherDetail header: no avatar | P1 | S | 3 |
-| DHT-12 | Verify teacher avatar fallback palette | P1 | XS | 1 |
-| DHT-14 | Teacher search: no visible label | P1 | XS | 3 |
-| DHT-15 | Teacher search empty state doesn't echo query | P1 | XS | 2 |
-| DHT-17 | Teacher search stale `teacherResults` | P3 | XS | 1 |
-| DHC-01 | Filtering collections removes grouping | P2 | M | 3 |
-| DHC-04 | CollectionDetail header: no icon | P1 | S | 3 |
-| DHC-05 | CollectionDetail `audioCount` hardcoded locale | P1 | XS | 2 |
-| DHC-06 | CollectionDetail Back: no context | P1 | XS | 3 |
-| DHC-07 | CollectionDetail renders full track list | P2 | M | 1 |
-| DHC-08 | CollectionDetail missing ProgressiveControls | P2 | M | 3 |
-| DHC-09 | Collections empty state doesn't echo query | P1 | XS | 2 |
-| DHC-11 | Collection description: no line-clamp | P3 | XS | 3 |
-| DHC-12 | Dead `data-collection-group-heading` attribute | P3 | XS | 2 |
-| DHC-13 | Collections search: no visible label | P1 | XS | 3 |
-| DHC-15 | CollectionCard title: no line-clamp | P3 | XS | 3 |
-| DHL-01 | Library pluralization not centralized | P2 | XS | 4 |
-| DHL-02 | Library: no tabs (Downloads/Favorites/History) | P2 | M | 3 |
-| DHL-03 | Library empty-state CTA wording | P3 | XS | 2 |
-| DHL-04 | Library title "Continue listening" duplicates Home | P1 | XS | 3 |
-| DHL-05 | Inconsistent terminology (Downloads vs offline) | P3 | XS | 4 |
-| DHL-06 | Downloaded tracks still show Download button | P1 | S | 2 |
-| DHL-07 | Library: silent waiting for downloads | P1 | S | 2 |
-| DHL-08 | Library: no History view | P2 | M | 3 |
-| DHL-09 | Library empty-state title is passive | P1 | XS | 3 |
-| DHL-11 | Library: no hint to favorite talks | P3 | XS | 3 |
-| DHS-01 | Settings: missing Browse-limit control | P1 | S | 3 |
-| DHS-02 | Settings: missing Language preference | P1 | M | 3 |
-| DHS-03 | Settings: Privacy card background differs | P3 | XS | 4 |
-| DHS-04 | Settings: no Reset for Default speed | P3 | XS | 3 |
-| DHS-05 | Settings: no keyboard shortcuts entry point | P1 | XS | 3 |
-| DHS-07 | Settings: no replay/loop option | P3 | M | 3 |
-| DHS-08 | Settings: no About section | P3 | XS | 4 |
-| DHX-01 | Sidebar collapse persists; content lost | P3 | XS | 3 |
-| DHX-02 | Sidebar copy ignores downloads | P3 | XS | 4 |
-| DHX-04 | Header: no breadcrumb on detail routes | P2 | XS | 3 |
-| DHX-05 | No ±60s seek shortcut | P3 | XS | 4 |
-| DHX-08 | Esc split across 3 handlers | P2 | M | 2 |
-| DHX-09 | App-level Space ignores disabled button | P3 | XS | 4 |
-| DHX-10 | AsyncState empty: single illustration | P3 | XS | 4 |
-| DHX-12 | AsyncState error: hardcoded title | P3 | XS | 3 |
-| DHX-13 | AsyncState empty: no CTA support | P1 | S | 2 |
-| DHX-14 | TextSearchField clear: 40px | P1 | XS | 2 |
-| DHX-21 | TrackRow title truncates Burmese mid-cluster | P1 | S | 2 |
-| DHX-22 | Duration format: Western numerals | P1 | S | 2 |
+| ID     | Title                                              | Severity | Effort | Wave |
+| ------ | -------------------------------------------------- | -------- | ------ | ---- |
+| DHH-01 | First-launch empty state on Home                   | P0       | S      | 2    |
+| DHH-02 | Resume hero / row list visual relationship         | P1       | M      | 3    |
+| DHH-03 | Dead `data-featured-layout` attribute              | P1       | XS     | 2    |
+| DHH-04 | Hardcoded `en-US` locale for catalogue numbers     | P1       | XS     | 2    |
+| DHH-05 | Unplayable hero: no accessible explanation         | P1       | S      | 2    |
+| DHH-06 | Heading size inconsistency on Continue listening   | P3       | XS     | 3    |
+| DHH-07 | Resume migration in `persistence.ts` not verified  | P2       | S      | 1    |
+| DHH-08 | Hero `aria-label` doesn't switch play/pause        | P1       | XS     | 2    |
+| DHH-09 | Resume hero vs player-bar resume mismatch          | P1       | S      | 2    |
+| DHE-01 | Search clear only resets text query                | P1       | XS     | 2    |
+| DHE-02 | No "Clear all filters" affordance                  | P1       | XS     | 2    |
+| DHE-05 | Verify `app.search()` debounce behaviour           | P1       | S      | 1    |
+| DHE-07 | Search query not shown as filter chip              | P1       | XS     | 2    |
+| DHE-08 | Pagination `exhausted` lag                         | P2       | XS     | 1    |
+| DHE-09 | `list_audio_categories` returns video categories   | P1       | S      | 1    |
+| DHE-12 | Search input lacks visible label                   | P1       | XS     | 3    |
+| DHE-13 | Empty state doesn't echo query                     | P1       | XS     | 2    |
+| DHE-14 | Clear-query failure path                           | P2       | S      | 1    |
+| DHE-15 | Category chips below 44px touch target             | P1       | XS     | 3    |
+| DHP-01 | Player hint text hidden below 980px                | P1       | XS     | 3    |
+| DHP-03 | Clear queue: destructive, no undo                  | P2       | M      | 2    |
+| DHP-04 | Queue badge count missing from `aria-label`        | P1       | XS     | 2    |
+| DHP-05 | Queue row remove: 40px (below 44)                  | P1       | XS     | 3    |
+| DHP-08 | Cheatsheet doesn't document `/` alt for `?`        | P2       | XS     | 2    |
+| DHP-09 | Cheatsheet lists Esc wrongly                       | P1       | XS     | 2    |
+| DHP-12 | Player error: no dismiss affordance                | P3       | S      | 2    |
+| DHP-13 | Slider step too granular for keyboard              | P3       | XS     | 4    |
+| DHP-14 | Player lacks `aria-keyshortcuts`                   | P3       | XS     | 4    |
+| DHP-15 | Speed selector duplicate `aria-label`              | P2       | XS     | 3    |
+| DHP-16 | QueuePanel hardcoded `bottom-*` offsets            | P3       | M      | 3    |
+| DHP-17 | Player show/hide lacks transition                  | P3       | XS     | 4    |
+| DHT-01 | Featured teachers: no visual distinction           | P0       | XS     | 3    |
+| DHT-03 | TeacherDetail `audioCount` hardcoded locale        | P1       | XS     | 2    |
+| DHT-04 | TeacherDetail Back: no context breadcrumb          | P1       | XS     | 3    |
+| DHT-06 | TeacherDetail talks empty state contradiction      | P1       | S      | 2    |
+| DHT-09 | TeacherDetail header: no avatar                    | P1       | S      | 3    |
+| DHT-12 | Verify teacher avatar fallback palette             | P1       | XS     | 1    |
+| DHT-14 | Teacher search: no visible label                   | P1       | XS     | 3    |
+| DHT-15 | Teacher search empty state doesn't echo query      | P1       | XS     | 2    |
+| DHT-17 | Teacher search stale `teacherResults`              | P3       | XS     | 1    |
+| DHC-01 | Filtering collections removes grouping             | P2       | M      | 3    |
+| DHC-04 | CollectionDetail header: no icon                   | P1       | S      | 3    |
+| DHC-05 | CollectionDetail `audioCount` hardcoded locale     | P1       | XS     | 2    |
+| DHC-06 | CollectionDetail Back: no context                  | P1       | XS     | 3    |
+| DHC-07 | CollectionDetail renders full track list           | P2       | M      | 1    |
+| DHC-08 | CollectionDetail missing ProgressiveControls       | P2       | M      | 3    |
+| DHC-09 | Collections empty state doesn't echo query         | P1       | XS     | 2    |
+| DHC-11 | Collection description: no line-clamp              | P3       | XS     | 3    |
+| DHC-12 | Dead `data-collection-group-heading` attribute     | P3       | XS     | 2    |
+| DHC-13 | Collections search: no visible label               | P1       | XS     | 3    |
+| DHC-15 | CollectionCard title: no line-clamp                | P3       | XS     | 3    |
+| DHL-01 | Library pluralization not centralized              | P2       | XS     | 4    |
+| DHL-02 | Library: no tabs (Downloads/Favorites/History)     | P2       | M      | 3    |
+| DHL-03 | Library empty-state CTA wording                    | P3       | XS     | 2    |
+| DHL-04 | Library title "Continue listening" duplicates Home | P1       | XS     | 3    |
+| DHL-05 | Inconsistent terminology (Downloads vs offline)    | P3       | XS     | 4    |
+| DHL-06 | Downloaded tracks still show Download button       | P1       | S      | 2    |
+| DHL-07 | Library: silent waiting for downloads              | P1       | S      | 2    |
+| DHL-08 | Library: no History view                           | P2       | M      | 3    |
+| DHL-09 | Library empty-state title is passive               | P1       | XS     | 3    |
+| DHL-11 | Library: no hint to favorite talks                 | P3       | XS     | 3    |
+| DHS-01 | Settings: missing Browse-limit control             | P1       | S      | 3    |
+| DHS-02 | Settings: missing Language preference              | P1       | M      | 3    |
+| DHS-03 | Settings: Privacy card background differs          | P3       | XS     | 4    |
+| DHS-04 | Settings: no Reset for Default speed               | P3       | XS     | 3    |
+| DHS-05 | Settings: no keyboard shortcuts entry point        | P1       | XS     | 3    |
+| DHS-07 | Settings: no replay/loop option                    | P3       | M      | 3    |
+| DHS-08 | Settings: no About section                         | P3       | XS     | 4    |
+| DHX-01 | Sidebar collapse persists; content lost            | P3       | XS     | 3    |
+| DHX-02 | Sidebar copy ignores downloads                     | P3       | XS     | 4    |
+| DHX-04 | Header: no breadcrumb on detail routes             | P2       | XS     | 3    |
+| DHX-05 | No ±60s seek shortcut                              | P3       | XS     | 4    |
+| DHX-08 | Esc split across 3 handlers                        | P2       | M      | 2    |
+| DHX-09 | App-level Space ignores disabled button            | P3       | XS     | 4    |
+| DHX-10 | AsyncState empty: single illustration              | P3       | XS     | 4    |
+| DHX-12 | AsyncState error: hardcoded title                  | P3       | XS     | 3    |
+| DHX-13 | AsyncState empty: no CTA support                   | P1       | S      | 2    |
+| DHX-14 | TextSearchField clear: 40px                        | P1       | XS     | 2    |
+| DHX-21 | TrackRow title truncates Burmese mid-cluster       | P1       | S      | 2    |
+| DHX-22 | Duration format: Western numerals                  | P1       | S      | 2    |
 
 ## 7. Implementation waves
 
 Each wave is independently mergeable and passes `bun run verify` / `bun run verify:web`.
 
 ### Wave 1 — Foundations (no UI changes, just unlocks later waves)
+
 - Drift cleanup between `DESIGN.md` frontmatter and `src/index.css` (`bun run design:check` clean).
 - Introduce semantic component primitives: `Button`, `SegmentedControl`, `EmptyState`, `StatusBadge` if missing.
 - Add `app-test` Playwright smoke for resume + search flows (TDD).
 
 ### Wave 2 — Worst-2-stars quick wins
+
 - Fix silent failures (search empty state, filter no-match, audio fallback timeout).
 - Focus restore after navigation/clear-search.
 - Confirm-destructive on remove-from-favorites & clear-queue.
@@ -337,12 +343,14 @@ Each wave is independently mergeable and passes `bun run verify` / `bun run veri
 - Color-only state cues → add icon or label.
 
 ### Wave 3 — View redesigns
+
 - **Home**: Resume → featured teachers → collections → recent catalogue. Layout review at 860px.
 - **Explore**: Search field placement, filter clarity, pagination density, results-vs-empty.
 - **Library**: Tabs for Downloads / Favorites / History with counts.
 - **Settings**: Grouping, default-rate exposed inline, browse-limit explained.
 
 ### Wave 4 — Polish & cross-cutting
+
 - Myanmar typography audit (line-break, padding-block, balance on titles).
 - Token drift sweep on every Svelte file (`bg-app-*`, `text-app-*`).
 - Copy pass: short, calm, action-oriented; no exclamation marks; no "Power user" voice.
@@ -350,12 +358,14 @@ Each wave is independently mergeable and passes `bun run verify` / `bun run veri
 - Reduced-motion verification across new transitions.
 
 ### Wave 5 — Listener validation
+
 - Five-task think-aloud with 1 Myanmar + 1 English listener.
 - Triage new findings → P0/P1 absorbed into next wave; P2/P3 parked.
 
 ## 8. Validation bar
 
 Every wave must:
+
 - `bun run verify:web` (format, lint, typecheck, test, coverage)
 - `bun run verify` (adds Rust fmt + clippy + Rust tests) when Rust touched
 - `bun run design:check` (token parity)
@@ -379,9 +389,9 @@ Every wave must:
 
 ## Appendix A — What changed since the previous audit (hypotheses for further confirmation)
 
-These are *hypotheses* I would update **after** running `bun run design:check` and walkthrough — listed here as the v0 backlog the audit will verify.
+These are _hypotheses_ I would update **after** running `bun run design:check` and walkthrough — listed here as the v0 backlog the audit will verify.
 
-- **A1.** `TrackRow` resume-position display uses color only (red dot) for "in progress" — add a label or icon. *(home, library)*
+- **A1.** `TrackRow` resume-position display uses color only (red dot) for "in progress" — add a label or icon. _(home, library)_
 - **A2.** Search field on Explore loses focus when filters change — restore focus to the input or to the first result.
 - **A3.** "Clear queue" is destructive but has no confirm — add a 2-step pattern.
 - **A4.** `myanmar-text` is applied to titles but not to metadata subtitles in `TrackRow` — extend scope.
@@ -396,14 +406,14 @@ These are *hypotheses* I would update **after** running `bun run design:check` a
 
 After auditing 6 views + cross-cutting components, **6 patterns** recur 3+ times each. These are the highest-yield cross-cutting fixes:
 
-| # | Pattern | Affected findings | Affected views | One-shot fix |
-| --- | --- | --- | --- | --- |
-| 1 | `toLocaleString("en-US")` hardcoded | DHH-04, DHT-03, DHC-05 | Home, TeacherDetail, CollectionDetail | Single `formatLocaleNumber(value)` helper in `src/utils.ts`. ~30 min. |
-| 2 | Search empty-state doesn't echo query | DHE-13, DHT-15, DHC-09 | Explore, Teachers, Collections | Extend `<AsyncState kind="empty">` to accept `actionLabel` + `onaction` (covered by DHX-13); share a `<SearchEmptyState>` wrapper. ~1 h. |
-| 3 | Search inputs lack visible labels | DHE-12, DHT-14, DHC-13 | Explore, Teachers, Collections | Replace placeholder-only labels with visible labels in `<TextSearchField>`. ~1 h. |
-| 4 | Burmese text truncation / orphan clusters | DHX-21, A5, A4 | TrackRow, TeacherCard, CollectionCard | Add `truncateTrackTitle` (Burmese-cluster aware); extend `myanmar-text` to subtitles. ~2 h. |
-| 5 | Touch targets below 44px (DESIGN.md min) | DHE-15, DHP-05, DHX-14 | Category chips, queue remove, search clear | Three small Tailwind class bumps. ~30 min. |
-| 6 | Keyboard discoverability | DHP-01, DHP-09, DHP-14, DHS-05 | Player, Cheatsheet, Settings | Cheatsheet review + in-context hint + Settings entry point. ~2 h. |
+| #   | Pattern                                   | Affected findings              | Affected views                             | One-shot fix                                                                                                                             |
+| --- | ----------------------------------------- | ------------------------------ | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `toLocaleString("en-US")` hardcoded       | DHH-04, DHT-03, DHC-05         | Home, TeacherDetail, CollectionDetail      | Single `formatLocaleNumber(value)` helper in `src/utils.ts`. ~30 min.                                                                    |
+| 2   | Search empty-state doesn't echo query     | DHE-13, DHT-15, DHC-09         | Explore, Teachers, Collections             | Extend `<AsyncState kind="empty">` to accept `actionLabel` + `onaction` (covered by DHX-13); share a `<SearchEmptyState>` wrapper. ~1 h. |
+| 3   | Search inputs lack visible labels         | DHE-12, DHT-14, DHC-13         | Explore, Teachers, Collections             | Replace placeholder-only labels with visible labels in `<TextSearchField>`. ~1 h.                                                        |
+| 4   | Burmese text truncation / orphan clusters | DHX-21, A5, A4                 | TrackRow, TeacherCard, CollectionCard      | Add `truncateTrackTitle` (Burmese-cluster aware); extend `myanmar-text` to subtitles. ~2 h.                                              |
+| 5   | Touch targets below 44px (DESIGN.md min)  | DHE-15, DHP-05, DHX-14         | Category chips, queue remove, search clear | Three small Tailwind class bumps. ~30 min.                                                                                               |
+| 6   | Keyboard discoverability                  | DHP-01, DHP-09, DHP-14, DHS-05 | Player, Cheatsheet, Settings               | Cheatsheet review + in-context hint + Settings entry point. ~2 h.                                                                        |
 
 ### Top-5 P1/P0 by score
 
@@ -419,10 +429,10 @@ After auditing 6 views + cross-cutting components, **6 patterns** recur 3+ times
 
 If only **one wave** could be done, **Wave 2 (Quick wins)** would touch the most findings (29) for the least code (most are XS/S, mostly Tailwind class swaps, single helper extractions, or removal of dead attributes). Estimated effort: **~6–8 hours** for an experienced Svelte dev with verification.
 
-### What *not* to do first
+### What _not_ to do first
 
 - **Don't start with Wave 3 redesigns.** Wave 3 requires Wave 2 helpers (`formatLocaleNumber`, `<SearchEmptyState>`, `<AsyncState>` CTA support) to land first or you'll redo them.
-- **Don't touch Settings (DHS-*) in isolation.** Most Settings findings tie back to features that don't exist in the UI yet (History, browse-limit, language). Add Settings together with the feature it controls.
+- **Don't touch Settings (DHS-\*) in isolation.** Most Settings findings tie back to features that don't exist in the UI yet (History, browse-limit, language). Add Settings together with the feature it controls.
 - **Don't add new components for things that are pure copy.** DHL-09, DHL-04, DHS-03 are copy decisions, not component decisions.
 
 ## Appendix E — Screenshot divergence note

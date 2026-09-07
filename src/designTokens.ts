@@ -150,7 +150,9 @@ function normalizeValue(value: string): string {
   const stripped = value.replace(/\s+/gu, "").toLowerCase();
   const pixelMatch = /^(-?[0-9.]+)px$/u.exec(stripped);
   if (pixelMatch !== null) {
-    return `${Number(pixelMatch[1]).toFixed(4).replace(/\.?0+$/u, "")}px`;
+    return `${Number(pixelMatch[1])
+      .toFixed(4)
+      .replace(/\.?0+$/u, "")}px`;
   }
   const remMatch = /^(-?[0-9.]+)rem$/u.exec(stripped);
   if (remMatch !== null) {

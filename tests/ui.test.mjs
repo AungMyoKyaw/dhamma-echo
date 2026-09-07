@@ -64,15 +64,17 @@ test("track titles truncate at the cluster boundary with middle ellipsis", () =>
   assert.equal(truncateTrackTitle("Short talk"), "Short talk");
   assert.equal(truncateTrackTitle("A"), "A");
   // English: long titles clip at the boundary.
-  const longEnglish =
-    "The greatest obstacle to discovering the shape of the world is the familiar";
+  const longEnglish = "The greatest obstacle to discovering the shape of the world is the familiar";
   const truncatedEnglish = truncateTrackTitle(longEnglish);
   assert.ok(truncatedEnglish.endsWith("…"));
   assert.ok(truncatedEnglish.length < longEnglish.length);
   // English boundary: ellipsis replaces a single character.
   assert.equal(truncatedEnglish, "The greatest obstacle to discovering the shape of the world…");
   // Burmese: cluster-aware — never splits a virama stack.
-  assert.equal(truncateTrackTitle("တရားတော်နှင့်တကွ သီတင်းသုံးရန်"), "တရားတော်နှင့်တကွ သီတင်းသုံးရန်");
+  assert.equal(
+    truncateTrackTitle("တရားတော်နှင့်တကွ သီတင်းသုံးရန်"),
+    "တရားတော်နှင့်တကွ သီတင်းသုံးရန်"
+  );
   const longBurmese = "တရားတော်".repeat(40);
   const truncatedBurmese = truncateTrackTitle(longBurmese);
   assert.ok(truncatedBurmese.includes("…"));

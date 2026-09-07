@@ -63,6 +63,10 @@
         actionLabel="Clear search"
         onaction={clear}
       />{:else}<div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
-        {#each results as teacher (teacher.id)}<TeacherCard {teacher} {state} onselect={open} />{/each}
+        {#each results as teacher (teacher.id)}<TeacherCard
+            {teacher}
+            {state}
+            onselect={open}
+          />{/each}
       </div>{/if}
   </section>{/if}

@@ -113,7 +113,12 @@ test("compareTokens flags tokens defined in DESIGN.md but missing from css", () 
 
 test("compareTokens flags css tokens missing from the design (canonical naming)", () => {
   const design = parseDesignFrontmatter(SAMPLE_DESIGN);
-  const css = loadCssTokens(SAMPLE_CSS.replace("--color-app-primary-ink: #ffffff;", "--color-app-primary-ink: #ffffff;\n  --color-app-warning: #ff0000;"));
+  const css = loadCssTokens(
+    SAMPLE_CSS.replace(
+      "--color-app-primary-ink: #ffffff;",
+      "--color-app-primary-ink: #ffffff;\n  --color-app-warning: #ff0000;"
+    )
+  );
   const drift = compareTokens(design, css);
   assert.ok(
     drift.missingFromDesign.includes("colors.app-warning"),
@@ -123,13 +128,9 @@ test("compareTokens flags css tokens missing from the design (canonical naming)"
 
 test("compareTokens reports mismatched values between design and css", () => {
   const design = parseDesignFrontmatter(SAMPLE_DESIGN);
-  const css = loadCssTokens(
-    `${SAMPLE_CSS.replace("#8c3f08", "#000000")}`
-  );
+  const css = loadCssTokens(`${SAMPLE_CSS.replace("#8c3f08", "#000000")}`);
   const drift = compareTokens(design, css);
-  const primaryMismatch = drift.valueMismatches.find(
-    (m) => m.path === "colors.primary"
-  );
+  const primaryMismatch = drift.valueMismatches.find((m) => m.path === "colors.primary");
   assert.ok(primaryMismatch !== undefined, "expected colors.primary mismatch");
   assert.equal(primaryMismatch.design, "#8c3f08");
   assert.equal(primaryMismatch.css, "#000000");
@@ -137,9 +138,7 @@ test("compareTokens reports mismatched values between design and css", () => {
 
 test("compareTokens treats equivalent colors as equal (case insensitive)", () => {
   const design = parseDesignFrontmatter(SAMPLE_DESIGN);
-  const css = loadCssTokens(
-    SAMPLE_CSS.replace("#fcf9f2", "#FCF9F2").replace("#8c3f08", "#8C3F08")
-  );
+  const css = loadCssTokens(SAMPLE_CSS.replace("#fcf9f2", "#FCF9F2").replace("#8c3f08", "#8C3F08"));
   const drift = compareTokens(design, css);
   assert.equal(drift.valueMismatches.length, 0);
 });
@@ -236,7 +235,9 @@ test("loadCssTokens classifies every CSS custom property prefix", () => {
 });
 
 test("compareTokens allows the design to omit rounded and spacing silently", () => {
-  const design = parseDesignFrontmatter(`---\nname: t\ncolors:\n  primary: "#8c3f08"\n---\n## Overview\n`);
+  const design = parseDesignFrontmatter(
+    `---\nname: t\ncolors:\n  primary: "#8c3f08"\n---\n## Overview\n`
+  );
   const css = loadCssTokens(SAMPLE_CSS);
   const drift = compareTokens(design, css);
   assert.equal(drift.missingFromDesign.length, 0);
@@ -329,10 +330,7 @@ test("parseDesignFrontmatter throws when a line is not a mapping", () => {
 });
 
 test("parseDesignFrontmatter throws when a colon is not followed by whitespace", () => {
-  assert.throws(
-    () => parseDesignFrontmatter("---\nname:bad\n---\nbody\n"),
-    /not a mapping/u
-  );
+  assert.throws(() => parseDesignFrontmatter("---\nname:bad\n---\nbody\n"), /not a mapping/u);
 });
 
 test("parseDesignFrontmatter ignores comment lines and blank lines", () => {
@@ -343,7 +341,9 @@ test("parseDesignFrontmatter ignores comment lines and blank lines", () => {
 });
 
 test("parseDesignFrontmatter tolerates CR/LF line endings", () => {
-  const tokens = parseDesignFrontmatter("---\r\nname: t\r\ncolors:\r\n  primary: \"#abcdef\"\r\n---\r\nbody\r\n");
+  const tokens = parseDesignFrontmatter(
+    '---\r\nname: t\r\ncolors:\r\n  primary: "#abcdef"\r\n---\r\nbody\r\n'
+  );
   assert.equal(tokens.colors.primary, "#abcdef");
 });
 
@@ -354,7 +354,7 @@ test("parseDesignFrontmatter accepts unquoted scalar values", () => {
 
 test("parseDesignFrontmatter strips surrounding quotes from quoted values", () => {
   const tokens = parseDesignFrontmatter(
-    '---\nname: t\ncolors:\n  primary: "red"\n  accent: \'blue\'\n---\nbody\n'
+    "---\nname: t\ncolors:\n  primary: \"red\"\n  accent: 'blue'\n---\nbody\n"
   );
   assert.equal(tokens.colors.primary, "red");
   assert.equal(tokens.colors.accent, "blue");
@@ -387,23 +387,17 @@ test("parseDesignFrontmatter filters out groups whose leaves were all empty", ()
 });
 
 test("parseDesignFrontmatter keeps single quotes inside double-quoted values intact", () => {
-  const tokens = parseDesignFrontmatter(
-    '---\ncolors:\n  primary: "abc:def\'ghi"\n---\n'
-  );
+  const tokens = parseDesignFrontmatter('---\ncolors:\n  primary: "abc:def\'ghi"\n---\n');
   assert.equal(tokens.colors.primary, "abc:def'ghi");
 });
 
 test("parseDesignFrontmatter keeps double quotes inside single-quoted values intact", () => {
-  const tokens = parseDesignFrontmatter(
-    "---\ncolors:\n  primary: 'abc:def\"ghi'\n---\n"
-  );
+  const tokens = parseDesignFrontmatter("---\ncolors:\n  primary: 'abc:def\"ghi'\n---\n");
   assert.equal(tokens.colors.primary, 'abc:def"ghi');
 });
 
 test("parseDesignFrontmatter handles unquoted values containing colons", () => {
-  const tokens = parseDesignFrontmatter(
-    "---\ncolors:\n  url: https://example.com:8080/x\n---\n"
-  );
+  const tokens = parseDesignFrontmatter("---\ncolors:\n  url: https://example.com:8080/x\n---\n");
   assert.equal(tokens.colors.url, "https://example.com:8080/x");
 });
 
@@ -506,9 +500,7 @@ test("formatTailwindTheme normalizes underscores in token names", () => {
 
 test("compareTokens handles tokens defined only in css but the design declares the group", () => {
   const design = { colors: { canvas: "#fcf9f2" } };
-  const css = loadCssTokens(
-    "@theme { --color-app-bg: #fcf9f2; --color-app-extra: #abcdef; }\n"
-  );
+  const css = loadCssTokens("@theme { --color-app-bg: #fcf9f2; --color-app-extra: #abcdef; }\n");
   const drift = compareTokens(design, css);
   assert.ok(drift.missingFromDesign.includes("colors.app-extra"));
 });

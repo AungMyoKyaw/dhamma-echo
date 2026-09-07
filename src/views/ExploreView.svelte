@@ -125,7 +125,11 @@
           >{/each}
       </fieldset>{/if}
   </form>
-  {#if hasFilters}<div class="flex flex-wrap items-center gap-2" role="group" aria-label="Active filters">
+  {#if hasFilters}<div
+      class="flex flex-wrap items-center gap-2"
+      role="group"
+      aria-label="Active filters"
+    >
       {#if state.search.query.length > 0}<div
           class="inline-flex min-h-10 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
         >
@@ -198,12 +202,18 @@
     />
   {:else if state.catalogue.page.items.length === 0}<AsyncState
       kind="empty"
-      title={state.search.query.length > 0 ? `No talks match “${state.search.query}”` : "No talks match these filters"}
+      title={state.search.query.length > 0
+        ? `No talks match “${state.search.query}”`
+        : "No talks match these filters"}
       detail={hasFilters
         ? "Try clearing a filter, broadening the language, or removing the search terms."
         : "The catalogue has no talks in this combination. Try resetting the filters."}
       actionLabel={hasFilters ? "Clear all filters" : ""}
-      onaction={hasFilters ? () => { void clearAll(); } : undefined}
+      onaction={hasFilters
+        ? () => {
+            void clearAll();
+          }
+        : undefined}
     />
   {:else}<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
       {#each state.catalogue.page.items as track (track.id)}<TrackRow

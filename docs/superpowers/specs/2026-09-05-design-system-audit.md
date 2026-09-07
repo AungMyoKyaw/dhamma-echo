@@ -95,8 +95,8 @@ lines) and throws loudly on anything richer.
 
 ## Verification
 
-| Change scope | Command |
-| ------------ | ------- |
+| Change scope | Command              |
+| ------------ | -------------------- |
 | Web only     | `bun run verify:web` |
 
 `bun run verify:web` now runs (in order) the test policy check, ESLint with

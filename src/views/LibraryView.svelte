@@ -89,20 +89,22 @@
         <p class="text-sm text-app-muted tabular-nums">
           {pluralize(downloads.length, "downloaded talk", undefined, appState.settings.locale)}
         </p>
-        {#if downloads.length > 0 && appState.library.favorites.length === 0}<p class="text-xs text-app-muted">
+        {#if downloads.length > 0 && appState.library.favorites.length === 0}<p
+            class="text-xs text-app-muted"
+          >
             Favorite talks while exploring to keep them close even without a download.
           </p>{/if}
         {#if hasDownloads}
           {#if downloads.length > 0}
             <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
-              {#each downloads as track (track.id)}<TrackRow {track} state={appState} {app} />{/each}
+              {#each downloads as track (track.id)}<TrackRow
+                  {track}
+                  state={appState}
+                  {app}
+                />{/each}
             </div>
           {:else}
-            <AsyncState
-              kind="loading"
-              loadingLabel="Loading downloaded talks"
-              shape="rows"
-            />
+            <AsyncState kind="loading" loadingLabel="Loading downloaded talks" shape="rows" />
           {/if}
         {:else}
           <AsyncState
@@ -128,7 +130,11 @@
         {/if}
         {#if favoriteOnly.length > 0}
           <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
-            {#each favoriteOnly as track (track.id)}<TrackRow {track} state={appState} {app} />{/each}
+            {#each favoriteOnly as track (track.id)}<TrackRow
+                {track}
+                state={appState}
+                {app}
+              />{/each}
           </div>
         {:else if appState.library.favorites.length > 0}
           <AsyncState
@@ -154,7 +160,11 @@
         </p>
         {#if historyTracks.length > 0}
           <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
-            {#each historyTracks as track (track.id)}<TrackRow {track} state={appState} {app} />{/each}
+            {#each historyTracks as track (track.id)}<TrackRow
+                {track}
+                state={appState}
+                {app}
+              />{/each}
           </div>
         {:else}
           <AsyncState

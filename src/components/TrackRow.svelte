@@ -56,9 +56,7 @@
     <span
       class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border-0 bg-app-soft text-app-muted shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-app-border)_70%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 {track.playable
         ? 'bg-[color-mix(in_srgb,var(--color-app-primary)_12%,var(--color-app-surface))] text-app-primary group-hover:bg-app-primary group-hover:text-app-primary-ink'
-        : ''} {current && track.playable
-        ? 'bg-app-primary text-app-primary-ink'
-        : ''}"
+        : ''} {current && track.playable ? 'bg-app-primary text-app-primary-ink' : ''}"
       ><span
         class="block size-[18px] [&_svg]:block [&_svg]:size-full {playing
           ? ''
@@ -69,8 +67,7 @@
       <span class="flex items-center gap-2"
         ><span
           class="break-words font-bold leading-6 {myanmarTitle ? 'myanmar-text' : ''}"
-          lang={myanmarTitle ? "my" : undefined}
-          >{displayTitle}</span
+          lang={myanmarTitle ? "my" : undefined}>{displayTitle}</span
         >{#if track.mediaType === "video"}<span
             class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-primary/15 px-2 pt-0.5 pb-0 align-middle text-[10px] leading-none font-bold text-app-primary uppercase"
             >Video</span
@@ -116,9 +113,7 @@
         class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app-primary disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         onclick={() => void download()}
-        aria-label={downloading
-          ? "Downloading"
-          : "Download for offline listening"}
+        aria-label={downloading ? "Downloading" : "Download for offline listening"}
         title={downloading ? "Downloading" : "Download for offline listening"}
         disabled={downloading || !track.playable}
         ><span class="size-5"><Icon name="download" /></span></button

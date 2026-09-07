@@ -28,7 +28,9 @@
   let cardCount = $derived(shape === "cards" ? 6 : 0);
   let rowSlots = $derived(Array.from({ length: rowCount }, (_, index) => index));
   let cardSlots = $derived(Array.from({ length: cardCount }, (_, index) => index));
-  let showAction = $derived(kind === "empty" && actionLabel !== undefined && onaction !== undefined);
+  let showAction = $derived(
+    kind === "empty" && actionLabel !== undefined && onaction !== undefined
+  );
 </script>
 
 {#if kind === "loading"}

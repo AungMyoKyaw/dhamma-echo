@@ -36,7 +36,9 @@
     >
       <div class="player-track min-w-0" aria-live="polite">
         <p
-          class="line-clamp-2 break-words text-sm font-bold {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
+          class="line-clamp-2 break-words text-sm font-bold {isMyanmarText(track.title)
+            ? 'myanmar-text'
+            : ''}"
           lang={isMyanmarText(track.title) ? "my" : undefined}
         >
           {truncateTrackTitle(track.title)}
@@ -61,8 +63,7 @@
                 class="inline-flex min-h-10 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-none font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
                 type="button"
                 onclick={clearError}
-                aria-label="Dismiss error"
-                >Dismiss</button
+                aria-label="Dismiss error">Dismiss</button
               ></span
             >{:else if loading}<span
               class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-app-primary"
@@ -152,8 +153,7 @@
           aria-expanded={state.player.queueOpen}
           ><span><Icon name="queue" /></span>{#if state.player.queue.length > 0}<span
               class="absolute -top-[3px] -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.58rem] font-extrabold text-app-primary-ink"
-              aria-hidden="true"
-              >{state.player.queue.length}</span
+              aria-hidden="true">{state.player.queue.length}</span
             >{/if}</button
         >
       </div>

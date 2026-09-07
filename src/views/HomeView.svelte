@@ -108,12 +108,16 @@
                   ? `${latest.title} (not supported by the macOS player)`
                   : `Resume ${latest.title}`}
               aria-pressed={playing}
-              title={!latest.playable ? "This format isn't supported by the macOS player." : undefined}
+              title={!latest.playable
+                ? "This format isn't supported by the macOS player."
+                : undefined}
               ><span class="ml-0.5 size-6"><Icon name={playing ? "pause" : "play"} /></span></button
             >
             <div class="min-w-0">
               <h3
-                class="line-clamp-2 break-words font-bold {isMyanmarText(latest.title) ? 'myanmar-text' : ''}"
+                class="line-clamp-2 break-words font-bold {isMyanmarText(latest.title)
+                  ? 'myanmar-text'
+                  : ''}"
                 lang={isMyanmarText(latest.title) ? "my" : undefined}
               >
                 {truncateTrackTitle(latest.title)}
@@ -131,15 +135,13 @@
             </div>
           </div>
           {#if rest.length > 0}<div class="space-y-2">
-            <h3 class="text-sm font-bold tracking-wide text-app-muted uppercase">
-              Recently played
-            </h3>
-            <div
-              class="overflow-hidden rounded-card border border-app-border bg-app-surface"
-            >
-              {#each rest as track (track.id)}<TrackRow {track} {state} {app} />{/each}
-            </div>
-          </div>{/if}
+              <h3 class="text-sm font-bold tracking-wide text-app-muted uppercase">
+                Recently played
+              </h3>
+              <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
+                {#each rest as track (track.id)}<TrackRow {track} {state} {app} />{/each}
+              </div>
+            </div>{/if}
         </section>
       {/if}
     {/if}
@@ -157,9 +159,7 @@
           onclick={() => go("teachers")}>View all</button
         >
       </div>
-      <div
-        class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4"
-      >
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
         {#if state.teachers.status === "ready" && featured.length > 0}{#each featured as teacher (teacher.id)}<TeacherCard
               {teacher}
               {state}

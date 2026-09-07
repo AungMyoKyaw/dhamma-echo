@@ -58,9 +58,7 @@ if (warnings.length > 0) {
 }
 
 const total = errors.length + warnings.length;
-const tokenSummary = parsed.findings.find(
-  (finding) => finding.rule === "token-summary"
-);
+const tokenSummary = parsed.findings.find((finding) => finding.rule === "token-summary");
 if (tokenSummary !== undefined && total === 0) {
   console.log(`design:lint OK —${tokenSummary.message.replace(/^Design system /u, "")}`);
 }

@@ -69,12 +69,14 @@
     <h2 class="text-lg font-bold">Playback</h2>
     <div class="mt-5 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
       <label class="text-sm font-bold"
-        >Default speed<div class="mt-1 flex items-center gap-2">
+        >Default speed
+        <div class="mt-1 flex items-center gap-2">
           <select
             class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 font-normal"
             value={String(appState.settings.playbackRate)}
             onchange={(event) => app.setRate(numberValue(event))}
-            >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option>{/each}</select
+            >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
+              >{/each}</select
           >
           {#if appState.settings.playbackRate !== 1}<button
               type="button"
@@ -95,7 +97,8 @@
               type: "set-browse-limit",
               limit: numberValue(event) as 25 | 50 | 100
             })}
-          >{#each browseLimits as limit (limit)}<option value={String(limit)}>{limit}</option>{/each}</select
+          >{#each browseLimits as limit (limit)}<option value={String(limit)}>{limit}</option
+            >{/each}</select
         ></label
       >
     </div>
@@ -117,8 +120,8 @@
     <p class="mt-2 text-sm leading-6 text-app-muted">
       Favorites, history, playback position, and settings are stored locally on this device. The
       bundled catalogue is read-only. Audio is requested from
-      <code class="font-mono">dhammadownload.com</code> only when you press play. Downloads stay on
-      this device until you remove them.
+      <code class="font-mono">dhammadownload.com</code> only when you press play. Downloads stay on this
+      device until you remove them.
     </p>
   </div>
   <div class="rounded-card border border-app-border bg-app-surface p-6">

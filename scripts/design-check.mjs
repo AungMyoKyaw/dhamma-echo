@@ -30,21 +30,32 @@ try {
     drift.missingFromDesign.length === 0 &&
     drift.valueMismatches.length === 0
   ) {
-    const tokenCount = Object.values(design).reduce((sum, group) => sum + Object.keys(group).length, 0);
-    console.log(`design:check OK —${tokenCount} token(s) match between DESIGN.md and src/index.css.`);
+    const tokenCount = Object.values(design).reduce(
+      (sum, group) => sum + Object.keys(group).length,
+      0
+    );
+    console.log(
+      `design:check OK —${tokenCount} token(s) match between DESIGN.md and src/index.css.`
+    );
     process.exit(0);
   }
 
   if (drift.missingFromCss.length > 0) {
-    console.error(`design:check: ${drift.missingFromCss.length} token(s) defined in DESIGN.md missing from src/index.css:`);
+    console.error(
+      `design:check: ${drift.missingFromCss.length} token(s) defined in DESIGN.md missing from src/index.css:`
+    );
     for (const path of drift.missingFromCss) console.error(`  - ${path}`);
   }
   if (drift.missingFromDesign.length > 0) {
-    console.error(`design:check: ${drift.missingFromDesign.length} css-only token(s) not declared in DESIGN.md:`);
+    console.error(
+      `design:check: ${drift.missingFromDesign.length} css-only token(s) not declared in DESIGN.md:`
+    );
     for (const path of drift.missingFromDesign) console.error(`  - ${path}`);
   }
   if (drift.valueMismatches.length > 0) {
-    console.error(`design:check: ${drift.valueMismatches.length} value mismatch(es) between DESIGN.md and src/index.css:`);
+    console.error(
+      `design:check: ${drift.valueMismatches.length} value mismatch(es) between DESIGN.md and src/index.css:`
+    );
     for (const mismatch of drift.valueMismatches) {
       console.error(`  - ${mismatch.path}: design=${mismatch.design} css=${mismatch.css}`);
     }
