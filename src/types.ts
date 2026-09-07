@@ -191,6 +191,7 @@ interface PlayerState {
 interface RecentState {
   status: "idle" | "loading" | "ready" | "error";
   tracks: AudioTrack[];
+  message: string;
 }
 
 export interface AppState {

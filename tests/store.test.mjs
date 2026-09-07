@@ -303,7 +303,7 @@ test("all load, failure, persistence, queue, and settings actions are determinis
 
 test("recent actions track loading, results, and failure", () => {
   let state = createInitialState();
-  assert.deepEqual(state.homeRecent, { status: "idle", tracks: [] });
+  assert.deepEqual(state.homeRecent, { status: "idle", tracks: [], message: "" });
   state = reduce(state, { type: "recent-started" });
   assert.equal(state.homeRecent.status, "loading");
   state = reduce(state, { type: "recent-loaded", tracks });

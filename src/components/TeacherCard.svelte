@@ -20,7 +20,9 @@
 </script>
 
 <button
-  class="group grid min-h-28 min-w-0 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-card border border-app-border bg-app-surface p-4 text-left transition-[border-color,background-color] duration-150 hover:border-app-primary/50 hover:bg-app-soft/35 focus-visible:border-app-primary/60"
+  class="group grid min-h-28 min-w-0 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-card border p-4 text-left transition-[border-color,background-color] duration-150 {featured
+    ? 'border-app-secondary/40 bg-app-secondary/[0.06] hover:border-app-secondary/70'
+    : 'border-app-border bg-app-surface hover:border-app-primary/50 hover:bg-app-soft/35'} focus-visible:border-app-primary/60"
   type="button"
   onclick={() => void onselect(teacher)}
 >

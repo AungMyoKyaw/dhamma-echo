@@ -350,7 +350,7 @@ export class DhammaApp {
     );
     const tracks = results.filter((track): track is AudioTrack => track !== null);
     if (tracks.length === 0) {
-      this.dispatch({ type: "recent-failed" });
+      this.dispatch({ type: "recent-failed", message: "Your recent talks are unavailable." });
       return;
     }
     this.dispatch({ type: "recent-loaded", tracks });

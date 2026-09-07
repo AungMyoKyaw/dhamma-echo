@@ -60,7 +60,9 @@
         >
           {detail.teacherName || "Unknown teacher"}
         </p>
-        {#if detail.description !== null}<p class="mt-4 text-sm leading-6 text-app-muted">
+        {#if detail.description !== null}<p
+            class="mt-4 line-clamp-3 break-words text-sm leading-6 text-app-muted"
+          >
             {detail.description}
           </p>{/if}
       </div>

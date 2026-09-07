@@ -93,3 +93,28 @@ select:focus-visible,
     animation-iteration-count: 1 !important;
   }
 }
+
+:root {
+  --player-height: 84px;
+}
+
+@media (max-width: 1040px) {
+  :root {
+    --player-height: 132px;
+  }
+}
+
+.player-above {
+  bottom: calc(var(--player-height) + 12px);
+}
+
+@keyframes fade-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

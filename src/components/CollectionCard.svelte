@@ -22,7 +22,7 @@
   onclick={() => void onselect(collection)}
 >
   <p
-    class="break-words font-bold leading-7 {myanmar ? 'myanmar-text' : ''}"
+    class="line-clamp-3 break-words font-bold leading-7 {myanmar ? 'myanmar-text' : ''}"
     lang={myanmar ? "my" : undefined}
   >
     {collection.name}

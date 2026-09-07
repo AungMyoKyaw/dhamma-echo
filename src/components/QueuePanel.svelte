@@ -11,7 +11,7 @@
   let panelClass = $derived(
     placement === "video"
       ? "absolute right-4 bottom-full z-40 mb-3 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-card border border-app-border bg-app-surface"
-      : "fixed right-6 bottom-28 z-40 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-card border border-app-border bg-app-surface max-[1040px]:right-4 max-[1040px]:bottom-40"
+      : "fixed right-6 z-40 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-card border border-app-border bg-app-surface max-[1040px]:right-4 player-above"
   );
   let undoSnapshot: AudioTrack[] | null = $state(null);
   let undoTimer: ReturnType<typeof setTimeout> | null = null;

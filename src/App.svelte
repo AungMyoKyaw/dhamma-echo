@@ -58,14 +58,14 @@
       void app.togglePlayback();
       return;
     }
-    if (event.code === "ArrowLeft" && !event.shiftKey) {
+    if (event.code === "ArrowLeft") {
       event.preventDefault();
-      app.seekBy(-15);
+      app.seekBy(event.shiftKey ? -60 : -15);
       return;
     }
-    if (event.code === "ArrowRight" && !event.shiftKey) {
+    if (event.code === "ArrowRight") {
       event.preventDefault();
-      app.seekBy(15);
+      app.seekBy(event.shiftKey ? 60 : 15);
       return;
     }
     if (event.key.toLowerCase() === "n") {

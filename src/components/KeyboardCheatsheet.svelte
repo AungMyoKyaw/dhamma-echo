@@ -5,7 +5,9 @@
   const shortcuts = [
     { keys: ["Space"], action: "Play or pause the current talk" },
     { keys: ["←"], action: "Jump back 15 seconds" },
+    { keys: ["Shift", "←"], action: "Jump back 1 minute" },
     { keys: ["→"], action: "Jump forward 15 seconds" },
+    { keys: ["Shift", "→"], action: "Jump forward 1 minute" },
     { keys: ["N"], action: "Play the next talk in the queue" },
     { keys: ["?"], action: "Show or hide this list" },
     { keys: ["Shift", "/"], action: "Same as ? — open or close this list" },

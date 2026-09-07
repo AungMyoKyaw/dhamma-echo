@@ -4,15 +4,14 @@
   import Icon from "../components/Icon.svelte";
   import TeacherCard from "../components/TeacherCard.svelte";
   import TrackRow from "../components/TrackRow.svelte";
-  import type { AppState, AudioTrack, TeacherSummary } from "../types.js";
+  import type { AppState, AudioTrack, Route, TeacherSummary } from "../types.js";
   import { featuredTeachers, isMyanmarText, truncateTrackTitle } from "../ui.js";
   import { formatLocaleDuration, formatLocaleNumber, pluralize } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   let featured = $derived(featuredTeachers(state.teachers.data));
-  let hasRecent = $derived(
-    state.homeRecent.status === "loading" ||
-      (state.homeRecent.status === "ready" && state.homeRecent.tracks.length > 0)
-  );
+  let recentReady = $derived(state.homeRecent.status === "ready");
+  let recentCount = $derived(state.homeRecent.tracks.length);
+  let isFirstLaunch = $derived(recentReady && recentCount === 0);
   let totalAudio = $derived(state.summary.data.totalAudio);
   let totalTeachers = $derived(state.summary.data.totalTeachers);
   let locale = $derived(state.settings.locale);
@@ -22,9 +21,19 @@
   function openTeacher(teacher: TeacherSummary): void {
     void app.openTeacher(teacher.id, "home");
   }
+  function go(route: Route): void {
+    app.dispatch({ type: "navigate", route });
+  }
   async function play(track: AudioTrack): Promise<void> {
-    if (state.player.current?.id === track.id) await app.togglePlayback();
-    else await app.playTrack(track);
+    if (state.player.current?.id === track.id && state.player.status === "playing") {
+      await app.togglePlayback();
+    } else if (state.player.current?.id === track.id) {
+      // Already loaded; resume from where the engine is, not from the saved
+      // resume value, so the user gets back exactly what they heard.
+      await app.togglePlayback();
+    } else {
+      await app.playTrack(track);
+    }
   }
 </script>
 
@@ -35,9 +44,41 @@
     {#if state.homeRecent.status === "loading"}
       <section class="space-y-4">
         <h2 class="text-xl font-bold">Continue listening</h2>
-        <div class="h-20 animate-pulse rounded-card bg-app-soft motion-reduce:animate-none"></div>
+        <div
+          class="h-20 animate-pulse rounded-card bg-app-soft motion-reduce:animate-none"
+          aria-hidden="true"
+        ></div>
       </section>
-    {:else if state.homeRecent.status === "ready" && state.homeRecent.tracks.length > 0}
+    {:else if state.homeRecent.status === "error"}
+      <AsyncState
+        kind="error"
+        title="Could not load your recent talks"
+        detail={state.homeRecent.message}
+        onretry={() => void app.loadRecent()}
+      />
+    {:else if isFirstLaunch}
+      <section
+        class="flex flex-col gap-5 rounded-card border border-app-secondary/30 bg-app-secondary/[0.06] p-6"
+      >
+        <p class="text-[11px] font-bold tracking-wide text-app-secondary uppercase">
+          Welcome to Dhamma Echo
+        </p>
+        <h2 class="text-xl font-bold">Find something to listen to</h2>
+        <p class="max-w-xl text-sm leading-6 text-app-muted">{catalogueSentence}</p>
+        <div class="flex flex-wrap gap-3">
+          <button
+            class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+            type="button"
+            onclick={() => go("explore")}>Explore talks</button
+          >
+          <button
+            class="inline-flex min-h-11 items-center justify-center rounded-control border border-app-border bg-transparent px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft"
+            type="button"
+            onclick={() => go("teachers")}>Browse teachers</button
+          >
+        </div>
+      </section>
+    {:else if recentCount > 0}
       {@const latest = state.homeRecent.tracks[0]}
       {#if latest !== undefined}
         {@const rest = state.homeRecent.tracks
@@ -50,7 +91,7 @@
         {@const resumeLabel = resume > 0 ? formatLocaleDuration(resume, locale) : ""}
         <section class="space-y-4">
           <div>
-            <h2 class="text-2xl font-bold">Continue listening</h2>
+            <h2 class="text-xl font-bold">Continue listening</h2>
             <p class="mt-1 text-sm text-app-muted">Pick up where you left off.</p>
           </div>
           <div
@@ -63,8 +104,11 @@
               onclick={() => void play(latest)}
               aria-label={playing
                 ? `Pause ${latest.title}`
-                : `Resume ${latest.title}`}
+                : !latest.playable
+                  ? `${latest.title} (not supported by the macOS player)`
+                  : `Resume ${latest.title}`}
               aria-pressed={playing}
+              title={!latest.playable ? "This format isn't supported by the macOS player." : undefined}
               ><span class="ml-0.5 size-6"><Icon name={playing ? "pause" : "play"} /></span></button
             >
             <div class="min-w-0">
@@ -94,29 +138,18 @@
         </section>
       {/if}
     {/if}
-    {#if !hasRecent}<section
-        class="flex flex-wrap items-center justify-between gap-4 rounded-card border border-app-border bg-app-surface p-5"
-      >
-        <div>
-          <h2 class="text-xl font-bold">Find something to listen to</h2>
-          <p class="mt-1 max-w-xl text-sm leading-6 text-app-muted">{catalogueSentence}</p>
-        </div>
-        <button
-          class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
-          type="button"
-          onclick={() => app.dispatch({ type: "navigate", route: "explore" })}>Explore talks</button
-        >
-      </section>
-    {/if}
     <div>
       <div class="mb-4 flex items-end justify-between">
         <div>
-          <h2 class="text-2xl font-bold">Featured teachers</h2>
+          <h2 class="text-xl font-bold">Featured teachers</h2>
+          <p class="mt-1 text-sm text-app-muted">
+            Curated teachers to start listening. Tap to explore their talks.
+          </p>
         </div>
         <button
           class="text-sm font-bold text-app-primary"
           type="button"
-          onclick={() => app.dispatch({ type: "navigate", route: "teachers" })}>View all</button
+          onclick={() => go("teachers")}>View all</button
         >
       </div>
       <div

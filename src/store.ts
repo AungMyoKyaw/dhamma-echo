@@ -66,7 +66,7 @@ export type AppAction =
   | { type: "close-video-player" }
   | { type: "recent-started" }
   | { type: "recent-loaded"; tracks: AudioTrack[] }
-  | { type: "recent-failed" }
+  | { type: "recent-failed"; message: string }
   | { type: "favorite-tracks-loaded"; tracks: AudioTrack[] }
   | { type: "downloaded-tracks-loaded"; tracks: AudioTrack[] }
   | { type: "downloaded"; id: number; path: string }
@@ -157,7 +157,7 @@ export function createInitialState(): AppState {
     selectedCollectionId: null,
     selectedTeacherId: null,
     navigationContext: null,
-    homeRecent: { status: "idle", tracks: [] },
+    homeRecent: { status: "idle", tracks: [], message: "" },
     library: createDefaultLibrary(),
     favoriteTracks: [],
     downloadedTracks: [],
@@ -535,11 +535,20 @@ export function reduce(state: AppState, action: AppAction): AppState {
         navigationContext: null
       };
     case "recent-started":
-      return { ...state, homeRecent: { status: "loading", tracks: state.homeRecent.tracks } };
+      return {
+        ...state,
+        homeRecent: { status: "loading", tracks: state.homeRecent.tracks, message: "" }
+      };
     case "recent-loaded":
-      return { ...state, homeRecent: { status: "ready", tracks: action.tracks } };
+      return {
+        ...state,
+        homeRecent: { status: "ready", tracks: action.tracks, message: "" }
+      };
     case "recent-failed":
-      return { ...state, homeRecent: { status: "error", tracks: [] } };
+      return {
+        ...state,
+        homeRecent: { status: "error", tracks: [], message: action.message }
+      };
     case "favorite-tracks-loaded":
       return { ...state, favoriteTracks: action.tracks };
     case "downloaded-tracks-loaded":

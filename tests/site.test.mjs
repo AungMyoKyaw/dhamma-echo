@@ -214,13 +214,14 @@ test("interactive card hover feedback does not move cards", async () => {
   }
 });
 
-test("collection cards show complete names", async () => {
+test("collection cards clamp long titles with break-words so cluster breaks are safe", async () => {
   const collectionCard = await readFile(
     new URL("../src/components/CollectionCard.svelte", import.meta.url),
     "utf8"
   );
 
-  assert.doesNotMatch(collectionCard, /line-clamp-/);
+  assert.match(collectionCard, /line-clamp-3/);
+  assert.match(collectionCard, /break-words/);
 });
 
 test("active filter clear icons cannot expand beyond their control", async () => {
