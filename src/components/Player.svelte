@@ -2,7 +2,7 @@
   import type { DhammaApp } from "../app.js";
   import type { AppState } from "../types.js";
   import { isMyanmarText, truncateTrackTitle } from "../ui.js";
-  import { formatLocaleDuration } from "../utils.js";
+  import { formatLocaleDuration, pluralize } from "../utils.js";
   import Icon from "./Icon.svelte";
   import QueuePanel from "./QueuePanel.svelte";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
@@ -15,7 +15,7 @@
   let queueLabel = $derived(
     state.player.queue.length === 0
       ? "Show queue"
-      : `Show queue with ${state.player.queue.length} talk${state.player.queue.length === 1 ? "" : "s"}`
+      : `Show queue with ${pluralize(state.player.queue.length, "talk", undefined, locale)}`
   );
   function numberFromControl(event: Event): number {
     return Number((event.currentTarget as HTMLInputElement | HTMLSelectElement).value);

@@ -2,6 +2,7 @@
   import type { DhammaApp } from "../app.js";
   import type { AppState, AudioTrack } from "../types.js";
   import { isMyanmarText, truncateTrackTitle } from "../ui.js";
+  import { pluralize } from "../utils.js";
   import Icon from "./Icon.svelte";
   let {
     state: appState,
@@ -92,7 +93,7 @@
         role="status"
         aria-live="polite"
       >
-        <span>{undoSnapshot.length} talk{undoSnapshot.length === 1 ? "" : "s"} cleared.</span>
+        <span>{pluralize(undoSnapshot.length, "talk", "talks", appState.settings.locale)} cleared.</span>
         <div class="flex items-center gap-1">
           <button
             type="button"
