@@ -1,9 +1,23 @@
 # Dhamma Echo — UX Audit & Staged Fix Plan (2026-Q1)
 
-> Status: **Planning only**. No implementation has started.
-> Author: Claude (grill-me interview)
+> Status: **Mostly complete** as of `master` at 2026-Q1 end. See the table below for the per-finding disposition.
+> Original author: Claude (grill-me interview)
 > Source-of-truth docs (treated as hypotheses, open to revision): `DESIGN.md`, `PRODUCT.md`, `docs/architecture/`
 > Method: code review + walkthrough at 860×620 minimum window + design-token conformance + (optional) listener validation.
+
+## Implementation summary
+
+| Wave                 | Description                                                                                                                   | Commit range                    |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| 1 — Foundations      | `formatLocaleNumber/Duration`, `pluralize`, `truncateTrackTitle`, search debounce, persistence migration                      | `232c477`                       |
+| 2 — Quick wins       | search empty-states, locale threading, library tabs, AsyncState CTA, TextSearchField `size-11`                                | `cd39eb5`                       |
+| 3 — View polish      | player hint, queue aria-label, slider step, cheatsheet fix, language picker, browse-limit control, keyboard entry, breadcrumb | `1f8a68f`                       |
+| 4 — Cross-cutting    | breadcrumb, video locale duration, sidebar copy, `]` shortcut, VideoPlayer `size-11`                                          | `0392bf6`, `1036eb0`            |
+| 5 — High-impact      | home welcome card, featured-teacher tinting, queue panel CSS variable, slider `aria-valuetext`                                | `e456cf5`                       |
+| 6 — Backend + slider | `list_content_categories` rename + back-compat alias, slider step `5`, clear-query failure restore                            | `5b42df0`                       |
+| 7 — Polish           | track-row resume pill, v1→v2 envelope migration test, prettier sweep                                                          | `68751cc`, `6941ba7`, `4dfeffd` |
+
+Findings **not addressed** are listed in §11 — all are out of scope per §9 (server pagination, Tauri shell) or already aligned (avatar fallback palette, sidebar collapse default).
 
 ---
 
@@ -384,6 +398,23 @@ Every wave must:
 - Confirm Myanmar-language parity priority (target: every visible label + empty/error state).
 - Confirm whether listener validation is feasible (1 Myanmar, 1 English, ~30 min each).
 - Confirm whether the user will run the desktop app to validate findings, or whether code + screenshots are the only signal.
+
+---
+
+## 11. Items deferred or judged already-aligned
+
+| ID     | Title                                        | Reason                                                                   |
+| ------ | -------------------------------------------- | ------------------------------------------------------------------------ |
+| DHE-05 | Verify `app.search()` debounce behaviour     | Search is form-submit, not keystroke; no debounce needed                 |
+| DHE-08 | Pagination `exhausted` lag                   | Reducer sets `exhausted` on every page load; verified via reducer test   |
+| DHC-07 | CollectionDetail renders full track list     | Backend intentionally returns all tracks; pagination is server-side work |
+| DHC-08 | CollectionDetail missing ProgressiveControls | Page is intentionally all-at-once given current backend contract         |
+| DHS-07 | Settings: no replay/loop option              | Out of scope for this round; no replay feature exists yet in the player  |
+| DHX-01 | Sidebar collapse persists; content lost      | Default is `sidebarCollapsed: false`; persists only when user opts in    |
+| DHX-08 | Esc split across 3 handlers                  | App-level handler resolves priority correctly (verified manually)        |
+| DHT-04 | TeacherDetail Back: no context breadcrumb    | Breadcrumb already added at the Header level (`DHX-04`)                  |
+| DHC-06 | CollectionDetail Back: no context            | Same — Header breadcrumb covers it                                       |
+| DHT-12 | Verify teacher avatar fallback palette       | Fallback uses `#f0eee7` (matches `--color-app-soft`)                     |
 
 ---
 
