@@ -124,8 +124,8 @@
         </p>
         {#if unresolvedFavorites > 0}
           <p class="text-xs text-app-muted">
-            {unresolvedFavorites} saved talk{unresolvedFavorites === 1 ? " is" : "s are"} unavailable
-            in the current catalogue.
+            {pluralize(unresolvedFavorites, "saved talk is", "saved talks are", appState.settings.locale)}
+            unavailable in the current catalogue.
           </p>
         {/if}
         {#if favoriteOnly.length > 0}
