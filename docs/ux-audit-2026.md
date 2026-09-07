@@ -16,6 +16,7 @@
 | 5 — High-impact      | home welcome card, featured-teacher tinting, queue panel CSS variable, slider `aria-valuetext`                                | `e456cf5`                       |
 | 6 — Backend + slider | `list_content_categories` rename + back-compat alias, slider step `5`, clear-query failure restore                            | `5b42df0`                       |
 | 7 — Polish           | track-row resume pill, v1→v2 envelope migration test, prettier sweep                                                          | `68751cc`, `6941ba7`, `4dfeffd` |
+| 8 — Touch targets    | filter chips, undo buttons, retry/dismiss, exit-fullscreen, queue close bumped to `size-11`; settings leaf icon; DHL-05 copy | `cb3dfc4`                       |
 
 Findings **not addressed** are listed in §11 — all are out of scope per §9 (server pagination, Tauri shell) or already aligned (avatar fallback palette, sidebar collapse default).
 
