@@ -9,8 +9,8 @@ use tauri::{Manager, path::BaseDirectory};
 use crate::{
     commands::{
         download_audio, get_audio_track, get_catalogue_summary, get_collection, get_teacher,
-        list_audio_categories, list_featured_teachers, search_audio, search_collections,
-        search_teachers,
+        list_audio_categories, list_content_categories, list_featured_teachers, search_audio,
+        search_collections, search_teachers,
     },
     db::Database,
     error::AppError,
@@ -30,6 +30,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             get_catalogue_summary,
             list_audio_categories,
+            list_content_categories,
             list_featured_teachers,
             search_teachers,
             get_teacher,

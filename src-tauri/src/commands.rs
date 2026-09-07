@@ -36,6 +36,13 @@ pub fn list_audio_categories(
 }
 
 #[tauri::command]
+pub fn list_content_categories(
+    database: State<'_, Database>,
+) -> Result<Vec<ContentCategory>, CommandError> {
+    database.audio_categories().map_err(CommandError::from)
+}
+
+#[tauri::command]
 pub fn search_collections(
     database: State<'_, Database>,
     request: CollectionSearchRequest,

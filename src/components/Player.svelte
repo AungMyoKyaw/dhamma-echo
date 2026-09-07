@@ -119,10 +119,11 @@
             type="range"
             min="0"
             {max}
-            step="1"
+            step="5"
             value={Math.min(state.player.currentTime, max)}
             oninput={(event) => app.seek(numberFromControl(event))}
             aria-label="Playback position"
+            aria-keyshortcuts="Home End"
             aria-valuemin="0"
             aria-valuemax={Math.round(state.player.duration)}
             aria-valuenow={Math.round(state.player.currentTime)}

@@ -219,7 +219,8 @@ export function createMockInvoke(): InvokeFn {
     if (command === "list_featured_teachers") {
       return teachers.slice(0, readNumber(args?.limit, 12)) as T;
     }
-    if (command === "list_audio_categories") return categories as T;
+    if (command === "list_audio_categories" || command === "list_content_categories")
+      return categories as T;
     if (command === "search_collections") {
       const request = (args?.request ?? {}) as Partial<CollectionSearchRequest>;
       const query = readString(request.query, "").toLowerCase();

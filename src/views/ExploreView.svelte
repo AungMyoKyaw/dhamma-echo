@@ -38,8 +38,16 @@
     await app.search();
   }
   async function clearQuery(): Promise<void> {
+    const previous = state.search.query;
     app.dispatch({ type: "set-query", query: "" });
-    await app.search();
+    try {
+      await app.search();
+    } catch (error) {
+      // Restore the previous query so the user is not silently left in an
+      // empty state after a network failure.
+      app.dispatch({ type: "set-query", query: previous });
+      throw error;
+    }
   }
   async function clearAll(): Promise<void> {
     app.dispatch({ type: "set-query", query: "" });

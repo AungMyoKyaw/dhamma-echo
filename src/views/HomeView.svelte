@@ -130,11 +130,16 @@
               </p>
             </div>
           </div>
-          {#if rest.length > 0}<div
+          {#if rest.length > 0}<div class="space-y-2">
+            <h3 class="text-sm font-bold tracking-wide text-app-muted uppercase">
+              Recently played
+            </h3>
+            <div
               class="overflow-hidden rounded-card border border-app-border bg-app-surface"
             >
               {#each rest as track (track.id)}<TrackRow {track} {state} {app} />{/each}
-            </div>{/if}
+            </div>
+          </div>{/if}
         </section>
       {/if}
     {/if}

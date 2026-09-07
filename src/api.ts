@@ -52,7 +52,7 @@ export class CatalogueApi {
   }
 
   listContentCategories(): Promise<ContentCategory[]> {
-    return this.call("list_audio_categories");
+    return this.call("list_content_categories");
   }
 
   searchCollections(request: CollectionSearchRequest): Promise<CollectionSearchPage> {
