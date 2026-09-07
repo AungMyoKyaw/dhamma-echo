@@ -77,12 +77,20 @@
           >{/if}</span
       >
       <span
-        class="mt-1 block truncate text-sm text-app-muted {myanmarTeacher ? 'myanmar-text' : ''}"
+        class="mt-1 flex items-center gap-2 truncate text-sm text-app-muted {myanmarTeacher
+          ? 'myanmar-text'
+          : ''}"
         lang={myanmarTeacher ? "my" : undefined}
-        >{track.teacherName || "Unknown teacher"} · {track.language} · {track.format.toUpperCase()}{resume >
-        0
-          ? ` · Resume at ${resumeLabel}`
-          : ""}</span
+        ><span class="truncate"
+          >{track.teacherName || "Unknown teacher"} · {track.language} ·
+          {track.format.toUpperCase()}</span
+        >{#if resume > 0 && !current}<span
+            class="inline-flex shrink-0 items-center gap-1 rounded-full bg-app-primary/10 px-2 pt-0.5 pb-0 align-middle text-[11px] leading-none font-bold text-app-primary"
+            aria-label="Resume at {resumeLabel}"
+          >
+            <span class="size-1.5 rounded-full bg-app-primary" aria-hidden="true"></span>
+            {resumeLabel}
+          </span>{/if}</span
       >
     </span>
   </button>
