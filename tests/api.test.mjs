@@ -114,7 +114,7 @@ test("CatalogueApi exposes audio category, collection, and teacher detail comman
   const calls = [];
   const api = new CatalogueApi(async (command, args) => {
     calls.push({ command, args });
-    return command === "list_audio_categories" ? [] : {};
+    return command === "list_content_categories" ? [] : {};
   });
 
   await api.listContentCategories();
@@ -123,7 +123,7 @@ test("CatalogueApi exposes audio category, collection, and teacher detail comman
   await api.getTeacher(3);
 
   assert.deepEqual(calls, [
-    { command: "list_audio_categories", args: undefined },
+    { command: "list_content_categories", args: undefined },
     {
       command: "search_collections",
       args: { request: { query: "disc", teacherId: 3, limit: 24, offset: 0 } }

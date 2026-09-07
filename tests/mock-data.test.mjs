@@ -83,7 +83,7 @@ test("mock invoke applies defaults and every optional filter branch", async () =
 
 test("mock invoke supports categories, collections, and detail records", async () => {
   const invoke = createMockInvoke();
-  const categories = await invoke("list_audio_categories");
+  const categories = await invoke("list_content_categories");
   assert.equal(categories.length > 0, true);
   const videoCategories = categories.filter((item) => item.name.startsWith("Video"));
   assert.deepEqual(

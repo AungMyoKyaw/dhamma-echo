@@ -147,6 +147,24 @@ test("settings storage rejects corrupt JSON and non-object values", () => {
   }
 });
 
+test("library save upgrades an older envelope without losing resume seconds", () => {
+  // Older version (v1) envelopes share the same shape as v2; the loader
+  // must accept either so resume positions survive a schema bump.
+  const storage = new MemoryStorage();
+  storage.setItem(
+    "dhamma-echo:library",
+    JSON.stringify({
+      version: 1,
+      favorites: [3],
+      history: [{ id: 3, playedAt: 1234 }],
+      resume: { 3: 47.5 }
+    })
+  );
+  const loaded = loadLibrary(storage);
+  assert.equal(loaded.resume[3], 47.5);
+  assert.deepEqual(loaded.favorites, [3]);
+});
+
 test("library storage rejects fractional identifiers", () => {
   const storage = new MemoryStorage();
   storage.setItem(
