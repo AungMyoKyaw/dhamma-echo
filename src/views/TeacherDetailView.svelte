@@ -76,7 +76,7 @@
     </div>
     {#if detail.collections.length > 0}<div>
         <h3 class="mb-3 text-lg font-bold">{t(locale, "teacherDetail.collections")}</h3>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+        <div class="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           {#each detail.collections as collection (collection.id)}<CollectionCard
               {collection}
               {state}
