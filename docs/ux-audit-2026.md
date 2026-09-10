@@ -18,6 +18,8 @@
 | 7 — Polish           | track-row resume pill, v1→v2 envelope migration test, prettier sweep                                                                                                                                                               | `68751cc`, `6941ba7`, `4dfeffd` |
 | 8 — Touch targets    | filter chips, undo buttons, retry/dismiss, exit-fullscreen, queue close bumped to `size-11`; settings leaf icon; DHL-05 copy                                                                                                       | `cb3dfc4`                       |
 | 9 — Localization     | full my-MM UI locale (`src/i18n.ts`, 260+ keys), centered cheatsheet dialog, Burmese-glyph line-height sweep, sidebar library icon, eyebrow color-role fix, dynamic back labels, mock teacher IDs aligned to the bundled catalogue | `66ea0d1`                       |
+| 10 — Selects + meta  | `appearance-none` + custom chevron on the speed / browse-limit / locale `<select>` to remove the WKWebView double-chevron; localized TrackRow metadata (language, format) | `7decd94`                      |
+| 11 — Card grid       | `auto-rows-fr` on Collections / TeacherDetail collection grids; CollectionCard re-flowed into a flex column so per-row heights match when one card has fewer lines of body copy | `06f4dd8`                      |
 
 Findings **not addressed** are listed in §11 — all are out of scope per §9 (server pagination, Tauri shell) or already aligned (avatar fallback palette, sidebar collapse default).
 
