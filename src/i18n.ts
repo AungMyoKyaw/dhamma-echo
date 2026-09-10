@@ -257,6 +257,10 @@ const en = {
   "track.badge.video": "Video",
   "track.badge.wma": "WMA unavailable",
   "track.badge.unavailable": "Source unavailable",
+  "track.language.myanmar": "Burmese",
+  "track.language.english": "English",
+  "track.language.unknown": "Language",
+  "track.format": "Format",
   "track.resumeAt": "Resume at {time}",
 
   "progress.loadMore": "Load {count} more",
@@ -556,6 +560,10 @@ const my: Partial<Record<MessageKey, string>> = {
   "track.badge.video": "ဗီဒီယို",
   "track.badge.wma": "WMA ဖွင့်မရ",
   "track.badge.unavailable": "ဖွင့်မရ",
+  "track.language.myanmar": "မြန်မာ",
+  "track.language.english": "အင်္ဂလိပ်",
+  "track.language.unknown": "ဘာသာစကား",
+  "track.format": "ပုံစံ",
   "track.resumeAt": "{time} တွင် ပြန်စမည်",
 
   "progress.loadMore": "နောက်ထပ် {count} ခု ထပ်ပြမည်",

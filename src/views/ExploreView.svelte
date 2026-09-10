@@ -84,7 +84,7 @@
       ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
         >{t(locale, "search.language")}</span
       ><select
-        class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
+        class="field-select h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="language"
         value={state.search.language}
         ><option value="all">{t(locale, "search.language.all")}</option><option value="myanmar"
@@ -96,7 +96,7 @@
       ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase">
         {t(locale, "search.format")}</span
       ><select
-        class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
+        class="field-select h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="format"
         value={state.search.format}
         ><option value="all">{t(locale, "search.format.all")}</option><option value="mp3"

@@ -152,7 +152,7 @@
           ><span class="sr-only">{t(locale, "player.speed")}</span><select
             value={String(state.settings.playbackRate)}
             onchange={(event) => app.setRate(numberFromControl(event))}
-            class="h-11 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app max-[1040px]:min-w-[58px] max-[1040px]:pr-[1.3rem] max-[1040px]:pl-2"
+            class="field-select h-11 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.95rem] pl-[0.65rem] text-xs font-bold text-app max-[1040px]:min-w-[58px] max-[1040px]:pr-[1.6rem] max-[1040px]:pl-2"
             >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
               >{/each}</select
           ></label

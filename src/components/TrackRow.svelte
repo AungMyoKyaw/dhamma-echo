@@ -92,7 +92,12 @@
           : ''}"
         lang={myanmarTeacher ? "my" : undefined}
         ><span class="truncate"
-          >{track.teacherName || t(locale, "player.unknownTeacher")} · {track.language} ·
+          >{track.teacherName || t(locale, "player.unknownTeacher")} · {t(
+            locale,
+            track.language === "myanmar" || track.language === "english"
+              ? `track.language.${track.language}`
+              : "track.language.unknown"
+          )} · {t(locale, "track.format")}
           {track.format.toUpperCase()}</span
         >{#if resume > 0 && !current}<span
             class="inline-flex shrink-0 items-center gap-1 rounded-full bg-app-primary/10 px-2 align-middle text-[11px] leading-normal font-bold text-app-primary"

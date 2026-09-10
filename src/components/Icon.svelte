@@ -18,6 +18,7 @@
     | "exit-fullscreen"
     | "chevron-left"
     | "chevron-right"
+    | "chevron-down"
     | "download"
     | "bookmark"
     | "leaf";
@@ -91,6 +92,7 @@
   {:else if name === "exit-fullscreen"}<path d="M9 4v5H4M15 4v5h5M20 15h-5v5M9 20v-5H4" />
   {:else if name === "chevron-left"}<path d="m15 18-6-6 6-6" />
   {:else if name === "chevron-right"}<path d="m9 18 6-6-6-6" />
+  {:else if name === "chevron-down"}<path d="m6 9 6 6 6-6" />
   {:else if name === "download"}<path d="M12 3v12M7 10l5 5 5-5M5 21h14" />
   {:else if name === "bookmark"}<path d="M7 4h10a1 1 0 0 1 1 1v15l-6-4.2L6 20V5a1 1 0 0 1 1-1z" />
   {:else}<path d="M20 4C12 4 5 8 5 15c0 2 1 4 3 5 0-5 4-9 10-12-5 4-7 8-7 12 6-1 10-6 9-16Z" />{/if}

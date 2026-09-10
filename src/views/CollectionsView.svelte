@@ -61,7 +61,7 @@
       ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
         >{t(locale, "search.collections.teacher")}</span
       ><select
-        class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
+        class="field-select h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="teacherId"
         value={state.collectionSearch.teacherId === null
           ? ""

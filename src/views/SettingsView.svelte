@@ -76,7 +76,7 @@
         >{t(locale, "settings.playback.speed")}
         <div class="mt-1 flex items-center gap-2">
           <select
-            class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 font-normal"
+            class="field-select h-12 w-full rounded-control border border-app-border bg-app-bg px-4 font-normal"
             value={String(appState.settings.playbackRate)}
             onchange={(event) => app.setRate(numberValue(event))}
             >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
@@ -95,7 +95,7 @@
           class="mt-1 block text-xs font-normal text-app-muted"
           >{t(locale, "settings.playback.limit.detail")}</span
         ><select
-          class="mt-1 h-12 w-full rounded-control border border-app-border bg-app-bg px-4 font-normal"
+          class="field-select mt-1 h-12 w-full rounded-control border border-app-border bg-app-bg px-4 font-normal"
           value={String(appState.settings.browseLimit)}
           onchange={(event) =>
             app.dispatch({

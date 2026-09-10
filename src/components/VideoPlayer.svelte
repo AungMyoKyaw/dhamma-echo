@@ -398,7 +398,7 @@
                 <select
                   value={String(appState.settings.playbackRate)}
                   onchange={(event) => app.setRate(numberFromControl(event))}
-                  class="h-11 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.6rem] pl-[0.65rem] text-xs font-bold text-app"
+                  class="field-select h-11 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.95rem] pl-[0.65rem] text-xs font-bold text-app"
                 >
                   {#each rates as rate (rate)}
                     <option value={String(rate)}>{rate}×</option>
