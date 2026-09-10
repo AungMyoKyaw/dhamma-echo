@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
+  import { countLabel, t } from "../i18n.js";
   import type { AppState, AudioTrack } from "../types.js";
   import { isMyanmarText, truncateTrackTitle } from "../ui.js";
-  import { pluralize } from "../utils.js";
   import Icon from "./Icon.svelte";
   let {
     state: appState,
@@ -35,27 +35,30 @@
     undoSnapshot = null;
     if (undoTimer !== null) clearTimeout(undoTimer);
   }
+  let locale = $derived(appState.settings.locale);
 </script>
 
 {#if appState.player.queueOpen}
-  <aside class={panelClass} aria-label="Playback queue">
+  <aside class={panelClass} aria-label={t(locale, "queue.label")}>
     <div class="flex items-center justify-between border-b border-app-border p-4">
       <div>
-        <p class="font-bold">Up next</p>
-        <p class="text-xs text-app-muted">{appState.player.queue.length} talks</p>
+        <p class="font-bold">{t(locale, "queue.title")}</p>
+        <p class="text-xs text-app-muted">
+          {countLabel(locale, "talk", appState.player.queue.length)}
+        </p>
       </div>
       <button
         class="inline-flex min-h-11 items-center rounded-full px-3 text-xs font-bold text-app-primary hover:bg-app-soft disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         disabled={appState.player.queue.length === 0}
-        onclick={clearWithUndo}>Clear</button
+        onclick={clearWithUndo}>{t(locale, "queue.clear")}</button
       >
     </div>
     <div
       class="max-h-80 overflow-y-auto [scrollbar-color:var(--color-app-border)_transparent] [scrollbar-width:thin]"
     >
       {#if appState.player.queue.length === 0}<p class="p-6 text-center text-sm text-app-muted">
-          Your queue is empty.
+          {t(locale, "queue.empty")}
         </p>
       {:else}{#each appState.player.queue as track (track.id)}<div
             class="flex items-center gap-3 border-b border-app-border p-3 last:border-0"
@@ -82,7 +85,7 @@
               class="flex size-11 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
               type="button"
               onclick={() => app.dispatch({ type: "remove-queue", id: track.id })}
-              aria-label="Remove {track.title} from queue"
+              aria-label={t(locale, "queue.remove", { title: track.title })}
               ><span class="size-4"><Icon name="close" /></span></button
             >
           </div>{/each}{/if}
@@ -93,18 +96,22 @@
         role="status"
         aria-live="polite"
       >
-        <span>{pluralize(undoSnapshot.length, "talk", "talks", appState.settings.locale)} cleared.</span>
+        <span
+          >{t(locale, "queue.cleared", {
+            count: countLabel(locale, "talk", undoSnapshot.length)
+          })}</span
+        >
         <div class="flex items-center gap-1">
           <button
             type="button"
             onclick={restore}
-            class="inline-flex min-h-11 items-center rounded-full bg-app-primary px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary-ink hover:bg-app-primary-strong"
-            >Undo</button
+            class="inline-flex min-h-11 items-center rounded-full bg-app-primary px-3 text-xs leading-normal font-bold text-app-primary-ink hover:bg-app-primary-strong"
+            >{t(locale, "queue.undo")}</button
           >
           <button
             type="button"
             onclick={dismissUndo}
-            aria-label="Dismiss undo notification"
+            aria-label={t(locale, "queue.undo.dismiss")}
             class="inline-flex size-11 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
             ><span class="size-3"><Icon name="close" /></span></button
           >

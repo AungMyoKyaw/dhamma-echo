@@ -5,9 +5,11 @@
   import ProgressiveControls from "../components/ProgressiveControls.svelte";
   import TextSearchField from "../components/TextSearchField.svelte";
   import type { AppState, CollectionSummary } from "../types.js";
+  import { t, tError } from "../i18n.js";
   import { groupCollectionsByTeacher } from "../ui.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
-  let groups = $derived(groupCollectionsByTeacher(state.collections.page.items));
+  let locale = $derived(state.settings.locale);
+  let groups = $derived(groupCollectionsByTeacher(state.collections.page.items, locale));
   async function submit(event: SubmitEvent): Promise<void> {
     event.preventDefault();
     const form = new FormData(event.currentTarget as HTMLFormElement);
@@ -48,56 +50,60 @@
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
-      label="Search collections"
-      placeholder="Search collection name"
+      label={t(locale, "search.collections.label")}
+      placeholder={t(locale, "search.collections.placeholder")}
       value={state.collectionSearch.query}
       visibleLabel
       className="min-w-[260px] flex-[1_1_360px]"
+      clearLabel={t(locale, "search.collections.clearSearch")}
       onclear={clear}
     /><label class="min-w-[190px] flex-[0_1_240px]"
       ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
-        >Collection teacher</span
+        >{t(locale, "search.collections.teacher")}</span
       ><select
         class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="teacherId"
         value={state.collectionSearch.teacherId === null
           ? ""
           : String(state.collectionSearch.teacherId)}
-        ><option value="">All teachers</option
+        ><option value="">{t(locale, "search.collections.allTeachers")}</option
         >{#each state.teachers.data as teacher (teacher.id)}<option value={String(teacher.id)}
             >{teacher.name}</option
           >{/each}</select
       ></label
     ><button
-      class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
-      type="submit">Search</button
+      class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+      type="submit">{t(locale, "search.submit")}</button
     >
   </form>
   {#if hasFilters}<div class="flex items-center gap-2">
       <button
         type="button"
         onclick={() => void clearAll()}
-        class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted hover:bg-app-soft hover:text-app"
-        >Clear filters</button
+        class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted hover:bg-app-soft hover:text-app"
+        >{t(locale, "search.collections.clear")}</button
       >
     </div>{/if}
   {#if state.collections.status === "error"}<AsyncState
+      {locale}
       kind="error"
-      detail={state.collections.message}
+      detail={tError(locale, state.collections.message)}
       onretry={() => void app.searchCollections()}
     />
   {:else if state.collections.status !== "ready"}<AsyncState
+      {locale}
       kind="loading"
-      loadingLabel="Loading collections"
+      loadingLabel={t(locale, "collections.loading")}
       shape="cards"
     />
   {:else if state.collections.page.items.length === 0}<AsyncState
+      {locale}
       kind="empty"
       title={state.collectionSearch.query.length > 0
-        ? `No collections match “${state.collectionSearch.query}”`
-        : "No collections match"}
-      detail="Try a shorter collection name or clear the teacher filter."
-      actionLabel={hasFilters ? "Clear filters" : ""}
+        ? t(locale, "collections.empty.title.query", { query: state.collectionSearch.query })
+        : t(locale, "collections.empty.title")}
+      detail={t(locale, "collections.empty.detail")}
+      actionLabel={hasFilters ? t(locale, "search.collections.clear") : ""}
       onaction={hasFilters
         ? () => {
             void clearAll();

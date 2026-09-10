@@ -133,20 +133,24 @@ test("dynamic audio text uses unclipped Myanmar typography", async () => {
   assert.match(home, /isMyanmarText\(latest\.title\)/);
 });
 
-test("shared pill controls use Tailwind optical vertical centering", async () => {
+test("shared pill controls keep 44px targets with clip-safe line height", async () => {
   const [explore, trackRow, videoPlayer] = await Promise.all([
     readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8"),
     readFile(new URL("../src/components/TrackRow.svelte", import.meta.url), "utf8"),
     readFile(new URL("../src/components/VideoPlayer.svelte", import.meta.url), "utf8")
   ]);
 
-  assert.match(explore, /min-h-(?:10|11)[^"']*pt-0\.5/);
-  assert.match(trackRow, /min-h-(?:10|11)[^"']*pt-0\.5/);
+  assert.match(explore, /min-h-(?:10|11)/);
+  assert.match(trackRow, /min-h-(?:10|11)/);
   const pills = videoPlayer.match(/class="[^"]*min-h-(?:10|11)[^"]*"/g) ?? [];
-  const centered = pills.filter(
-    (pill) => pill.includes("leading-none") && pill.includes("pt-0.5") && pill.includes("pb-0")
-  );
-  assert.ok(centered.length >= 3, "video player pills keep leading-none optical centering");
+  assert.ok(pills.length >= 3, "video player keeps at least three pill controls");
+  for (const source of [explore, trackRow, videoPlayer]) {
+    assert.doesNotMatch(
+      source,
+      /leading-none/,
+      "leading-none clips Myanmar glyphs and must not return"
+    );
+  }
 });
 
 test("progressive loading controls use explicit batches without a row chooser", async () => {
@@ -164,14 +168,17 @@ test("progressive loading controls use explicit batches without a row chooser", 
 });
 
 test("video loading state exposes the quiet centered signal", async () => {
-  const videoPlayer = await readFile(
-    new URL("../src/components/VideoPlayer.svelte", import.meta.url),
-    "utf8"
-  );
+  const [videoPlayer, i18n] = await Promise.all([
+    readFile(new URL("../src/components/VideoPlayer.svelte", import.meta.url), "utf8"),
+    readFile(new URL("../src/i18n.ts", import.meta.url), "utf8")
+  ]);
 
-  assert.match(videoPlayer, /aria-label="Preparing video"/);
-  assert.match(videoPlayer, /Preparing the video/);
-  assert.match(videoPlayer, /A moment of quiet before playback/);
+  assert.match(videoPlayer, /aria-label=\{t\(locale, "video\.preparing\.label"\)\}/);
+  assert.match(videoPlayer, /t\(locale, "video\.preparing"\)/);
+  assert.match(videoPlayer, /t\(locale, "video\.preparing\.detail"\)/);
+  assert.match(i18n, /"video\.preparing\.label": "Preparing video"/);
+  assert.match(i18n, /"video\.preparing": "Preparing the video"/);
+  assert.match(i18n, /"video\.preparing\.detail": "A moment of quiet before playback"/);
   assert.match(videoPlayer, /bg-app-primary/);
   assert.match(videoPlayer, /motion-reduce:animate-none/);
   assert.doesNotMatch(videoPlayer, /Connecting…/);

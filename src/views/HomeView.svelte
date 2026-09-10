@@ -5,8 +5,9 @@
   import TeacherCard from "../components/TeacherCard.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, AudioTrack, Route, TeacherSummary } from "../types.js";
+  import { countLabel, t, tError } from "../i18n.js";
   import { featuredTeachers, isMyanmarText, truncateTrackTitle } from "../ui.js";
-  import { formatLocaleDuration, formatLocaleNumber, pluralize } from "../utils.js";
+  import { formatLocaleDuration } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   let featured = $derived(featuredTeachers(state.teachers.data));
   let recentReady = $derived(state.homeRecent.status === "ready");
@@ -16,7 +17,10 @@
   let totalTeachers = $derived(state.summary.data.totalTeachers);
   let locale = $derived(state.settings.locale);
   let catalogueSentence = $derived(
-    `Search by title, teacher, language, or format across ${pluralize(totalAudio, "talk", undefined, locale)} and ${formatLocaleNumber(totalTeachers, locale)} teachers.`
+    t(locale, "home.welcome.body", {
+      talks: countLabel(locale, "talk", totalAudio),
+      teachers: countLabel(locale, "teacher", totalTeachers)
+    })
   );
   function openTeacher(teacher: TeacherSummary): void {
     void app.openTeacher(teacher.id, "home");
@@ -38,12 +42,17 @@
 </script>
 
 {#if state.summary.status === "error"}
-  <AsyncState kind="error" detail={state.summary.message} onretry={() => void app.loadSummary()} />
+  <AsyncState
+    {locale}
+    kind="error"
+    detail={tError(locale, state.summary.message)}
+    onretry={() => void app.loadSummary()}
+  />
 {:else}
   <section class="space-y-8">
     {#if state.homeRecent.status === "loading"}
       <section class="space-y-4">
-        <h2 class="text-xl font-bold">Continue listening</h2>
+        <h2 class="text-xl font-bold">{t(locale, "home.continue")}</h2>
         <div
           class="h-20 animate-pulse rounded-card bg-app-soft motion-reduce:animate-none"
           aria-hidden="true"
@@ -51,30 +60,29 @@
       </section>
     {:else if state.homeRecent.status === "error"}
       <AsyncState
+        {locale}
         kind="error"
-        title="Could not load your recent talks"
-        detail={state.homeRecent.message}
+        title={t(locale, "home.recent.error")}
+        detail={tError(locale, state.homeRecent.message)}
         onretry={() => void app.loadRecent()}
       />
     {:else if isFirstLaunch}
-      <section
-        class="flex flex-col gap-5 rounded-card border border-app-secondary/30 bg-app-secondary/[0.06] p-6"
-      >
-        <p class="text-[11px] font-bold tracking-wide text-app-secondary uppercase">
-          Welcome to Dhamma Echo
+      <section class="flex flex-col gap-5 rounded-card border border-app-border bg-app-soft p-6">
+        <p class="text-[11px] font-bold tracking-wide text-app-muted uppercase">
+          {t(locale, "home.welcome.eyebrow")}
         </p>
-        <h2 class="text-xl font-bold">Find something to listen to</h2>
+        <h2 class="text-xl font-bold">{t(locale, "home.welcome.title")}</h2>
         <p class="max-w-xl text-sm leading-6 text-app-muted">{catalogueSentence}</p>
         <div class="flex flex-wrap gap-3">
           <button
-            class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+            class="inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
             type="button"
-            onclick={() => go("explore")}>Explore talks</button
+            onclick={() => go("explore")}>{t(locale, "home.welcome.explore")}</button
           >
           <button
-            class="inline-flex min-h-11 items-center justify-center rounded-control border border-app-border bg-transparent px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft"
+            class="inline-flex min-h-11 items-center justify-center rounded-control border border-app-border bg-transparent px-5 text-sm leading-normal font-bold text-app-primary transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft"
             type="button"
-            onclick={() => go("teachers")}>Browse teachers</button
+            onclick={() => go("teachers")}>{t(locale, "home.welcome.teachers")}</button
           >
         </div>
       </section>
@@ -91,8 +99,8 @@
         {@const resumeLabel = resume > 0 ? formatLocaleDuration(resume, locale) : ""}
         <section class="space-y-4">
           <div>
-            <h2 class="text-xl font-bold">Continue listening</h2>
-            <p class="mt-1 text-sm text-app-muted">Pick up where you left off.</p>
+            <h2 class="text-xl font-bold">{t(locale, "home.continue")}</h2>
+            <p class="mt-1 text-sm text-app-muted">{t(locale, "home.continue.detail")}</p>
           </div>
           <div
             class="flex items-center gap-4 overflow-hidden rounded-card border border-app-primary/25 bg-app-primary/[0.04] p-5"
@@ -103,14 +111,12 @@
               disabled={!latest.playable}
               onclick={() => void play(latest)}
               aria-label={playing
-                ? `Pause ${latest.title}`
+                ? t(locale, "home.pauseTrack", { title: latest.title })
                 : !latest.playable
-                  ? `${latest.title} (not supported by the macOS player)`
-                  : `Resume ${latest.title}`}
+                  ? t(locale, "home.unsupportedTrack", { title: latest.title })
+                  : t(locale, "home.resumeTrack", { title: latest.title })}
               aria-pressed={playing}
-              title={!latest.playable
-                ? "This format isn't supported by the macOS player."
-                : undefined}
+              title={!latest.playable ? t(locale, "home.unsupportedHint") : undefined}
               ><span class="ml-0.5 size-6"><Icon name={playing ? "pause" : "play"} /></span></button
             >
             <div class="min-w-0">
@@ -128,15 +134,15 @@
                   : ''}"
                 lang={isMyanmarText(latest.teacherName) ? "my" : undefined}
               >
-                {latest.teacherName || "Unknown teacher"}{resume > 0
-                  ? ` · Resume at ${resumeLabel}`
+                {latest.teacherName || t(locale, "player.unknownTeacher")}{resume > 0
+                  ? ` · ${t(locale, "home.resumeAt", { time: resumeLabel })}`
                   : ""}
               </p>
             </div>
           </div>
           {#if rest.length > 0}<div class="space-y-2">
               <h3 class="text-sm font-bold tracking-wide text-app-muted uppercase">
-                Recently played
+                {t(locale, "home.recentlyPlayed")}
               </h3>
               <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
                 {#each rest as track (track.id)}<TrackRow {track} {state} {app} />{/each}
@@ -148,15 +154,15 @@
     <div>
       <div class="mb-4 flex items-end justify-between">
         <div>
-          <h2 class="text-xl font-bold">Featured teachers</h2>
+          <h2 class="text-xl font-bold">{t(locale, "home.featured")}</h2>
           <p class="mt-1 text-sm text-app-muted">
-            Curated teachers to start listening. Tap to explore their talks.
+            {t(locale, "home.featured.detail")}
           </p>
         </div>
         <button
-          class="text-sm font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center text-sm font-bold text-app-primary"
           type="button"
-          onclick={() => go("teachers")}>View all</button
+          onclick={() => go("teachers")}>{t(locale, "home.featured.viewAll")}</button
         >
       </div>
       <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
@@ -167,7 +173,7 @@
             />{/each}{:else}<div
             class="rounded-card border border-dashed border-app-border bg-app-soft p-6 text-sm text-app-muted"
           >
-            Teacher highlights will appear here when the catalogue is ready.
+            {t(locale, "home.featured.empty")}
           </div>{/if}
       </div>
     </div>

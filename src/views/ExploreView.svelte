@@ -6,9 +6,11 @@
   import TextSearchField from "../components/TextSearchField.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, FormatFilter, LanguageFilter } from "../types.js";
+  import { t, tError } from "../i18n.js";
   import { teacherFilterName } from "../ui.js";
   import { formatLocaleNumber } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
+  let locale = $derived(state.settings.locale);
   let category = $derived(
     state.categories.data.find((item) => item.id === state.search.categoryId)
   );
@@ -70,145 +72,153 @@
     onsubmit={(event) => void submit(event)}
   >
     <TextSearchField
-      label="Search talks"
-      placeholder="Search title or teacher"
+      label={t(locale, "search.talks.label")}
+      placeholder={t(locale, "search.talks.placeholder")}
       value={state.search.query}
       visibleLabel
       className="min-w-[280px] flex-[1_1_360px]"
+      clearLabel={t(locale, "search.talks.clear")}
       onclear={clearQuery}
     />
     <label class="min-w-40 flex-[1_1_160px]"
       ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
-        >Language</span
+        >{t(locale, "search.language")}</span
       ><select
         class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="language"
         value={state.search.language}
-        ><option value="all">All languages</option><option value="myanmar">Myanmar</option><option
-          value="english">English</option
-        ></select
+        ><option value="all">{t(locale, "search.language.all")}</option><option value="myanmar"
+          >{t(locale, "search.language.myanmar")}</option
+        ><option value="english">{t(locale, "search.language.english")}</option></select
       ></label
     >
     <label class="min-w-36 flex-[1_1_140px]"
-      ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
-        >Format</span
+      ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase">
+        {t(locale, "search.format")}</span
       ><select
         class="h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="format"
         value={state.search.format}
-        ><option value="all">All formats</option><option value="mp3">MP3</option><option value="wma"
-          >WMA</option
-        ><option value="mp4">MP4 video</option><option value="wmv">WMV</option></select
+        ><option value="all">{t(locale, "search.format.all")}</option><option value="mp3"
+          >MP3</option
+        ><option value="wma">WMA</option><option value="mp4"
+          >{t(locale, "search.format.mp4")}</option
+        ><option value="wmv">WMV</option></select
       ></label
     >
     <button
-      class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
-      type="submit">Search</button
+      class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+      type="submit">{t(locale, "search.submit")}</button
     >
     {#if state.categories.status === "ready"}<fieldset class="basis-full flex flex-wrap gap-2">
-        <legend class="sr-only">Content categories</legend>
+        <legend class="sr-only">{t(locale, "search.category.legend")}</legend>
         <button
-          class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
+          class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
             .search.categoryId === null
             ? 'bg-app-primary text-app-primary-ink'
             : 'bg-app-soft text-app-muted'}"
           type="button"
-          onclick={() => setCategory(null)}>All content</button
+          aria-pressed={state.search.categoryId === null}
+          onclick={() => setCategory(null)}>{t(locale, "search.category.all")}</button
         >{#each state.categories.data as item (item.id)}<button
-            class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 pt-0.5 pb-0 align-middle text-xs leading-none font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
+            class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
               .search.categoryId === item.id
               ? 'bg-app-primary text-app-primary-ink'
               : 'bg-app-soft text-app-muted'}"
             type="button"
+            aria-pressed={state.search.categoryId === item.id}
             onclick={() => setCategory(item.id)}
-            >{item.name} · {formatLocaleNumber(item.count, state.settings.locale)}</button
+            >{item.name} · {formatLocaleNumber(item.count, locale)}</button
           >{/each}
       </fieldset>{/if}
   </form>
   {#if hasFilters}<div
       class="flex flex-wrap items-center gap-2"
       role="group"
-      aria-label="Active filters"
+      aria-label={t(locale, "search.filters.active")}
     >
       {#if state.search.query.length > 0}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
         >
-          Search: "{state.search.query}"<button
+          {t(locale, "search.filters.query", { query: state.search.query })}<button
             type="button"
             onclick={() => void clearQuery()}
             class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
-            aria-label="Clear search query"
+            aria-label={t(locale, "search.filters.clearQuery")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if state.search.teacherId !== null}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
         >
-          Teacher: {teacherFilterName(state)}<button
+          {t(locale, "search.filters.teacher", { name: teacherFilterName(state) })}<button
             type="button"
             onclick={() => {
               app.dispatch({ type: "set-teacher", teacherId: null });
               void app.search();
             }}
             class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
-            aria-label="Clear teacher filter"
+            aria-label={t(locale, "search.filters.clearTeacher")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if category !== undefined}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
         >
-          Category: {category.name}<button
+          {t(locale, "search.filters.category", { name: category.name })}<button
             type="button"
             onclick={() => {
               app.dispatch({ type: "clear-category" });
               void app.search();
             }}
             class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
-            aria-label="Clear category filter"
+            aria-label={t(locale, "search.filters.clearCategory")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if state.search.collectionId !== null}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
         >
-          Collection filter<button
+          {t(locale, "search.filters.collection")}<button
             type="button"
             onclick={() => {
               app.dispatch({ type: "clear-collection" });
               void app.search();
             }}
             class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
-            aria-label="Clear collection filter"
+            aria-label={t(locale, "search.filters.clearCollection")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       <button
         type="button"
         onclick={() => void clearAll()}
-        class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted hover:bg-app-soft hover:text-app"
-        >Clear all filters</button
+        class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted hover:bg-app-soft hover:text-app"
+        >{t(locale, "search.filters.clearAll")}</button
       >
     </div>{/if}
   {#if state.catalogue.status === "error"}<AsyncState
+      {locale}
       kind="error"
-      detail={state.catalogue.message}
+      detail={tError(locale, state.catalogue.message)}
       onretry={() => void app.search()}
     />
   {:else if state.catalogue.status !== "ready"}<AsyncState
+      {locale}
       kind="loading"
-      loadingLabel="Loading talks"
+      loadingLabel={t(locale, "explore.loading")}
       shape="rows"
     />
   {:else if state.catalogue.page.items.length === 0}<AsyncState
+      {locale}
       kind="empty"
       title={state.search.query.length > 0
-        ? `No talks match “${state.search.query}”`
-        : "No talks match these filters"}
+        ? t(locale, "explore.empty.title.query", { query: state.search.query })
+        : t(locale, "explore.empty.title.filters")}
       detail={hasFilters
-        ? "Try clearing a filter, broadening the language, or removing the search terms."
-        : "The catalogue has no talks in this combination. Try resetting the filters."}
-      actionLabel={hasFilters ? "Clear all filters" : ""}
+        ? t(locale, "explore.empty.detail.filters")
+        : t(locale, "explore.empty.detail.catalogue")}
+      actionLabel={hasFilters ? t(locale, "search.filters.clearAll") : ""}
       onaction={hasFilters
         ? () => {
             void clearAll();

@@ -7,16 +7,17 @@
 
 ## Implementation summary
 
-| Wave                 | Description                                                                                                                   | Commit range                    |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| 1 — Foundations      | `formatLocaleNumber/Duration`, `pluralize`, `truncateTrackTitle`, search debounce, persistence migration                      | `232c477`                       |
-| 2 — Quick wins       | search empty-states, locale threading, library tabs, AsyncState CTA, TextSearchField `size-11`                                | `cd39eb5`                       |
-| 3 — View polish      | player hint, queue aria-label, slider step, cheatsheet fix, language picker, browse-limit control, keyboard entry, breadcrumb | `1f8a68f`                       |
-| 4 — Cross-cutting    | breadcrumb, video locale duration, sidebar copy, `]` shortcut, VideoPlayer `size-11`                                          | `0392bf6`, `1036eb0`            |
-| 5 — High-impact      | home welcome card, featured-teacher tinting, queue panel CSS variable, slider `aria-valuetext`                                | `e456cf5`                       |
-| 6 — Backend + slider | `list_content_categories` rename + back-compat alias, slider step `5`, clear-query failure restore                            | `5b42df0`                       |
-| 7 — Polish           | track-row resume pill, v1→v2 envelope migration test, prettier sweep                                                          | `68751cc`, `6941ba7`, `4dfeffd` |
-| 8 — Touch targets    | filter chips, undo buttons, retry/dismiss, exit-fullscreen, queue close bumped to `size-11`; settings leaf icon; DHL-05 copy | `cb3dfc4`                       |
+| Wave                 | Description                                                                                                                                                                                                                        | Commit range                    |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| 1 — Foundations      | `formatLocaleNumber/Duration`, `pluralize`, `truncateTrackTitle`, search debounce, persistence migration                                                                                                                           | `232c477`                       |
+| 2 — Quick wins       | search empty-states, locale threading, library tabs, AsyncState CTA, TextSearchField `size-11`                                                                                                                                     | `cd39eb5`                       |
+| 3 — View polish      | player hint, queue aria-label, slider step, cheatsheet fix, language picker, browse-limit control, keyboard entry, breadcrumb                                                                                                      | `1f8a68f`                       |
+| 4 — Cross-cutting    | breadcrumb, video locale duration, sidebar copy, `]` shortcut, VideoPlayer `size-11`                                                                                                                                               | `0392bf6`, `1036eb0`            |
+| 5 — High-impact      | home welcome card, featured-teacher tinting, queue panel CSS variable, slider `aria-valuetext`                                                                                                                                     | `e456cf5`                       |
+| 6 — Backend + slider | `list_content_categories` rename + back-compat alias, slider step `5`, clear-query failure restore                                                                                                                                 | `5b42df0`                       |
+| 7 — Polish           | track-row resume pill, v1→v2 envelope migration test, prettier sweep                                                                                                                                                               | `68751cc`, `6941ba7`, `4dfeffd` |
+| 8 — Touch targets    | filter chips, undo buttons, retry/dismiss, exit-fullscreen, queue close bumped to `size-11`; settings leaf icon; DHL-05 copy                                                                                                       | `cb3dfc4`                       |
+| 9 — Localization     | full my-MM UI locale (`src/i18n.ts`, 260+ keys), centered cheatsheet dialog, Burmese-glyph line-height sweep, sidebar library icon, eyebrow color-role fix, dynamic back labels, mock teacher IDs aligned to the bundled catalogue | (this wave)                     |
 
 Findings **not addressed** are listed in §11 — all are out of scope per §9 (server pagination, Tauri shell) or already aligned (avatar fallback palette, sidebar collapse default).
 

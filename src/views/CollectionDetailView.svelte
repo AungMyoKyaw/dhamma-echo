@@ -3,9 +3,10 @@
   import AsyncState from "../components/AsyncState.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState } from "../types.js";
+  import { backLabel, countLabel, t, tError } from "../i18n.js";
   import { isMyanmarText } from "../ui.js";
-  import { pluralize } from "../utils.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
+  let locale = $derived(state.settings.locale);
   function retry(): void {
     if (state.selectedCollectionId !== null)
       void app.openCollection(
@@ -17,18 +18,21 @@
 
 <section class="space-y-5">
   <button
-    class="inline-flex min-h-11 items-center justify-center rounded-full border border-app-border px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+    class="inline-flex min-h-11 items-center justify-center rounded-full border border-app-border px-4 text-sm leading-normal font-bold text-app-primary transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
     type="button"
-    onclick={() => app.dispatch({ type: "return-to-list" })}>← Back to Collections</button
+    onclick={() => app.dispatch({ type: "return-to-list" })}
+    >{backLabel(locale, state.navigationContext?.returnRoute)}</button
   >
   {#if state.collectionDetail.status === "error"}<AsyncState
+      {locale}
       kind="error"
-      detail={state.collectionDetail.message}
+      detail={tError(locale, state.collectionDetail.message)}
       onretry={retry}
     />
   {:else if state.collectionDetail.status !== "ready" || state.collectionDetail.data === null}<AsyncState
+      {locale}
       kind="loading"
-      loadingLabel="Loading collection"
+      loadingLabel={t(locale, "collectionDetail.loading")}
       shape="detail"
     />
   {:else}{@const detail = state.collectionDetail.data}
@@ -44,7 +48,7 @@
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-sm font-semibold text-app-muted tabular-nums">
-          {pluralize(detail.audioCount, "talk", undefined, state.settings.locale)}
+          {countLabel(locale, "talk", detail.audioCount)}
         </p>
         <h2
           class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
@@ -58,7 +62,7 @@
             : ''}"
           lang={isMyanmarText(detail.teacherName) ? "my" : undefined}
         >
-          {detail.teacherName || "Unknown teacher"}
+          {detail.teacherName || t(locale, "collections.unknownTeacher")}
         </p>
         {#if detail.description !== null}<p
             class="mt-4 line-clamp-3 break-words text-sm leading-6 text-app-muted"
@@ -68,9 +72,10 @@
       </div>
     </div>
     {#if detail.tracks.length === 0}<AsyncState
+        {locale}
         kind="empty"
-        title="No talks in this collection"
-        detail="This collection has no playable records to play."
+        title={t(locale, "collectionDetail.empty.title")}
+        detail={t(locale, "collectionDetail.empty.detail")}
       />{:else}<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
         {#each detail.tracks as track (track.id)}<TrackRow {track} {state} {app} />{/each}
       </div>{/if}{/if}

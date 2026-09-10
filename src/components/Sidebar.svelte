@@ -1,15 +1,17 @@
 <script lang="ts">
   import type { DhammaApp } from "../app.js";
+  import { t } from "../i18n.js";
   import type { AppState, Route } from "../types.js";
   import Icon from "./Icon.svelte";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
+  let locale = $derived(state.settings.locale);
   const routes = [
-    { route: "home", label: "Home", icon: "home" },
-    { route: "explore", label: "Explore", icon: "explore" },
-    { route: "collections", label: "Collections", icon: "library" },
-    { route: "teachers", label: "Teachers", icon: "teachers" },
-    { route: "library", label: "My library", icon: "library" },
-    { route: "settings", label: "Settings", icon: "settings" }
+    { route: "home", labelKey: "nav.home", icon: "home" },
+    { route: "explore", labelKey: "nav.explore", icon: "explore" },
+    { route: "collections", labelKey: "nav.collections", icon: "library" },
+    { route: "teachers", labelKey: "nav.teachers", icon: "teachers" },
+    { route: "library", labelKey: "nav.library", icon: "bookmark" },
+    { route: "settings", labelKey: "nav.settings", icon: "settings" }
   ] as const;
   let collapsed = $derived(state.ui.sidebarCollapsed);
   function active(route: Route): boolean {
@@ -33,16 +35,16 @@
   class="fixed inset-y-0 left-0 z-20 flex {collapsed
     ? 'w-[72px] px-3'
     : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface py-6 [scrollbar-gutter:stable] max-[1040px]:pt-4 max-[1040px]:pb-1"
-  aria-label="Primary"
+  aria-label={t(locale, "nav.primary")}
 >
   <div class="flex items-center {collapsed ? 'justify-center' : 'gap-3 px-2'}">
     <img src="./logo.svg" alt="" class="size-11 rounded-control" />
     {#if !collapsed}<div>
-        <p class="text-lg font-bold tracking-tight">Dhamma Echo</p>
-        <p class="text-xs text-app-muted">Listen with intention</p>
+        <p class="text-lg font-bold tracking-tight">{t(locale, "app.name")}</p>
+        <p class="text-xs text-app-muted">{t(locale, "app.tagline")}</p>
       </div>{/if}
   </div>
-  <nav class="mt-9 space-y-2 max-[1040px]:mt-8" aria-label="Primary navigation">
+  <nav class="mt-9 space-y-2 max-[1040px]:mt-8" aria-label={t(locale, "nav.primaryNavigation")}>
     {#each routes as item (item.route)}<button
         class="group flex h-12 min-h-12 w-full items-center {collapsed
           ? 'justify-center'
@@ -54,11 +56,11 @@
         type="button"
         onclick={() => navigate(item.route)}
         aria-current={active(item.route) ? "page" : undefined}
-        title={collapsed ? item.label : undefined}
+        title={collapsed ? t(locale, item.labelKey) : undefined}
         ><span
           class="flex size-5 shrink-0 -translate-y-px items-center justify-center [&_svg]:block [&_svg]:size-full"
           ><Icon name={item.icon} /></span
-        >{#if !collapsed}<span>{item.label}</span>{/if}</button
+        >{#if !collapsed}<span>{t(locale, item.labelKey)}</span>{/if}</button
       >{/each}
   </nav>
   <div class="mt-auto space-y-3 max-[1040px]:space-y-1">
@@ -70,10 +72,9 @@
         >
           <span class="size-5"><Icon name="leaf" /></span>
         </div>
-        <p class="text-sm font-bold">A quiet library</p>
+        <p class="text-sm font-bold">{t(locale, "privacy.title")}</p>
         <p class="mt-1 text-xs leading-5 text-app-muted">
-          Your catalogue stays on this device. Audio streams only when you press play; downloads
-          stay until you remove them.
+          {t(locale, "privacy.body")}
         </p>
       </div>{/if}
     <button
@@ -81,11 +82,11 @@
         ? 'justify-center'
         : 'gap-2 px-4'} rounded-control text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
       onclick={toggle}
-      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-      title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      aria-label={collapsed ? t(locale, "nav.expandSidebar") : t(locale, "nav.collapseSidebar")}
+      title={collapsed ? t(locale, "nav.expandSidebar") : t(locale, "nav.collapseSidebar")}
       ><span class="flex size-4 -translate-y-px items-center justify-center [&_svg]:size-full"
         ><Icon name={collapsed ? "chevron-right" : "chevron-left"} /></span
-      >{#if !collapsed}<span>Collapse</span>{/if}</button
+      >{#if !collapsed}<span>{t(locale, "nav.collapse")}</span>{/if}</button
     >
   </div>
 </aside>

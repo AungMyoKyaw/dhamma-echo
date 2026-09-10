@@ -4,8 +4,10 @@
   import TeacherCard from "../components/TeacherCard.svelte";
   import TextSearchField from "../components/TextSearchField.svelte";
   import type { AppState, TeacherSummary } from "../types.js";
+  import { t, tError } from "../i18n.js";
   import { orderTeachersFeaturedFirst } from "../ui.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
+  let locale = $derived(state.settings.locale);
   let searching = $derived(state.teacherQuery.length > 0);
   let results = $derived(
     searching ? state.teacherResults : orderTeachersFeaturedFirst(state.teachers.data)
@@ -25,19 +27,22 @@
 </script>
 
 {#if state.teachers.status === "error"}<AsyncState
+    {locale}
     kind="error"
-    detail={state.teachers.message}
+    detail={tError(locale, state.teachers.message)}
     onretry={() => void app.loadTeachers()}
   />
 {:else if state.teachers.status !== "ready"}<AsyncState
+    {locale}
     kind="loading"
-    loadingLabel="Loading teachers"
+    loadingLabel={t(locale, "teachers.loading")}
     shape="cards"
   />
 {:else if state.teachers.data.length === 0}<AsyncState
+    {locale}
     kind="empty"
-    title="No teachers found"
-    detail="The catalogue does not currently include teacher records."
+    title={t(locale, "teachers.empty.title")}
+    detail={t(locale, "teachers.empty.detail")}
   />
 {:else}<section class="space-y-5">
     <form
@@ -45,22 +50,24 @@
       onsubmit={(event) => void submit(event)}
     >
       <TextSearchField
-        label="Search teachers"
-        placeholder="Search teacher name"
+        label={t(locale, "search.teachers.label")}
+        placeholder={t(locale, "search.teachers.placeholder")}
         value={state.teacherQuery}
         visibleLabel
         className="min-w-[260px] flex-[1_1_360px]"
+        clearLabel={t(locale, "search.teachers.clear")}
         onclear={clear}
       /><button
-        class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
-        type="submit">Search</button
+        class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        type="submit">{t(locale, "search.submit")}</button
       >
     </form>
     {#if searching && results.length === 0}<AsyncState
+        {locale}
         kind="empty"
-        title={`No teachers match “${state.teacherQuery}”`}
-        detail="Try a different spelling or a shorter name."
-        actionLabel="Clear search"
+        title={t(locale, "teachers.empty.title.query", { query: state.teacherQuery })}
+        detail={t(locale, "teachers.empty.detail.query")}
+        actionLabel={t(locale, "teachers.empty.clear")}
         onaction={clear}
       />{:else}<div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
         {#each results as teacher (teacher.id)}<TeacherCard

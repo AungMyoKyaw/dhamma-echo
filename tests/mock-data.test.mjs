@@ -11,7 +11,7 @@ test("mock invoke supports summary, teachers, and filtered paginated audio", asy
   const featured = await invoke("list_featured_teachers", { limit: 6 });
   assert.deepEqual(
     featured.map(({ id }) => id),
-    [283, 2872, 2960, 41979, 2972, 273]
+    [16, 42, 40, 53, 61, 8]
   );
   const searchedTeachers = await invoke("search_teachers", { query: "jotika", limit: 10 });
   assert.equal(searchedTeachers.length, 1);
@@ -46,7 +46,7 @@ test("mock invoke applies defaults and every optional filter branch", async () =
   const defaultTeachers = await invoke("list_featured_teachers", { limit: "bad" });
   assert.equal(defaultTeachers.length, 12);
   const allTeachers = await invoke("search_teachers");
-  assert.equal(allTeachers.length, 12);
+  assert.equal(allTeachers.length, 14);
   const all = await invoke("search_audio");
   assert.equal(all.items.length, 8);
   const byTeacherName = await invoke("search_audio", {

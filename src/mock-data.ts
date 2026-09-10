@@ -12,20 +12,22 @@ import type {
 } from "./types.js";
 
 const teachers: TeacherSummary[] = [
-  { id: 283, name: "မိုးကုတ်ဆရာတော်ဘုရားကြီး", audioCount: 942 },
-  { id: 2872, name: "သဲအင်းဂူဆရာတော်ဘုရားကြီး ဦးဥက္ကဋ္ဌ", audioCount: 96 },
-  { id: 2960, name: "ဖားအောက်တောရဆရာတော်ကြီး ဘဒ္ဒန္တအာစိဏ္ဏ", audioCount: 1321 },
+  { id: 16, name: "မိုးကုတ်ဆရာတော်ဘုရားကြီး", audioCount: 942 },
+  { id: 42, name: "သဲအင်းဂူဆရာတော်ဘုရားကြီး ဦးဥက္ကဋ္ဌ", audioCount: 96 },
+  { id: 40, name: "ဖားအောက်တောရဆရာတော်ကြီး ဘဒ္ဒန္တအာစိဏ္ဏ", audioCount: 1321 },
   {
-    id: 41979,
+    id: 53,
     name: "မဟာဗောဓိမြိုင် ဆရာတော် ဝနဝါသီ အရှင်ဉေယျဓမ္မသာမိမထေရ်",
     audioCount: 229
   },
-  { id: 2972, name: "ဆရာတော်ဦးဇောတိက (မဟာမြိုင်တောရ)", audioCount: 73 },
+  { id: 61, name: "ဆရာတော်ဦးဇောတိက (မဟာမြိုင်တောရ)", audioCount: 73 },
   {
-    id: 273,
+    id: 8,
     name: "ပါမောက္ခချုပ်ဆရာတော်ကြီး ဘဒ္ဒန္တ ဒေါက်တာ နန္ဒမာလာဘိဝံသ",
     audioCount: 3389
   },
+  { id: 55, name: "တောင်တန်းသာသနာပြု ဆရာတော်ဘုရားကြီး ဦးဥတ္တမသာရ", audioCount: 187 },
+  { id: 1307, name: "Dr. Mehm Tin Mon", audioCount: 210 },
   { id: 3, name: "Venerable Sayadaw U Jotika", audioCount: 120 },
   { id: 4, name: "Venerable Dr. K. Dhammasami", audioCount: 80 },
   { id: 12, name: "Mogok Sayadaw", audioCount: 960 },

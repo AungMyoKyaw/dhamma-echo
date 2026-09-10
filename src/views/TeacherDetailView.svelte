@@ -5,10 +5,11 @@
   import ProgressiveControls from "../components/ProgressiveControls.svelte";
   import TrackRow from "../components/TrackRow.svelte";
   import type { AppState, CollectionSummary } from "../types.js";
+  import { backLabel, countLabel, t, tError } from "../i18n.js";
   import { isMyanmarText } from "../ui.js";
-  import { pluralize } from "../utils.js";
   import { teacherAvatarDataUri } from "../teacherAvatar.js";
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
+  let locale = $derived(state.settings.locale);
   function retry(): void {
     if (state.selectedTeacherId !== null)
       void app.openTeacher(
@@ -30,18 +31,21 @@
 
 <section class="space-y-6">
   <button
-    class="inline-flex min-h-11 items-center justify-center rounded-full border border-app-border px-4 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+    class="inline-flex min-h-11 items-center justify-center rounded-full border border-app-border px-4 text-sm leading-normal font-bold text-app-primary transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] enabled:hover:bg-app-soft enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
     type="button"
-    onclick={() => app.dispatch({ type: "return-to-list" })}>← Back to Teachers</button
+    onclick={() => app.dispatch({ type: "return-to-list" })}
+    >{backLabel(locale, state.navigationContext?.returnRoute)}</button
   >
   {#if state.teacherDetail.status === "error"}<AsyncState
+      {locale}
       kind="error"
-      detail={state.teacherDetail.message}
+      detail={tError(locale, state.teacherDetail.message)}
       onretry={retry}
     />
   {:else if state.teacherDetail.status !== "ready" || state.teacherDetail.data === null}<AsyncState
+      {locale}
       kind="loading"
-      loadingLabel="Loading teacher"
+      loadingLabel={t(locale, "teacherDetail.loading")}
       shape="detail"
     />
   {:else}{@const detail = state.teacherDetail.data}
@@ -55,7 +59,7 @@
       </div>
       <div class="min-w-0 flex-1">
         <p class="text-sm font-semibold text-app-muted tabular-nums">
-          {pluralize(detail.audioCount, "talk", undefined, state.settings.locale)}
+          {countLabel(locale, "talk", detail.audioCount)}
         </p>
         <h2
           class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
@@ -64,14 +68,14 @@
           {detail.name}
         </h2>
         <button
-          class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 pt-0.5 pb-0 text-xs leading-none font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+          class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-4 text-xs leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
           type="button"
-          onclick={() => void explore()}>Explore this teacher's talks</button
+          onclick={() => void explore()}>{t(locale, "teacherDetail.explore")}</button
         >
       </div>
     </div>
     {#if detail.collections.length > 0}<div>
-        <h3 class="mb-3 text-lg font-bold">Collections</h3>
+        <h3 class="mb-3 text-lg font-bold">{t(locale, "teacherDetail.collections")}</h3>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           {#each detail.collections as collection (collection.id)}<CollectionCard
               {collection}
@@ -81,21 +85,26 @@
         </div>
       </div>{/if}
     <div>
-      <h3 class="mb-3 text-lg font-bold">Talks</h3>
+      <h3 class="mb-3 text-lg font-bold">{t(locale, "teacherDetail.talks")}</h3>
       {#if state.teacherTalks.status === "error"}<AsyncState
+          {locale}
           kind="error"
-          detail={state.teacherTalks.message}
+          detail={tError(locale, state.teacherTalks.message)}
           onretry={() => void app.loadTeacherTalks()}
         />{:else if state.teacherTalks.status !== "ready"}<AsyncState
+          {locale}
           kind="loading"
-          loadingLabel="Loading talks"
+          loadingLabel={t(locale, "teacherDetail.talks.loading")}
           shape="rows"
         />{:else if state.teacherTalks.page.items.length === 0}<AsyncState
+          {locale}
           kind="empty"
-          title={detail.audioCount > 0 ? "Loading more talks" : "No talks found"}
+          title={detail.audioCount > 0
+            ? t(locale, "teacherDetail.pending.title")
+            : t(locale, "teacherDetail.empty.title")}
           detail={detail.audioCount > 0
-            ? `This teacher has ${detail.audioCount} talks on file. Load more below to see them.`
-            : "This teacher has no talks in the catalogue."}
+            ? t(locale, "teacherDetail.pending.detail", { count: detail.audioCount })
+            : t(locale, "teacherDetail.empty.detail")}
         />{:else}<div class="overflow-hidden rounded-card border border-app-border bg-app-surface">
           {#each state.teacherTalks.page.items as track (track.id)}<TrackRow
               {track}

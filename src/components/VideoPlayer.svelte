@@ -2,10 +2,11 @@
   import { tick } from "svelte";
   import type { DhammaApp } from "../app.js";
   import { focusTrapIndex } from "../a11y.js";
+  import { t, tError } from "../i18n.js";
   import { getNativeWindow } from "../runtime.js";
   import type { AppState } from "../types.js";
   import { isMyanmarText, truncateTrackTitle } from "../ui.js";
-  import { formatLocaleDuration } from "../utils.js";
+  import { formatLocaleDuration, formatLocaleNumber } from "../utils.js";
   import Icon from "./Icon.svelte";
   import QueuePanel from "./QueuePanel.svelte";
 
@@ -255,17 +256,17 @@
             bind:this={exitFullscreenButton}
             type="button"
             onclick={() => void exitFullscreen()}
-            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
-            aria-label="Exit fullscreen"
-            title="Exit fullscreen"
+            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 text-xs leading-normal font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
+            aria-label={t(locale, "video.fullscreen.exit")}
+            title={t(locale, "video.fullscreen.exit")}
           >
             <span class="block size-4 [&_svg]:size-full"><Icon name="exit-fullscreen" /></span>
-            <span>Exit fullscreen</span>
+            <span>{t(locale, "video.fullscreen.exit")}</span>
           </button>{/if}
         {#if videoVisible && !videoReady && !appState.player.error}<div
             class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/35 px-6 text-center"
             role="status"
-            aria-label="Preparing video"
+            aria-label={t(locale, "video.preparing.label")}
           >
             <span
               class="flex size-16 items-center justify-center rounded-full border border-app-primary/45 bg-app-soft/65 shadow-[0_0_0_10px_color-mix(in_srgb,var(--color-app-primary)_12%,transparent)]"
@@ -274,8 +275,8 @@
                 class="size-3 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
               ></span>
             </span>
-            <span class="mt-5 text-sm font-bold text-white">Preparing the video</span>
-            <span class="mt-1 text-xs text-white/70">A moment of quiet before playback</span>
+            <span class="mt-5 text-sm font-bold text-white">{t(locale, "video.preparing")}</span>
+            <span class="mt-1 text-xs text-white/70">{t(locale, "video.preparing.detail")}</span>
           </div>{/if}
       </div>
 
@@ -283,7 +284,7 @@
         <div class="flex min-w-0 flex-col border-l border-app-border max-lg:border-t">
           <header class="flex items-start justify-between gap-4 p-5 pb-3">
             <div class="min-w-0">
-              <p class="text-xs font-semibold text-app-primary">Now playing · video</p>
+              <p class="text-xs font-semibold text-app-primary">{t(locale, "video.nowPlaying")}</p>
               <h2
                 id="video-player-title"
                 class="mt-1 line-clamp-2 break-words text-base font-bold {isMyanmarText(track.title)
@@ -299,45 +300,45 @@
                   ? 'myanmar-text'
                   : ''}"
                 lang={isMyanmarText(track.teacherName) ? "my" : undefined}
-                title={track.teacherName || "Unknown teacher"}
+                title={track.teacherName || t(locale, "player.unknownTeacher")}
               >
-                {track.teacherName || "Unknown teacher"} · {track.format.toUpperCase()}
+                {track.teacherName || t(locale, "player.unknownTeacher")} · {track.format.toUpperCase()}
               </p>
             </div>
             <button
               type="button"
               onclick={() => void close()}
-              class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
-              aria-label="Close video player"
-              title="Close video player (Esc)"
+              class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
+              aria-label={t(locale, "video.closePlayer")}
+              title={t(locale, "video.closePlayer")}
             >
               <span class="block size-4 [&_svg]:size-full"><Icon name="close" /></span>
-              <span>Close</span>
+              <span>{t(locale, "video.close")}</span>
             </button>
           </header>
 
           <div class="min-h-5 px-5">
             {#if appState.player.error}<p class="text-xs font-semibold text-error" role="alert">
-                {appState.player.error}
+                {tError(locale, appState.player.error)}
               </p>{:else if loading}<p
                 class="inline-flex items-center gap-2 text-xs font-semibold text-app-primary"
                 role="status"
               >
-                Loading video…
-              </p>{:else}<p class="text-xs text-app-muted">Space to pause · ←/→ to seek</p>{/if}
+                {t(locale, "video.loading")}
+              </p>{:else}<p class="text-xs text-app-muted">{t(locale, "video.hint")}</p>{/if}
           </div>
 
           <div class="mt-auto border-t border-app-border px-5 py-4">
             <div
               class="flex items-center justify-center gap-2"
-              aria-label="Video playback controls"
+              aria-label={t(locale, "video.controls")}
             >
               <button
                 type="button"
                 onclick={() => app.seekBy(-15)}
                 class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
-                aria-label="Jump back 15 seconds"
-                title="Jump back 15 seconds"
+                aria-label={t(locale, "player.back15")}
+                title={t(locale, "player.back15")}
               >
                 <span><Icon name="backward15" /></span>
               </button>
@@ -346,11 +347,15 @@
                 onclick={() => void app.togglePlayback()}
                 class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
                 aria-label={loading
-                  ? "Pause video loading"
+                  ? t(locale, "video.pauseLoading")
                   : playing
-                    ? "Pause video"
-                    : "Play video"}
-                title={loading ? "Pause video loading" : playing ? "Pause video" : "Play video"}
+                    ? t(locale, "video.pause")
+                    : t(locale, "video.play")}
+                title={loading
+                  ? t(locale, "video.pauseLoading")
+                  : playing
+                    ? t(locale, "video.pause")
+                    : t(locale, "video.play")}
                 aria-pressed={playing}
               >
                 <span class="block size-[21px] {playing || loading ? '' : 'translate-x-px'}"
@@ -361,8 +366,8 @@
                 type="button"
                 onclick={() => app.seekBy(15)}
                 class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
-                aria-label="Jump forward 15 seconds"
-                title="Jump forward 15 seconds"
+                aria-label={t(locale, "player.forward15")}
+                title={t(locale, "player.forward15")}
               >
                 <span><Icon name="forward15" /></span>
               </button>
@@ -380,7 +385,7 @@
                 step="1"
                 value={Math.min(appState.player.currentTime, max)}
                 oninput={(event) => app.seek(numberFromControl(event))}
-                aria-label="Playback position"
+                aria-label={t(locale, "player.position")}
               />
               <span>{formatLocaleDuration(appState.player.duration, locale)}</span>
             </div>
@@ -388,8 +393,8 @@
             <div
               class="mt-3 flex items-center justify-between gap-2 border-t border-app-border pt-3"
             >
-              <label title="Playback speed">
-                <span class="sr-only">Playback speed</span>
+              <label title={t(locale, "player.speed")}>
+                <span class="sr-only">{t(locale, "player.speed")}</span>
                 <select
                   value={String(appState.settings.playbackRate)}
                   onchange={(event) => app.setRate(numberFromControl(event))}
@@ -405,27 +410,35 @@
                   type="button"
                   onclick={() => app.dispatch({ type: "toggle-queue" })}
                   class="relative inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-app-border bg-transparent text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
-                  aria-label="Show queue"
-                  title="Show queue"
+                  aria-label={t(locale, "video.queue.show")}
+                  title={t(locale, "video.queue.show")}
                   aria-expanded={appState.player.queueOpen}
                 >
                   <span class="block size-[18px] [&_svg]:size-full"><Icon name="queue" /></span>
                   {#if appState.player.queue.length > 0}<span
                       class="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.55rem] font-extrabold text-app-primary-ink"
-                      >{appState.player.queue.length}</span
+                      >{formatLocaleNumber(appState.player.queue.length, locale)}</span
                     >{/if}
                 </button>
                 <button
                   type="button"
                   onclick={() => void toggleFullscreen()}
-                  class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 pt-0.5 pb-0 text-xs leading-none font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
-                  aria-label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-                  title={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+                  class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
+                  aria-label={fullscreen
+                    ? t(locale, "video.fullscreen.exit")
+                    : t(locale, "video.fullscreen.enter")}
+                  title={fullscreen
+                    ? t(locale, "video.fullscreen.exit")
+                    : t(locale, "video.fullscreen.enter")}
                 >
                   <span class="block size-4 [&_svg]:size-full"
                     ><Icon name={fullscreen ? "exit-fullscreen" : "fullscreen"} /></span
                   >
-                  <span>{fullscreen ? "Exit" : "Fullscreen"}</span>
+                  <span
+                    >{fullscreen
+                      ? t(locale, "video.fullscreen.exit.short")
+                      : t(locale, "video.fullscreen.enter.short")}</span
+                  >
                 </button>
               </div>
             </div>

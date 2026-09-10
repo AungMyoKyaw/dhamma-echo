@@ -1,19 +1,20 @@
 <script lang="ts">
+  import { t, type MessageKey } from "../i18n.js";
+  import type { AppLocale } from "../types.js";
   import Icon from "./Icon.svelte";
-  let { onclose }: { onclose: () => void } = $props();
+  let { locale, onclose }: { locale: AppLocale; onclose: () => void } = $props();
   let dialog: HTMLDialogElement;
-  const shortcuts = [
-    { keys: ["Space"], action: "Play or pause the current talk" },
-    { keys: ["←"], action: "Jump back 15 seconds" },
-    { keys: ["Shift", "←"], action: "Jump back 1 minute" },
-    { keys: ["→"], action: "Jump forward 15 seconds" },
-    { keys: ["Shift", "→"], action: "Jump forward 1 minute" },
-    { keys: ["N"], action: "Play the next talk in the queue" },
-    { keys: ["?"], action: "Show or hide this list" },
-    { keys: ["Shift", "/"], action: "Same as ? — open or close this list" },
-    { keys: ["["], action: "Collapse or expand the sidebar" },
-    { keys: ["Esc"], action: "Close this dialog or the active overlay" }
-  ] as const;
+  const shortcuts: { keys: string[]; action: MessageKey }[] = [
+    { keys: ["Space"], action: "shortcuts.playPause" },
+    { keys: ["←"], action: "shortcuts.back15" },
+    { keys: ["Shift", "←"], action: "shortcuts.back60" },
+    { keys: ["→"], action: "shortcuts.forward15" },
+    { keys: ["Shift", "→"], action: "shortcuts.forward60" },
+    { keys: ["N"], action: "shortcuts.next" },
+    { keys: ["?"], action: "shortcuts.toggleHelp" },
+    { keys: ["["], action: "shortcuts.toggleSidebar" },
+    { keys: ["Esc"], action: "shortcuts.escape" }
+  ];
   $effect(() => {
     dialog.showModal();
     return () => {
@@ -30,29 +31,32 @@
 
 <dialog
   bind:this={dialog}
-  class="m-0 max-h-full max-w-full border-0 bg-transparent p-4 backdrop:bg-[color-mix(in_srgb,var(--color-app)_45%,transparent)]"
+  class="m-auto max-h-full max-w-full border-0 bg-transparent p-4 backdrop:bg-[color-mix(in_srgb,var(--color-app)_45%,transparent)]"
   onclick={backdrop}
   onclose={handleClose}
 >
   <div class="w-full max-w-md rounded-card border border-app-border bg-app-surface p-6">
     <div class="flex items-start justify-between gap-3">
       <div>
-        <h2 id="keyboard-shortcuts-title" class="text-lg font-bold">Keyboard shortcuts</h2>
+        <h2 id="keyboard-shortcuts-title" class="text-lg font-bold">
+          {t(locale, "shortcuts.title")}
+        </h2>
         <p class="mt-1 text-sm text-app-muted">
-          Move through the library without leaving the keyboard.
+          {t(locale, "shortcuts.detail")}
         </p>
       </div>
       <button
         class="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
         type="button"
         onclick={onclose}
-        aria-label="Close shortcuts"><span class="block size-4"><Icon name="close" /></span></button
+        aria-label={t(locale, "shortcuts.close")}
+        ><span class="block size-4"><Icon name="close" /></span></button
       >
     </div>
     <dl class="mt-5 space-y-3">
       {#each shortcuts as shortcut (shortcut.action)}
         <div class="flex items-center justify-between gap-3">
-          <dt class="text-sm text-app">{shortcut.action}</dt>
+          <dt class="text-sm text-app">{t(locale, shortcut.action)}</dt>
           <dd class="flex shrink-0 items-center gap-1">
             {#each shortcut.keys as key (key)}<kbd
                 class="inline-flex h-7 min-w-7 items-center justify-center rounded-control border border-app-border bg-app-soft px-2 font-mono text-xs font-bold text-app"
@@ -63,11 +67,7 @@
       {/each}
     </dl>
     <p class="mt-5 border-t border-app-border pt-4 text-xs text-app-muted">
-      Search fields keep the keyboard for editing. Press <kbd
-        class="mx-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-control border border-app-border bg-app-soft px-1.5 font-mono text-[11px] font-bold"
-        >Esc</kbd
-      >
-      inside a search field to clear what you typed.
+      {t(locale, "shortcuts.searchNote", { key: "Esc" })}
     </p>
   </div>
 </dialog>

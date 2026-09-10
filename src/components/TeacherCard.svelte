@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { AppState, TeacherSummary } from "../types.js";
+  import { countLabel, t } from "../i18n.js";
   import { isCuratedFeaturedTeacher, isMyanmarText, truncateTeacherCardName } from "../ui.js";
   import { teacherAvatarDataUri } from "../teacherAvatar.js";
-  import { pluralize } from "../utils.js";
   let {
     teacher,
     state,
@@ -21,7 +21,7 @@
 
 <button
   class="group grid min-h-28 min-w-0 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-card border p-4 text-left transition-[border-color,background-color] duration-150 {featured
-    ? 'border-app-secondary/40 bg-app-secondary/[0.06] hover:border-app-secondary/70'
+    ? 'border-app-tertiary/40 bg-app-tertiary/[0.06] hover:border-app-tertiary/70'
     : 'border-app-border bg-app-surface hover:border-app-primary/50 hover:bg-app-soft/35'} focus-visible:border-app-primary/60"
   type="button"
   onclick={() => void onselect(teacher)}
@@ -33,8 +33,8 @@
     <img src={avatar} alt="" class="block size-full object-cover" />
   </div>
   <div class="min-w-0">
-    {#if featured}<p class="text-[10px] font-bold tracking-wide text-app-secondary uppercase">
-        Featured teacher
+    {#if featured}<p class="text-[10px] font-bold tracking-wide text-app-tertiary uppercase">
+        {t(locale, "teachers.featuredBadge")}
       </p>{/if}
     <p
       class="break-words font-bold leading-6 {myanmar ? 'myanmar-text' : ''}"
@@ -45,7 +45,7 @@
       {displayName}
     </p>
     <p class="mt-1 text-sm text-app-muted tabular-nums">
-      {pluralize(teacher.audioCount, "talk", undefined, locale)}
+      {countLabel(locale, "talk", teacher.audioCount)}
     </p>
   </div>
 </button>

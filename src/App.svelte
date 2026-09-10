@@ -17,6 +17,7 @@
   import SettingsView from "./views/SettingsView.svelte";
   import TeacherDetailView from "./views/TeacherDetailView.svelte";
   import TeachersView from "./views/TeachersView.svelte";
+  import { documentLanguage } from "./i18n.js";
 
   let { app, stateStore }: { app: DhammaApp; stateStore: Readable<AppState> } = $props();
   let appState = $derived($stateStore);
@@ -27,6 +28,10 @@
     const theme = appState.settings.theme;
     applyTheme(theme);
     return watchSystemTheme(theme, () => {});
+  });
+
+  $effect(() => {
+    globalThis.document.documentElement.lang = documentLanguage(appState.settings.locale);
   });
 
   function keydown(event: KeyboardEvent): void {
@@ -131,5 +136,8 @@
     {#if showAudioFooter}<Player state={appState} {app} />{/if}
   </div>
   <VideoPlayer state={appState} {app} onbackgroundwheel={scrollContentFromPlayer} />
-  {#if helpOpen}<KeyboardCheatsheet onclose={() => (helpOpen = false)} />{/if}
+  {#if helpOpen}<KeyboardCheatsheet
+      locale={appState.settings.locale}
+      onclose={() => (helpOpen = false)}
+    />{/if}
 </div>

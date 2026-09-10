@@ -1,28 +1,32 @@
 <script lang="ts">
+  import { t } from "../i18n.js";
+  import type { AppLocale } from "../types.js";
   type Kind = "loading" | "empty" | "error";
   type Shape = "rows" | "cards" | "detail";
   let {
     kind,
     title = "",
     detail = "",
-    loadingLabel = "Loading content",
+    loadingLabel = undefined,
     shape = "rows",
-    errorTitle = "This view needs another try",
+    errorTitle = undefined,
     illustration = "./empty-library.svg",
     actionLabel = undefined as string | undefined,
     onaction = undefined as (() => void) | undefined,
-    onretry = undefined as (() => void) | undefined
+    onretry = undefined as (() => void) | undefined,
+    locale = "en-US"
   }: {
     kind: Kind;
     title?: string;
     detail?: string;
-    loadingLabel?: string;
+    loadingLabel?: string | undefined;
     shape?: Shape;
-    errorTitle?: string;
+    errorTitle?: string | undefined;
     illustration?: string;
     actionLabel?: string | undefined;
     onaction?: (() => void) | undefined;
     onretry?: (() => void) | undefined;
+    locale?: AppLocale;
   } = $props();
   let rowCount = $derived(shape === "detail" ? 4 : 6);
   let cardCount = $derived(shape === "cards" ? 6 : 0);
@@ -39,7 +43,7 @@
     role="status"
     aria-live="polite"
     aria-busy="true"
-    aria-label={loadingLabel}
+    aria-label={loadingLabel ?? t(locale, "async.loading")}
   >
     {#if shape === "detail"}
       <div class="space-y-3">
@@ -72,7 +76,7 @@
     {#if showAction}
       {@const label = actionLabel ?? ""}
       <button
-        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
         type="button"
         onclick={() => onaction?.()}>{label}</button
       >
@@ -82,12 +86,12 @@
   <div
     class="flex min-h-64 flex-col items-center justify-center rounded-card border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-app-border))] bg-error-soft p-8 text-center"
   >
-    <h2 class="text-xl font-bold">{errorTitle}</h2>
+    <h2 class="text-xl font-bold">{errorTitle ?? t(locale, "async.error.title")}</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
-        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 pt-0.5 pb-0 text-sm leading-none font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
-        onclick={onretry}>Try again</button
+        onclick={onretry}>{t(locale, "async.retry")}</button
       >{/if}
   </div>
 {/if}

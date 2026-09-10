@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { AppState, CollectionSummary } from "../types.js";
+  import { countLabel, t } from "../i18n.js";
   import { isMyanmarText } from "../ui.js";
-  import { pluralize } from "../utils.js";
   let {
     collection,
     showTeacher = true,
@@ -33,9 +33,9 @@
         : ''}"
       lang={isMyanmarText(collection.teacherName) ? "my" : undefined}
     >
-      {collection.teacherName || "Unknown teacher"}
+      {collection.teacherName || t(state.settings.locale, "collections.unknownTeacher")}
     </p>{/if}
   <p class="mt-auto pt-3 text-xs font-bold text-app-primary tabular-nums">
-    {pluralize(collection.audioCount, "talk", undefined, state.settings.locale)}
+    {countLabel(state.settings.locale, "talk", collection.audioCount)}
   </p>
 </button>

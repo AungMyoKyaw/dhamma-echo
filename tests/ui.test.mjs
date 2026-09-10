@@ -82,12 +82,13 @@ test("track titles truncate at the cluster boundary with middle ellipsis", () =>
   assert.ok(!truncatedBurmese.includes("္…") && !truncatedBurmese.includes("…္"));
 });
 test("route labels cover every route", () => {
-  assert.deepEqual(routeLabel("home", 30563), {
+  assert.deepEqual(routeLabel("home"), {
     eyebrow: "Home",
     title: "Discover the Dhamma",
     detail: "Return to recent talks and trusted teachers."
   });
-  assert.equal(routeLabel("explore", 30563).eyebrow, "Explore");
+  assert.equal(routeLabel("explore").eyebrow, "Explore");
+  assert.equal(routeLabel("home", "my-MM").eyebrow, "ပင်မ");
   for (const route of [
     "collections",
     "collection-detail",
@@ -96,7 +97,7 @@ test("route labels cover every route", () => {
     "library",
     "settings"
   ]) {
-    const label = routeLabel(route, 1);
+    const label = routeLabel(route);
     assert.equal(typeof label.title, "string");
     assert.equal(typeof label.detail, "string");
     assert.ok(label.detail.length > 0);
@@ -139,6 +140,7 @@ test("groupCollectionsByTeacher groups contiguous teacher runs", () => {
       ["2", "T", [4]]
     ]
   );
+  assert.equal(groupCollectionsByTeacher(items, "my-MM")[1]?.name, "ဆရာတော် မသိရ");
 });
 test("knownFavoriteTracks returns unique loaded favorites", () => {
   const state = createInitialState();

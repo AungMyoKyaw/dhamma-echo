@@ -1,4 +1,12 @@
-import type { AppState, AudioTrack, CollectionSummary, Route, TeacherSummary } from "./types.js";
+import { routeLabels, t } from "./i18n.js";
+import type {
+  AppLocale,
+  AppState,
+  AudioTrack,
+  CollectionSummary,
+  Route,
+  TeacherSummary
+} from "./types.js";
 
 const CURATED_FEATURED_TEACHER_IDS = [16, 42, 40, 53, 61, 8, 55, 1307] as const;
 const FEATURED = new Set<number>(CURATED_FEATURED_TEACHER_IDS);
@@ -60,50 +68,11 @@ export function truncateTrackTitle(value: string, maxClusters = 60): string {
   return `${head.join("")}…`;
 }
 
-export function routeLabel(route: Route): { eyebrow: string; title: string; detail: string } {
-  const labels: Record<Route, { eyebrow: string; title: string; detail: string }> = {
-    home: {
-      eyebrow: "Home",
-      title: "Discover the Dhamma",
-      detail: "Return to recent talks and trusted teachers."
-    },
-    explore: {
-      eyebrow: "Explore",
-      title: "Explore the Dhamma library",
-      detail: "Search talks by teacher, language, format, or collection."
-    },
-    collections: {
-      eyebrow: "Collections",
-      title: "Browse listening collections",
-      detail: "Move through related talks without losing your place."
-    },
-    "collection-detail": {
-      eyebrow: "Collection",
-      title: "Collection details",
-      detail: "Listen through this collection at your own pace."
-    },
-    teachers: {
-      eyebrow: "Teachers",
-      title: "Learn from trusted voices",
-      detail: "Browse teachers and continue into their available talks."
-    },
-    "teacher-detail": {
-      eyebrow: "Teacher",
-      title: "Teacher details",
-      detail: "Explore talks and collections from this teacher."
-    },
-    library: {
-      eyebrow: "Your space",
-      title: "Your library",
-      detail: "Downloads, favorites, and recently played talks."
-    },
-    settings: {
-      eyebrow: "Preferences",
-      title: "Make listening yours",
-      detail: "Adjust appearance and playback defaults for this device."
-    }
-  };
-  return labels[route];
+export function routeLabel(
+  route: Route,
+  locale: AppLocale = "en-US"
+): { eyebrow: string; title: string; detail: string } {
+  return routeLabels(route, locale);
 }
 
 export function teacherFilterName(state: AppState): string {
@@ -113,7 +82,7 @@ export function teacherFilterName(state: AppState): string {
   if (fromList !== undefined) return fromList;
   return state.player.current?.id === state.search.teacherId
     ? state.player.current.teacherName
-    : "selected teacher";
+    : t(state.settings.locale, "search.filters.selectedTeacher");
 }
 
 interface CollectionGroup {
@@ -122,13 +91,21 @@ interface CollectionGroup {
   items: CollectionSummary[];
 }
 
-export function groupCollectionsByTeacher(items: CollectionSummary[]): CollectionGroup[] {
+export function groupCollectionsByTeacher(
+  items: CollectionSummary[],
+  locale: AppLocale = "en-US"
+): CollectionGroup[] {
   const groups: CollectionGroup[] = [];
   for (const item of items) {
     const key = item.teacherId === null ? "unknown" : String(item.teacherId);
     const latest = groups.at(-1);
     if (latest?.key === key) latest.items.push(item);
-    else groups.push({ key, name: item.teacherName || "Unknown teacher", items: [item] });
+    else
+      groups.push({
+        key,
+        name: item.teacherName || t(locale, "collections.unknownTeacher"),
+        items: [item]
+      });
   }
   return groups;
 }

@@ -7,6 +7,7 @@
     value,
     className = "",
     visibleLabel = false,
+    clearLabel,
     onclear
   }: {
     label: string;
@@ -14,6 +15,7 @@
     value: string;
     className?: string;
     visibleLabel?: boolean;
+    clearLabel: string;
     onclear: () => void | Promise<void>;
   } = $props();
   let input: HTMLInputElement;
@@ -52,8 +54,7 @@
         class="absolute right-1 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-app-muted hover:bg-app-soft hover:text-app"
         type="button"
         onclick={() => void clear()}
-        aria-label="Clear {label.toLowerCase()}"
-        ><span class="size-4"><Icon name="close" /></span></button
+        aria-label={clearLabel}><span class="size-4"><Icon name="close" /></span></button
       >{/if}
   </span>
 </label>
