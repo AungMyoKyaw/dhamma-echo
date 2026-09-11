@@ -30,7 +30,7 @@
 
 <section class="mx-auto max-w-3xl space-y-4">
   <div class="rounded-card border border-app-border bg-app-surface p-6">
-    <h2 class="text-lg font-bold">{t(locale, "settings.language")}</h2>
+    <h2 class="text-lg font-semibold">{t(locale, "settings.language")}</h2>
     <p class="mt-1 text-sm text-app-muted">
       {t(locale, "settings.language.detail")}
     </p>
@@ -51,7 +51,7 @@
     </div>
   </div>
   <div class="rounded-card border border-app-border bg-app-surface p-6">
-    <h2 class="text-lg font-bold">{t(locale, "settings.appearance")}</h2>
+    <h2 class="text-lg font-semibold">{t(locale, "settings.appearance")}</h2>
     <p class="mt-1 text-sm text-app-muted">{t(locale, "settings.appearance.detail")}</p>
     <div
       class="mt-4 inline-flex rounded-control bg-app-soft p-1"
@@ -70,7 +70,7 @@
     </div>
   </div>
   <div class="rounded-card border border-app-border bg-app-surface p-6">
-    <h2 class="text-lg font-bold">{t(locale, "settings.playback")}</h2>
+    <h2 class="text-lg font-semibold">{t(locale, "settings.playback")}</h2>
     <p class="mt-1 text-sm text-app-muted">
       {t(locale, "settings.playback.detail")}
     </p>
@@ -110,7 +110,7 @@
     </div>
   </div>
   <div class="rounded-card border border-app-border bg-app-surface p-6">
-    <h2 class="text-lg font-bold">{t(locale, "settings.keyboard")}</h2>
+    <h2 class="text-lg font-semibold">{t(locale, "settings.keyboard")}</h2>
     <p class="mt-1 text-sm text-app-muted">
       {t(locale, "settings.keyboard.detail")}
     </p>
@@ -140,7 +140,7 @@
       aria-expanded={aboutExpanded}
       class="flex w-full items-center justify-between gap-2 text-left"
     >
-      <h2 class="text-lg font-bold">{t(locale, "settings.about")}</h2>
+      <h2 class="text-lg font-semibold">{t(locale, "settings.about")}</h2>
       <span class="text-xs font-bold tracking-wide text-app-muted uppercase">
         {aboutExpanded ? t(locale, "settings.about.hide") : t(locale, "settings.about.show")}
       </span>

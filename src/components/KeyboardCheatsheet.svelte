@@ -38,7 +38,7 @@
   <div class="w-full max-w-md rounded-card border border-app-border bg-app-surface p-6">
     <div class="flex items-start justify-between gap-3">
       <div>
-        <h2 id="keyboard-shortcuts-title" class="text-lg font-bold">
+        <h2 id="keyboard-shortcuts-title" class="text-lg font-semibold">
           {t(locale, "shortcuts.title")}
         </h2>
         <p class="mt-1 text-sm text-app-muted">

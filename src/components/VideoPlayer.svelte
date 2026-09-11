@@ -256,7 +256,7 @@
             bind:this={exitFullscreenButton}
             type="button"
             onclick={() => void exitFullscreen()}
-            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-black/65 px-3 text-xs leading-normal font-bold text-white backdrop-blur-sm transition-[background-color,border-color] duration-150 hover:border-white/70 hover:bg-black/85"
+            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white bg-black px-3 text-xs leading-normal font-bold text-white transition-[background-color,border-color] duration-150 hover:bg-app-bg"
             aria-label={t(locale, "video.fullscreen.exit")}
             title={t(locale, "video.fullscreen.exit")}
           >

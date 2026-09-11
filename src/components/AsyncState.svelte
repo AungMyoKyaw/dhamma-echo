@@ -71,7 +71,7 @@
     class="flex min-h-80 flex-col items-center justify-center rounded-card border border-dashed border-app-border bg-app-surface p-8 text-center"
   >
     <img src={illustration} alt="" class="h-32 w-40" />
-    <h2 class="mt-4 text-xl font-bold">{title}</h2>
+    <h2 class="mt-4 text-xl font-semibold">{title}</h2>
     <p class="mt-2 max-w-sm text-sm leading-6 text-app-muted">{detail}</p>
     {#if showAction}
       {@const label = actionLabel ?? ""}
@@ -86,7 +86,7 @@
   <div
     class="flex min-h-64 flex-col items-center justify-center rounded-card border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-app-border))] bg-error-soft p-8 text-center"
   >
-    <h2 class="text-xl font-bold">{errorTitle ?? t(locale, "async.error.title")}</h2>
+    <h2 class="text-xl font-semibold">{errorTitle ?? t(locale, "async.error.title")}</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
         class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"

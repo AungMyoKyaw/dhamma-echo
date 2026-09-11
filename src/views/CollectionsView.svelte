@@ -102,7 +102,7 @@
         : undefined}
     />
   {:else if state.collectionSearch.teacherId !== null}<div
-      class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4"
+      class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4"
     >
       {#each state.collections.page.items as collection (collection.id)}<CollectionCard
           {collection}
@@ -113,8 +113,8 @@
     </div>
   {:else}<div class="space-y-7">
       {#each groups as group (group.key)}<section>
-          <h2 class="mb-3 text-lg font-bold">{group.name}</h2>
-          <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <h2 class="mb-3 text-lg font-semibold">{group.name}</h2>
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
             {#each group.items as collection (collection.id)}<CollectionCard
                 {collection}
                 {state}

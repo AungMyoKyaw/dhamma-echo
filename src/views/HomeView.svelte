@@ -52,7 +52,7 @@
   <section class="space-y-8">
     {#if state.homeRecent.status === "loading"}
       <section class="space-y-4">
-        <h2 class="text-xl font-bold">{t(locale, "home.continue")}</h2>
+        <h2 class="text-xl font-semibold">{t(locale, "home.continue")}</h2>
         <div
           class="h-20 animate-pulse rounded-card bg-app-soft motion-reduce:animate-none"
           aria-hidden="true"
@@ -71,7 +71,7 @@
         <p class="text-[11px] font-bold tracking-wide text-app-muted uppercase">
           {t(locale, "home.welcome.eyebrow")}
         </p>
-        <h2 class="text-xl font-bold">{t(locale, "home.welcome.title")}</h2>
+        <h2 class="text-xl font-semibold">{t(locale, "home.welcome.title")}</h2>
         <p class="max-w-xl text-sm leading-6 text-app-muted">{catalogueSentence}</p>
         <div class="flex flex-wrap gap-3">
           <button
@@ -99,7 +99,7 @@
         {@const resumeLabel = resume > 0 ? formatLocaleDuration(resume, locale) : ""}
         <section class="space-y-4">
           <div>
-            <h2 class="text-xl font-bold">{t(locale, "home.continue")}</h2>
+            <h2 class="text-xl font-semibold">{t(locale, "home.continue")}</h2>
             <p class="mt-1 text-sm text-app-muted">{t(locale, "home.continue.detail")}</p>
           </div>
           <div
@@ -154,7 +154,7 @@
     <div>
       <div class="mb-4 flex items-end justify-between">
         <div>
-          <h2 class="text-xl font-bold">{t(locale, "home.featured")}</h2>
+          <h2 class="text-xl font-semibold">{t(locale, "home.featured")}</h2>
           <p class="mt-1 text-sm text-app-muted">
             {t(locale, "home.featured.detail")}
           </p>

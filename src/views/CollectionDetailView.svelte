@@ -51,7 +51,7 @@
           {countLabel(locale, "talk", detail.audioCount)}
         </p>
         <h2
-          class="mt-2 text-2xl font-bold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
+          class="mt-2 text-2xl font-semibold {isMyanmarText(detail.name) ? 'myanmar-text' : ''}"
           lang={isMyanmarText(detail.name) ? "my" : undefined}
         >
           {detail.name}

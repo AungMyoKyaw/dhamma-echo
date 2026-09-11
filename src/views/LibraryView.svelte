@@ -70,7 +70,7 @@
 
     {#if activeTab === "downloads"}
       <div class="space-y-3" role="tabpanel" aria-label={t(locale, "library.downloads")}>
-        <h2 class="text-xl font-bold">{t(locale, "library.downloads")}</h2>
+        <h2 class="text-xl font-semibold">{t(locale, "library.downloads")}</h2>
         <p class="text-sm text-app-muted tabular-nums">
           {countLabel(locale, "downloadedTalk", downloads.length)}
         </p>
@@ -109,7 +109,7 @@
       </div>
     {:else if activeTab === "favorites"}
       <div class="space-y-3" role="tabpanel" aria-label={t(locale, "library.favorites")}>
-        <h2 class="text-xl font-bold">{t(locale, "library.favorites")}</h2>
+        <h2 class="text-xl font-semibold">{t(locale, "library.favorites")}</h2>
         <p class="text-sm text-app-muted tabular-nums">
           {countLabel(locale, "savedTalk", favoriteOnly.length)}
         </p>
@@ -148,7 +148,7 @@
       </div>
     {:else}
       <div class="space-y-3" role="tabpanel" aria-label={t(locale, "library.history")}>
-        <h2 class="text-xl font-bold">{t(locale, "home.recentlyPlayed")}</h2>
+        <h2 class="text-xl font-semibold">{t(locale, "home.recentlyPlayed")}</h2>
         <p class="text-sm text-app-muted tabular-nums">
           {t(locale, "library.history.count", {
             count: countLabel(locale, "talk", historyTracks.length)
