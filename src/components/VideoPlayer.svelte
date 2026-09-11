@@ -269,7 +269,7 @@
             aria-label={t(locale, "video.preparing.label")}
           >
             <span
-              class="flex size-16 items-center justify-center rounded-full border border-app-primary/45 bg-app-soft/65 shadow-[0_0_0_10px_color-mix(in_srgb,var(--color-app-primary)_12%,transparent)]"
+              class="flex size-16 items-center justify-center rounded-full border border-app-primary/45 bg-app-soft/65"
             >
               <span
                 class="size-3 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
@@ -284,7 +284,9 @@
         <div class="flex min-w-0 flex-col border-l border-app-border max-lg:border-t">
           <header class="flex items-start justify-between gap-4 p-5 pb-3">
             <div class="min-w-0">
-              <p class="text-xs font-semibold text-app-primary">{t(locale, "video.nowPlaying")}</p>
+              <p class="text-xs font-bold tracking-wide text-app-muted uppercase">
+                {t(locale, "video.nowPlaying")}
+              </p>
               <h2
                 id="video-player-title"
                 class="mt-1 line-clamp-2 break-words text-base font-bold {isMyanmarText(track.title)

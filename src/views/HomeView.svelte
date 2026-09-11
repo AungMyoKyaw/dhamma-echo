@@ -103,7 +103,7 @@
             <p class="mt-1 text-sm text-app-muted">{t(locale, "home.continue.detail")}</p>
           </div>
           <div
-            class="flex items-center gap-4 overflow-hidden rounded-card border border-app-primary/25 bg-app-primary/[0.04] p-5"
+            class="flex items-center gap-4 overflow-hidden rounded-card border border-app-border bg-app-soft p-5"
           >
             <button
               class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-app-primary-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"

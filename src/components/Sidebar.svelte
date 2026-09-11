@@ -51,7 +51,7 @@
           : 'gap-3 px-4'} rounded-control py-0 text-left text-sm font-semibold leading-5 transition-[background-color,color,box-shadow] duration-150 {active(
           item.route
         )
-          ? 'bg-app-primary text-app-primary-ink shadow-sm'
+          ? 'bg-app-primary text-app-primary-ink'
           : 'text-app-muted hover:bg-app-soft hover:text-app'}"
         type="button"
         onclick={() => navigate(item.route)}

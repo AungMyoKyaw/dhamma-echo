@@ -2,6 +2,8 @@
 
 @theme {
   --font-sans: Inter, "Noto Sans Myanmar", "Myanmar Text", "Pyidaungsu", system-ui, sans-serif;
+  --font-display: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+  --font-heading: "Source Serif 4", "Source Serif Pro", Georgia, serif;
   --color-app: #2e2e2a;
   --color-app-muted: #565550;
   --color-app-bg: #f7f3ea;
@@ -95,6 +97,11 @@
   word-break: keep-all;
   overflow-wrap: normal;
   text-wrap: balance;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
 }
 
 h1,

@@ -42,7 +42,7 @@
       {#each locales as option (option.value)}<button
           class="inline-flex min-h-11 items-center justify-center rounded-control px-5 text-sm leading-normal font-bold transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {appState
             .settings.locale === option.value
-            ? 'bg-app-surface text-app-primary shadow-sm'
+            ? 'bg-app-surface text-app-primary'
             : 'text-app-muted'}"
           type="button"
           aria-pressed={appState.settings.locale === option.value}
@@ -61,7 +61,7 @@
       {#each themes as theme (theme.value)}<button
           class="inline-flex min-h-11 items-center justify-center rounded-control px-5 text-sm leading-normal font-bold transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {appState
             .settings.theme === theme.value
-            ? 'bg-app-surface text-app-primary shadow-sm'
+            ? 'bg-app-surface text-app-primary'
             : 'text-app-muted'}"
           type="button"
           aria-pressed={appState.settings.theme === theme.value}

@@ -168,7 +168,7 @@
         ></span>
       </span>{/if}
     {#if menuOpen}<div
-        class="absolute right-0 top-full z-10 mt-2 min-w-[200px] rounded-card border border-app-border bg-app-surface p-1 shadow-sm"
+        class="absolute right-0 top-full z-10 mt-2 min-w-[200px] rounded-card border border-app-border bg-app-surface p-1"
         role="menu"
         aria-label={t(locale, "track.menu")}
       >
