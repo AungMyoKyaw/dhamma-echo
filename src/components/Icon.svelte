@@ -12,6 +12,7 @@
     | "next"
     | "heart"
     | "queue"
+    | "more"
     | "search"
     | "close"
     | "fullscreen"
@@ -83,6 +84,19 @@
     />
   {:else if name === "queue"}<path d="M4 7h10M4 12h10M4 17h7" /><path
       d="m16 14 4 3-4 3z"
+      fill="currentColor"
+      stroke="none"
+    />
+  {:else if name === "more"}<circle
+      cx="6"
+      cy="12"
+      r="1.4"
+      fill="currentColor"
+      stroke="none"
+    /><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" /><circle
+      cx="18"
+      cy="12"
+      r="1.4"
       fill="currentColor"
       stroke="none"
     />

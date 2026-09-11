@@ -184,10 +184,11 @@ const en = {
   "settings.theme.dark": "Dark",
   "settings.theme.system": "System",
   "settings.playback": "Playback",
+  "settings.playback.detail":
+    "Choose the default playback speed and how many talks appear on each catalogue page.",
   "settings.playback.speed": "Default speed",
   "settings.playback.speed.reset": "Reset",
   "settings.playback.limit": "Browse limit",
-  "settings.playback.limit.detail": "Talks loaded per page on Explore, Teachers, and Collections.",
   "settings.keyboard": "Keyboard",
   "settings.keyboard.detail":
     "The app responds to a small set of keyboard shortcuts while listening.",
@@ -246,6 +247,7 @@ const en = {
   "track.play": "Play {title}",
   "track.pause": "Pause {title}",
   "track.connecting": "Connecting to {title}",
+  "track.menu": "Talk actions",
   "track.enqueue": "Queue",
   "track.favorite.add": "Add to favorites",
   "track.favorite.remove": "Remove from favorites",
@@ -308,7 +310,7 @@ export type MessageKey = keyof typeof en;
 
 const my: Partial<Record<MessageKey, string>> = {
   "app.name": "Dhamma Echo",
-  "app.tagline": "သတိပြု၍ နားထောင်ပါ",
+  "app.tagline": "ရည်ရွယ်ချက်ဖြင့် နားထောင်ပါ",
 
   "nav.primary": "အဓိက",
   "nav.primaryNavigation": "အဓိက လမ်းညွှန်",
@@ -318,17 +320,17 @@ const my: Partial<Record<MessageKey, string>> = {
   "nav.teachers": "ဆရာတော်များ",
   "nav.library": "ကိုယ်ပိုင်စာကြည့်တိုက်",
   "nav.settings": "ဆက်တင်များ",
-  "nav.collapse": "ခေါတ်မည်",
-  "nav.collapseSidebar": "ဘေးဘားကို ခေါင်းလိုက်မည်",
+  "nav.collapse": "ခေါက်မည်",
+  "nav.collapseSidebar": "ဘေးဘားကို ခေါက်မည်",
   "nav.expandSidebar": "ဘေးဘားကို ပြန်ဖွင့်မည်",
 
   "privacy.title": "တိတ်ဆိတ်သော စာကြည့်တိုက်",
   "privacy.body":
-    "စာရင်းဇယားသည် သင့်စက်ထဲတွင်သာ ရှိသည်။ အသံကို play နှိပ်သည့်အချိန်မှသာ streamed ဖြစ်၍ ဒေါင်းလုပ်များကိုလည်း သင်မဖျက်မချင်း စက်ထဲတွင်ပင် ကျန်ရှိမည်။",
+    "စာရင်းဇယားသည် သင့်စက်ထဲတွင်သာ ရှိသည်။ ဖွင့်နှိပ်သည့်အချိန်မှသာ အသံကို ထုတ်လွှင့်၍ ဒေါင်းလုပ်များကိုလည်း သင်မဖျက်မချင်း စက်ထဲတွင်ပင် ကျန်ရှိနေမည်။",
   "privacy.body.settings":
     "အနှစ်သက်ဆုံးများ၊ မှတ်တမ်း၊ ဖွင့်နေသောနေရာနှင့် ဆက်တင်များကို ဤစက်ထဲတွင်သာ သိမ်းသည်။ ပါရှိသော စာရင်းဇယားကို ဖတ်ရုံသာမျှ ဖြစ်သည်။ အသံကို ",
   "privacy.body.settings.tail":
-    " မှ play နှိပ်သည့်အချိန်မှသာ တောင်းဆိုသည်။ ဒေါင်းလုပ်များကိုလည်း သင်မဖျက်မချင်း ဤစက်ထဲတွင်ပင် ရှိနေမည်။",
+    " မှ ဖွင့်နှိပ်သည့်အချိန်မှသာ တောင်းဆိုသည်။ ဒေါင်းလုပ်များကိုလည်း သင်မဖျက်မချင်း ဤစက်ထဲတွင်ပင် ရှိနေမည်။",
 
   "route.home.eyebrow": "ပင်မ",
   "route.home.title": "ဓမ္မကို ရှာဖွေတွေ့ရှိပါ",
@@ -354,7 +356,7 @@ const my: Partial<Record<MessageKey, string>> = {
     "ဒေါင်းလုပ်များ၊ အနှစ်သက်ဆုံးများနှင့် မကြာသေးမီက နားထောင်ခဲ့သော တရားတော်များ။",
   "route.settings.eyebrow": "ဦးစားပေးချက်များ",
   "route.settings.title": "နားထောင်ပုံကို ကိုယ်စဉ်းလှော်ပါ",
-  "route.settings.detail": "ဤစက်အတွက် အသွင်အပြင်နှင့် ဖွင့်ချိန် မူလတန်ဖိုးများကို ညှိပါ။",
+  "route.settings.detail": "ဤစက်အတွက် အသွင်အပြင်နှင့် ပြန်ဖွင့်ခြင်း မူလတန်ဖိုးများကို ညှိပါ။",
 
   "back.to": "← {destination} သို့ ပြန်သွားမည်",
   "back.generic": "← နောက်သို့",
@@ -370,14 +372,16 @@ const my: Partial<Record<MessageKey, string>> = {
   "home.welcome.explore": "တရားတော်များ ရှာဖွေမည်",
   "home.welcome.teachers": "ဆရာတော်များကို ကြည့်မည်",
   "home.featured": "အထူးတင်ဆက် ဆရာတော်များ",
-  "home.featured.detail": "နားထောင်စရန် ရွေးချယ်ထားသော ဆရာတော်များ။ တရားတော်များ ကြည့်ရန် နှိပ်ပါ။",
+  "home.featured.detail":
+    "နားထောင်စရန် ရွေးချယ်ထားသော ဆရာတော်များ။ တရားတော်များ ရှာဖွေရန် နှိပ်ပါ။",
   "home.featured.viewAll": "အားလုံးကြည့်မည်",
-  "home.featured.empty": "စာရင်းဇယား အသင့်ဖြစ်သောအခါ ဆရာတော်များ၏ အထူးအပိုင်းကို ဤနေရာတွင် ပြမည်။",
+  "home.featured.empty":
+    "စာရင်းဇယား အဆင်သင့်ဖြစ်သောအခါ ဆရာတော်များ၏ အထူးအပိုင်းကို ဤနေရာတွင် ပြမည်။",
   "home.resumeAt": "{time} တွင် ပြန်စမည်",
-  "home.resumeTrack": "{title} ကို ပြန်စနားထောင်မည်",
+  "home.resumeTrack": "{title} ကို ဆက်နားထောင်မည်",
   "home.pauseTrack": "{title} ကို ခဏရပ်မည်",
-  "home.unsupportedTrack": "{title} (macOS player ဖြင့် ဖွင့်မရ)",
-  "home.unsupportedHint": "ဤဖော်မက်ကို macOS player ဖြင့် ဖွင့်မရနိုင်ပါ။",
+  "home.unsupportedTrack": "{title} (macOS player မှ ပံ့ပိုးမထားပါ)",
+  "home.unsupportedHint": "ဤဖော်မက်ကို macOS player မှ ပံ့ပိုးမထားပါ။",
 
   "search.talks.label": "တရားတော် ရှာဖွေခြင်း",
   "search.talks.placeholder": "ခေါင်းစဉ် သို့မဟုတ် ဆရာတော် ရှာပါ",
@@ -443,7 +447,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "teacherDetail.talks.loading": "တရားတော်များ တင်နေသည်",
   "teacherDetail.pending.title": "နောက်ထပ် တရားတော်များ တင်နေသည်",
   "teacherDetail.pending.detail":
-    "ဤဆရာတော်တွင် တရားတော် {count} ခု မှတ်တမ်းရှိသည်။ အောက်ပါတည်းမှ နောက်ထပ် တင်ပါ။",
+    "ဤဆရာတော်တွင် တရားတော် {count} ခု မှတ်တမ်းရှိသည်။ အောက်တွင်မှ နောက်ထပ် တင်ပါ။",
   "teacherDetail.empty.title": "တရားတော် မတွေ့ပါ",
   "teacherDetail.empty.detail": "ဤဆရာတော်၏ တရားတော်များ စာရင်းဇယားတွင် မရှိပါ။",
 
@@ -460,7 +464,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "library.favorites": "အနှစ်သက်ဆုံးများ",
   "library.history": "မှတ်တမ်း",
   "library.downloads.hint":
-    "ဒေါင်းလုပ်မလုပ်ဘဲလည်း အနီးကပ် သိမ်းထားရန် ရှာဖွေနေစဉ် တရားတော်များကို အနှစ်သက်ဆုံး လုပ်ပါ။",
+    "ဒေါင်းလုပ်မလုပ်ဘဲ အနီးကပ် သိမ်းထားရန် ရှာဖွေနေစဉ် တရားတော်များကို အနှစ်သက်ဆုံး လုပ်ပါ။",
   "library.downloads.loading": "ဒေါင်းလုပ် တရားတော်များ တင်နေသည်",
   "library.downloads.empty.title": "ဒေါင်းလုပ် မရှိသေးပါ",
   "library.downloads.empty.detail":
@@ -470,7 +474,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "library.favorites.saved.detail":
     "သိမ်းထားသော တရားတော်များကို လက်ရှိစာရင်းဇယားတွင် မရနိုင်ပါ။ စာရင်းဇယား အသစ်ရရန် အက်ပ်ကို ပြန်ဖွင့်ပါ။",
   "library.favorites.empty.title": "အနှစ်သက်ဆုံး မရှိသေးပါ",
-  "library.favorites.empty.detail": "ဤနေရာတွင် သိမ်းရန် တရားတော်ရှိ နှလုံးသားသင်္ကေတကို နှိပ်ပါ။",
+  "library.favorites.empty.detail": "ဤနေရာတွင် သိမ်းရန် တရားတော်ရှိ နှလုံးပုံ သင်္ကေတကို နှိပ်ပါ။",
   "library.history.count": "မကြာသေးမီက {count} ဖွင့်ခဲ့သည်။",
   "library.history.empty.title": "ဖွင့်ဖူးခြင်း မရှိသေးပါ",
   "library.history.empty.detail": "သင်စတင်ဖွင့်သော တရားတော်များကို ပြန်သွားရန် ဤနေရာတွင် ပြမည်။",
@@ -481,17 +485,17 @@ const my: Partial<Record<MessageKey, string>> = {
     "အသုံးပြုမှုမျက်နှာပြင်၊ ဂဏန်းများနှင့် ကြာချိန်များအတွက် ဘာသာစကား ရွေးပါ။",
   "settings.language.group": "အက်ပ် ဘာသာစကား",
   "settings.appearance": "အသွင်အပြင်",
-  "settings.appearance.detail": "အလင်း၊ အမှောင် သို့မဟုတ် operating system အလိုက် ရွေးပါ။",
+  "settings.appearance.detail": "အလင်း၊ အမှောင် သို့မဟုတ် လည်ပတ်ရေးစနစ် အလိုက် ရွေးပါ။",
   "settings.appearance.group": "အရောင် အပြင်အဆင်",
   "settings.theme.light": "အလင်း",
   "settings.theme.dark": "အမှောင်",
   "settings.theme.system": "စနစ်အလိုက်",
-  "settings.playback": "ဖွင့်ချိန်",
+  "settings.playback": "ပြန်ဖွင့်ခြင်း",
+  "settings.playback.detail":
+    "မူလ ပြန်ဖွင့်နှုန်းနှင့် စာရင်းဇယား စာမျက်နှာတစ်ခုစီတွင် ပြသမည့် တရားတော် အရေအတွက်ကို ရွေးပါ။",
   "settings.playback.speed": "မူလ အရှိန်",
   "settings.playback.speed.reset": "မူလသို့",
   "settings.playback.limit": "တစ်မျက်နှာလျှင် ပြသမှု အကန့်အသတ်",
-  "settings.playback.limit.detail":
-    "ရှာဖွေခြင်း၊ ဆရာတော်များနှင့် စုစည်းမှုများတွင် တစ်မျက်နှာလျှင် တင်သော တရားတော် အရေအတွက်။",
   "settings.keyboard": "ကီးဘုတ်",
   "settings.keyboard.detail": "နားထောင်နေစဉ် ကီးဘုတ် ဖြတ်လမ်းအနည်းငယ်ကို အက်ပ်က တုံ့ပြန်သည်။",
   "settings.keyboard.view": "ဖြတ်လမ်းများ ကြည့်မည်",
@@ -500,9 +504,9 @@ const my: Partial<Record<MessageKey, string>> = {
   "settings.about.show": "ပြမည်",
   "settings.about.hide": "ဖျောက်မည်",
   "settings.about.body1":
-    "တရားတော်များအတွက် တိတ်ဆိတ်သော desktop စာကြည့်တိုက်။ PolyForm Noncommercial လိုင်စင်။ အကောင့်များ၊ analytics များ၊ telemetry မရှိပါ။",
+    "တရားတော်များအတွက် တိတ်ဆိတ်သော ကွန်ပျူတာ စာကြည့်တိုက်။ PolyForm Noncommercial လိုင်စင်။ အကောင့်များ၊ analytics များ၊ telemetry မရှိပါ။",
   "settings.about.body2":
-    "စာရင်းဇယားသည် အက်ပ်နှင့်အတူ ပါရှိပြီး အက်ပ်ကို update လုပ်သောအခါမှသာ လတ်တလော ဖြစ်သည်။",
+    "စာရင်းဇယားသည် အက်ပ်နှင့်အတူ ပါရှိပြီး အက်ပ်ကို အသစ်ထုတ်သောအခါမှသာ ပြန်လည်လတ်ဆန်းသည်။",
 
   "player.unknownTeacher": "ဆရာတော် မသိရ",
   "player.region": "အသံ player",
@@ -510,17 +514,17 @@ const my: Partial<Record<MessageKey, string>> = {
   "player.dismiss": "ပိတ်မည်",
   "player.connecting": "ချိတ်ဆက်နေသည်…",
   "player.hint": "Space − ဖွင့်/ရပ် · ←/→ − ရှေ့/နောက် · ? − အကူအညီ",
-  "player.hint.compact": "? ကို နှိပ်ပါ",
+  "player.hint.compact": "? နှိပ်ပါ",
   "player.back15": "စက္ကန့် ၁၅ နောက်ပြန်သွားမည်",
   "player.forward15": "စက္ကန့် ၁၅ ရှေ့သွားမည်",
   "player.play": "ဖွင့်မည်",
   "player.pause": "ခဏရပ်မည်",
   "player.connectingTo": "အသံသို့ ချိတ်ဆက်နေသည်",
-  "player.speed": "ဖွင့်နှုန်း",
+  "player.speed": "ပြန်ဖွင့်နှုန်း",
   "player.position": "ဖွင့်နေသော နေရာ",
   "player.position.value": "{duration} ထဲက {current}",
   "player.queue.show": "အစဉ်စာရင်း ကြည့်မည်",
-  "player.queue.showCount": "{count}ပါသော အစဉ်စာရင်း ကြည့်မည်",
+  "player.queue.showCount": "{count} ပါသော အစဉ်စာရင်း ကြည့်မည်",
 
   "queue.label": "ဖွင့်မည့် အစဉ်စာရင်း",
   "queue.title": "နောက်တစ်ခု",
@@ -541,14 +545,15 @@ const my: Partial<Record<MessageKey, string>> = {
   "shortcuts.forward60": "တစ်မိနစ် ရှေ့သွားမည်",
   "shortcuts.next": "အစဉ်စာရင်းရှိ နောက်တစ်ခုကို ဖွင့်မည်",
   "shortcuts.toggleHelp": "ဤစာရင်းကို ပြမည် သို့မဟုတ် ဖျောက်မည်",
-  "shortcuts.toggleSidebar": "ဘေးဘားကို ခေါင်းလိုက်မည် သို့မဟုတ် ပြန်ဖွင့်မည်",
-  "shortcuts.escape": "ဤဒိုင်ယာလော့ သို့မဟုတ် လက်ရှိ overlay ကို ပိတ်မည်",
+  "shortcuts.toggleSidebar": "ဘေးဘားကို ခေါက်မည် သို့မဟုတ် ပြန်ဖွင့်မည်",
+  "shortcuts.escape": "ဤဒိုင်ယာလော့ သို့မဟုတ် လက်ရှိ ဝင်းဒိုးကို ပိတ်မည်",
   "shortcuts.searchNote":
-    "ရှာဖွေမှုကွက်လပ်များသည် တည်းဖြတ်ရန် ကီးဘုတ်ကို ဆက်ထားသည်။ ရိုက်ထားသည်ကို ဖျက်ရန် ရှာဖွေမှုကွက်လပ်အတွင်းတွင် {key} ကို နှိပ်ပါ။",
+    "ရှာဖွေမှုကွက်လပ်များတွင် တည်းဖြတ်ရန် ကီးဘုတ်ကို ဆက်လက် အသုံးပြုနိုင်သည်။ ရိုက်ထားသည်ကို ဖျက်ရန် ရှာဖွေမှုကွက်လပ်အတွင်းတွင် {key} ကို နှိပ်ပါ။",
 
   "track.play": "{title} ကို ဖွင့်မည်",
   "track.pause": "{title} ကို ခဏရပ်မည်",
   "track.connecting": "{title} သို့ ချိတ်ဆက်နေသည်",
+  "track.menu": "တရားတော် လုပ်ဆောင်ချက်များ",
   "track.enqueue": "အစဉ်ထည့်မည်",
   "track.favorite.add": "အနှစ်သက်ဆုံးများ ထည့်မည်",
   "track.favorite.remove": "အနှစ်သက်ဆုံးများမှ ဖယ်မည်",
@@ -559,7 +564,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "track.download.progress.percent": "{percent} ရာခိုင်နှုန်း ဒေါင်းလုပ် ဆွဲပြီး",
   "track.badge.video": "ဗီဒီယို",
   "track.badge.wma": "WMA ဖွင့်မရ",
-  "track.badge.unavailable": "ဖွင့်မရ",
+  "track.badge.unavailable": "ရင်းမြစ် မရနိုင်",
   "track.language.myanmar": "မြန်မာ",
   "track.language.english": "အင်္ဂလိပ်",
   "track.language.unknown": "ဘာသာစကား",
@@ -572,7 +577,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "progress.pagination": "{noun} စာမျက်နှာသွားလာမှု",
 
   "async.loading": "အကြောင်းအရာ တင်နေသည်",
-  "async.error.title": "ဤစာမျက်နှာကို တစ်ဖန် ကြိုးစားရ လိုအပ်သည်",
+  "async.error.title": "ဤစာမျက်နှာကို ထပ်မံ ကြိုးစားရန် လိုအပ်သည်",
   "async.retry": "ထပ်ကြိုးစားကြည့်မည်",
 
   "video.nowPlaying": "ဖွင့်နေသည် · ဗီဒီယို",
@@ -594,13 +599,13 @@ const my: Partial<Record<MessageKey, string>> = {
   "video.play": "ဗီဒီယို ဖွင့်မည်",
 
   "error.media.untrusted": "ဤမီဒီယာ ရင်းမြစ်ကို ယုံကြည်မရပါ။",
-  "error.media.unsupported": "ဤမီဒီယာ ဖော်မက်ကို macOS player ဖြင့် ဖွင့်မရနိုင်ပါ။",
+  "error.media.unsupported": "ဤမီဒီယာ ဖော်မက်ကို macOS player မှ ပံ့ပိုးမထားပါ။",
   "error.video.start": "ဗီဒီယိုကို စဖွင့်မရပါ။",
   "error.audio.start": "အသံကို စဖွင့်မရပါ။",
   "error.video.unavailable": "ဗီဒီယိုကို Dhamma Download မှ မရနိုင်ပါ။",
   "error.audio.unavailable": "အသံကို Dhamma Download မှ မရနိုင်ပါ။",
   "error.catalogue.unavailable": "စာရင်းဇယားကို မရနိုင်ပါ။",
-  "error.catalogue.load": "ဓမ္မစာရင်းဇယားကို တင်မရနိုင်ပါ။",
+  "error.catalogue.load": "စာရင်းဇယားကို မတင်နိုင်ပါ။",
 
   "noun.talks": "တရားတော်",
   "noun.collections": "စုစည်းမှု",

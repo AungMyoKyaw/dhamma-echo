@@ -45,22 +45,16 @@
 </script>
 
 <section class="space-y-5">
-  <form
-    class="flex flex-wrap items-end gap-3 rounded-card border border-app-border bg-app-surface p-4"
-    onsubmit={(event) => void submit(event)}
-  >
+  <form class="flex flex-wrap items-center gap-3" onsubmit={(event) => void submit(event)}>
     <TextSearchField
       label={t(locale, "search.collections.label")}
       placeholder={t(locale, "search.collections.placeholder")}
       value={state.collectionSearch.query}
-      visibleLabel
       className="min-w-[260px] flex-[1_1_360px]"
       clearLabel={t(locale, "search.collections.clearSearch")}
       onclear={clear}
     /><label class="min-w-[190px] flex-[0_1_240px]"
-      ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
-        >{t(locale, "search.collections.teacher")}</span
-      ><select
+      ><span class="sr-only">{t(locale, "search.collections.teacher")}</span><select
         class="field-select h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="teacherId"
         value={state.collectionSearch.teacherId === null
@@ -71,9 +65,6 @@
             >{teacher.name}</option
           >{/each}</select
       ></label
-    ><button
-      class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
-      type="submit">{t(locale, "search.submit")}</button
     >
   </form>
   {#if hasFilters}<div class="flex items-center gap-2">
@@ -123,7 +114,7 @@
   {:else}<div class="space-y-7">
       {#each groups as group (group.key)}<section>
           <h2 class="mb-3 text-lg font-bold">{group.name}</h2>
-          <div class="grid auto-rows-fr grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
             {#each group.items as collection (collection.id)}<CollectionCard
                 {collection}
                 {state}

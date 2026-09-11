@@ -67,23 +67,17 @@
 </script>
 
 <section class="space-y-5">
-  <form
-    class="flex flex-wrap items-end gap-3 rounded-card border border-app-border bg-app-surface p-4"
-    onsubmit={(event) => void submit(event)}
-  >
+  <form class="flex flex-wrap items-center gap-3" onsubmit={(event) => void submit(event)}>
     <TextSearchField
       label={t(locale, "search.talks.label")}
       placeholder={t(locale, "search.talks.placeholder")}
       value={state.search.query}
-      visibleLabel
       className="min-w-[280px] flex-[1_1_360px]"
       clearLabel={t(locale, "search.talks.clear")}
       onclear={clearQuery}
     />
     <label class="min-w-40 flex-[1_1_160px]"
-      ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase"
-        >{t(locale, "search.language")}</span
-      ><select
+      ><span class="sr-only">{t(locale, "search.language")}</span><select
         class="field-select h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="language"
         value={state.search.language}
@@ -93,9 +87,7 @@
       ></label
     >
     <label class="min-w-36 flex-[1_1_140px]"
-      ><span class="mb-1.5 block text-xs font-bold tracking-wide text-app-muted uppercase">
-        {t(locale, "search.format")}</span
-      ><select
+      ><span class="sr-only">{t(locale, "search.format")}</span><select
         class="field-select h-12 w-full rounded-control border border-app-border bg-app-bg px-4 text-sm"
         name="format"
         value={state.search.format}
@@ -105,10 +97,6 @@
           >{t(locale, "search.format.mp4")}</option
         ><option value="wmv">WMV</option></select
       ></label
-    >
-    <button
-      class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
-      type="submit">{t(locale, "search.submit")}</button
     >
     {#if state.categories.status === "ready"}<fieldset class="basis-full flex flex-wrap gap-2">
         <legend class="sr-only">{t(locale, "search.category.legend")}</legend>
@@ -138,18 +126,18 @@
       aria-label={t(locale, "search.filters.active")}
     >
       {#if state.search.query.length > 0}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app"
         >
           {t(locale, "search.filters.query", { query: state.search.query })}<button
             type="button"
             onclick={() => void clearQuery()}
-            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-app-surface"
             aria-label={t(locale, "search.filters.clearQuery")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if state.search.teacherId !== null}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app"
         >
           {t(locale, "search.filters.teacher", { name: teacherFilterName(state) })}<button
             type="button"
@@ -157,13 +145,13 @@
               app.dispatch({ type: "set-teacher", teacherId: null });
               void app.search();
             }}
-            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-app-surface"
             aria-label={t(locale, "search.filters.clearTeacher")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if category !== undefined}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app"
         >
           {t(locale, "search.filters.category", { name: category.name })}<button
             type="button"
@@ -171,13 +159,13 @@
               app.dispatch({ type: "clear-category" });
               void app.search();
             }}
-            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-app-surface"
             aria-label={t(locale, "search.filters.clearCategory")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >
         </div>{/if}
       {#if state.search.collectionId !== null}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full bg-app-primary/10 px-4 text-xs leading-normal font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app"
         >
           {t(locale, "search.filters.collection")}<button
             type="button"
@@ -185,7 +173,7 @@
               app.dispatch({ type: "clear-collection" });
               void app.search();
             }}
-            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-[color-mix(in_srgb,var(--color-app-primary)_14%,transparent)]"
+            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-app-surface"
             aria-label={t(locale, "search.filters.clearCollection")}
             ><span class="block size-3"><Icon name="close" /></span></button
           >

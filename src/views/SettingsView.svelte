@@ -71,7 +71,10 @@
   </div>
   <div class="rounded-card border border-app-border bg-app-surface p-6">
     <h2 class="text-lg font-bold">{t(locale, "settings.playback")}</h2>
-    <div class="mt-5 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+    <p class="mt-1 text-sm text-app-muted">
+      {t(locale, "settings.playback.detail")}
+    </p>
+    <div class="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
       <label class="text-sm font-bold"
         >{t(locale, "settings.playback.speed")}
         <div class="mt-1 flex items-center gap-2">
@@ -91,10 +94,7 @@
         </div></label
       >
       <label class="text-sm font-bold"
-        >{t(locale, "settings.playback.limit")}<span
-          class="mt-1 block text-xs font-normal text-app-muted"
-          >{t(locale, "settings.playback.limit.detail")}</span
-        ><select
+        >{t(locale, "settings.playback.limit")}<select
           class="field-select mt-1 h-12 w-full rounded-control border border-app-border bg-app-bg px-4 font-normal"
           value={String(appState.settings.browseLimit)}
           onchange={(event) =>

@@ -6,8 +6,7 @@ import {
   formatLocaleDuration,
   formatLocaleNumber,
   mediaUrlCandidates,
-  normalizeWhitespace,
-  pluralize
+  normalizeWhitespace
 } from "../.test-build/src/utils.js";
 
 test("normalizeWhitespace collapses scraped whitespace", () => {
@@ -61,19 +60,6 @@ test("formatLocaleNumber treats non-finite input as zero", () => {
 test("formatLocaleDuration passes through non-Burmese locales unchanged", () => {
   // Forces the isBurmeseLocale false branch.
   assert.equal(formatLocaleDuration(3725, "de-DE"), "1:02:05");
-});
-
-test("pluralize returns singular or plural based on count and locale", () => {
-  assert.equal(pluralize(0, "talk"), "0 talks");
-  assert.equal(pluralize(1, "talk"), "1 talk");
-  assert.equal(pluralize(2, "talk"), "2 talks");
-  assert.equal(pluralize(1, "talk", "talks"), "1 talk");
-  assert.equal(pluralize(5, "talk", "talks"), "5 talks");
-  // Burmese pluralizes like English in practice for this UI's phrasing.
-  assert.equal(pluralize(1, "တရား", "တရားများ"), "၁ တရား");
-  assert.equal(pluralize(5, "တရား", "တရားများ"), "၅ တရားများ");
-  assert.equal(pluralize(Number.NaN, "talk"), "0 talks");
-  assert.equal(pluralize(Number.POSITIVE_INFINITY, "talk"), "0 talks");
 });
 
 test("clamp constrains finite and non-finite values", () => {

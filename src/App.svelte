@@ -100,7 +100,7 @@
     videoPlayerOpen
       ? "pb-[38rem] max-[1040px]:pb-[34rem]"
       : showAudioFooter
-        ? "pb-28 max-[1040px]:pb-40"
+        ? "pb-[calc(var(--player-height)+24px)]"
         : "pb-8"
   );
 </script>

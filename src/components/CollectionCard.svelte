@@ -17,11 +17,11 @@
 </script>
 
 <button
-  class="group flex h-full min-w-0 flex-col gap-3 overflow-hidden rounded-card border border-app-border bg-app-surface p-4 text-left transition-[border-color,background-color] duration-150 hover:border-app-primary/50 hover:bg-app-soft/35 focus-visible:border-app-primary/60"
+  class="group flex min-w-0 flex-col gap-3 overflow-hidden rounded-card border border-app-border bg-app-surface p-4 text-left transition-[border-color,background-color] duration-150 hover:border-app-primary/50 hover:bg-app-soft/35 focus-visible:border-app-primary/60"
   type="button"
   onclick={() => void onselect(collection)}
 >
-  <div class="flex flex-1 flex-col gap-2">
+  <div class="flex flex-col gap-2">
     <p
       class="line-clamp-3 break-words font-bold leading-7 {myanmar ? 'myanmar-text' : ''}"
       lang={myanmar ? "my" : undefined}
@@ -35,7 +35,7 @@
         {collection.teacherName || t(state.settings.locale, "collections.unknownTeacher")}
       </p>{/if}
   </div>
-  <p class="text-xs font-bold text-app-primary tabular-nums">
+  <p class="text-xs font-bold text-app-muted tabular-nums">
     {countLabel(state.settings.locale, "talk", collection.audioCount)}
   </p>
 </button>

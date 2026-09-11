@@ -45,22 +45,15 @@
     detail={t(locale, "teachers.empty.detail")}
   />
 {:else}<section class="space-y-5">
-    <form
-      class="flex flex-wrap items-end gap-3 rounded-card border border-app-border bg-app-surface p-4"
-      onsubmit={(event) => void submit(event)}
-    >
+    <form class="flex flex-wrap items-center gap-3" onsubmit={(event) => void submit(event)}>
       <TextSearchField
         label={t(locale, "search.teachers.label")}
         placeholder={t(locale, "search.teachers.placeholder")}
         value={state.teacherQuery}
-        visibleLabel
         className="min-w-[260px] flex-[1_1_360px]"
         clearLabel={t(locale, "search.teachers.clear")}
         onclear={clear}
-      /><button
-        class="inline-flex h-12 min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
-        type="submit">{t(locale, "search.submit")}</button
-      >
+      />
     </form>
     {#if searching && results.length === 0}<AsyncState
         {locale}

@@ -80,7 +80,7 @@
             onclick={() => go("explore")}>{t(locale, "home.welcome.explore")}</button
           >
           <button
-            class="inline-flex min-h-11 items-center justify-center rounded-control border border-app-border bg-transparent px-5 text-sm leading-normal font-bold text-app-primary transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft"
+            class="inline-flex min-h-11 items-center justify-center rounded-control border border-app-border bg-transparent px-5 text-sm leading-normal font-bold text-app transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft"
             type="button"
             onclick={() => go("teachers")}>{t(locale, "home.welcome.teachers")}</button
           >
@@ -160,7 +160,7 @@
           </p>
         </div>
         <button
-          class="inline-flex min-h-11 items-center text-sm font-bold text-app-primary"
+          class="inline-flex min-h-11 items-center text-sm font-bold text-app underline-offset-4 hover:underline"
           type="button"
           onclick={() => go("teachers")}>{t(locale, "home.featured.viewAll")}</button
         >

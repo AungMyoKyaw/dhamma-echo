@@ -43,9 +43,9 @@
     aria-label={t(locale, "player.region")}
   >
     <div
-      class="grid grid-cols-[minmax(180px,0.9fr)_minmax(340px,1.45fr)_minmax(210px,0.9fr)] items-center gap-5 max-[1180px]:grid-cols-[minmax(150px,0.75fr)_minmax(300px,1.35fr)_minmax(180px,auto)] max-[1180px]:gap-4 max-[1040px]:grid-cols-[minmax(0,1fr)_auto] max-[1040px]:gap-x-3 max-[1040px]:gap-y-2"
+      class="grid grid-cols-[minmax(180px,0.9fr)_minmax(340px,1.45fr)_minmax(210px,0.9fr)] items-start gap-5 max-[1180px]:grid-cols-[minmax(150px,0.75fr)_minmax(300px,1.35fr)_minmax(180px,auto)] max-[1180px]:gap-4 max-[1040px]:grid-cols-[minmax(0,1fr)_auto] max-[1040px]:gap-x-3 max-[1040px]:gap-y-2"
     >
-      <div class="player-track min-w-0" aria-live="polite">
+      <div class="player-track min-w-0 self-center" aria-live="polite">
         <p
           class="line-clamp-2 break-words text-sm font-bold {isMyanmarText(track.title)
             ? 'myanmar-text'
@@ -90,7 +90,9 @@
             >{/if}
         </div>
       </div>
-      <div class="min-w-0 max-[1040px]:col-span-2 max-[1040px]:row-start-2">
+      <div
+        class="player-transport grid min-w-0 grid-rows-[3rem_auto] gap-y-[0.3rem] self-start max-[1040px]:col-span-2 max-[1040px]:row-start-2"
+      >
         <div class="flex items-center justify-center gap-2" aria-label="Playback controls">
           <button
             class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed disabled:opacity-45 [&>span]:block [&>span]:size-5 [&_svg]:size-full"
@@ -123,7 +125,7 @@
           >
         </div>
         <div
-          class="mt-[0.3rem] grid grid-cols-[3.4rem_minmax(90px,1fr)_3.4rem] items-center gap-[0.55rem] text-xs text-app-muted tabular-nums max-[1040px]:grid-cols-[3rem_minmax(120px,1fr)_3rem] max-[1040px]:gap-2 [&>span:first-child]:text-right"
+          class="grid grid-cols-[3.4rem_minmax(90px,1fr)_3.4rem] items-center gap-[0.55rem] text-xs text-app-muted tabular-nums max-[1040px]:grid-cols-[3rem_minmax(120px,1fr)_3rem] max-[1040px]:gap-2 [&>span:first-child]:text-right"
         >
           <span>{formatLocaleDuration(state.player.currentTime, locale)}</span><input
             class="w-full min-w-0 accent-app-primary"
@@ -146,7 +148,7 @@
         </div>
       </div>
       <div
-        class="flex min-w-0 items-center justify-end gap-[0.55rem] max-[1040px]:col-start-2 max-[1040px]:row-start-1"
+        class="player-actions flex min-w-0 items-center justify-end gap-[0.55rem] self-start max-[1040px]:col-start-2 max-[1040px]:row-start-1"
       >
         <label title={t(locale, "player.speed")}
           ><span class="sr-only">{t(locale, "player.speed")}</span><select
