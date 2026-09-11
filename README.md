@@ -215,7 +215,7 @@ bun run site:verify
 
 - The SQLite catalogue is bundled as an immutable application resource.
 - Favorites, history, queue, settings, and resume positions are stored locally.
-- Myanmar text uses installed system fonts; no font files are bundled.
+- Source Serif 4 (display font for page and section headings) is bundled as a variable WOFF2 in `src/assets/fonts/`. Myanmar text continues to use installed system fonts (Noto Sans Myanmar, Myanmar Text, Pyidaungsu); those are not bundled.
 - Media network access is restricted to the approved Dhamma Download hosts.
 
 ## Data and licensing
@@ -232,7 +232,7 @@ Check the source format first. WMA and WMV remain searchable but are not playabl
 
 ### Myanmar text uses an unexpected font
 
-Install or enable a Unicode Myanmar font such as Noto Sans Myanmar, Myanmar Text, or Pyidaungsu. The application deliberately does not bundle font files.
+Install or enable a Unicode Myanmar font such as Noto Sans Myanmar, Myanmar Text, or Pyidaungsu. The application deliberately does not bundle Myanmar fonts.
 
 ### Native build fails on Linux
 
