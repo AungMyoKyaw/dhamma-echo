@@ -1,18 +1,19 @@
 ---
+version: alpha
 name: Dhamma Echo
-description: A quiet editorial desktop listening room for Dhamma talks, built around a warm rust/olive palette, generous spacing, and a single local-first font stack that handles English and Myanmar.
+description: A quiet desktop listening room for Dhamma talks — editorial paperback discipline on a warm oat canvas, with a single terracotta-leaning rust as the only interactive accent.
 colors:
-  canvas: "#fcf9f2"
+  canvas: "#f7f3ea"
   surface: "#ffffff"
-  soft: "#f0eee7"
+  soft: "#efece4"
   ink: "#2e2e2a"
   ink-muted: "#565550"
   border: "#d5d1c8"
-  primary: "#8c3f08"
-  primary-strong: "#6d2f00"
+  primary: "#7a3508"
+  primary-strong: "#5e2904"
   on-primary: "#ffffff"
-  secondary: "#485b37"
-  tertiary: "#6e5014"
+  secondary: "#3d4d30"
+  tertiary: "#634a16"
   error: "#8d3531"
   error-soft: "#f9e8e6"
   canvas-dark: "#181714"
@@ -22,12 +23,24 @@ colors:
   ink-muted-dark: "#b8b0a4"
   border-dark: "#464138"
   primary-dark: "#d8894d"
+  primary-strong-dark: "#b87440"
   on-primary-dark: "#181714"
   secondary-dark: "#9bab82"
-  tertiary-dark: "#d0aa62"
+  tertiary-dark: "#c9a45e"
   error-dark: "#e2938c"
   error-soft-dark: "#35201f"
 typography:
+  display:
+    fontFamily: "'Source Serif 4', 'Source Serif Pro', Georgia, serif"
+    fontSize: "1.875rem"
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "-0.01em"
+  heading:
+    fontFamily: "'Source Serif 4', 'Source Serif Pro', Georgia, serif"
+    fontSize: "1.5rem"
+    fontWeight: 600
+    lineHeight: 1.2
   body:
     fontFamily: "Inter, 'Noto Sans Myanmar', 'Myanmar Text', 'Pyidaungsu', system-ui, sans-serif"
     fontSize: "0.875rem"
@@ -50,18 +63,16 @@ components:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     rounded: "{rounded.control}"
-    typography: "{typography.body}"
     padding: "10px 16px"
   button-secondary:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink-muted}"
     rounded: "{rounded.control}"
-    typography: "{typography.body}"
+    padding: "10px 16px"
   input-field:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     rounded: "{rounded.control}"
-    typography: "{typography.body}"
     padding: "12px 16px"
   card-surface:
     backgroundColor: "{colors.surface}"
@@ -73,14 +84,17 @@ components:
     backgroundColor: "{colors.soft}"
     textColor: "{colors.ink-muted}"
     rounded: "{rounded.pill}"
+    padding: "6px 12px"
   pill-active:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     rounded: "{rounded.pill}"
+    padding: "6px 12px"
   pill-warning:
     backgroundColor: "{colors.error-soft}"
     textColor: "{colors.error}"
     rounded: "{rounded.pill}"
+    padding: "6px 12px"
   track-row-current:
     backgroundColor: "color-mix(in srgb, {colors.primary} 5%, transparent)"
     rounded: "{rounded.control}"
@@ -92,6 +106,7 @@ components:
     backgroundColor: "{colors.error-soft}"
     textColor: "{colors.error}"
     rounded: "{rounded.card}"
+    padding: "16px"
   sidebar-active:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
@@ -102,6 +117,10 @@ components:
   hover-primary:
     backgroundColor: "{colors.primary-strong}"
     textColor: "{colors.on-primary}"
+    rounded: "{rounded.control}"
+  hover-primary-dark:
+    backgroundColor: "{colors.primary-strong-dark}"
+    textColor: "{colors.on-primary-dark}"
     rounded: "{rounded.control}"
   dark-canvas:
     backgroundColor: "{colors.canvas-dark}"
@@ -131,17 +150,17 @@ components:
 
 ## Overview
 
-A quiet editorial listening room. The interface behaves like a well-kept reading desk: warm parchment canvas, single rust accent for the one action that matters, and a single sans-serif voice that reads in English and Burmese without changing personality. Everything in the layout earns its place by serving listening — content hierarchy and playback feedback come first, visual personality comes from generous spacing, a small radius grammar, and the rust/olive palette.
+The interface reads like a 1970s Burmese monastery library shelf, rendered in editorial Penguin paperback discipline: warm oat parchment, single accent color for the one action that matters, and a two-voice typography (display serif, body sans) that handles English and Burmese without changing personality. Everything in the layout earns its place by serving listening — content hierarchy and playback feedback come first; visual personality comes from generous spacing, a small radius grammar, and the discipline of _one accent, one rhythm_. The catalogue is the hero. There is no hero moment.
 
 ## Colors
 
-The palette is a warm editorial scheme with two accents and a single error signal. It follows the system theme by default (`prefers-color-scheme: dark` lifts the same hues onto a deep charcoal canvas) and can be overridden in Settings.
+The palette is a quiet editorial scheme with two accents and a single error signal. The rust is terracotta-leaning — deeper than the bright rust typical of editorial design, with a warmth that sits naturally on the oat ground rather than fighting it.
 
 **Canvas and surfaces**
 
-- **canvas** (`#fcf9f2`) is the background the application lives on — the warm parchment tone you see behind every panel. Use it for the page background, for inputs, and for empty regions of a card. Never paint a button or a strong text color with it.
+- **canvas** (`#f7f3ea`) is the warm oat parchment the application lives on. Use it for the page background, for inputs, and for empty regions of a card. Never paint a button or a strong text color with it.
 - **surface** (`#ffffff`) is the slightly lifted paper that holds list rows, cards, and the audio player. Reserve it for grouped content; do not stack surfaces on top of surfaces.
-- **soft** (`#f0eee7`) is the secondary panel — sidebar privacy callouts, mute filter pills, and skeleton placeholders. It is the only "muted selection" surface, used for non-current state emphasis.
+- **soft** (`#efece4`) is the secondary panel — sidebar privacy callouts, mute filter pills, and skeleton placeholders. It is the only "muted selection" surface, used for non-current state emphasis.
 
 **Ink**
 
@@ -151,34 +170,45 @@ The palette is a warm editorial scheme with two accents and a single error signa
 
 **Accents**
 
-- **primary** (`#8c3f08`) is rust — the single accent that drives interaction. It paints the sidebar's active route, the play button, the current track row's tint and ring, and primary submit buttons. It never paints a passive surface, never paints text on canvas or surface, and never appears as decoration (no underlines, no eyebrows, no glows, no gradients).
-- **primary-strong** (`#6d2f00`) is the hover state of primary. Use it only on `:hover` / `:active` of a primary button, never as a standalone token.
+- **primary** (`#7a3508`) is terracotta rust — the single accent that drives interaction. It paints the sidebar's active route, the play button, the current track row's tint and ring, and primary submit buttons. It never paints a passive surface, never paints text on canvas or surface, and never appears as decoration (no underlines, no eyebrows, no glows, no gradients). It is also the only color that wears a shadow.
+- **primary-strong** (`#5e2904`) is the hover state of primary. Use it only on `:hover` / `:active` of a primary button, never as a standalone token.
 - **on-primary** (`#ffffff`) is the ink that sits on primary surfaces. Use it only on top of `primary` or `primary-strong`.
-- **secondary** (`#485b37`) is olive — the privacy and library reassurance color. It appears once, inside a small leaf-icon callout in the sidebar, and on nothing else. It is not a second brand color.
-- **tertiary** (`#6e5014`) is a quiet brass reserved for occasional eyebrow text or status badges where olive is wrong and rust would shout. Use sparingly.
+- **secondary** (`#3d4d30`) is forest-moss olive — the privacy and library reassurance color. It appears once, inside a small leaf-icon callout in the sidebar, and on nothing else. It is not a second brand color.
+- **tertiary** (`#634a16`) is cooled bronze brass, reserved for occasional eyebrow text or status badges where olive is wrong and rust would shout. Use sparingly.
 
 **Error**
 
 - **error** (`#8d3531`) and **error-soft** (`#f9e8e6`) are the only failure colors. Error copy in the player, error states on async surfaces, and the inline "Retry" pill all use them. Never pair error with rust — the user needs to read the difference.
 
-**Dark mode** mirrors the same roles onto a deep canvas (`#181714`) with a warmer, brighter rust (`#d8894d`) so it reads on the darker ground. The dark `ink` lifts to `#eee9df`; `ink-muted` to `#b8b0a4`; `border` to `#464138`. Roles do not change — only the values do.
+**Dark mode** mirrors the same roles onto a deep charcoal canvas (`#181714`) with a brighter, warmer rust (`#d8894d`) so it reads on the darker ground. The dark `ink` lifts to `#eee9df`; `ink-muted` to `#b8b0a4`; `border` to `#464138`. Roles do not change — only the values do.
 
 ## Typography
 
-The product uses a single local-first sans-serif voice. One font stack, one weight ladder, one scale.
+The product uses two voices: a display serif for editorial weight, and a single sans-serif for body, UI, and Burmese script.
 
-**Stack.** `Inter`, then installed Myanmar fonts (`Noto Sans Myanmar`, `Myanmar Text`, `Pyidaungsu`), then `system-ui`. The system stack is fallback, not a second voice — Myanmar fonts are expected to be installed on the device, and the body does not reflow noticeably when they engage.
+**Required fonts.** The downstream app rewrite must bundle or load these; this file assumes they are present.
 
-**Roles.** Four text roles carry the entire interface.
+- **Source Serif 4** — display only. Never appears in body, UI, labels, or buttons.
+- **Inter** — body, h3, UI labels, captions, and English headings.
+- **Noto Sans Myanmar**, **Myanmar Text**, **Pyidaungsu** — Burmese mirrors. Expected to be installed on the device; the body does not reflow noticeably when they engage.
 
-- **h1** (page title) — 30px / 700, tight tracking, balanced wrap. One per route, lives in the Header component. Drops to 28px below the 1040px breakpoint.
-- **h2** (section title) — 24px / 700. "Continue listening", "Featured teachers", the live catalogue heading. Never used inline.
-- **h3** (item title in a list) — 18px / 700. Track titles, teacher names on detail pages.
-- **body** (default reading text) — 14px / 400. Captions beneath titles use the same family at 12px / 600.
+**Stack.** Display and headings use `'Source Serif 4', 'Source Serif Pro', Georgia, serif`. Everything else uses `Inter, 'Noto Sans Myanmar', 'Myanmar Text', 'Pyidaungsu', system-ui, sans-serif`. The system stack is fallback, not a second voice.
 
-**Myanmar treatment.** Whenever the content contains Burmese characters (the regex `[\u1000-\u109F]` in `src/ui.ts`), the text gets `lang="my"` and a `.myanmar-text` class that increases line-height to 1.8, prevents intra-word breaks (`word-break: keep-all`, `overflow-wrap: normal`), applies `line-break: auto`, and balances the wrap. This is not decoration; Burmese typography breaks badly under Latin defaults. The class is the only place that touches `line-break`, `overflow-wrap`, or `word-break`.
+**Roles.** Four text roles carry the interface.
 
-**What does not exist.** No italics anywhere — emphasis comes from weight, color, and size, not slant. No display serif, no monospace body, no all-caps body. The `tabular-nums` Tailwind utility appears only on the player timestamps and on talk counts (so columns of numbers align); it is never a typographic style choice. Headings and long titles use `text-wrap: balance` so they do not break on a single awkward word.
+- **display** (h1 — page title) — Source Serif 4 at 600 weight, tight tracking (`-0.01em`), balanced wrap. Default 30px; drops to 28px below the 1040px breakpoint. One per route, lives in the Header component.
+- **heading** (h2 — section title) — Source Serif 4 at 600 weight, default 24px. "Continue listening," "Featured teachers," the live catalogue heading. Never used inline.
+- **body** (default reading text, h3, UI labels) — Inter 14px / 400. h3 escalates to 18px / 600 for track titles and teacher names on detail pages. Captions under titles use Inter at 12px / 600.
+
+**Myanmar treatment.** Whenever content contains Burmese characters (the regex `[\u1000-\u109F]` in `src/ui.ts`), the text gets `lang="my"` and a `.myanmar-text` class that increases line-height to 1.8, prevents intra-word breaks (`word-break: keep-all`, `overflow-wrap: normal`), applies `line-break: auto`, and balances the wrap. This is not decoration; Burmese typography breaks badly under Latin defaults. The class is the only place that touches `line-break`, `overflow-wrap`, or `word-break`.
+
+**What does not exist.**
+
+- No italics anywhere — emphasis comes from weight, color, and size, not slant.
+- No serif in body, UI, labels, captions, or buttons. The display serif appears only in h1 and h2.
+- No monospace body.
+- No all-caps body. The `tabular-nums` Tailwind utility appears only on player timestamps and talk counts (so columns of numbers align); it is never a typographic style choice.
+- Headings and long titles use `text-wrap: balance` so they do not break on a single awkward word.
 
 **Focus.** All interactive elements show a 3px outline at `color-mix(in srgb, var(--color-app-primary) 55%, transparent)` with a 3px offset on `:focus-visible`. There is no other focus style.
 
@@ -249,6 +279,7 @@ There is no square corner anywhere. There are no squircles, no asymmetric radii.
 **Do**
 
 - Use rust for the one thing the user needs to do right now — play, search, the active route, the current row. Keep it single-purpose.
+- Reserve Source Serif 4 for h1 and h2 only. It never appears in body, UI labels, captions, or buttons.
 - Reach for the muted ink and the soft surface before reaching for a second color. The palette is two accents, not five.
 - Switch the typography voice with `lang="my"` and the `.myanmar-text` class the moment Burmese characters appear. Never let Burmese fall onto Latin defaults.
 - Keep list rows inside a single card with shared borders. Do not give each row its own card.
@@ -256,18 +287,24 @@ There is no square corner anywhere. There are no squircles, no asymmetric radii.
 - Apply the focus ring (`color-mix` primary at 55%, 3px, 3px offset) to every interactive element on `:focus-visible`. It is the only focus style.
 - Show loading, empty, and error states in the same place content would sit, using the `AsyncState` component. Never let the catalogue silently stay on the previous result.
 - Honor `prefers-reduced-motion`: collapse the skeleton pulse, the button press scale, and the hover lift into instant transitions.
+- Verify dark-mode contrast for every new light-mode pairing. The dark palette is a mirror, not an afterthought.
+- Treat the catalogue as the hero. There is no hero moment on any route.
+- When in doubt, reach for `ink-muted` and `soft` before reaching for `tertiary` brass or `secondary` olive. Brass and olive are not for general use.
+- Trust the radius grammar. 10 for controls, 14 for cards, full for pills. No exceptions.
 
 **Don't**
 
-- Don't add a hero moment to the title page, the route header, or any section. The product has no hero. The catalogue is the hero.
+- Don't add a hero moment to the title page, the route header, or any section. The catalogue is the hero.
 - Don't use gradients anywhere — not on text, not on buttons, not on cards, not on the player, not on backgrounds.
 - Don't use glassmorphism, blur, or translucency on the sidebar, header, cards, or the player. Surfaces are opaque.
 - Don't paint text, eyebrows, or section labels in rust. Rust is for action and selection only. Use weight and ink-muted for hierarchy.
 - Don't add drop shadows to cards, teacher cards, collection cards, or list rows. Cards are flat. The only shadows are the player's upward lift and the primary play button's colored lift.
 - Don't use a colored side stripe to indicate the active sidebar item, the current track, or any selected state. Use full-surface tint and inset ring.
-- Don't introduce italics, display serifs, or monospace body text. Emphasis comes from weight and color, not from a second voice.
+- Don't introduce italics, display serifs in body, or monospace body text. Emphasis comes from weight and color, not from a second voice.
 - Don't widen the radius grammar. Three radii (10px control, 14px card, full pill) — no others. No square corners, no asymmetric radii.
 - Don't animate decorative motion. The only animation in the interface is the loading pulse, the hover/active state changes, and the range scrubber's filled portion.
 - Don't reorder the catalogue silently to surface featured content. Featured teachers live in their own labelled section; the grid itself sorts by an intrinsic signal.
 - Don't break the layout below 860px. The shell, sidebar, header, and a usable player must remain operable at the minimum supported window.
 - Don't widen the CSP or introduce a second domain to the trusted media allowlist without an explicit design decision.
+- Don't introduce grain, paper-fiber, or any decorative surface texture on canvas, surface, or soft. The interface is untextured.
+- Don't use Source Serif 4 (or any serif) for UI labels, captions, buttons, or any role below h2. Serif is editorial weight, not UI voice.
