@@ -81,6 +81,19 @@
       event.preventDefault();
       app.setSidebarCollapsed(!appState.ui.sidebarCollapsed);
     }
+    // macOS uses Cmd (metaKey); Windows and Linux use Ctrl. The cheatsheet
+    // renders the same binding with the platform-correct modifier glyph.
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
+      event.preventDefault();
+      const searchInput = globalThis.document.querySelector<HTMLInputElement>('input[name="query"]');
+      searchInput?.focus();
+      return;
+    }
+    if ((event.metaKey || event.ctrlKey) && event.key === ",") {
+      event.preventDefault();
+      app.dispatch({ type: "navigate", route: "settings" });
+      return;
+    }
   }
 
   function scrollContentFromPlayer(event: WheelEvent): void {

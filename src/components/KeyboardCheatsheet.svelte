@@ -4,18 +4,28 @@
   import Icon from "./Icon.svelte";
   let { locale, onclose }: { locale: AppLocale; onclose: () => void } = $props();
   let dialog: HTMLDialogElement;
-  const shortcuts: { keys: string[]; action: MessageKey }[] = [
-    { keys: ["Space"], action: "shortcuts.playPause" },
-    { keys: ["←"], action: "shortcuts.back15" },
-    { keys: ["Shift", "←"], action: "shortcuts.back60" },
-    { keys: ["→"], action: "shortcuts.forward15" },
-    { keys: ["Shift", "→"], action: "shortcuts.forward60" },
-    { keys: ["N"], action: "shortcuts.next" },
-    { keys: ["?"], action: "shortcuts.toggleHelp" },
-    { keys: ["["], action: "shortcuts.toggleSidebar" },
-    { keys: ["Esc"], action: "shortcuts.escape" }
-  ];
+  // `data-platform` is set on <body> by `applyPlatformClass()` in runtime.ts.
+  // macOS shows the ⌘ glyph in keycaps; Windows and Linux show "Ctrl".
+  let platform = $state<string>("browser");
+  let modifier = $derived(platform === "macos" ? "⌘" : "Ctrl");
+  type Shortcut =
+    | { kind: "single"; keys: string[]; action: MessageKey }
+    | { kind: "modifier"; modifier: string; key: string; action: MessageKey };
+  const shortcuts: Shortcut[] = $derived([
+    { kind: "single", keys: ["Space"], action: "shortcuts.playPause" },
+    { kind: "single", keys: ["←"], action: "shortcuts.back15" },
+    { kind: "single", keys: ["Shift", "←"], action: "shortcuts.back60" },
+    { kind: "single", keys: ["→"], action: "shortcuts.forward15" },
+    { kind: "single", keys: ["Shift", "→"], action: "shortcuts.forward60" },
+    { kind: "single", keys: ["N"], action: "shortcuts.next" },
+    { kind: "single", keys: ["?"], action: "shortcuts.toggleHelp" },
+    { kind: "single", keys: ["["], action: "shortcuts.toggleSidebar" },
+    { kind: "modifier", modifier, key: "F", action: "shortcuts.focusSearch" },
+    { kind: "modifier", modifier, key: ",", action: "shortcuts.openSettings" },
+    { kind: "single", keys: ["Esc"], action: "shortcuts.escape" }
+  ]);
   $effect(() => {
+    platform = document.body.dataset.platform ?? "browser";
     dialog.showModal();
     return () => {
       if (dialog.open) dialog.close();
@@ -58,10 +68,20 @@
         <div class="flex items-center justify-between gap-3">
           <dt class="text-sm text-app">{t(locale, shortcut.action)}</dt>
           <dd class="flex shrink-0 items-center gap-1">
-            {#each shortcut.keys as key (key)}<kbd
+            {#if shortcut.kind === "single"}
+              {#each shortcut.keys as key (key)}<kbd
+                  class="inline-flex h-7 min-w-7 items-center justify-center rounded-control border border-app-border bg-app-soft px-2 font-mono text-xs font-bold text-app"
+                  >{key}</kbd
+                >{/each}
+            {:else}
+              <kbd
                 class="inline-flex h-7 min-w-7 items-center justify-center rounded-control border border-app-border bg-app-soft px-2 font-mono text-xs font-bold text-app"
-                >{key}</kbd
-              >{/each}
+                >{shortcut.modifier}</kbd
+              ><kbd
+                class="inline-flex h-7 min-w-7 items-center justify-center rounded-control border border-app-border bg-app-soft px-2 font-mono text-xs font-bold text-app"
+                >{shortcut.key}</kbd
+              >
+            {/if}
           </dd>
         </div>
       {/each}

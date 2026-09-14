@@ -3,6 +3,7 @@
   import { countLabel, t } from "../i18n.js";
   import { isCuratedFeaturedTeacher, isMyanmarText, truncateTeacherCardName } from "../ui.js";
   import { teacherAvatarDataUri } from "../teacherAvatar.js";
+  import MarkerBadge from "./MarkerBadge.svelte";
   let {
     teacher,
     state,
@@ -31,9 +32,9 @@
     <img src={avatar} alt="" class="block size-full object-cover" />
   </div>
   <div class="min-w-0">
-    {#if featured}<p class="text-[10px] font-bold tracking-wide text-app-marker uppercase">
-        {t(locale, "teachers.featuredBadge")}
-      </p>{/if}
+    {#if featured}<div class="mb-1">
+        <MarkerBadge label={t(locale, "teachers.featuredBadge")} />
+      </div>{/if}
     <p
       class="break-words font-bold leading-6 {myanmar ? 'myanmar-text' : ''}"
       lang={myanmar ? "my" : undefined}

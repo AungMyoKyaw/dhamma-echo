@@ -241,6 +241,8 @@ const en = {
   "shortcuts.toggleHelp": "Show or hide this list",
   "shortcuts.toggleSidebar": "Collapse or expand the sidebar",
   "shortcuts.escape": "Close this dialog or the active overlay",
+  "shortcuts.focusSearch": "Focus the search field",
+  "shortcuts.openSettings": "Open Settings",
   "shortcuts.searchNote":
     "Search fields keep the keyboard for editing. Press {key} inside a search field to clear what you typed.",
 
@@ -547,6 +549,8 @@ const my: Partial<Record<MessageKey, string>> = {
   "shortcuts.toggleHelp": "ဤစာရင်းကို ပြမည် သို့မဟုတ် ဖျောက်မည်",
   "shortcuts.toggleSidebar": "ဘေးဘားကို ခေါက်မည် သို့မဟုတ် ပြန်ဖွင့်မည်",
   "shortcuts.escape": "ဤဒိုင်ယာလော့ သို့မဟုတ် လက်ရှိ ဝင်းဒိုးကို ပိတ်မည်",
+  "shortcuts.focusSearch": "ရှာဖွေမှုကွက်လပ်ကို အာရုံစိုက်မည်",
+  "shortcuts.openSettings": "ဆ฀်တင်များကို ဖွင့်မည်",
   "shortcuts.searchNote":
     "ရှာဖွေမှုကွက်လပ်များတွင် တည်းဖြတ်ရန် ကီးဘုတ်ကို ဆက်လက် အသုံးပြုနိုင်သည်။ ရိုက်ထားသည်ကို ဖျက်ရန် ရှာဖွေမှုကွက်လပ်အတွင်းတွင် {key} ကို နှိပ်ပါ။",
 
