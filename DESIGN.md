@@ -174,7 +174,7 @@ components:
 
 ## Overview
 
-The interface reads like the page of a 19th-century alpine herbarium opened to a pressed specimen in late afternoon light: aged paper ground, a single lichen-green specimen mount, a small bronze label, generous margin, and the discipline of a study done carefully. There is no hero moment on any route — the catalogue is the specimen, and the chrome recedes so the catalogue can be studied. Color is reserved for one job at a time; warmth comes from the substrate, not from accents. Two voices carry the interface: a sturdy book serif for the page and section titles, and a humanist sans for everything else, including Burmese. The reference is a real object, and the constraints it carries — no gradients, no glow, no glass, no neon, no italic, no rounded primary buttons — arrive with the reference and are not listed separately.
+The interface reads like the page of a 19th-century alpine herbarium opened to a pressed specimen in late afternoon light: aged paper ground, a single lichen-green specimen mount, a small bronze label, generous margin, and the discipline of a study done carefully. There is no hero moment on any route — the catalogue is the specimen, and the chrome recedes so the catalogue can be studied. Color is reserved for one job at a time; warmth comes from the substrate, not from accents. Two voices carry the interface: a sturdy book serif for the page and section titles, and a humanist sans for everything else, including Burmese. The reference is a real object, and the constraints it carries — no gradients, no glow, no glass, no neon, no italic, no pill-shaped primary buttons — arrive with the reference and are not listed separately.
 
 **Platform.** The product is a macOS desktop application delivered through the Tauri 2 webview (WKWebView), with Windows and Linux installers built from the same webview code. macOS is the design target: traffic-light window chrome, the macOS focus ring, native trackpad scroll momentum, `Cmd` as the application modifier, and a system-appearance option that mirrors `prefers-color-scheme`. Windows and Linux follow the same tokens but adopt their platform's modifier key (Ctrl) and window-drag conventions automatically — never both at once.
 
@@ -285,7 +285,9 @@ There is no square corner anywhere. There are no squircles, no asymmetric radii.
 
 ## Components
 
-**Sidebar navigation item.** 48px tall (`h-12`, also `min-h-12`). Icon on the left, label on the right when expanded; icon-only and centered when collapsed. Inactive: `text-ink-quiet` on the substrate surface, hovers to a `bg-panel` wash and `text-ink`. Active: `bg-primary text-on-primary shadow-sm`. Active state uses a full-surface tint, never a colored side stripe.
+**App icon and sidebar wordmark.** The lotus-and-sound-wave mark is a flat botanical glyph on the `page` specimen sheet: petals and upper wave in `primary` / `primary-strong`, lower wave in `marker`, and a 1px `rule` outline around the tile. It is not an illustration and never carries a gradient, glow, texture, or drop shadow. The macOS Dock master uses the same flat geometry inside the platform's optical safe area; Windows and Linux icon sizes are deterministic resizes of that master. The sidebar wordmark pairs the 44px mark with the sans product name and quiet tagline — the wordmark itself never uses the display serif.
+
+**Sidebar navigation item.** 48px tall (`h-12`, also `min-h-12`). Icon on the left, label on the right when expanded; icon-only and centered when collapsed. Inactive: `text-ink-quiet` on the substrate surface, hovers to a `bg-panel` wash and `text-ink`. Active: `bg-primary text-on-primary`. Active state uses a full-surface tint, never a colored side stripe or shadow.
 
 **Track row.** Two-column grid — clickable title block on the left, action cluster on the right. Inside a card, rows are separated by 1px borders (`border-b border-b-rule last:border-b-0`), with 12px vertical padding and 16px horizontal padding. The play disc is a 44px circle that gains primary color and a small lift on hover; on the current row it sits on `primary` permanently. Action buttons are 44px round icon buttons (favorite, download, enqueue) plus a small text "Queue" pill. The current row is the only row that gets an inset ring + tint; other rows are flush with the card.
 
@@ -325,7 +327,7 @@ There is no square corner anywhere. There are no squircles, no asymmetric radii.
 - Reach for `panel` and `ink-quiet` before reaching for the marker. The marker is ornamental; it does not carry meaning.
 - Use `Cmd` as the macOS modifier for app-level shortcuts (search, settings, quit). Map the same shortcut to `Ctrl` on Windows and Linux. Single keys (`Space`, `←`/`→`, `N`, `?`, `Esc`, `/`) stay unbound to any modifier on every platform.
 - Honor the macOS system appearance when the user has chosen `system` theme by listening to `prefers-color-scheme`. When the user has chosen `light` or `dark` explicitly, follow that choice and ignore the system signal.
-- Keep the Tauri window opaque. Do not enable vibrancy, transparency, or hidden-inset title bars — the substrate extends edge to edge so the herbarium paper is continuous from chrome to chrome.
+- Keep the Tauri window opaque. Do not enable vibrancy or window transparency. The overlay title bar is the deliberate macOS exception: it exposes the same opaque webview substrate beneath the native traffic lights so the herbarium paper is continuous from chrome to chrome.
 - Respect native macOS behavior where it is already correct: trackpad scroll momentum, text selection inside the catalogue, the standard context menu, the standard close/minimize/maximize controls. Override only when the platform default fails an accessibility or design constraint, and document the override.
 
 **Don't**
@@ -346,7 +348,7 @@ There is no square corner anywhere. There are no squircles, no asymmetric radii.
 - Don't use Source Serif 4 (or any serif) for UI labels, captions, buttons, or any role below h2. Serif is editorial weight, not UI voice.
 - Don't use the marker bronze for state, for errors, or for interactive accents. The marker is quiet ornament only.
 - Don't bind app-level shortcuts to `Ctrl` on macOS. macOS users expect `Cmd`. The shortcut handler maps the same binding to `Ctrl` on Windows and Linux automatically — never show both at once.
-- Don't enable window vibrancy, transparency, or hidden-inset title bars. The window is opaque substrate.
+- Don't enable window vibrancy or transparency. The configured overlay title bar is allowed because it keeps native traffic lights while exposing the same opaque substrate; do not replace it with custom controls.
 - Don't override the macOS system context menu or the standard text-selection color without a documented reason. Selection inside the catalogue should read on the substrate without becoming a design statement.
 - Don't hide the traffic lights, move them, or render custom window controls. They live where macOS puts them.
 - Don't let the sidebar wordmark collide with the traffic-light row. The 28px macOS top inset is mandatory.

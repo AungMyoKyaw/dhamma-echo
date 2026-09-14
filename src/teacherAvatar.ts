@@ -3,7 +3,10 @@ import blobs from "@dicebear/styles/blobs.json" with { type: "json" };
 
 const style = new Style(blobs);
 
-const BACKGROUND_COLORS = ["#f0eee7", "#e8e3d6", "#ddd5c2"] as const;
+// DESIGN.md substrate / panel / rule. Keeping the exact system values here
+// makes the deterministic SVG/data-URI avatars read as specimen labels rather
+// than as a disconnected grey illustration set.
+const BACKGROUND_COLORS = ["#ece6d4", "#e3dcc4", "#cbc5b0"] as const;
 
 export function teacherAvatarSvg(id: number): string {
   return new Avatar(style, {

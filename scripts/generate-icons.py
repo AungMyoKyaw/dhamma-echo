@@ -64,17 +64,21 @@ def make_master() -> Image.Image:
     canvas = Image.new("RGBA", (MASTER_SIZE * SCALE, MASTER_SIZE * SCALE), (0, 0, 0, 0))
     draw = ImageDraw.Draw(canvas)
 
-    # A smaller, centered tile leaves an optical safe area in the Dock.
+    # A smaller, centered specimen-sheet tile leaves an optical safe area in
+    # the Dock. Values mirror DESIGN.md: page, rule, primary, primary-strong.
     tile = tuple(value * SCALE for value in (96, 96, 928, 928))
-    draw.rounded_rectangle(tile, radius=190 * SCALE, fill=(253, 249, 241, 255), outline=(224, 217, 204, 255), width=3 * SCALE)
+    draw.rounded_rectangle(
+        tile,
+        radius=160 * SCALE,
+        fill=(244, 239, 222, 255),
+        outline=(203, 197, 176, 255),
+        width=3 * SCALE,
+    )
 
-    # A subtle inner glow gives definition without making the icon visually heavy.
-    inner = tuple(value * SCALE for value in (112, 112, 912, 912))
-    draw.rounded_rectangle(inner, radius=174 * SCALE, outline=(255, 255, 255, 170), width=5 * SCALE)
-
-    draw.polygon(transform(petal_left()), fill=(164, 81, 28, 232))
-    draw.polygon(transform(petal_right()), fill=(140, 63, 8, 218))
-    draw.polygon(transform(petal_center()), fill=(156, 63, 0, 255))
+    # Flat botanical geometry: no gradients, inner glow, or decorative depth.
+    draw.polygon(transform(petal_left()), fill=(63, 107, 58, 210))
+    draw.polygon(transform(petal_right()), fill=(44, 77, 40, 220))
+    draw.polygon(transform(petal_center()), fill=(63, 107, 58, 255))
 
     upper_wave = cubic((18, 86), (31, 99), (46, 105), (64, 105)) + cubic(
         (64, 105), (82, 105), (97, 99), (110, 86)
@@ -82,8 +86,8 @@ def make_master() -> Image.Image:
     lower_wave = cubic((30, 105), (40, 112), (51, 115), (64, 115)) + cubic(
         (64, 115), (77, 115), (88, 112), (98, 105)
     )[1:]
-    draw.line(transform(upper_wave), fill=(64, 89, 53, 255), width=6 * 6 * SCALE, joint="curve")
-    draw.line(transform(lower_wave), fill=(104, 77, 29, 205), width=4 * 6 * SCALE, joint="curve")
+    draw.line(transform(upper_wave), fill=(63, 107, 58, 255), width=6 * 6 * SCALE, joint="curve")
+    draw.line(transform(lower_wave), fill=(122, 90, 30, 220), width=4 * 6 * SCALE, joint="curve")
 
     return canvas.resize((MASTER_SIZE, MASTER_SIZE), Image.Resampling.LANCZOS)
 
