@@ -123,7 +123,7 @@
   </div>
   <div class="rounded-card border border-app-border/70 bg-app-soft p-6">
     <div
-      class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-secondary/15 text-app-secondary"
+      class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-primary/12 text-app-primary"
     >
       <span class="size-5"><Icon name="leaf" /></span>
     </div>

@@ -13,8 +13,8 @@ const SAMPLE_DESIGN = `---
 name: Sample
 description: A test design system.
 colors:
-  canvas: "#fcf9f2"
-  surface: "#ffffff"
+  substrate: "#fcf9f2"
+  page: "#ffffff"
   primary: "#8c3f08"
   primary-strong: "#6d2f00"
   on-primary: "#ffffff"
@@ -44,7 +44,7 @@ const SAMPLE_CSS = `@import "tailwindcss";
 
 test("parseDesignFrontmatter returns the yaml block as a token map", () => {
   const tokens = parseDesignFrontmatter(SAMPLE_DESIGN);
-  assert.equal(tokens.colors.canvas, "#fcf9f2");
+  assert.equal(tokens.colors.substrate, "#fcf9f2");
   assert.equal(tokens.colors.primary, "#8c3f08");
   assert.equal(tokens.rounded.control, "10px");
   assert.equal(tokens.rounded.card, "14px");
@@ -102,8 +102,8 @@ test("compareTokens flags tokens defined in DESIGN.md but missing from css", () 
   const css = loadCssTokens(`@theme { --color-app-bg: #fcf9f2; }`);
   const drift = compareTokens(design, css);
   assert.ok(
-    drift.missingFromCss.includes("colors.surface"),
-    `expected colors.surface missing; got ${JSON.stringify(drift.missingFromCss)}`
+    drift.missingFromCss.includes("colors.page"),
+    `expected colors.page missing; got ${JSON.stringify(drift.missingFromCss)}`
   );
   assert.ok(
     drift.missingFromCss.includes("colors.primary"),
@@ -154,8 +154,8 @@ test("compareTokens treats px and rem as equivalent for color and round values",
 test("compareTokens validates dark-mode color overrides", () => {
   const design = {
     colors: {
-      "canvas-dark": "#181714",
-      "surface-dark": "#23211d",
+      "substrate-dark": "#181714",
+      "page-dark": "#23211d",
       "primary-dark": "#d8894d"
     }
   };
@@ -201,7 +201,7 @@ test("valuesEqual handles fractional rem values", () => {
 });
 
 test("compareTokens works when design declares only dark colors", () => {
-  const design = { colors: { "canvas-dark": "#181714" } };
+  const design = { colors: { "substrate-dark": "#181714" } };
   const css = loadCssTokens('[data-theme="dark"] {\n  --color-app-bg: #181714;\n}\n');
   const drift = compareTokens(design, css);
   assert.equal(drift.missingFromCss.length, 0);
@@ -254,7 +254,7 @@ test("formatTailwindTheme emits a complete @theme block from the design tokens",
   const design = parseDesignFrontmatter(SAMPLE_DESIGN);
   const css = formatTailwindTheme(design);
   assert.match(css, /@theme\s*\{/u);
-  assert.match(css, /--color-canvas:\s*#fcf9f2/u);
+  assert.match(css, /--color-substrate:\s*#fcf9f2/u);
   assert.match(css, /--color-primary:\s*#8c3f08/u);
   assert.match(css, /--radius-control:\s*10px/u);
   assert.match(css, /--radius-card:\s*14px/u);

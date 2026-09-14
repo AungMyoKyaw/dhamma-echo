@@ -68,7 +68,7 @@
         class="rounded-card border border-app-border/70 bg-app-soft p-4 max-[1040px]:p-2.5"
       >
         <div
-          class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-secondary/15 text-app-secondary max-[1040px]:mb-2"
+          class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-primary/12 text-app-primary max-[1040px]:mb-2"
         >
           <span class="size-5"><Icon name="leaf" /></span>
         </div>

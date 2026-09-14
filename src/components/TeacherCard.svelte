@@ -31,7 +31,7 @@
     <img src={avatar} alt="" class="block size-full object-cover" />
   </div>
   <div class="min-w-0">
-    {#if featured}<p class="text-[10px] font-bold tracking-wide text-app-tertiary uppercase">
+    {#if featured}<p class="text-[10px] font-bold tracking-wide text-app-marker uppercase">
         {t(locale, "teachers.featuredBadge")}
       </p>{/if}
     <p

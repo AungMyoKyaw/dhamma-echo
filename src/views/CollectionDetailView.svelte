@@ -38,7 +38,7 @@
   {:else}{@const detail = state.collectionDetail.data}
     <div class="flex items-start gap-5 rounded-card border border-app-border bg-app-surface p-6">
       <div
-        class="flex size-16 shrink-0 items-center justify-center rounded-control bg-app-secondary/15 text-app-secondary"
+        class="flex size-16 shrink-0 items-center justify-center rounded-control bg-app-marker/15 text-app-marker"
         aria-hidden="true"
       >
         <svg viewBox="0 0 24 24" class="size-8" fill="none" stroke="currentColor" stroke-width="2"

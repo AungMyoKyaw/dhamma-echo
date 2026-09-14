@@ -29,20 +29,21 @@ export interface DriftReport {
  * Maps semantic token names used in DESIGN.md to the prefixed names used in
  * `src/index.css`. The CSS layer adds an `app-` prefix for color tokens and
  * keeps raw `--color-error` for error roles; this map keeps the design
- * readable without renaming every reference.
+ * readable without renaming every reference. Names not listed here pass
+ * through unchanged, which is why `error` and `error-quiet` do not appear.
  */
 const COLOR_ALIASES: Record<string, string> = {
-  canvas: "app-bg",
-  surface: "app-surface",
-  soft: "app-soft",
+  substrate: "app-bg",
+  page: "app-surface",
+  panel: "app-soft",
   ink: "app",
-  "ink-muted": "app-muted",
-  border: "app-border",
+  "ink-quiet": "app-muted",
+  rule: "app-border",
   primary: "app-primary",
   "primary-strong": "app-primary-strong",
   "on-primary": "app-primary-ink",
-  secondary: "app-secondary",
-  tertiary: "app-tertiary"
+  marker: "app-marker",
+  "marker-quiet": "app-marker-quiet"
 };
 
 function aliasColor(name: string): string {
