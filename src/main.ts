@@ -4,7 +4,7 @@ import App from "./App.svelte";
 import { CatalogueApi } from "./api.js";
 import { DhammaApp } from "./app.js";
 import "./index.css";
-import { selectInvoke, type NativeWindowFullscreenBridge } from "./runtime.js";
+import { applyPlatformClass, selectInvoke, type NativeWindowFullscreenBridge } from "./runtime.js";
 import { createInitialState } from "./store.js";
 import { applyTheme } from "./theme.js";
 import type { InvokeFn } from "./types.js";
@@ -24,6 +24,8 @@ declare global {
 export async function bootstrap(): Promise<DhammaApp> {
   const root = document.querySelector<HTMLElement>("#app");
   if (root === null) throw new Error("Missing #app root element.");
+
+  applyPlatformClass();
 
   const audio = new Audio();
   audio.preload = "metadata";

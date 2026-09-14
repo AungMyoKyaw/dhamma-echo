@@ -81,6 +81,7 @@
     --color-app-marker-quiet: #2a2418;
     --color-error: #d68b7a;
     --color-error-quiet: #2d1813;
+    --shadow-player: 0 -4px 12px rgb(0 0 0 / 0.32);
     color-scheme: dark;
   }
 }
@@ -184,7 +185,28 @@ select:focus-visible,
 
 /* macOS window chrome — opaque substrate extends under the traffic-light row.
    The 28px top inset on the sidebar keeps the wordmark clear of the close,
-   minimize, and maximize buttons at the top-left of the window. */
+   minimize, and maximize buttons at the top-left of the window. The default
+   inset is 0; `applyPlatformClass()` from runtime.ts sets
+   `body[data-platform="macos"]` which lifts the inset to 28px on macOS only. */
 :root {
+  --macos-titlebar-inset: 0px;
+}
+
+body[data-platform="macos"] {
   --macos-titlebar-inset: 28px;
+}
+
+/* Sidebar padding combines the macOS traffic-light inset with the regular
+   top padding so the wordmark stays clear of the close/minimize/maximize
+   buttons on macOS while still sitting at the normal offset elsewhere. */
+:root {
+  --sidebar-padding-top: max(1.5rem, var(--macos-titlebar-inset));
+  --sidebar-padding-bottom: 1.5rem;
+}
+
+@media (max-width: 1040px) {
+  :root {
+    --sidebar-padding-top: max(1rem, var(--macos-titlebar-inset));
+    --sidebar-padding-bottom: 0.25rem;
+  }
 }

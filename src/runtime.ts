@@ -41,3 +41,23 @@ export function isEditableTarget(target: EventTarget | null): boolean {
     tag === "input" || tag === "select" || tag === "textarea" || element.isContentEditable === true
   );
 }
+
+/**
+ * Reports the host platform so the layout can apply platform-specific chrome
+ * (e.g. macOS traffic-light inset). Detection prefers Tauri's bridge when
+ * present and falls back to `navigator.userAgent` for the Vite preview, where
+ * the value is "browser" — a sentinel that suppresses platform-specific
+ * chrome entirely.
+ */
+export function detectPlatform(): "macos" | "windows" | "linux" | "browser" {
+  const ua = typeof navigator === "undefined" ? "" : navigator.userAgent;
+  if (/Macintosh|Mac OS X/i.test(ua)) return "macos";
+  if (/Windows/i.test(ua)) return "windows";
+  if (/Linux/i.test(ua)) return "linux";
+  return "browser";
+}
+
+export function applyPlatformClass(target: HTMLElement = document.body): void {
+  const platform = detectPlatform();
+  target.dataset.platform = platform;
+}

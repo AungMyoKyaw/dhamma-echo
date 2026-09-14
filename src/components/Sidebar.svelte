@@ -34,7 +34,7 @@
 <aside
   class="fixed inset-y-0 left-0 z-20 flex {collapsed
     ? 'w-[72px] px-3'
-    : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface py-6 [scrollbar-gutter:stable] max-[1040px]:pt-4 max-[1040px]:pb-1"
+    : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface pt-[var(--sidebar-padding-top)] pb-[var(--sidebar-padding-bottom)] [scrollbar-gutter:stable]"
   aria-label={t(locale, "nav.primary")}
 >
   <div class="flex items-center {collapsed ? 'justify-center' : 'gap-3 px-2'}">

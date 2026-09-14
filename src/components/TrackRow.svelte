@@ -77,7 +77,7 @@
 
 <article
   class="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-b-app-border px-4 py-3 last:border-b-0 {current
-    ? 'bg-app-primary/5 ring-1 ring-inset ring-app-primary/20'
+    ? 'bg-app-primary/6 ring-1 ring-inset ring-app-primary/22'
     : ''} {track.playable ? 'transition hover:bg-app-soft/60' : ''}"
 >
   <button
