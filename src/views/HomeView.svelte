@@ -68,7 +68,7 @@
       />
     {:else if isFirstLaunch}
       <section class="flex flex-col gap-5 rounded-card border border-app-border bg-app-soft p-6">
-        <p class="text-[11px] font-bold tracking-wide text-app-muted uppercase">
+        <p class="text-xs font-bold tracking-[0.04em] text-app-muted uppercase">
           {t(locale, "home.welcome.eyebrow")}
         </p>
         <h2 class="text-xl font-semibold">{t(locale, "home.welcome.title")}</h2>
@@ -141,7 +141,7 @@
             </div>
           </div>
           {#if rest.length > 0}<div class="space-y-2">
-              <h3 class="text-sm font-bold tracking-wide text-app-muted uppercase">
+              <h3 class="text-xs font-bold tracking-[0.04em] text-app-muted uppercase">
                 {t(locale, "home.recentlyPlayed")}
               </h3>
               <div class="overflow-hidden rounded-card border border-app-border bg-app-surface">

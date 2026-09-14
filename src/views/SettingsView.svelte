@@ -141,7 +141,7 @@
       class="flex w-full items-center justify-between gap-2 text-left"
     >
       <h2 class="text-lg font-semibold">{t(locale, "settings.about")}</h2>
-      <span class="text-xs font-bold tracking-wide text-app-muted uppercase">
+      <span class="text-xs font-bold tracking-[0.04em] text-app-muted uppercase">
         {aboutExpanded ? t(locale, "settings.about.hide") : t(locale, "settings.about.show")}
       </span>
     </button>

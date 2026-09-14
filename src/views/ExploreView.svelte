@@ -126,7 +126,7 @@
       aria-label={t(locale, "search.filters.active")}
     >
       {#if state.search.query.length > 0}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app-muted"
         >
           {t(locale, "search.filters.query", { query: state.search.query })}<button
             type="button"
@@ -137,7 +137,7 @@
           >
         </div>{/if}
       {#if state.search.teacherId !== null}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app-muted"
         >
           {t(locale, "search.filters.teacher", { name: teacherFilterName(state) })}<button
             type="button"
@@ -151,7 +151,7 @@
           >
         </div>{/if}
       {#if category !== undefined}<div
-          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app"
+          class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-app-soft px-4 text-xs leading-normal font-bold text-app-muted"
         >
           {t(locale, "search.filters.category", { name: category.name })}<button
             type="button"

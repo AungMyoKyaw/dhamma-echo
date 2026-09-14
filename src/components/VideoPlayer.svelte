@@ -284,7 +284,7 @@
         <div class="flex min-w-0 flex-col border-l border-app-border max-lg:border-t">
           <header class="flex items-start justify-between gap-4 p-5 pb-3">
             <div class="min-w-0">
-              <p class="text-xs font-bold tracking-wide text-app-muted uppercase">
+              <p class="text-xs font-bold tracking-[0.04em] text-app-muted uppercase">
                 {t(locale, "video.nowPlaying")}
               </p>
               <h2
