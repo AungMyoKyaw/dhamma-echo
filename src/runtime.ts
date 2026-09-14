@@ -43,11 +43,10 @@ export function isEditableTarget(target: EventTarget | null): boolean {
 }
 
 /**
- * Reports the host platform so the layout can apply platform-specific chrome
- * (e.g. macOS traffic-light inset). Detection prefers Tauri's bridge when
- * present and falls back to `navigator.userAgent` for the Vite preview, where
- * the value is "browser" — a sentinel that suppresses platform-specific
- * chrome entirely.
+ * Reports the host platform from the webview user agent so the layout can
+ * apply platform-specific chrome (e.g. the macOS traffic-light inset). The
+ * Vite preview uses the browser host platform; unknown or absent user agents
+ * return "browser" to suppress platform-specific treatment.
  */
 export function detectPlatform(): "macos" | "windows" | "linux" | "browser" {
   const ua = typeof navigator === "undefined" ? "" : navigator.userAgent;

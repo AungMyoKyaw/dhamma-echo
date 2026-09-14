@@ -15,6 +15,21 @@ ICON_DIR = ROOT / "src-tauri" / "icons"
 MASTER_SIZE = 1024
 SCALE = 4
 
+# Exact DESIGN.md roles used by the icon. Keep these as hex strings so the
+# design-assets check can reject any out-of-system color added to the source.
+COLORS = {
+    "page": "#f4efde",
+    "rule": "#cbc5b0",
+    "primary": "#3f6b3a",
+    "primary-strong": "#2c4d28",
+    "marker": "#7a5a1e",
+}
+
+
+def rgba(role: str, alpha: int = 255) -> tuple[int, int, int, int]:
+    value = COLORS[role].removeprefix("#")
+    return tuple(int(value[index : index + 2], 16) for index in (0, 2, 4)) + (alpha,)
+
 
 def cubic(p0, p1, p2, p3, steps: int = 28):
     points = []
@@ -70,15 +85,15 @@ def make_master() -> Image.Image:
     draw.rounded_rectangle(
         tile,
         radius=160 * SCALE,
-        fill=(244, 239, 222, 255),
-        outline=(203, 197, 176, 255),
+        fill=rgba("page"),
+        outline=rgba("rule"),
         width=3 * SCALE,
     )
 
     # Flat botanical geometry: no gradients, inner glow, or decorative depth.
-    draw.polygon(transform(petal_left()), fill=(63, 107, 58, 210))
-    draw.polygon(transform(petal_right()), fill=(44, 77, 40, 220))
-    draw.polygon(transform(petal_center()), fill=(63, 107, 58, 255))
+    draw.polygon(transform(petal_left()), fill=rgba("primary", 210))
+    draw.polygon(transform(petal_right()), fill=rgba("primary-strong", 220))
+    draw.polygon(transform(petal_center()), fill=rgba("primary"))
 
     upper_wave = cubic((18, 86), (31, 99), (46, 105), (64, 105)) + cubic(
         (64, 105), (82, 105), (97, 99), (110, 86)
@@ -86,8 +101,8 @@ def make_master() -> Image.Image:
     lower_wave = cubic((30, 105), (40, 112), (51, 115), (64, 115)) + cubic(
         (64, 115), (77, 115), (88, 112), (98, 105)
     )[1:]
-    draw.line(transform(upper_wave), fill=(63, 107, 58, 255), width=6 * 6 * SCALE, joint="curve")
-    draw.line(transform(lower_wave), fill=(122, 90, 30, 220), width=4 * 6 * SCALE, joint="curve")
+    draw.line(transform(upper_wave), fill=rgba("primary"), width=6 * 6 * SCALE, joint="curve")
+    draw.line(transform(lower_wave), fill=rgba("marker", 220), width=4 * 6 * SCALE, joint="curve")
 
     return canvas.resize((MASTER_SIZE, MASTER_SIZE), Image.Resampling.LANCZOS)
 

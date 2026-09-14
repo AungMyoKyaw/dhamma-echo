@@ -167,19 +167,20 @@ Then open `http://127.0.0.1:51729`.
 
 ## Useful commands
 
-| Command                 | Purpose                                                                 |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `bun run dev`           | Run the Tauri desktop application                                       |
-| `bun run dev:web`       | Run the browser preview with HMR                                        |
-| `bun run format`        | Format web and Rust sources                                             |
-| `bun run lint`          | Run strict ESLint with zero warnings                                    |
-| `bun run typecheck`     | Run strict Svelte/TypeScript checking                                   |
-| `bun run test`          | Run TypeScript behavior tests                                           |
-| `bun run test:coverage` | Run the core TypeScript coverage gate                                   |
-| `bun run verify:web`    | Run the complete web-app verification gate                              |
-| `bun run site:verify`   | Verify the static product website                                       |
-| `bun run verify`        | Run formatting, web, site, audit, clippy, Rust tests, and release build |
-| `bun run package`       | Build native installers with Tauri                                      |
+| Command                       | Purpose                                                                 |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| `bun run dev`                 | Run the Tauri desktop application                                       |
+| `bun run dev:web`             | Run the browser preview with HMR                                        |
+| `bun run format`              | Format web and Rust sources                                             |
+| `bun run lint`                | Run strict ESLint with zero warnings                                    |
+| `bun run typecheck`           | Run strict Svelte/TypeScript checking                                   |
+| `bun run test`                | Run TypeScript behavior tests                                           |
+| `bun run test:coverage`       | Run the core TypeScript coverage gate                                   |
+| `bun run design:assets:check` | Reject UI colors or effects that drift from `DESIGN.md`                 |
+| `bun run verify:web`          | Run the complete web-app verification gate                              |
+| `bun run site:verify`         | Verify the static product website                                       |
+| `bun run verify`              | Run formatting, web, site, audit, clippy, Rust tests, and release build |
+| `bun run package`             | Build native installers with Tauri                                      |
 
 ## Verification bar
 
@@ -190,6 +191,7 @@ The repository treats verification as part of the product, not as a release afte
 - Focused or skipped required tests are rejected by policy.
 - Core TypeScript behavior modules enforce **100% lines**, **100% functions**, and at least **99% branches** with Node's V8 coverage.
 - The static product site's JavaScript enforces **100% line / function / branch coverage**.
+- `design:assets:check` rejects app-facing colors absent from `DESIGN.md`, gradients, blur, and retired semantic roles.
 - Site smoke tests reject missing local assets, path escapes, duplicate IDs, remote runtime dependencies, and text assets over 100 KiB.
 - Rust verification includes rustfmt, clippy with `-D warnings`, tests, and a locked release build.
 
