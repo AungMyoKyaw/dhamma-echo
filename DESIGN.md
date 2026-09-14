@@ -1,34 +1,34 @@
 ---
 version: alpha
 name: Dhamma Echo
-description: A quiet desktop listening room for Dhamma talks — editorial paperback discipline on a warm oat canvas, with a single terracotta-leaning rust as the only interactive accent.
+description: A quiet desktop listening room for Dhamma talks — the discipline of a 19th-century alpine herbarium, opened to a pressed specimen in late afternoon light, with lichen-green as the only interactive accent.
 colors:
-  canvas: "#f7f3ea"
-  surface: "#ffffff"
-  soft: "#efece4"
-  ink: "#2e2e2a"
-  ink-muted: "#565550"
-  border: "#d5d1c8"
-  primary: "#7a3508"
-  primary-strong: "#5e2904"
-  on-primary: "#ffffff"
-  secondary: "#3d4d30"
-  tertiary: "#634a16"
-  error: "#8d3531"
-  error-soft: "#f9e8e6"
-  canvas-dark: "#181714"
-  surface-dark: "#23211d"
-  soft-dark: "#2e2b25"
-  ink-dark: "#eee9df"
-  ink-muted-dark: "#b8b0a4"
-  border-dark: "#464138"
-  primary-dark: "#d8894d"
-  primary-strong-dark: "#b87440"
-  on-primary-dark: "#181714"
-  secondary-dark: "#9bab82"
-  tertiary-dark: "#c9a45e"
-  error-dark: "#e2938c"
-  error-soft-dark: "#35201f"
+  substrate: "#ece6d4"
+  page: "#f4efde"
+  panel: "#e3dcc4"
+  ink: "#1f2024"
+  ink-quiet: "#5a5b55"
+  rule: "#cbc5b0"
+  primary: "#3f6b3a"
+  primary-strong: "#2c4d28"
+  on-primary: "#f4efde"
+  marker: "#7a5a1e"
+  marker-quiet: "#efe3c6"
+  error: "#8d3a2c"
+  error-quiet: "#efd6cc"
+  substrate-dark: "#16180f"
+  page-dark: "#1d1f15"
+  panel-dark: "#252820"
+  ink-dark: "#e6e3d3"
+  ink-quiet-dark: "#9e9d8a"
+  rule-dark: "#3a3b32"
+  primary-dark: "#7fa572"
+  primary-strong-dark: "#a4c69b"
+  on-primary-dark: "#16180f"
+  marker-dark: "#c79c5a"
+  marker-quiet-dark: "#2a2418"
+  error-dark: "#d68b7a"
+  error-quiet-dark: "#2d1813"
 typography:
   display:
     fontFamily: "'Source Serif 4', 'Source Serif Pro', Georgia, serif"
@@ -46,9 +46,15 @@ typography:
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.5
+  label:
+    fontFamily: "Inter, 'Noto Sans Myanmar', 'Myanmar Text', 'Pyidaungsu', system-ui, sans-serif"
+    fontSize: "0.75rem"
+    fontWeight: 600
+    lineHeight: 1.35
+    letterSpacing: "0.04em"
 rounded:
-  control: 10px
-  card: 14px
+  control: 8px
+  card: 12px
   pill: 9999px
 spacing:
   page-max: 1520px
@@ -64,25 +70,33 @@ components:
     textColor: "{colors.on-primary}"
     rounded: "{rounded.control}"
     padding: "10px 16px"
-  button-secondary:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink-muted}"
+  button-quiet:
+    backgroundColor: "{colors.page}"
+    textColor: "{colors.ink-quiet}"
+    rounded: "{rounded.control}"
+    padding: "10px 16px"
+  button-ghost:
+    backgroundColor: "{colors.page}"
+    textColor: "{colors.ink-quiet}"
     rounded: "{rounded.control}"
     padding: "10px 16px"
   input-field:
-    backgroundColor: "{colors.canvas}"
+    backgroundColor: "{colors.substrate}"
     textColor: "{colors.ink}"
     rounded: "{rounded.control}"
     padding: "12px 16px"
   card-surface:
-    backgroundColor: "{colors.surface}"
+    backgroundColor: "{colors.page}"
     rounded: "{rounded.card}"
   card-muted:
-    backgroundColor: "{colors.soft}"
+    backgroundColor: "{colors.panel}"
+    rounded: "{rounded.card}"
+  card-flat:
+    backgroundColor: "transparent"
     rounded: "{rounded.card}"
   pill-filter:
-    backgroundColor: "{colors.soft}"
-    textColor: "{colors.ink-muted}"
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink-quiet}"
     rounded: "{rounded.pill}"
     padding: "6px 12px"
   pill-active:
@@ -90,20 +104,28 @@ components:
     textColor: "{colors.on-primary}"
     rounded: "{rounded.pill}"
     padding: "6px 12px"
+  pill-marker:
+    backgroundColor: "{colors.marker-quiet}"
+    textColor: "{colors.marker}"
+    rounded: "{rounded.pill}"
+    padding: "4px 10px"
   pill-warning:
-    backgroundColor: "{colors.error-soft}"
+    backgroundColor: "{colors.error-quiet}"
     textColor: "{colors.error}"
     rounded: "{rounded.pill}"
     padding: "6px 12px"
   track-row-current:
-    backgroundColor: "color-mix(in srgb, {colors.primary} 5%, transparent)"
+    backgroundColor: "color-mix(in srgb, {colors.primary} 6%, transparent)"
     rounded: "{rounded.control}"
   player-play:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     rounded: "{rounded.pill}"
+  player-surface:
+    backgroundColor: "{colors.page}"
+    rounded: "{rounded.card}"
   error-card:
-    backgroundColor: "{colors.error-soft}"
+    backgroundColor: "{colors.error-quiet}"
     textColor: "{colors.error}"
     rounded: "{rounded.card}"
     padding: "16px"
@@ -112,7 +134,7 @@ components:
     textColor: "{colors.on-primary}"
     rounded: "{rounded.control}"
   border-hairline:
-    backgroundColor: "{colors.border}"
+    backgroundColor: "{colors.rule}"
     rounded: "{rounded.control}"
   hover-primary:
     backgroundColor: "{colors.primary-strong}"
@@ -122,74 +144,80 @@ components:
     backgroundColor: "{colors.primary-strong-dark}"
     textColor: "{colors.on-primary-dark}"
     rounded: "{rounded.control}"
-  dark-canvas:
-    backgroundColor: "{colors.canvas-dark}"
+  pill-marker-dark:
+    backgroundColor: "{colors.marker-quiet-dark}"
+    textColor: "{colors.marker-dark}"
+    rounded: "{rounded.pill}"
+    padding: "4px 10px"
+  dark-substrate:
+    backgroundColor: "{colors.substrate-dark}"
     textColor: "{colors.ink-dark}"
-  dark-surface:
-    backgroundColor: "{colors.surface-dark}"
+  dark-page:
+    backgroundColor: "{colors.page-dark}"
     textColor: "{colors.ink-dark}"
-  dark-soft:
-    backgroundColor: "{colors.soft-dark}"
-    textColor: "{colors.ink-muted-dark}"
-  dark-border:
-    backgroundColor: "{colors.border-dark}"
+  dark-panel:
+    backgroundColor: "{colors.panel-dark}"
+    textColor: "{colors.ink-quiet-dark}"
+  dark-rule:
+    backgroundColor: "{colors.rule-dark}"
     textColor: "{colors.ink-dark}"
   dark-primary:
     backgroundColor: "{colors.primary-dark}"
     textColor: "{colors.on-primary-dark}"
-  dark-secondary:
-    backgroundColor: "{colors.secondary-dark}"
-    textColor: "{colors.canvas-dark}"
-  dark-tertiary:
-    backgroundColor: "{colors.tertiary-dark}"
-    textColor: "{colors.canvas-dark}"
+  dark-marker:
+    backgroundColor: "{colors.marker-dark}"
+    textColor: "{colors.substrate-dark}"
   dark-error:
     backgroundColor: "{colors.error-dark}"
-    textColor: "{colors.error-soft-dark}"
+    textColor: "{colors.error-quiet-dark}"
 ---
 
 ## Overview
 
-The interface reads like a 1970s Burmese monastery library shelf, rendered in editorial Penguin paperback discipline: warm oat parchment, single accent color for the one action that matters, and a two-voice typography (display serif, body sans) that handles English and Burmese without changing personality. Everything in the layout earns its place by serving listening — content hierarchy and playback feedback come first; visual personality comes from generous spacing, a small radius grammar, and the discipline of _one accent, one rhythm_. The catalogue is the hero. There is no hero moment.
+The interface reads like the page of a 19th-century alpine herbarium opened to a pressed specimen in late afternoon light: aged paper ground, a single lichen-green specimen mount, a small bronze label, generous margin, and the discipline of a study done carefully. There is no hero moment on any route — the catalogue is the specimen, and the chrome recedes so the catalogue can be studied. Color is reserved for one job at a time; warmth comes from the substrate, not from accents. Two voices carry the interface: a sturdy book serif for the page and section titles, and a humanist sans for everything else, including Burmese. The reference is a real object, and the constraints it carries — no gradients, no glow, no glass, no neon, no italic, no rounded primary buttons — arrive with the reference and are not listed separately.
+
+**Platform.** The product is a macOS desktop application delivered through the Tauri 2 webview (WKWebView), with Windows and Linux installers built from the same webview code. macOS is the design target: traffic-light window chrome, the macOS focus ring, native trackpad scroll momentum, `Cmd` as the application modifier, and a system-appearance option that mirrors `prefers-color-scheme`. Windows and Linux follow the same tokens but adopt their platform's modifier key (Ctrl) and window-drag conventions automatically — never both at once.
 
 ## Colors
 
-The palette is a quiet editorial scheme with two accents and a single error signal. The rust is terracotta-leaning — deeper than the bright rust typical of editorial design, with a warmth that sits naturally on the oat ground rather than fighting it.
+The palette is a quiet study palette with one accent, one quiet marker, and one error signal. Every color earns its name from the herbarium reference.
 
-**Canvas and surfaces**
+**Substrate and surfaces**
 
-- **canvas** (`#f7f3ea`) is the warm oat parchment the application lives on. Use it for the page background, for inputs, and for empty regions of a card. Never paint a button or a strong text color with it.
-- **surface** (`#ffffff`) is the slightly lifted paper that holds list rows, cards, and the audio player. Reserve it for grouped content; do not stack surfaces on top of surfaces.
-- **soft** (`#efece4`) is the secondary panel — sidebar privacy callouts, mute filter pills, and skeleton placeholders. It is the only "muted selection" surface, used for non-current state emphasis.
+- **substrate** (`#ece6d4`) is the aged paper ground the application lives on. Slightly cooler and quieter than fresh oat — it has been in a drawer. It paints the page background, inputs, and the empty regions of cards. It never paints a button, a strong text color, or a card surface.
+- **page** (`#f4efde`) is the slightly lifted specimen sheet — a hair brighter than the substrate, so cards and list wrappers read as paper laid on paper. It is reserved for grouped content; surfaces are not stacked on surfaces.
+- **panel** (`#e3dcc4`) is the secondary paper — the muted wash used for non-current sidebar callouts, mute filter pills, skeleton placeholders, and the panel behind the privacy reassurance. It is the only "muted selection" surface.
 
 **Ink**
 
-- **ink** (`#2e2e2a`) is the primary text color. It is warm enough to sit on the canvas without contrast fighting. Do not introduce pure black anywhere.
-- **ink-muted** (`#565550`) carries supporting text — captions, teacher names under titles, helper copy. It must never be the only carrier of meaning; weight and size must also convey the hierarchy.
-- **border** (`#d5d1c8`) is the only border tone. Borders are 1px. There is no second border color and no decorative outline.
+- **ink** (`#1f2024`) is the primary text. Deep and slightly cool, the color of iron-gall ink on aged paper. Never pure black. Never used to paint a surface.
+- **ink-quiet** (`#5a5b55`) carries supporting text — captions, teacher names under titles, helper copy, secondary button labels. It must never be the only carrier of meaning; weight and size carry the hierarchy with it.
+- **rule** (`#cbc5b0`) is the only border tone. 1px hairlines. There is no second border color and no decorative outline anywhere.
 
-**Accents**
+**Accent**
 
-- **primary** (`#7a3508`) is terracotta rust — the single accent that drives interaction. It paints the sidebar's active route, the play button, the current track row's tint and ring, and primary submit buttons. It never paints a passive surface, never paints text on canvas or surface, and never appears as decoration (no underlines, no eyebrows, no glows, no gradients). It is also the only color that wears a shadow.
-- **primary-strong** (`#5e2904`) is the hover state of primary. Use it only on `:hover` / `:active` of a primary button, never as a standalone token.
-- **on-primary** (`#ffffff`) is the ink that sits on primary surfaces. Use it only on top of `primary` or `primary-strong`.
-- **secondary** (`#3d4d30`) is forest-moss olive — the privacy and library reassurance color. It appears once, inside a small leaf-icon callout in the sidebar, and on nothing else. It is not a second brand color.
-- **tertiary** (`#634a16`) is cooled bronze brass, reserved for occasional eyebrow text or status badges where olive is wrong and rust would shout. Use sparingly.
+- **primary** (`#3f6b3a`) is lichen green — the single interactive accent. It paints the sidebar's active route, the play button, the current track row's tint and inset ring, and primary submit buttons. It never paints a passive surface, never paints text on substrate or page, never appears as decoration (no underlines, no eyebrows, no glows, no gradients, no tinted badges). It is the only color that wears a shadow.
+- **primary-strong** (`#2c4d28`) is the hover/active state of primary. Use only on `:hover` and `:active` of a primary surface, never as a standalone token.
+- **on-primary** (`#f4efde`) is the ink that sits on primary surfaces. It is the substrate-tinted off-white — never pure white. Use only on top of `primary` or `primary-strong`.
+
+**Marker**
+
+- **marker** (`#7a5a1e`) and **marker-quiet** (`#efe3c6`) are the bronze of an old specimen pin / handwritten label. They appear on eyebrows, status badges ("Featured teacher", "New collection"), and the rare ornamental moment where a quiet warm neutral is needed without the lichen accent. The marker is not a second brand color and never drives interaction.
 
 **Error**
 
-- **error** (`#8d3531`) and **error-soft** (`#f9e8e6`) are the only failure colors. Error copy in the player, error states on async surfaces, and the inline "Retry" pill all use them. Never pair error with rust — the user needs to read the difference.
+- **error** (`#8d3a2c`) and **error-quiet** (`#efd6cc`) are the only failure colors — faded madder red, the traditional manuscript correction-ink red. Error copy in the player, error states on async surfaces, and the inline "Retry" pill all use them. Error never shares a surface with the marker bronze; the user needs to read the difference at a glance.
 
-**Dark mode** mirrors the same roles onto a deep charcoal canvas (`#181714`) with a brighter, warmer rust (`#d8894d`) so it reads on the darker ground. The dark `ink` lifts to `#eee9df`; `ink-muted` to `#b8b0a4`; `border` to `#464138`. Roles do not change — only the values do.
+**Dark mode** mirrors the same roles onto a deep lichen-night ground (`#16180f`). The substrate lifts slightly to `#1d1f15` for the page surface and `#252820` for the panel. Ink lifts to `#e6e3d3`, ink-quiet to `#9e9d8a`, rule to `#3a3b32`. Primary lifts to `#7fa572` and primary-strong to `#a4c69b` — the brighter lichen reads as the same plant under different light. Marker lifts to `#c79c5a` and error to `#d68b7a`. Roles do not change — only the values do.
 
 ## Typography
 
-The product uses two voices: a display serif for editorial weight, and a single sans-serif for body, UI, and Burmese script.
+Two voices carry the interface. There is no third.
 
 **Required fonts.** The downstream app rewrite must bundle or load these; this file assumes they are present.
 
-- **Source Serif 4** — display only. Never appears in body, UI, labels, or buttons.
-- **Inter** — body, h3, UI labels, captions, and English headings.
+- **Source Serif 4** — display and headings only. Reads here as a sturdy scientific-journal serif (the Linnean Society, the alpine botanical monograph), not as Penguin paperback editorial.
+- **Inter** — body, h3, UI labels, captions, and English headings below h2.
 - **Noto Sans Myanmar**, **Myanmar Text**, **Pyidaungsu** — Burmese mirrors. Expected to be installed on the device; the body does not reflow noticeably when they engage.
 
 **Stack.** Display and headings use `'Source Serif 4', 'Source Serif Pro', Georgia, serif`. Everything else uses `Inter, 'Noto Sans Myanmar', 'Myanmar Text', 'Pyidaungsu', system-ui, sans-serif`. The system stack is fallback, not a second voice.
@@ -198,9 +226,10 @@ The product uses two voices: a display serif for editorial weight, and a single 
 
 - **display** (h1 — page title) — Source Serif 4 at 600 weight, tight tracking (`-0.01em`), balanced wrap. Default 30px; drops to 28px below the 1040px breakpoint. One per route, lives in the Header component.
 - **heading** (h2 — section title) — Source Serif 4 at 600 weight, default 24px. "Continue listening," "Featured teachers," the live catalogue heading. Never used inline.
-- **body** (default reading text, h3, UI labels) — Inter 14px / 400. h3 escalates to 18px / 600 for track titles and teacher names on detail pages. Captions under titles use Inter at 12px / 600.
+- **body** (default reading text, h3, UI labels) — Inter 14px / 400. h3 escalates to 18px / 600 for track titles and teacher names on detail pages.
+- **label** (small caps metadata, eyebrows, badge text) — Inter 12px / 600, tracking `0.04em`. Used for specimen-style eyebrows and quiet status text. The only place letter-spacing widens beyond the heading tight tracking. Caps never appear in Burmese — the class suppresses them via `text-transform: none` when `lang="my"`.
 
-**Myanmar treatment.** Whenever content contains Burmese characters (the regex `[\u1000-\u109F]` in `src/ui.ts`), the text gets `lang="my"` and a `.myanmar-text` class that increases line-height to 1.8, prevents intra-word breaks (`word-break: keep-all`, `overflow-wrap: normal`), applies `line-break: auto`, and balances the wrap. This is not decoration; Burmese typography breaks badly under Latin defaults. The class is the only place that touches `line-break`, `overflow-wrap`, or `word-break`.
+**Myanmar treatment.** Whenever content contains Burmese characters (the regex `[\u1000-\u109F]` in `src/ui.ts`), the text gets `lang="my"` and a `.myanmar-text` class that increases line-height to 1.8, prevents intra-word breaks (`word-break: keep-all`, `overflow-wrap: normal`), applies `line-break: auto`, and balances the wrap. This is not decoration; Burmese typography breaks badly under Latin defaults. The class is the only place that touches `line-break`, `overflow-wrap`, or `word-break`. Caps are suppressed inside the same class because all-caps Burmese reads as shouty without conveying hierarchy.
 
 **What does not exist.**
 
@@ -216,11 +245,13 @@ The product uses two voices: a display serif for editorial weight, and a single 
 
 The shell is a three-region desktop layout: a fixed left sidebar, a centered main column, and a fixed bottom audio player that floats over the main column.
 
-**Sidebar.** 256px wide at full width, 224px between 1040px and 1180px, and 72px when the user collapses it. It holds the wordmark at the top, six primary routes as full-height buttons, and at the bottom a quiet olive-leaf privacy callout followed by the Collapse control. The collapse button is a textual "Collapse" / icon-only state; the icon-only collapsed state shows tooltips on hover. The sidebar scrolls internally with `scrollbar-gutter: stable` and `overscroll-contain` so scrolling inside it never bleeds into the page.
+**Sidebar.** 256px wide at full width, 224px between 1040px and 1180px, and 72px when the user collapses it. It holds the wordmark at the top, six primary routes as full-height buttons, and at the bottom a quiet privacy callout followed by the Collapse control. The collapse button is a textual "Collapse" / icon-only state; the icon-only collapsed state shows tooltips on hover. The sidebar scrolls internally with `scrollbar-gutter: stable` and `overscroll-contain` so scrolling inside it never bleeds into the page.
 
 **Main column.** Bounded at `max-w-[1520px]` and centered. Below the 1040px breakpoint the outer padding drops from 40px to 24px and the header padding tightens. The Header sits inside this column with the route title and a one-line description; the view content sits below it with 32px of vertical breathing room.
 
-**Audio player.** Fixed to the bottom, anchored to the right edge of the sidebar (`left-(--sidebar-offset)`). 84px tall at full width, 132px when the columns collapse below 1040px. Three zones at full width — track info, transport + scrubber, speed + queue — that reorganize into two rows at compact width (controls row, then the scrubber row, then track info squeezed beside the transport). The player sits on top of `surface` with a single 1px top border and a single soft drop shadow; it is the only element with persistent elevation.
+**Window chrome (macOS).** The Tauri window is opaque — no vibrancy, no transparency, no hidden-inset title bar. The substrate (`#ece6d4` light, `#16180f` dark) extends edge to edge, including under the traffic-light buttons. The traffic lights sit at the macOS default (top-left, ~12px inset, vertically centered on the title-bar row, ~28px tall). The sidebar wordmark starts below the traffic-light row: the sidebar adds a 28px top padding on macOS so the wordmark never collides with the close/minimize/maximize controls. The title-bar area between the traffic lights and the sidebar wordmark is a drag region — clicking and dragging it moves the window, matching macOS expectation. On Windows and Linux the traffic-light inset collapses to 0 and the full sidebar height is content; the window-drag region is the same header strip. The minimum window 860×620 is enforced via Tauri's window constraints and is the same on every platform.
+
+**Audio player.** Fixed to the bottom, anchored to the right edge of the sidebar (`left-(--sidebar-offset)`). 84px tall at full width, 132px when the columns collapse below 1040px. Three zones at full width — track info, transport + scrubber, speed + queue — that reorganize into two rows at compact width (controls row, then the scrubber row, then track info squeezed beside the transport). The player sits on `page` with a single 1px top border and a single soft drop shadow; it is the only persistent elevation.
 
 **Video player.** When the current track is a video, the main column swaps to a 16:9 stage on the left and a track-detail panel on the right, with fullscreen escaping into the webview's native fullscreen. The stage always preserves aspect ratio.
 
@@ -232,79 +263,91 @@ The shell is a three-region desktop layout: a fixed left sidebar, a centered mai
 
 ## Elevation & Depth
 
-The product is almost flat. Depth is used in three places, and only those three.
+The product is almost flat. Depth is used in two places, and only those two.
 
-**The audio player** has a soft upward shadow (`0 -4px 12px rgb(46 46 42 / 0.08)`) so it reads as floating above the catalogue. This is the only persistent elevation.
+**The audio player** has a soft upward shadow (`0 -4px 12px rgb(31 32 36 / 0.08)`) so it reads as floating above the catalogue. This is the only persistent elevation.
 
-**The primary play button** has a small colored shadow at 25% primary alpha that lifts it 5px; on hover it lifts to 7px at 30%. The shadow is the same hue as the button — it reads as the button pushing toward you, not as a generic drop shadow. No other button has a shadow.
+**The primary play button** has a small colored shadow at 25% primary alpha that lifts it 4px; on hover it lifts to 6px at 30%. The shadow is the same hue as the button — it reads as the button pushing toward you, not as a generic drop shadow. No other button has a shadow.
 
-**The current track row** has no shadow at all. Current state is shown by a full-surface tint (`color-mix(in srgb, primary 5%, transparent)`) and an inset 1px ring (`color-mix(in srgb, primary 20%, transparent)`). Depth is replaced by saturation.
-
-**Flat everywhere else.** Cards, list rows, the sidebar, modals, dropdowns, the keyboard cheatsheet, the queue panel — all flat. They may have a 1px border; they do not have a shadow. The cheat sheet opens as an inset surface within the shell, not as a floating panel.
+**Flat everywhere else.** Cards, list rows, the sidebar, modals, dropdowns, the keyboard cheatsheet, the queue panel — all flat. They may have a 1px hairline; they do not have a shadow. The current track row uses no shadow either: current state is shown by a full-surface tint (`color-mix(in srgb, primary 6%, transparent)`) and an inset 1px ring (`color-mix(in srgb, primary 22%, transparent)`). Depth is replaced by saturation. The cheatsheet opens as an inset surface within the shell, not as a floating panel.
 
 ## Shapes
 
 A small, disciplined radius grammar. Three radii, no exceptions.
 
-- **control** (10px) — inputs, navigation buttons in the sidebar, primary buttons, the playback rate select. Anything the user clicks or types into.
-- **card** (14px) — group surfaces: teacher cards, collection cards, the catalogue list wrapper, the track-row card on Home, the privacy callout. Cards hold groups, not single items.
+- **control** (8px) — inputs, navigation buttons in the sidebar, primary buttons, the playback rate select. Anything the user clicks or types into.
+- **card** (12px) — group surfaces: teacher cards, collection cards, the catalogue list wrapper, the track-row card on Home, the privacy callout. Cards hold groups, not single items.
 - **pill** (full round) — filters, badges, the "Video" / "WMA unavailable" chips on rows, the playback speed pill, the inline "Retry" pill, the "Connecting…" indicator, the queue-count dot on the player button.
 
-The grammar is enforced: never use `rounded-card` on a control, never use `rounded-control` on a card. Pills are for status and selection chips, not for buttons that drive primary actions. The primary play button is a pill, but that is a special case — it is both a status indicator ("play" vs "pause") and a control.
+The grammar is enforced: never use `card` on a control, never use `control` on a card. Pills are for status and selection chips, not for buttons that drive primary actions. The primary play button is a pill, but that is a special case — it is both a status indicator ("play" vs "pause") and a control.
 
 There is no square corner anywhere. There are no squircles, no asymmetric radii. The one structural exception is a stage flush-joined to a sibling panel below it — the video player renders its top corners with `rounded-t-card` and `border-b-0` because the bottom edge is owned by the controls panel directly underneath. The two surfaces compose into one continuous shape; treating them as one composite surface is more honest than rounding all four corners and then covering two of them.
 
 ## Components
 
-**Sidebar navigation item.** 48px tall (`h-12`, also `min-h-12`). Icon on the left, label on the right when expanded; icon-only and centered when collapsed. Inactive: `text-ink-muted` on the sidebar surface, hovers to a `bg-soft` wash and `text-ink`. Active: `bg-primary text-on-primary shadow-sm`. Active state uses a full-surface tint, never a colored side stripe.
+**Sidebar navigation item.** 48px tall (`h-12`, also `min-h-12`). Icon on the left, label on the right when expanded; icon-only and centered when collapsed. Inactive: `text-ink-quiet` on the substrate surface, hovers to a `bg-panel` wash and `text-ink`. Active: `bg-primary text-on-primary shadow-sm`. Active state uses a full-surface tint, never a colored side stripe.
 
-**Track row.** Two-column grid — clickable title block on the left, action cluster on the right. Inside a card, rows are separated by 1px borders (`border-b border-b-border last:border-b-0`), with 12px vertical padding and 16px horizontal padding. The play disc is a 44px circle that gains primary color and a small lift on hover; on the current row it sits on `primary` permanently. Action buttons are 44px round icon buttons (favorite, download, enqueue) plus a small text "Queue" pill.
+**Track row.** Two-column grid — clickable title block on the left, action cluster on the right. Inside a card, rows are separated by 1px borders (`border-b border-b-rule last:border-b-0`), with 12px vertical padding and 16px horizontal padding. The play disc is a 44px circle that gains primary color and a small lift on hover; on the current row it sits on `primary` permanently. Action buttons are 44px round icon buttons (favorite, download, enqueue) plus a small text "Queue" pill. The current row is the only row that gets an inset ring + tint; other rows are flush with the card.
 
-**Teacher card.** Three-column grid — avatar (48px), name and count, optional chevron. 112px minimum height, full card padding (16px). Hover lifts the border to `primary/50` and the background to `soft/35%` — no shadow.
+**Teacher card.** Three-column grid — avatar (48px), name and count, optional chevron. 112px minimum height, full card padding (16px). Hover lifts the border to `primary/45` and the background to `panel/40%` — no shadow.
 
-**Search field.** 48px tall, full-width inside its row, with a 20px leading icon and an inline clear button (40px round) when the field has content. The field itself uses the canvas color (so it sits a half-step below the surface around it) with a 1px border. On focus the border becomes primary; the outline shows on top.
+**Search field.** 48px tall, full-width inside its row, with a 20px leading icon and an inline clear button (40px round) when the field has content. The field itself uses the substrate color (so it sits a half-step below the page surface around it) with a 1px border. On focus the border becomes primary; the outline shows on top.
 
-**Filter pill.** 40px tall, padded horizontally, fully rounded. Inactive: `bg-soft text-ink-muted`. Active: `bg-primary text-on-primary`. Hover on inactive darkens the border toward primary at 45%. Pills sit in a wrapping row inside the search card; there is no scroll, no horizontal overflow.
+**Filter pill.** 40px tall, padded horizontally, fully rounded. Inactive: `bg-panel text-ink-quiet`. Active: `bg-primary text-on-primary`. Hover on inactive darkens the border toward primary at 45%. Pills sit in a wrapping row inside the search card; there is no scroll, no horizontal overflow.
 
-**Async surfaces.** Three states: loading (a skeleton block with a single muted pulse on `soft`, `motion-reduce:animate-none`), empty (a soft-bordered card with a short title and one short line of helper copy), error (an `error-soft` background with an `error` border mixed 35% with `border`, an inline error message, and a "Try again" button). Empty and error states sit in the same place the content would, with the same outer dimensions.
+**Marker badge.** A small `marker-quiet` pill with `marker` text and the 12px label role. Used for specimen-style eyebrows ("Featured", "New collection", the inline role tag on a teacher card). Never used for state.
+
+**Async surfaces.** Three states: loading (a skeleton block with a single muted pulse on `panel`, `motion-reduce:animate-none`), empty (a panel-bordered card with a short title and one short line of helper copy), error (an `error-quiet` background with an `error` border mixed 35% with `rule`, an inline error message, and a "Try again" button). Empty and error states sit in the same place the content would, with the same outer dimensions.
 
 **Player.** Fixed bottom footer. The three zones are aligned to a single baseline at full width and re-stack at compact width. The scrubber is a range input with `accent-primary`. The play button uses the only persistent colored shadow. Error states replace the inline "Space / ← / → / ?" hint at the bottom of the track-info zone with the error message plus an inline "Retry" pill; loading replaces it with a small pulsing primary dot and "Connecting…". The queue toggle button shows a primary count badge when the queue is non-empty.
 
-**Sidebar privacy callout.** A 1px-bordered `soft` card, leaf icon in a `secondary/15` disc, a 14px bold "A quiet library" line, and two lines of 12px muted copy: "Your catalogue remains on this device. Audio streams only when you press play." It disappears when the sidebar is collapsed.
+**Sidebar privacy callout.** A 1px-bordered `panel` card, leaf icon in a `primary/12` disc, a 14px bold "A quiet library" line, and two lines of 12px quiet copy: "Your catalogue remains on this device. Audio streams only when you press play." It disappears when the sidebar is collapsed.
 
-**Keyboard cheatsheet.** A single modal panel listing the four shortcuts — Space (play/pause), ←/→ (seek 15s), N (next in queue), ? (this help) — plus Esc to clear search and `/` to focus the active search field. Title row, shortcut row, kbd-styled keycap. Opens centered, closes on Esc or backdrop click.
+**Keyboard cheatsheet.** A single modal panel listing the shortcuts — Space (play/pause), ←/→ (seek 15s), N (next in queue), ? (this help), Esc (clear search / close dialog), `/` and `Cmd+F` (focus the active search field), `Cmd+,` (open Settings — the macOS-native preference shortcut). Application shortcuts use `Cmd` on macOS; the same shortcut bindings map to `Ctrl` on Windows and Linux automatically. Title row, shortcut row, kbd-styled keycap showing the platform-correct modifier (`⌘` on macOS, `Ctrl` elsewhere). Opens centered, closes on Esc or backdrop click.
 
 ## Do's and Don'ts
 
 **Do**
 
-- Use rust for the one thing the user needs to do right now — play, search, the active route, the current row. Keep it single-purpose.
+- Use lichen green for the one thing the user needs to do right now — play, search, the active route, the current row. Keep it single-purpose.
 - Reserve Source Serif 4 for h1 and h2 only. It never appears in body, UI labels, captions, or buttons.
-- Reach for the muted ink and the soft surface before reaching for a second color. The palette is two accents, not five.
-- Switch the typography voice with `lang="my"` and the `.myanmar-text` class the moment Burmese characters appear. Never let Burmese fall onto Latin defaults.
-- Keep list rows inside a single card with shared borders. Do not give each row its own card.
+- Reach for the quiet ink and the panel surface before reaching for a second color. The palette is one accent, one marker, one error — not five.
+- Use the marker bronze only for specimen-style eyebrows and quiet status badges. It is not a second brand color and never drives interaction.
+- Switch the typography voice with `lang="my"` and the `.myanmar-text` class the moment Burmese characters appear. Never let Burmese fall onto Latin defaults. Suppress all-caps inside the same class.
+- Keep list rows inside a single card with shared hairlines. Do not give each row its own card.
 - Use `auto-fit` grids with a `280px` minimum for catalogue tiles. Avoid column-count breakpoints.
 - Apply the focus ring (`color-mix` primary at 55%, 3px, 3px offset) to every interactive element on `:focus-visible`. It is the only focus style.
 - Show loading, empty, and error states in the same place content would sit, using the `AsyncState` component. Never let the catalogue silently stay on the previous result.
 - Honor `prefers-reduced-motion`: collapse the skeleton pulse, the button press scale, and the hover lift into instant transitions.
 - Verify dark-mode contrast for every new light-mode pairing. The dark palette is a mirror, not an afterthought.
 - Treat the catalogue as the hero. There is no hero moment on any route.
-- When in doubt, reach for `ink-muted` and `soft` before reaching for `tertiary` brass or `secondary` olive. Brass and olive are not for general use.
-- Trust the radius grammar. 10 for controls, 14 for cards, full for pills. No exceptions.
+- Trust the radius grammar. 8 for controls, 12 for cards, full for pills. No exceptions.
+- Reach for `panel` and `ink-quiet` before reaching for the marker. The marker is ornamental; it does not carry meaning.
+- Use `Cmd` as the macOS modifier for app-level shortcuts (search, settings, quit). Map the same shortcut to `Ctrl` on Windows and Linux. Single keys (`Space`, `←`/`→`, `N`, `?`, `Esc`, `/`) stay unbound to any modifier on every platform.
+- Honor the macOS system appearance when the user has chosen `system` theme by listening to `prefers-color-scheme`. When the user has chosen `light` or `dark` explicitly, follow that choice and ignore the system signal.
+- Keep the Tauri window opaque. Do not enable vibrancy, transparency, or hidden-inset title bars — the substrate extends edge to edge so the herbarium paper is continuous from chrome to chrome.
+- Respect native macOS behavior where it is already correct: trackpad scroll momentum, text selection inside the catalogue, the standard context menu, the standard close/minimize/maximize controls. Override only when the platform default fails an accessibility or design constraint, and document the override.
 
 **Don't**
 
 - Don't add a hero moment to the title page, the route header, or any section. The catalogue is the hero.
 - Don't use gradients anywhere — not on text, not on buttons, not on cards, not on the player, not on backgrounds.
 - Don't use glassmorphism, blur, or translucency on the sidebar, header, cards, or the player. Surfaces are opaque.
-- Don't paint text, eyebrows, or section labels in rust. Rust is for action and selection only. Use weight and ink-muted for hierarchy.
+- Don't paint text, eyebrows, or section labels in lichen green. Green is for action and selection only. Use weight and `ink-quiet` for hierarchy.
 - Don't add drop shadows to cards, teacher cards, collection cards, or list rows. Cards are flat. The only shadows are the player's upward lift and the primary play button's colored lift.
 - Don't use a colored side stripe to indicate the active sidebar item, the current track, or any selected state. Use full-surface tint and inset ring.
 - Don't introduce italics, display serifs in body, or monospace body text. Emphasis comes from weight and color, not from a second voice.
-- Don't widen the radius grammar. Three radii (10px control, 14px card, full pill) — no others. No square corners, no asymmetric radii.
+- Don't widen the radius grammar. Three radii (8px control, 12px card, full pill) — no others. No square corners, no asymmetric radii.
 - Don't animate decorative motion. The only animation in the interface is the loading pulse, the hover/active state changes, and the range scrubber's filled portion.
 - Don't reorder the catalogue silently to surface featured content. Featured teachers live in their own labelled section; the grid itself sorts by an intrinsic signal.
 - Don't break the layout below 860px. The shell, sidebar, header, and a usable player must remain operable at the minimum supported window.
 - Don't widen the CSP or introduce a second domain to the trusted media allowlist without an explicit design decision.
-- Don't introduce grain, paper-fiber, or any decorative surface texture on canvas, surface, or soft. The interface is untextured.
+- Don't introduce grain, paper-fiber, or any decorative surface texture on substrate, page, or panel. The herbarium pages are smooth paper, not parchment.
 - Don't use Source Serif 4 (or any serif) for UI labels, captions, buttons, or any role below h2. Serif is editorial weight, not UI voice.
+- Don't use the marker bronze for state, for errors, or for interactive accents. The marker is quiet ornament only.
+- Don't bind app-level shortcuts to `Ctrl` on macOS. macOS users expect `Cmd`. The shortcut handler maps the same binding to `Ctrl` on Windows and Linux automatically — never show both at once.
+- Don't enable window vibrancy, transparency, or hidden-inset title bars. The window is opaque substrate.
+- Don't override the macOS system context menu or the standard text-selection color without a documented reason. Selection inside the catalogue should read on the substrate without becoming a design statement.
+- Don't hide the traffic lights, move them, or render custom window controls. They live where macOS puts them.
+- Don't let the sidebar wordmark collide with the traffic-light row. The 28px macOS top inset is mandatory.
+- Don't use Ctrl-click as a custom binding for the right-click affordance on macOS. Two-finger trackpad tap and `Ctrl`+click both produce a context event natively — let the platform handle it.
