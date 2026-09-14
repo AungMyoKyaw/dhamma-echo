@@ -42,7 +42,7 @@
       {#each locales as option (option.value)}<button
           class="inline-flex min-h-11 items-center justify-center rounded-control px-5 text-sm leading-normal font-bold transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {appState
             .settings.locale === option.value
-            ? 'bg-app-surface text-app-primary'
+            ? 'bg-app-primary text-app-primary-ink'
             : 'text-app-muted'}"
           type="button"
           aria-pressed={appState.settings.locale === option.value}
@@ -61,7 +61,7 @@
       {#each themes as theme (theme.value)}<button
           class="inline-flex min-h-11 items-center justify-center rounded-control px-5 text-sm leading-normal font-bold transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 {appState
             .settings.theme === theme.value
-            ? 'bg-app-surface text-app-primary'
+            ? 'bg-app-primary text-app-primary-ink'
             : 'text-app-muted'}"
           type="button"
           aria-pressed={appState.settings.theme === theme.value}
@@ -88,7 +88,7 @@
           {#if appState.settings.playbackRate !== 1}<button
               type="button"
               onclick={resetRate}
-              class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted hover:bg-app-soft hover:text-app"
+              class="inline-flex min-h-11 shrink-0 items-center rounded-control border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted hover:bg-app-soft hover:text-app"
               >{t(locale, "settings.playback.speed.reset")}</button
             >{/if}
         </div></label
@@ -117,7 +117,7 @@
     <button
       type="button"
       onclick={() => (helpOpen = true)}
-      class="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+      class="mt-4 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,color,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
       >{t(locale, "settings.keyboard.view")}</button
     >
   </div>

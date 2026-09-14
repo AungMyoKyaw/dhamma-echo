@@ -76,7 +76,7 @@
     {#if showAction}
       {@const label = actionLabel ?? ""}
       <button
-        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
+        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98]"
         type="button"
         onclick={() => onaction?.()}>{label}</button
       >
@@ -89,7 +89,7 @@
     <h2 class="text-xl font-semibold">{errorTitle ?? t(locale, "async.error.title")}</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>
     {#if onretry !== undefined}<button
-        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-full bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
+        class="mt-5 inline-flex min-h-11 items-center justify-center rounded-control bg-app-primary px-5 text-sm leading-normal font-bold text-app-primary-ink transition-[background-color,border-color,color,box-shadow,transform] duration-150 enabled:hover:bg-app-primary-strong enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         onclick={onretry}>{t(locale, "async.retry")}</button
       >{/if}

@@ -39,7 +39,7 @@
 {#if track !== null}
   <QueuePanel {state} {app} />
   <footer
-    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)] max-[1040px]:min-h-[132px] max-[1040px]:px-4 motion-safe:animate-[fade-in_180ms_ease-out]"
+    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 motion-safe:animate-[fade-in_180ms_ease-out]"
     aria-label={t(locale, "player.region")}
   >
     <div
@@ -103,7 +103,7 @@
             title={t(locale, "player.back15")}><span><Icon name="backward15" /></span></button
           >
           <button
-            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_7px_18px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
+            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_6px_16px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
             type="button"
             onclick={() => void app.togglePlayback()}
             aria-label={playLabel}

@@ -48,7 +48,7 @@
         </p>
       </div>
       <button
-        class="inline-flex min-h-11 items-center rounded-full px-3 text-xs font-bold text-app-primary hover:bg-app-soft disabled:cursor-not-allowed disabled:opacity-45"
+        class="inline-flex min-h-11 items-center rounded-control px-3 text-xs font-bold text-app-primary hover:bg-app-soft disabled:cursor-not-allowed disabled:opacity-45"
         type="button"
         disabled={appState.player.queue.length === 0}
         onclick={clearWithUndo}>{t(locale, "queue.clear")}</button
@@ -105,7 +105,7 @@
           <button
             type="button"
             onclick={restore}
-            class="inline-flex min-h-11 items-center rounded-full bg-app-primary px-3 text-xs leading-normal font-bold text-app-primary-ink hover:bg-app-primary-strong"
+            class="inline-flex min-h-11 items-center rounded-control bg-app-primary px-3 text-xs leading-normal font-bold text-app-primary-ink hover:bg-app-primary-strong"
             >{t(locale, "queue.undo")}</button
           >
           <button

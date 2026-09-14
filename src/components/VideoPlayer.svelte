@@ -42,7 +42,7 @@
   let sectionClass = $derived(
     fullscreen
       ? "h-full w-full overflow-hidden bg-black"
-      : "mx-auto max-w-[1120px] overflow-hidden rounded-t-card border border-b-0 border-app-border bg-app-surface shadow-[0_-4px_12px_rgb(46_46_42_/_0.08)]"
+      : "mx-auto max-w-[1120px] overflow-hidden rounded-t-card border border-b-0 border-app-border bg-app-surface"
   );
   let layoutClass = $derived(
     fullscreen
@@ -256,7 +256,7 @@
             bind:this={exitFullscreenButton}
             type="button"
             onclick={() => void exitFullscreen()}
-            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-full border border-white bg-black px-3 text-xs leading-normal font-bold text-white transition-[background-color,border-color] duration-150 hover:bg-app-bg"
+            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-control border border-white bg-black px-3 text-xs leading-normal font-bold text-white transition-[background-color,border-color] duration-150 hover:bg-app-bg"
             aria-label={t(locale, "video.fullscreen.exit")}
             title={t(locale, "video.fullscreen.exit")}
           >
@@ -310,7 +310,7 @@
             <button
               type="button"
               onclick={() => void close()}
-              class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
+              class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-control border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
               aria-label={t(locale, "video.closePlayer")}
               title={t(locale, "video.closePlayer")}
             >
@@ -347,7 +347,7 @@
               <button
                 type="button"
                 onclick={() => void app.togglePlayback()}
-                class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_5px_14px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
+                class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
                 aria-label={loading
                   ? t(locale, "video.pauseLoading")
                   : playing
@@ -425,7 +425,7 @@
                 <button
                   type="button"
                   onclick={() => void toggleFullscreen()}
-                  class="inline-flex min-h-11 items-center gap-2 rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
+                  class="inline-flex min-h-11 items-center gap-2 rounded-control border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted transition-[background-color,border-color,color] duration-150 hover:border-app-primary hover:bg-app-soft hover:text-app-primary"
                   aria-label={fullscreen
                     ? t(locale, "video.fullscreen.exit")
                     : t(locale, "video.fullscreen.enter")}
