@@ -550,7 +550,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "shortcuts.toggleSidebar": "ဘေးဘားကို ခေါက်မည် သို့မဟုတ် ပြန်ဖွင့်မည်",
   "shortcuts.escape": "ဤဒိုင်ယာလော့ သို့မဟုတ် လက်ရှိ ဝင်းဒိုးကို ပိတ်မည်",
   "shortcuts.focusSearch": "ရှာဖွေမှုကွက်လပ်ကို အာရုံစိုက်မည်",
-  "shortcuts.openSettings": "ဆ฀်တင်များကို ဖွင့်မည်",
+  "shortcuts.openSettings": "ဆက်တင်များကို ဖွင့်မည်",
   "shortcuts.searchNote":
     "ရှာဖွေမှုကွက်လပ်များတွင် တည်းဖြတ်ရန် ကီးဘုတ်ကို ဆက်လက် အသုံးပြုနိုင်သည်။ ရိုက်ထားသည်ကို ဖျက်ရန် ရှာဖွေမှုကွက်လပ်အတွင်းတွင် {key} ကို နှိပ်ပါ။",
 

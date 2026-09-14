@@ -57,7 +57,7 @@ export function detectPlatform(): "macos" | "windows" | "linux" | "browser" {
   return "browser";
 }
 
-export function applyPlatformClass(target: HTMLElement = document.body): void {
+export function applyPlatformClass(target: HTMLElement = document.documentElement): void {
   const platform = detectPlatform();
   target.dataset.platform = platform;
 }

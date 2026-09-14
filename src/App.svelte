@@ -35,6 +35,21 @@
   });
 
   function keydown(event: KeyboardEvent): void {
+    // Application-level shortcuts run before the editable-target guard so
+    // Cmd/Ctrl+, still opens Settings while a search field has focus. Cmd/Ctrl+F
+    // keeps focus in (or moves it to) the active route's search field.
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
+      event.preventDefault();
+      const searchInput =
+        globalThis.document.querySelector<HTMLInputElement>('input[name="query"]');
+      searchInput?.focus();
+      return;
+    }
+    if ((event.metaKey || event.ctrlKey) && event.key === ",") {
+      event.preventDefault();
+      app.dispatch({ type: "navigate", route: "settings" });
+      return;
+    }
     if (isEditableTarget(event.target)) return;
     if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
       event.preventDefault();
@@ -80,20 +95,6 @@
     if (event.key === "[") {
       event.preventDefault();
       app.setSidebarCollapsed(!appState.ui.sidebarCollapsed);
-    }
-    // macOS uses Cmd (metaKey); Windows and Linux use Ctrl. The cheatsheet
-    // renders the same binding with the platform-correct modifier glyph.
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
-      event.preventDefault();
-      const searchInput =
-        globalThis.document.querySelector<HTMLInputElement>('input[name="query"]');
-      searchInput?.focus();
-      return;
-    }
-    if ((event.metaKey || event.ctrlKey) && event.key === ",") {
-      event.preventDefault();
-      app.dispatch({ type: "navigate", route: "settings" });
-      return;
     }
   }
 

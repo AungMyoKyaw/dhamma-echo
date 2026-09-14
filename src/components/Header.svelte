@@ -4,6 +4,7 @@
   let { state }: { state: AppState } = $props();
   let label = $derived(routeLabel(state.route, state.settings.locale));
   let eyebrowMyanmar = $derived(isMyanmarText(label.eyebrow));
+  let titleMyanmar = $derived(isMyanmarText(label.title));
   let detailMyanmar = $derived(isMyanmarText(label.detail));
 </script>
 
@@ -17,7 +18,12 @@
     >
       {label.eyebrow}
     </p>
-    <h1 class="mt-2 text-3xl font-semibold tracking-[-0.01em] max-[1040px]:text-[1.75rem]">
+    <h1
+      class="mt-2 text-3xl font-semibold tracking-[-0.01em] max-[1040px]:text-[1.75rem] {titleMyanmar
+        ? 'myanmar-text'
+        : ''}"
+      lang={titleMyanmar ? "my" : undefined}
+    >
       {label.title}
     </h1>
     <p

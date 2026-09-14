@@ -115,6 +115,7 @@
 }
 
 .myanmar-text.myanmar-text {
+  font-family: var(--font-sans);
   line-height: 1.8;
   padding-block: 0.2em;
   line-break: auto;
@@ -186,13 +187,13 @@ select:focus-visible,
 /* macOS window chrome — opaque substrate extends under the traffic-light row.
    The 28px top inset on the sidebar keeps the wordmark clear of the close,
    minimize, and maximize buttons at the top-left of the window. The default
-   inset is 0; `applyPlatformClass()` from runtime.ts sets
-   `body[data-platform="macos"]` which lifts the inset to 28px on macOS only. */
+   inset is 0; `applyPlatformClass()` from runtime.ts sets the platform on
+   <html>, where dependent root tokens resolve against the macOS override. */
 :root {
   --macos-titlebar-inset: 0px;
 }
 
-body[data-platform="macos"] {
+:root[data-platform="macos"] {
   --macos-titlebar-inset: 28px;
 }
 

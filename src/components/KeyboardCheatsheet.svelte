@@ -4,7 +4,7 @@
   import Icon from "./Icon.svelte";
   let { locale, onclose }: { locale: AppLocale; onclose: () => void } = $props();
   let dialog: HTMLDialogElement;
-  // `data-platform` is set on <body> by `applyPlatformClass()` in runtime.ts.
+  // `data-platform` is set on <html> by `applyPlatformClass()` in runtime.ts.
   // macOS shows the ⌘ glyph in keycaps; Windows and Linux show "Ctrl".
   let platform = $state<string>("browser");
   let modifier = $derived(platform === "macos" ? "⌘" : "Ctrl");
@@ -25,7 +25,7 @@
     { kind: "single", keys: ["Esc"], action: "shortcuts.escape" }
   ]);
   $effect(() => {
-    platform = document.body.dataset.platform ?? "browser";
+    platform = document.documentElement.dataset.platform ?? "browser";
     dialog.showModal();
     return () => {
       if (dialog.open) dialog.close();
@@ -45,7 +45,9 @@
   onclick={backdrop}
   onclose={handleClose}
 >
-  <div class="w-full max-w-md rounded-card border border-app-border bg-app-surface p-6">
+  <div
+    class="max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-card border border-app-border bg-app-surface p-6"
+  >
     <div class="flex items-start justify-between gap-3">
       <div>
         <h2 id="keyboard-shortcuts-title" class="text-lg font-semibold">
