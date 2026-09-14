@@ -39,30 +39,32 @@
 {#if track !== null}
   <QueuePanel {state} {app} />
   <footer
-    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 motion-safe:animate-[fade-in_180ms_ease-out]"
+    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 max-[1040px]:py-2 motion-safe:animate-[fade-in_180ms_ease-out]"
     aria-label={t(locale, "player.region")}
   >
     <div
-      class="grid grid-cols-[minmax(180px,0.9fr)_minmax(340px,1.45fr)_minmax(210px,0.9fr)] items-start gap-5 max-[1180px]:grid-cols-[minmax(150px,0.75fr)_minmax(300px,1.35fr)_minmax(180px,auto)] max-[1180px]:gap-4 max-[1040px]:grid-cols-[minmax(0,1fr)_auto] max-[1040px]:gap-x-3 max-[1040px]:gap-y-2"
+      class="grid grid-cols-[minmax(180px,0.9fr)_minmax(340px,1.45fr)_minmax(210px,0.9fr)] items-start gap-5 max-[1180px]:grid-cols-[minmax(150px,0.75fr)_minmax(300px,1.35fr)_minmax(180px,auto)] max-[1180px]:gap-4 max-[1040px]:grid-cols-[minmax(0,1fr)_auto] max-[1040px]:gap-x-3 max-[1040px]:gap-y-1"
     >
       <div class="player-track min-w-0 self-center" aria-live="polite">
         <p
-          class="line-clamp-2 break-words text-sm font-bold {isMyanmarText(track.title)
-            ? 'myanmar-text'
-            : ''}"
+          class="line-clamp-2 break-words text-sm font-bold {state.player.error
+            ? 'max-[1040px]:hidden'
+            : 'max-[1040px]:line-clamp-1'} {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
           lang={isMyanmarText(track.title) ? "my" : undefined}
         >
           {truncateTrackTitle(track.title)}
         </p>
         <p
-          class="truncate text-xs text-app-muted {isMyanmarText(track.teacherName)
+          class="truncate text-xs text-app-muted max-[1040px]:hidden {isMyanmarText(
+            track.teacherName
+          )
             ? 'myanmar-text'
             : ''}"
           lang={isMyanmarText(track.teacherName) ? "my" : undefined}
         >
           {track.teacherName || t(locale, "player.unknownTeacher")}
         </p>
-        <div class="mt-1 min-h-4">
+        <div class="mt-1 min-h-4 max-[1040px]:mt-0">
           {#if state.player.error}<span
               class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-error"
               role="alert"
@@ -85,13 +87,13 @@
               class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-app-muted max-[980px]:hidden"
               >{t(locale, "player.hint")}</span
             ><span
-              class="hidden max-[980px]:inline-flex min-h-10 items-center rounded-full border border-app-border bg-transparent px-3 text-xs leading-normal font-bold text-app-muted"
+              class="hidden items-center text-xs font-semibold text-app-muted max-[980px]:inline-flex"
               aria-hidden="true">{t(locale, "player.hint.compact")}</span
             >{/if}
         </div>
       </div>
       <div
-        class="player-transport grid min-w-0 grid-rows-[3rem_auto] gap-y-[0.3rem] self-start max-[1040px]:col-span-2 max-[1040px]:row-start-2"
+        class="player-transport grid min-w-0 grid-rows-[3rem_auto] gap-y-[0.3rem] self-start max-[1040px]:col-span-2 max-[1040px]:row-start-2 max-[1040px]:grid-rows-[2.75rem_auto] max-[1040px]:gap-y-1"
       >
         <div class="flex items-center justify-center gap-2" aria-label="Playback controls">
           <button
@@ -103,7 +105,7 @@
             title={t(locale, "player.back15")}><span><Icon name="backward15" /></span></button
           >
           <button
-            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_6px_16px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
+            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_6px_16px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 max-[1040px]:size-11 [&_svg]:size-full"
             type="button"
             onclick={() => void app.togglePlayback()}
             aria-label={playLabel}

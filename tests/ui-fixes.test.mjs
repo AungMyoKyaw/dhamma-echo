@@ -120,6 +120,27 @@ test("C2 player zones share a top control axis and center track metadata across 
   );
 });
 
+test("C3 compact player preserves the 132px minimum-window contract", async () => {
+  const src = await sources.player();
+  assert.match(src, /max-\[1040px\]:min-h-\[132px\]/, "compact footer height token missing");
+  assert.match(src, /max-\[1040px\]:py-2/, "compact footer must use reduced block padding");
+  assert.match(
+    src,
+    /player-transport[^"]*max-\[1040px\]:grid-rows-\[2\.75rem_auto\]/,
+    "compact transport rows must fit inside the 132px footer"
+  );
+  assert.match(
+    src,
+    /text-app-muted max-\[1040px\]:hidden/,
+    "compact footer must hide the teacher metadata line"
+  );
+  assert.doesNotMatch(
+    src,
+    /max-\[980px\]:inline-flex min-h-10/,
+    "compact keyboard hint must not force the footer beyond 132px"
+  );
+});
+
 // ─── Track D — settings alignment ───────────────────────────────────────────
 
 test("D1 playback settings use shared detail text so controls align", async () => {
