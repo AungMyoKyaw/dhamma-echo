@@ -34,7 +34,8 @@
 
 <label class="relative block {className}">
   {#if visibleLabel}<span
-      class="mb-1.5 block text-xs font-bold tracking-[0.04em] text-app-muted uppercase">{label}</span
+      class="mb-1.5 block text-xs font-bold tracking-[0.04em] text-app-muted uppercase"
+      >{label}</span
     >{:else}<span class="sr-only">{label}</span>{/if}
   <span class="relative block">
     <span class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-app-muted"

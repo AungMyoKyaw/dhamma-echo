@@ -85,7 +85,8 @@
     // renders the same binding with the platform-correct modifier glyph.
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
       event.preventDefault();
-      const searchInput = globalThis.document.querySelector<HTMLInputElement>('input[name="query"]');
+      const searchInput =
+        globalThis.document.querySelector<HTMLInputElement>('input[name="query"]');
       searchInput?.focus();
       return;
     }
