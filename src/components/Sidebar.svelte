@@ -38,7 +38,7 @@
     : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface pt-[var(--sidebar-padding-top)] pb-[var(--sidebar-padding-bottom)] [scrollbar-gutter:stable]"
   aria-label={t(locale, "nav.primary")}
 >
-  <div use:dragWindow class="flex items-center {collapsed ? 'justify-center' : 'gap-3 px-2'}">
+  <div use:dragWindow class="flex items-center pt-3 {collapsed ? 'justify-center' : 'gap-3 px-2'}">
     <img src="./logo.svg" alt="" class="size-11 rounded-control" />
     {#if !collapsed}<div>
         <p class="text-lg font-bold tracking-tight">{t(locale, "app.name")}</p>
