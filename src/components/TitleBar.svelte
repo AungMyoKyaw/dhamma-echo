@@ -45,7 +45,7 @@
 
 <div
   use:dragWindow
-  class="fixed inset-x-0 top-0 z-30 flex h-(--titlebar-height) items-stretch bg-app-bg select-none"
+  class="fixed inset-x-0 top-0 z-30 flex h-(--titlebar-height) items-stretch border-b border-app-border bg-app-bg select-none"
 >
   <div class="flex-1" aria-hidden="true"></div>
   {#if showCustomControls}

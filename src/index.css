@@ -183,18 +183,16 @@ select:focus-visible,
 
 /* Window chrome — the Tauri window is opaque on every platform and the
    substrate extends edge to edge. A fixed drag strip sits at the top of the
-   webview (TitleBar.svelte). On macOS the strip is 28px and shares the row
-   with the native traffic lights (overlay title-bar style). On Windows and
-   Linux the strip is 32px and renders custom close / minimize / maximize
-   buttons. The default applies in browser preview and on any unrecognised
-   platform; `applyPlatformClass()` from runtime.ts sets the platform on
-   <html>, where dependent root tokens resolve against the macOS override. */
+   webview (TitleBar.svelte). The strip is 36px on every platform: enough to
+   clear the ~28px macOS traffic-light row with breathing room below, and
+   enough room for the Windows / Linux custom control buttons. A 1px hairline
+   border sits at the bottom of the strip (rendered by TitleBar.svelte) so
+   the chrome-to-content boundary is visible even when the strip itself is
+   invisible on macOS. The default applies in browser preview and on any
+   unrecognised platform; `applyPlatformClass()` from runtime.ts sets the
+   platform on <html>. */
 :root {
-  --titlebar-height: 32px;
-}
-
-:root[data-platform="macos"] {
-  --titlebar-height: 28px;
+  --titlebar-height: 36px;
 }
 
 /* Sidebar padding combines the titlebar height with the regular top padding
