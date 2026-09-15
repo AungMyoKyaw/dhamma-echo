@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { detectPlatform, getNativeChrome } from "../runtime.js";
+  import { detectPlatform, dragWindow, getNativeChrome } from "../runtime.js";
   import Icon from "./Icon.svelte";
 
   let platform = $derived(detectPlatform());
@@ -44,10 +44,10 @@
 </script>
 
 <div
-  data-tauri-drag-region
+  use:dragWindow
   class="fixed inset-x-0 top-0 z-30 flex h-(--titlebar-height) items-stretch bg-app-bg select-none"
 >
-  <div class="flex-1" data-tauri-drag-region aria-hidden="true"></div>
+  <div class="flex-1" aria-hidden="true"></div>
   {#if showCustomControls}
     <div class="flex items-center gap-0.5 pr-2 max-[1040px]:pr-1">
       <button

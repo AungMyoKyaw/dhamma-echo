@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   applyPlatformClass,
   detectPlatform,
+  dragWindow,
   getNativeChrome,
   getNativeWindow,
   isEditableTarget,
@@ -47,7 +48,8 @@ function fullWindowMock() {
     close: async () => {},
     minimize: async () => {},
     isMaximized: async () => false,
-    toggleMaximize: async () => false
+    toggleMaximize: async () => false,
+    startDragging: () => {}
   };
 }
 
@@ -76,6 +78,163 @@ test("getNativeChrome returns null outside Tauri", () => {
   const previous = globalThis.window;
   globalThis.window = {};
   assert.equal(getNativeChrome(), null);
+  globalThis.window = previous;
+});
+
+function installDragHost(startDragging) {
+  const listeners = new Map();
+  return {
+    host: {
+      addEventListener(name, handler) {
+        listeners.set(name, handler);
+      },
+      removeEventListener(name) {
+        listeners.delete(name);
+      }
+    },
+    fire(target) {
+      const handler = listeners.get("mousedown");
+      assert.equal(typeof handler, "function");
+      const preventDefaultCalls = [];
+      const event = {
+        button: 0,
+        target,
+        preventDefault() {
+          preventDefaultCalls.push(true);
+        }
+      };
+      handler(event);
+      return { preventDefaultCalls };
+    },
+    destroy(action) {
+      action.destroy();
+    },
+    startDragging
+  };
+}
+
+test("dragWindow calls startDragging on left mousedown over the host", () => {
+  const previous = globalThis.window;
+  let dragged = false;
+  globalThis.window = {
+    __TAURI__: {
+      window: {
+        getCurrentWindow: () => ({
+          isFullscreen: async () => false,
+          setFullscreen: async () => {},
+          close: async () => {},
+          minimize: async () => {},
+          isMaximized: async () => false,
+          toggleMaximize: async () => false,
+          startDragging: () => {
+            dragged = true;
+          }
+        })
+      }
+    }
+  };
+  const harness = installDragHost();
+  const action = dragWindow(harness.host);
+  const { preventDefaultCalls } = harness.fire({ tagName: "DIV", closest: () => null });
+  harness.destroy(action);
+  assert.equal(dragged, true);
+  assert.equal(preventDefaultCalls.length, 1);
+  globalThis.window = previous;
+});
+test("dragWindow ignores non-left mouse buttons", () => {
+  const previous = globalThis.window;
+  let dragged = false;
+  globalThis.window = {
+    __TAURI__: {
+      window: {
+        getCurrentWindow: () => ({
+          isFullscreen: async () => false,
+          setFullscreen: async () => {},
+          close: async () => {},
+          minimize: async () => {},
+          isMaximized: async () => false,
+          toggleMaximize: async () => false,
+          startDragging: () => {
+            dragged = true;
+          }
+        })
+      }
+    }
+  };
+  const listeners = new Map();
+  const host = {
+    addEventListener(name, handler) {
+      listeners.set(name, handler);
+    },
+    removeEventListener(name) {
+      listeners.delete(name);
+    }
+  };
+  const action = dragWindow(host);
+  const handler = listeners.get("mousedown");
+  handler({ button: 2, target: { tagName: "DIV", closest: () => null }, preventDefault() {} });
+  assert.equal(dragged, false);
+  action.destroy();
+  globalThis.window = previous;
+});
+test("dragWindow ignores mousedown on interactive descendants", () => {
+  const previous = globalThis.window;
+  let dragged = false;
+  globalThis.window = {
+    __TAURI__: {
+      window: {
+        getCurrentWindow: () => ({
+          isFullscreen: async () => false,
+          setFullscreen: async () => {},
+          close: async () => {},
+          minimize: async () => {},
+          isMaximized: async () => false,
+          toggleMaximize: async () => false,
+          startDragging: () => {
+            dragged = true;
+          }
+        })
+      }
+    }
+  };
+  const listeners = new Map();
+  const host = {
+    addEventListener(name, handler) {
+      listeners.set(name, handler);
+    },
+    removeEventListener(name) {
+      listeners.delete(name);
+    }
+  };
+  const action = dragWindow(host);
+  const handler = listeners.get("mousedown");
+  const button = {
+    tagName: "BUTTON",
+    closest(selector) {
+      return selector.includes("button") ? button : null;
+    }
+  };
+  handler({ button: 0, target: button, preventDefault() {} });
+  assert.equal(dragged, false);
+  action.destroy();
+  globalThis.window = previous;
+});
+test("dragWindow is a no-op outside Tauri", () => {
+  const previous = globalThis.window;
+  globalThis.window = {};
+  const listeners = new Map();
+  const host = {
+    addEventListener(name, handler) {
+      listeners.set(name, handler);
+    },
+    removeEventListener(name) {
+      listeners.delete(name);
+    }
+  };
+  const action = dragWindow(host);
+  // No throw, no drag attempt.
+  assert.equal(typeof action.destroy, "function");
+  action.destroy();
   globalThis.window = previous;
 });
 

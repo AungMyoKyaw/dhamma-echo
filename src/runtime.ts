@@ -11,6 +11,7 @@ export interface NativeWindowChromeBridge {
   minimize: () => Promise<void>;
   isMaximized: () => Promise<boolean>;
   toggleMaximize: () => Promise<boolean>;
+  startDragging: () => void;
 }
 
 export type NativeWindow = NativeWindowFullscreenBridge & NativeWindowChromeBridge;
@@ -44,6 +45,44 @@ export function getNativeWindow(): NativeWindow | null {
 
 export function getNativeChrome(): NativeWindowChromeBridge | null {
   return getNativeWindow();
+}
+
+/**
+ * Svelte action: turns a host element into a window-drag area. Calls
+ * `startDragging()` on the native window bridge when the user presses
+ * the left mouse button on the host, unless the press originated on
+ * an interactive descendant (button, link, form control). This is the
+ * primary drag mechanism on every platform and intentionally does NOT
+ * rely on Tauri's `data-tauri-drag-region` data attribute, which is
+ * unreliable on macOS when combined with the overlay title-bar style.
+ */
+export function dragWindow(node: HTMLElement): { destroy(): void } {
+  function isInteractive(target: EventTarget | null): boolean {
+    if (target === null || typeof target !== "object") return false;
+    const element = target as { closest?: (selector: string) => unknown };
+    return (
+      typeof element.closest === "function" &&
+      element.closest(
+        "button, a, input, select, textarea, summary, [role='button'], [role='checkbox'], [role='menuitem'], [role='option'], [role='tab'], [data-no-drag]"
+      ) !== null
+    );
+  }
+
+  function onMouseDown(event: MouseEvent): void {
+    if (event.button !== 0) return;
+    if (isInteractive(event.target)) return;
+    const chrome = getNativeChrome();
+    if (chrome === null) return;
+    event.preventDefault();
+    chrome.startDragging();
+  }
+
+  node.addEventListener("mousedown", onMouseDown);
+  return {
+    destroy(): void {
+      node.removeEventListener("mousedown", onMouseDown);
+    }
+  };
 }
 
 export function isEditableTarget(target: EventTarget | null): boolean {
