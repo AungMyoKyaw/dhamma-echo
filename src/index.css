@@ -181,30 +181,32 @@ select:focus-visible,
   }
 }
 
-/* macOS window chrome — opaque substrate extends under the traffic-light row.
-   The 28px top inset on the sidebar keeps the wordmark clear of the close,
-   minimize, and maximize buttons at the top-left of the window. The default
-   inset is 0; `applyPlatformClass()` from runtime.ts sets the platform on
+/* Window chrome — the Tauri window is opaque on every platform and the
+   substrate extends edge to edge. A fixed drag strip sits at the top of the
+   webview (TitleBar.svelte). On macOS the strip is 28px and shares the row
+   with the native traffic lights (overlay title-bar style). On Windows and
+   Linux the strip is 32px and renders custom close / minimize / maximize
+   buttons. The default applies in browser preview and on any unrecognised
+   platform; `applyPlatformClass()` from runtime.ts sets the platform on
    <html>, where dependent root tokens resolve against the macOS override. */
 :root {
-  --macos-titlebar-inset: 0px;
+  --titlebar-height: 32px;
 }
 
 :root[data-platform="macos"] {
-  --macos-titlebar-inset: 28px;
+  --titlebar-height: 28px;
 }
 
-/* Sidebar padding combines the macOS traffic-light inset with the regular
-   top padding so the wordmark stays clear of the close/minimize/maximize
-   buttons on macOS while still sitting at the normal offset elsewhere. */
+/* Sidebar padding combines the titlebar height with the regular top padding
+   so the wordmark stays clear of the chrome strip on every platform. */
 :root {
-  --sidebar-padding-top: max(1.5rem, var(--macos-titlebar-inset));
+  --sidebar-padding-top: max(1.5rem, var(--titlebar-height));
   --sidebar-padding-bottom: 1.5rem;
 }
 
 @media (max-width: 1040px) {
   :root {
-    --sidebar-padding-top: max(1rem, var(--macos-titlebar-inset));
+    --sidebar-padding-top: max(1rem, var(--titlebar-height));
     --sidebar-padding-bottom: 0.25rem;
   }
 }

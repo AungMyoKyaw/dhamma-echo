@@ -15,6 +15,9 @@
     | "more"
     | "search"
     | "close"
+    | "chrome-minimize"
+    | "chrome-maximize"
+    | "chrome-restore"
     | "fullscreen"
     | "exit-fullscreen"
     | "chevron-left"
@@ -102,6 +105,9 @@
     />
   {:else if name === "search"}<circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" />
   {:else if name === "close"}<path d="m6 6 12 12M18 6 6 18" />
+  {:else if name === "chrome-minimize"}<path d="M4 12h16" />
+  {:else if name === "chrome-maximize"}<path d="M5 5h14v14H5z" />
+  {:else if name === "chrome-restore"}<path d="M9 5h6v6h-2V7H9z" /><path d="M5 9h6v10H5z" />
   {:else if name === "fullscreen"}<path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4" />
   {:else if name === "exit-fullscreen"}<path d="M9 4v5H4M15 4v5h5M20 15h-5v5M9 20v-5H4" />
   {:else if name === "chevron-left"}<path d="m15 18-6-6 6-6" />

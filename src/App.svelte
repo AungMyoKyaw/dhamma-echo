@@ -5,6 +5,7 @@
   import KeyboardCheatsheet from "./components/KeyboardCheatsheet.svelte";
   import Player from "./components/Player.svelte";
   import Sidebar from "./components/Sidebar.svelte";
+  import TitleBar from "./components/TitleBar.svelte";
   import VideoPlayer from "./components/VideoPlayer.svelte";
   import { isEditableTarget } from "./runtime.js";
   import { applyTheme, watchSystemTheme } from "./theme.js";
@@ -131,7 +132,7 @@
     <div
       bind:this={contentScroller}
       data-content-scroller
-      class="ml-(--sidebar-offset) h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] {bottomPadding}"
+      class="ml-(--sidebar-offset) h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] pt-(--titlebar-height) {bottomPadding}"
     >
       <Header state={appState} />
       <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
@@ -150,6 +151,7 @@
     </div>
     {#if showAudioFooter}<Player state={appState} {app} />{/if}
   </div>
+  <TitleBar />
   <VideoPlayer state={appState} {app} onbackgroundwheel={scrollContentFromPlayer} />
   {#if helpOpen}<KeyboardCheatsheet
       locale={appState.settings.locale}

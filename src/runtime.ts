@@ -6,12 +6,21 @@ export interface NativeWindowFullscreenBridge {
   setFullscreen: (fullscreen: boolean) => Promise<void>;
 }
 
+export interface NativeWindowChromeBridge {
+  close: () => Promise<void>;
+  minimize: () => Promise<void>;
+  isMaximized: () => Promise<boolean>;
+  toggleMaximize: () => Promise<boolean>;
+}
+
+export type NativeWindow = NativeWindowFullscreenBridge & NativeWindowChromeBridge;
+
 /* c8 ignore start -- this block only augments browser/Tauri global types. */
 declare global {
   interface Window {
     __TAURI__?: {
       core?: { invoke?: InvokeFn; convertFileSrc?: (path: string) => string };
-      window?: { getCurrentWindow?: () => NativeWindowFullscreenBridge };
+      window?: { getCurrentWindow?: () => NativeWindow };
       event?: {
         listen?: (name: string, handler: (event: { payload: unknown }) => void) => Promise<unknown>;
       };
@@ -29,8 +38,12 @@ export function localFileUrl(path: string): string {
   return convert?.(path) ?? path;
 }
 
-export function getNativeWindow(): NativeWindowFullscreenBridge | null {
+export function getNativeWindow(): NativeWindow | null {
   return window.__TAURI__?.window?.getCurrentWindow?.() ?? null;
+}
+
+export function getNativeChrome(): NativeWindowChromeBridge | null {
+  return getNativeWindow();
 }
 
 export function isEditableTarget(target: EventTarget | null): boolean {

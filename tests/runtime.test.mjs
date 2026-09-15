@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   applyPlatformClass,
   detectPlatform,
+  getNativeChrome,
   getNativeWindow,
   isEditableTarget,
   selectInvoke
@@ -39,12 +40,20 @@ test("localFileUrl falls back to the original path", async () => {
   assert.equal(localFileUrl("/tmp/talk.mp3"), "/tmp/talk.mp3");
   globalThis.window = previous;
 });
+function fullWindowMock() {
+  return {
+    isFullscreen: async () => false,
+    setFullscreen: async () => {},
+    close: async () => {},
+    minimize: async () => {},
+    isMaximized: async () => false,
+    toggleMaximize: async () => false
+  };
+}
+
 test("getNativeWindow exposes the Tauri window fullscreen bridge", () => {
   const previous = globalThis.window;
-  const nativeWindow = {
-    isFullscreen: async () => false,
-    setFullscreen: async () => {}
-  };
+  const nativeWindow = fullWindowMock();
   globalThis.window = { __TAURI__: { window: { getCurrentWindow: () => nativeWindow } } };
   assert.equal(getNativeWindow(), nativeWindow);
   globalThis.window = previous;
@@ -53,6 +62,20 @@ test("getNativeWindow returns null outside Tauri", () => {
   const previous = globalThis.window;
   globalThis.window = {};
   assert.equal(getNativeWindow(), null);
+  globalThis.window = previous;
+});
+test("getNativeChrome forwards the chrome bridge from the current Tauri window", () => {
+  const previous = globalThis.window;
+  const nativeWindow = fullWindowMock();
+  globalThis.window = { __TAURI__: { window: { getCurrentWindow: () => nativeWindow } } };
+  const chrome = getNativeChrome();
+  assert.equal(chrome, nativeWindow);
+  globalThis.window = previous;
+});
+test("getNativeChrome returns null outside Tauri", () => {
+  const previous = globalThis.window;
+  globalThis.window = {};
+  assert.equal(getNativeChrome(), null);
   globalThis.window = previous;
 });
 

@@ -25,6 +25,21 @@ pub fn run() {
                 .resolve("resources/dhamma.db", BaseDirectory::Resource)
                 .map_err(|error| AppError::ResourcePath(error.to_string()))?;
             app.manage(Database::open_read_only(&path)?);
+
+            // The Tauri window config keeps native decorations on every
+            // platform so macOS retains its traffic lights. On Windows and
+            // Linux we strip decorations at runtime so the webview owns the
+            // entire frame and renders the custom drag strip and
+            // close / minimize / maximize buttons (see TitleBar.svelte).
+            // macOS keeps decorations on and uses the configured overlay
+            // title-bar style — the overlay area is naturally draggable.
+            #[cfg(not(target_os = "macos"))]
+            {
+                if let Some(window) = app.get_webview_window("main") {
+                    window.set_decorations(false)?;
+                }
+            }
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

@@ -26,9 +26,11 @@ export default tseslint.config(
         extraFileExtensions: [".svelte"]
       },
       globals: {
-        document: "readonly",
-        setTimeout: "readonly",
+        clearInterval: "readonly",
         clearTimeout: "readonly",
+        document: "readonly",
+        setInterval: "readonly",
+        setTimeout: "readonly",
         window: "readonly"
       }
     },
