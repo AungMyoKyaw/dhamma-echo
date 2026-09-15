@@ -126,7 +126,6 @@ const en = {
   "teachers.empty.title": "No teachers found",
   "teachers.empty.detail": "The catalogue does not currently include teacher records.",
   "teachers.loading": "Loading teachers",
-  "teachers.featuredBadge": "Featured teacher",
 
   "collections.loading": "Loading collections",
   "collections.empty.title.query": "No collections match “{query}”",
@@ -433,7 +432,6 @@ const my: Partial<Record<MessageKey, string>> = {
   "teachers.empty.title": "ဆရာတော် မတွေ့ပါ",
   "teachers.empty.detail": "စာရင်းဇယားတွင် ဆရာတော် မှတ်တမ်းများ ယခုမရှိသေးပါ။",
   "teachers.loading": "ဆရာတော်များ တင်နေသည်",
-  "teachers.featuredBadge": "အထူးတင်ဆက် ဆရာတော်",
 
   "collections.loading": "စုစည်းမှုများ တင်နေသည်",
   "collections.empty.title.query": "“{query}” နှင့် ကိုက်ညီသော စုစည်းမှု မရှိပါ",

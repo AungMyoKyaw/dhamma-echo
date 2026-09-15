@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { AppState, TeacherSummary } from "../types.js";
-  import { countLabel, t } from "../i18n.js";
-  import { isCuratedFeaturedTeacher, isMyanmarText, truncateTeacherCardName } from "../ui.js";
+  import { countLabel } from "../i18n.js";
+  import { isMyanmarText, truncateTeacherCardName } from "../ui.js";
   import { teacherAvatarDataUri } from "../teacherAvatar.js";
-  import MarkerBadge from "./MarkerBadge.svelte";
   let {
     teacher,
     state,
@@ -16,7 +15,6 @@
   let myanmar = $derived(isMyanmarText(teacher.name));
   let avatar = $derived(teacherAvatarDataUri(teacher.id));
   let displayName = $derived(truncateTeacherCardName(teacher.name));
-  let featured = $derived(isCuratedFeaturedTeacher(teacher.id));
   let locale = $derived(state.settings.locale);
 </script>
 
@@ -32,9 +30,6 @@
     <img src={avatar} alt="" class="block size-full object-cover" />
   </div>
   <div class="min-w-0">
-    {#if featured}<div class="mb-1">
-        <MarkerBadge label={t(locale, "teachers.featuredBadge")} />
-      </div>{/if}
     <p
       class="break-words font-bold leading-6 {myanmar ? 'myanmar-text' : ''}"
       lang={myanmar ? "my" : undefined}

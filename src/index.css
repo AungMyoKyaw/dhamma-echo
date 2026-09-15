@@ -37,7 +37,6 @@
   --color-app-primary-strong: #2c4d28;
   --color-app-primary-ink: #f4efde;
   --color-app-marker: #7a5a1e;
-  --color-app-marker-quiet: #efe3c6;
   --color-error: #8d3a2c;
   --color-error-quiet: #efd6cc;
   --shadow-player: 0 -4px 12px rgb(31 32 36 / 0.08);
@@ -59,8 +58,7 @@
   --color-app-primary: #7fa572;
   --color-app-primary-strong: #a4c69b;
   --color-app-primary-ink: #16180f;
-  --color-app-marker: #ab8a5e;
-  --color-app-marker-quiet: #2a2418;
+  --color-app-marker: #9c7d4d;
   --color-error: #d68b7a;
   --color-error-quiet: #2d1813;
   color-scheme: dark;
@@ -77,8 +75,7 @@
     --color-app-primary: #7fa572;
     --color-app-primary-strong: #a4c69b;
     --color-app-primary-ink: #16180f;
-    --color-app-marker: #ab8a5e;
-    --color-app-marker-quiet: #2a2418;
+    --color-app-marker: #9c7d4d;
     --color-error: #d68b7a;
     --color-error-quiet: #2d1813;
     --shadow-player: 0 -4px 12px rgb(0 0 0 / 0.32);

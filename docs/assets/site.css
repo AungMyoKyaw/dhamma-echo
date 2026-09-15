@@ -1,7 +1,7 @@
 :root {
   /* Alpine herbarium identity — substrate, page, panel, ink, ink-quiet,
      rule, primary lichen-green, primary-strong, on-primary, marker,
-     marker-quiet, error, error-quiet. Keep this token table the only
+     error, error-quiet. Keep this token table the only
      place these hex values live. */
   --substrate: #ece6d4;
   --page: #f4efde;
@@ -13,7 +13,6 @@
   --primary-strong: #2c4d28;
   --on-primary: #f4efde;
   --marker: #7a5a1e;
-  --marker-quiet: #efe3c6;
   --error: #8d3a2c;
   --error-quiet: #efd6cc;
   /* Semantic aliases retained from the previous file so the 1100+ lines of

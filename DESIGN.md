@@ -13,7 +13,6 @@ colors:
   primary-strong: "#2c4d28"
   on-primary: "#f4efde"
   marker: "#7a5a1e"
-  marker-quiet: "#efe3c6"
   error: "#8d3a2c"
   error-quiet: "#efd6cc"
   substrate-dark: "#16180f"
@@ -25,8 +24,7 @@ colors:
   primary-dark: "#7fa572"
   primary-strong-dark: "#a4c69b"
   on-primary-dark: "#16180f"
-  marker-dark: "#ab8a5e"
-  marker-quiet-dark: "#2a2418"
+  marker-dark: "#9c7d4d"
   error-dark: "#d68b7a"
   error-quiet-dark: "#2d1813"
 typography:
@@ -104,11 +102,6 @@ components:
     textColor: "{colors.on-primary}"
     rounded: "{rounded.pill}"
     padding: "6px 12px"
-  pill-marker:
-    backgroundColor: "{colors.marker-quiet}"
-    textColor: "{colors.marker}"
-    rounded: "{rounded.pill}"
-    padding: "4px 10px"
   pill-warning:
     backgroundColor: "{colors.error-quiet}"
     textColor: "{colors.error}"
@@ -144,11 +137,10 @@ components:
     backgroundColor: "{colors.primary-strong-dark}"
     textColor: "{colors.on-primary-dark}"
     rounded: "{rounded.control}"
-  pill-marker-dark:
-    backgroundColor: "{colors.marker-quiet-dark}"
-    textColor: "{colors.marker-dark}"
-    rounded: "{rounded.pill}"
-    padding: "4px 10px"
+  icon-tile:
+    backgroundColor: "color-mix(in srgb, {colors.marker} 15%, transparent)"
+    textColor: "{colors.marker}"
+    rounded: "{rounded.control}"
   dark-substrate:
     backgroundColor: "{colors.substrate-dark}"
     textColor: "{colors.ink-dark}"
@@ -202,13 +194,13 @@ The palette is a quiet study palette with one accent, one quiet marker, and one 
 
 **Marker**
 
-- **marker** (`#7a5a1e`) and **marker-quiet** (`#efe3c6`) are the bronze of an old specimen pin / handwritten label. They appear on eyebrows, status badges ("Featured teacher", "New collection"), and the rare ornamental moment where a quiet warm neutral is needed without the lichen accent. The marker is not a second brand color and never drives interaction.
+- **marker** (`#7a5a1e`) is the bronze of an old specimen pin / handwritten label. It appears at low opacity on collection detail icon containers and the rare ornamental moment where a quiet warm neutral is needed without the lichen accent. The marker is not a second brand color and never drives interaction. Featured teachers are conveyed by ordering — they lead every list — not by chrome.
 
 **Error**
 
 - **error** (`#8d3a2c`) and **error-quiet** (`#efd6cc`) are the only failure colors — faded madder red, the traditional manuscript correction-ink red. Error copy in the player, error states on async surfaces, and the inline "Retry" pill all use them. Error never shares a surface with the marker bronze; the user needs to read the difference at a glance.
 
-**Dark mode** mirrors the same roles onto a deep lichen-night ground (`#16180f`). The substrate lifts slightly to `#1d1f15` for the page surface and `#252820` for the panel. Ink lifts to `#e6e3d3`, ink-quiet to `#9e9d8a`, rule to `#3a3b32`. Primary lifts to `#7fa572` and primary-strong to `#a4c69b` — the brighter lichen reads as the same plant under different light. Marker lifts to `#ab8a5e` and error to `#d68b7a`. The marker is desaturated relative to its light-mode hue so it still reads as a bronze label under lamplight rather than gilding into gold — the hue is the same, the chroma is the difference. Roles do not change — only the values do.
+**Dark mode** mirrors the same roles onto a deep lichen-night ground (`#16180f`). The substrate lifts slightly to `#1d1f15` for the page surface and `#252820` for the panel. Ink lifts to `#e6e3d3`, ink-quiet to `#9e9d8a`, rule to `#3a3b32`. Primary lifts to `#7fa572` and primary-strong to `#a4c69b` — the brighter lichen reads as the same plant under different light. Marker lifts to `#9c7d4d` and error to `#d68b7a`. The marker is desaturated relative to its light-mode hue so it still reads as a bronze label under lamplight rather than gilding into gold — the hue is the same, the chroma is the difference. Roles do not change — only the values do.
 
 ## Typography
 
@@ -296,8 +288,6 @@ There is no square corner anywhere. There are no squircles, no asymmetric radii.
 **Search field.** 48px tall, full-width inside its row, with a 20px leading icon and an inline clear button (40px round) when the field has content. The field itself uses the substrate color (so it sits a half-step below the page surface around it) with a 1px border. On focus the border becomes primary; the outline shows on top.
 
 **Filter pill.** 40px tall, padded horizontally, fully rounded. Inactive: `bg-panel text-ink-quiet`. Active: `bg-primary text-on-primary`. Hover on inactive darkens the border toward primary at 45%. Pills sit in a wrapping row inside the search card; there is no scroll, no horizontal overflow.
-
-**Marker badge.** A small `marker-quiet` pill with `marker` text and the 12px label role. Used for specimen-style eyebrows ("Featured", "New collection", the inline role tag on a teacher card). Never used for state.
 
 **Async surfaces.** Three states: loading (a skeleton block with a single muted pulse on `panel`, `motion-reduce:animate-none`), empty (a panel-bordered card with a short title and one short line of helper copy), error (an `error-quiet` background with an `error` border mixed 35% with `rule`, an inline error message, and a "Try again" button). Empty and error states sit in the same place the content would, with the same outer dimensions.
 
