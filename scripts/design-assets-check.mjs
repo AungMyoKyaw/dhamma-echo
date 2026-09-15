@@ -10,10 +10,32 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const designPath = resolve(repoRoot, "DESIGN.md");
-const scanRoots = [resolve(repoRoot, "src"), resolve(repoRoot, "public")];
+const scanRoots = [
+  resolve(repoRoot, "src"),
+  resolve(repoRoot, "public"),
+  resolve(repoRoot, "docs/assets")
+];
 const explicitFiles = [resolve(repoRoot, "scripts/generate-icons.py")];
+// Fixture files legitimately reference the retired palette to exercise the
+// parser; they must never enter the prod scan.
+const fixtureFiles = new Set([resolve(repoRoot, "tests/designTokens.test.mjs")]);
 const sourceExtensions = new Set([".css", ".py", ".svelte", ".svg", ".ts"]);
 const visualExtensions = new Set([".css", ".svelte", ".svg"]);
+
+// Hex palette explicitly retired from the previous identity. Even if a hex
+// matches the current DESIGN.md role, a stale copy outside the new tokens
+// list is forbidden. Comma-separated, lowercased, no #. Keep in sync with
+// the negative space Do's/Don'ts in DESIGN.md.
+const retiredPalette = new Set([
+  "#f7f3ea", "#ffffff", "#efece4", "#2e2e2a", "#565550", "#d5d1c8",
+  "#7a3508", "#5e2904", "#3d4d30", "#634a16", "#8d3531", "#f9e8e6",
+  "#181714", "#23211d", "#2e2b25", "#eee9df", "#b8b0a4", "#464138",
+  "#d8894d", "#b87440", "#9bab82", "#c9a45e", "#e2938c", "#35201f",
+  "#fcf9f2", "#b85c20", "#a4511c", "#8c3f08", "#485b37", "#6e5014",
+  "#e69a60", "#657552", "#383d34", "#4b5245", "#d8d2c8", "#10100f",
+  "#f0eee7", "#72716b", "#c2a25a", "#e8e3d6", "#ddd5c2", "#fcf9f2",
+  "#fcb874", "#f2847c"
+]);
 
 const prohibitedVisualPatterns = [
   { label: "gradient", pattern: /(?:linear|radial)-gradient\s*\(|<(?:linear|radial)Gradient\b/iu },
@@ -48,11 +70,16 @@ try {
   let colorReferences = 0;
 
   for (const file of files) {
+    if (fixtureFiles.has(file)) continue;
     const text = await readFile(file, "utf8");
     const displayPath = relative(repoRoot, file);
     const colors = [...text.matchAll(hexPattern)].map((match) => match[0].toLowerCase());
     colorReferences += colors.length;
     for (const color of colors) {
+      if (retiredPalette.has(color)) {
+        failures.push(`${displayPath}: retired palette color ${color} is forbidden`);
+        continue;
+      }
       if (!allowedColors.has(color)) {
         failures.push(`${displayPath}: rogue color ${color} is not declared in DESIGN.md`);
       }

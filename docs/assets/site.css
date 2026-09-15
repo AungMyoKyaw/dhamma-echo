@@ -1,22 +1,41 @@
 :root {
-  --bg: #181714;
-  --bg-deep: #10100f;
-  --surface: #23211d;
-  --ink: #eee9df;
-  --ink-strong: #ffffff;
-  --muted: #b8b0a4;
-  --muted-strong: #d8d2c8;
-  --line: #383d34;
-  --line-strong: #4b5245;
-  --rust: #d8894d;
-  --rust-strong: #e69a60;
-  --olive: #9bab82;
-  --olive-deep: #657552;
-  --light-surface: #fcf9f2;
-  --light-ink: #2e2e2a;
+  /* Alpine herbarium identity — substrate, page, panel, ink, ink-quiet,
+     rule, primary lichen-green, primary-strong, on-primary, marker,
+     marker-quiet, error, error-quiet. Keep this token table the only
+     place these hex values live. */
+  --substrate: #ece6d4;
+  --page: #f4efde;
+  --panel: #e3dcc4;
+  --ink: #1f2024;
+  --ink-quiet: #5a5b55;
+  --rule: #cbc5b0;
+  --primary: #3f6b3a;
+  --primary-strong: #2c4d28;
+  --on-primary: #f4efde;
+  --marker: #7a5a1e;
+  --marker-quiet: #efe3c6;
+  --error: #8d3a2c;
+  --error-quiet: #efd6cc;
+  /* Semantic aliases retained from the previous file so the 1100+ lines of
+     selector bodies that already reference --bg/--rust/etc. need no
+     rewriting. New code must use the canonical names above. */
+  --bg: var(--substrate);
+  --bg-deep: var(--substrate);
+  --surface: var(--page);
+  --ink-strong: var(--ink);
+  --muted: var(--ink-quiet);
+  --muted-strong: var(--ink);
+  --line: var(--rule);
+  --line-strong: var(--rule);
+  --rust: var(--primary);
+  --rust-strong: var(--primary-strong);
+  --olive: var(--primary);
+  --olive-deep: var(--primary-strong);
+  --light-surface: var(--page);
+  --light-ink: var(--ink);
   --shell: min(1180px, calc(100% - 48px));
-  --radius-control: 10px;
-  --radius-frame: 14px;
+  --radius-control: 8px;
+  --radius-frame: 12px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -306,11 +325,11 @@ p {
 
 .button-primary {
   background: var(--rust-strong);
-  color: #17100c;
+  color: var(--on-primary);
 }
 
 .button-primary:hover {
-  background: #ff8c4c;
+  background: var(--primary-strong);
   transform: translateY(-1px);
 }
 
@@ -413,14 +432,14 @@ p {
   height: 34px;
   padding: 0 12px;
   gap: 6px;
-  background: #0c0d0c;
+  background: var(--panel);
 }
 
 .screen-bar span {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #444942;
+  background: var(--rule);
 }
 
 .screen-bar span:first-child {
@@ -429,7 +448,7 @@ p {
 
 .screen-bar strong {
   margin-left: 5px;
-  color: #8f958a;
+  color: var(--ink-quiet);
   font-size: 9px;
   font-weight: 650;
   letter-spacing: 0.02em;
@@ -443,7 +462,7 @@ p {
 .screen-shell figcaption {
   margin: 0;
   padding: 12px 15px 14px;
-  color: #989e94;
+  color: var(--ink-quiet);
   font-size: 11px;
   line-height: 1.5;
 }
@@ -633,7 +652,7 @@ p {
 .privacy-proof {
   padding: clamp(90px, 12vw, 160px) 0;
   background: var(--rust);
-  color: #1d120c;
+  color: var(--on-primary);
 }
 
 .privacy-layout {
@@ -643,14 +662,14 @@ p {
 }
 
 .privacy-proof h2 {
-  color: #190f0a;
+  color: var(--on-primary);
   font-size: clamp(2.7rem, 5.5vw, 5rem);
 }
 
 .privacy-lead {
   max-width: 54ch;
   margin-bottom: 0;
-  color: #31180d;
+  color: var(--ink-quiet);
   font-size: 18px;
   font-weight: 560;
 }
@@ -670,7 +689,7 @@ p {
 
 .architecture-facts dt {
   margin-bottom: 8px;
-  color: #190f0a;
+  color: var(--on-primary);
   font-size: 15px;
   font-weight: 790;
 }
@@ -678,7 +697,7 @@ p {
 .architecture-facts dd {
   max-width: 60ch;
   margin: 0;
-  color: #31180d;
+  color: var(--ink-quiet);
   font-size: 14px;
 }
 
@@ -689,7 +708,7 @@ p {
   width: fit-content;
   min-height: 44px;
   margin-top: -20px;
-  color: #190f0a;
+  color: var(--on-primary);
   font-size: 14px;
   font-weight: 790;
   text-decoration: underline;
@@ -749,13 +768,13 @@ p {
 }
 
 .download-layout > header > p {
-  color: #45483f;
+  color: var(--ink-quiet);
 }
 
 .install-panel {
   padding: clamp(28px, 4vw, 46px);
   border-radius: var(--radius-frame);
-  background: #1a1c19;
+  background: var(--panel);
   color: var(--ink);
 }
 
@@ -769,8 +788,8 @@ p {
   margin-bottom: 28px;
   padding: 21px 0;
   overflow-x: auto;
-  border-block: 1px solid #3a3f37;
-  color: #f2f0ea;
+  border-block: 1px solid var(--rule);
+  color: var(--ink);
   font-size: clamp(12px, 1.4vw, 14px);
   line-height: 1.6;
 }
@@ -782,7 +801,7 @@ p {
 
 .button-light:hover {
   background: var(--rust-strong);
-  color: #17100c;
+  color: var(--on-primary);
 }
 
 .text-link {

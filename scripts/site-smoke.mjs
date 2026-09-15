@@ -86,6 +86,27 @@ async function main() {
   const screenshot = await stat(screenshotPath);
   assert.ok(screenshot.isFile(), "Supplied Dhamma Echo screenshot is missing");
   assert.ok(screenshot.size > 100 * 1024, "Supplied Dhamma Echo screenshot is unexpectedly small");
+  const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const screenshotHead = await readFile(screenshotPath, { flag: "r" });
+  assert.ok(
+    screenshotHead.subarray(0, 8).equals(pngSignature),
+    "Supplied Dhamma Echo screenshot is not a valid PNG"
+  );
+  const width = screenshotHead.readUInt32BE(16);
+  const height = screenshotHead.readUInt32BE(20);
+  assert.ok(width >= 1920 && height >= 1080, `Supplied Dhamma Echo screenshot must be at least 1920x1080, got ${width}x${height}`);
+  for (const filename of [
+    "home.png",
+    "explore.png",
+    "collections.png",
+    "teachers.png",
+    "library.png",
+    "settings.png"
+  ]) {
+    const info = await stat(path.join(docsRoot, "images", filename));
+    assert.ok(info.isFile(), `${filename} is missing from docs/images`);
+    assert.ok(info.size > 50 * 1024, `${filename} is too small`);
+  }
 
   for (const relative of ["index.html", "assets/site.css", "assets/site.js", "assets/logo.svg"]) {
     const info = await stat(path.join(docsRoot, relative));

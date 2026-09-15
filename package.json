@@ -39,6 +39,7 @@
     "tauri": "tauri",
     "icons:generate": "python3 scripts/generate-icons.py",
     "icons:check": "node scripts/verify-icons.mjs",
+    "screenshots:capture": "node scripts/capture-docs-screenshots.mjs",
     "site:coverage": "node --experimental-test-coverage --test-coverage-include='docs/assets/site.js' --test-coverage-include='docs/assets/site-bootstrap.js' --test-coverage-lines=100 --test-coverage-functions=100 --test-coverage-branches=100 --test tests/site-links.test.mjs",
     "package": "tauri build",
     "test:policy": "node scripts/check-tests.mjs"
