@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Explicit content sources. Tailwind v4 auto-detects via the Vite plugin,
+   but listing the source globs keeps scanning deterministic and resilient
+   to file moves. */
+@source "./**/*.{svelte,ts,html}";
+@source "../index.html";
+
+/* `data-theme="dark"` (set by theme.ts on <html>) drives both the
+   CSS-variable cascade below and the `dark:` utility variant. */
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @font-face {
   font-family: "Source Serif 4";
   font-style: normal;
@@ -26,7 +36,6 @@
 @theme {
   --font-sans: Inter, "Noto Sans Myanmar", "Myanmar Text", "Pyidaungsu", system-ui, sans-serif;
   --font-display: "Source Serif 4", "Source Serif Pro", Georgia, serif;
-  --font-heading: "Source Serif 4", "Source Serif Pro", Georgia, serif;
   --color-app: #1f2024;
   --color-app-muted: #5a5b55;
   --color-app-bg: #ece6d4;
@@ -61,6 +70,7 @@
   --color-app-marker: #9c7d4d;
   --color-error: #d68b7a;
   --color-error-quiet: #2d1813;
+  --shadow-player: 0 -4px 12px rgb(0 0 0 / 0.32);
   color-scheme: dark;
 }
 
@@ -83,47 +93,55 @@
   }
 }
 
-.field-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235a5b55' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.85rem center;
-  background-size: 0.95rem 0.95rem;
-}
+/* Component layer: custom rules below utilities so `dark:`/utility classes
+   can override them when needed. */
+@layer components {
+  /* Custom <select> chrome — replaces the native caret. */
+  .field-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235a5b55' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 0.95rem 0.95rem;
+  }
 
-[data-theme="dark"] .field-select,
-:root:not([data-theme="light"]) .field-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239e9d8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-}
+  [data-theme="dark"] .field-select,
+  :root:not([data-theme="light"]) .field-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239e9d8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
 
-/* macOS Safari / WKWebView: the select still leaks its native button chrome
-   without an explicit WebKit pseudo reset. The `::-webkit-appearance`
-   declaration above handles Firefox/Blink; this tightens WebKit. */
-.field-select::-webkit-search-decoration,
-.field-select::-webkit-search-cancel-button,
-.field-select::-webkit-search-results-button,
-.field-select::-webkit-search-results-decoration,
-.field-select::-webkit-contacts-auto-fill-button {
-  -webkit-appearance: none;
-  appearance: none;
-  display: none;
-}
+  /* macOS Safari / WKWebView: the select still leaks its native button chrome
+     without an explicit WebKit pseudo reset. The `::-webkit-appearance`
+     declaration above handles Firefox/Blink; this tightens WebKit. */
+  .field-select::-webkit-search-decoration,
+  .field-select::-webkit-search-cancel-button,
+  .field-select::-webkit-search-results-button,
+  .field-select::-webkit-search-results-decoration,
+  .field-select::-webkit-contacts-auto-fill-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
 
-.myanmar-text.myanmar-text {
-  font-family: var(--font-sans);
-  line-height: 1.8;
-  padding-block: 0.2em;
-  line-break: auto;
-  word-break: keep-all;
-  overflow-wrap: normal;
-  text-wrap: balance;
-}
+  /* Burmese / Myanmar script typography: serif fallbacks handled by the
+     display stack, looser leading, balanced wrapping. The double-class
+     selector boosts specificity so it overrides inline utilities. */
+  .myanmar-text.myanmar-text {
+    font-family: var(--font-sans);
+    line-height: 1.8;
+    padding-block: 0.2em;
+    line-break: auto;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    text-wrap: balance;
+  }
 
-.myanmar-text,
-.myanmar-text * {
-  text-transform: none;
+  .myanmar-text,
+  .myanmar-text * {
+    text-transform: none;
+  }
 }
 
 h1,
@@ -156,13 +174,26 @@ select:focus-visible,
   }
 }
 
+/* Window chrome — the Tauri window is opaque on every platform and the
+   substrate extends edge to edge. A fixed drag strip sits at the top of the
+   webview (TitleBar.svelte). The strip is 36px on every platform: enough to
+   clear the ~28px macOS traffic-light row with breathing room below, and
+   enough room for the Windows / Linux custom control buttons. A 1px hairline
+   border sits at the bottom of the strip (rendered by TitleBar.svelte) so
+   the chrome-to-content boundary is visible even when the strip itself is
+   invisible on macOS. The default applies in browser preview and on any
+   unrecognised platform; `applyPlatformClass()` from runtime.ts sets the
+   platform on <html>. */
 :root {
+  --titlebar-height: 36px;
   --player-height: 84px;
 }
 
 @media (max-width: 1040px) {
   :root {
     --player-height: 132px;
+    --sidebar-padding-top: max(1rem, var(--titlebar-height));
+    --sidebar-padding-bottom: 0.25rem;
   }
 }
 
@@ -181,30 +212,9 @@ select:focus-visible,
   }
 }
 
-/* Window chrome — the Tauri window is opaque on every platform and the
-   substrate extends edge to edge. A fixed drag strip sits at the top of the
-   webview (TitleBar.svelte). The strip is 36px on every platform: enough to
-   clear the ~28px macOS traffic-light row with breathing room below, and
-   enough room for the Windows / Linux custom control buttons. A 1px hairline
-   border sits at the bottom of the strip (rendered by TitleBar.svelte) so
-   the chrome-to-content boundary is visible even when the strip itself is
-   invisible on macOS. The default applies in browser preview and on any
-   unrecognised platform; `applyPlatformClass()` from runtime.ts sets the
-   platform on <html>. */
-:root {
-  --titlebar-height: 36px;
-}
-
 /* Sidebar padding combines the titlebar height with the regular top padding
    so the wordmark stays clear of the chrome strip on every platform. */
 :root {
   --sidebar-padding-top: max(1.5rem, var(--titlebar-height));
   --sidebar-padding-bottom: 1.5rem;
-}
-
-@media (max-width: 1040px) {
-  :root {
-    --sidebar-padding-top: max(1rem, var(--titlebar-height));
-    --sidebar-padding-bottom: 0.25rem;
-  }
 }
