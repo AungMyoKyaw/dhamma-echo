@@ -84,7 +84,7 @@
   </div>
 {:else}
   <div
-    class="flex min-h-64 flex-col items-center justify-center rounded-card border border-[color-mix(in_srgb,var(--color-error)_35%,var(--color-app-border))] bg-error-soft p-8 text-center"
+    class="flex min-h-64 flex-col items-center justify-center rounded-card border border-error-border-soft bg-error-soft p-8 text-center"
   >
     <h2 class="text-xl font-semibold">{errorTitle ?? t(locale, "async.error.title")}</h2>
     <p class="mt-2 max-w-md text-sm text-app-muted">{detail}</p>

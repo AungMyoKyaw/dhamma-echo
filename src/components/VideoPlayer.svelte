@@ -36,12 +36,12 @@
 
   let asideClass = $derived(
     fullscreen
-      ? "fixed inset-0 z-50 bg-black"
+      ? "fixed inset-0 z-50 bg-video-canvas"
       : "fixed right-0 bottom-0 z-30 left-(--sidebar-offset) max-[640px]:left-0"
   );
   let sectionClass = $derived(
     fullscreen
-      ? "h-full w-full overflow-hidden bg-black"
+      ? "h-full w-full overflow-hidden bg-video-canvas"
       : "mx-auto max-w-[1120px] overflow-hidden rounded-t-card border border-b-0 border-app-border bg-app-surface"
   );
   let layoutClass = $derived(
@@ -51,8 +51,8 @@
   );
   let stageClass = $derived(
     fullscreen
-      ? "relative h-full w-full bg-black"
-      : "relative aspect-video min-h-0 bg-black max-[1040px]:h-[clamp(10rem,32vh,20rem)] max-[1040px]:aspect-auto"
+      ? "relative h-full w-full bg-video-canvas"
+      : "relative aspect-video min-h-0 bg-video-canvas max-[1040px]:h-[clamp(10rem,32vh,20rem)] max-[1040px]:aspect-auto"
   );
 
   $effect(() => {
@@ -256,7 +256,7 @@
             bind:this={exitFullscreenButton}
             type="button"
             onclick={() => void exitFullscreen()}
-            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-control border border-white bg-black px-3 text-xs leading-normal font-bold text-white transition-[background-color,border-color] duration-150 hover:bg-app-bg"
+            class="absolute top-4 right-4 z-10 inline-flex min-h-11 items-center gap-2 rounded-control border border-on-video-canvas bg-video-canvas px-3 text-xs leading-normal font-bold text-on-video-canvas transition-[background-color,border-color] duration-150 hover:bg-app-bg"
             aria-label={t(locale, "video.fullscreen.exit")}
             title={t(locale, "video.fullscreen.exit")}
           >
@@ -264,7 +264,7 @@
             <span>{t(locale, "video.fullscreen.exit")}</span>
           </button>{/if}
         {#if videoVisible && !videoReady && !appState.player.error}<div
-            class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-black/35 px-6 text-center"
+            class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center bg-video-canvas/35 px-6 text-center"
             role="status"
             aria-label={t(locale, "video.preparing.label")}
           >
@@ -275,8 +275,8 @@
                 class="size-3 animate-pulse rounded-full bg-app-primary motion-reduce:animate-none"
               ></span>
             </span>
-            <span class="mt-5 text-sm font-bold text-white">{t(locale, "video.preparing")}</span>
-            <span class="mt-1 text-xs text-white/70">{t(locale, "video.preparing.detail")}</span>
+            <span class="mt-5 text-sm font-bold text-on-video-canvas">{t(locale, "video.preparing")}</span>
+            <span class="mt-1 text-xs text-on-video-canvas/70">{t(locale, "video.preparing.detail")}</span>
           </div>{/if}
       </div>
 
@@ -347,7 +347,7 @@
               <button
                 type="button"
                 onclick={() => void app.togglePlayback()}
-                class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
+                class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-play-idle transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong disabled:cursor-wait disabled:opacity-45 [&_svg]:size-full"
                 aria-label={loading
                   ? t(locale, "video.pauseLoading")
                   : playing

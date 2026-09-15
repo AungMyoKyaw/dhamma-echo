@@ -519,3 +519,128 @@ test("compareTokens treats value mismatch as a mismatch even when the alias reso
   assert.equal(drift.valueMismatches.length, 1);
   assert.equal(drift.valueMismatches[0].path, "colors.primary");
 });
+
+test("parseDesignFrontmatter expands {path.to.token} references in string values", () => {
+  const design = parseDesignFrontmatter(`---
+name: Sample
+description: Test.
+colors:
+  primary: "#3f6b3a"
+  rule: "#cbc5b0"
+  primary-border-emphasis: "color-mix(in srgb, {colors.primary} 45%, {colors.rule})"
+---
+`);
+  assert.equal(
+    design.colors["primary-border-emphasis"],
+    "color-mix(in srgb, #3f6b3a 45%, #cbc5b0)"
+  );
+});
+
+test("parseDesignFrontmatter leaves unresolved references intact", () => {
+  const design = parseDesignFrontmatter(`---
+name: Sample
+description: Test.
+colors:
+  derived: "color-mix(in srgb, {colors.missing} 10%, transparent)"
+---
+`);
+  assert.equal(
+    design.colors.derived,
+    "color-mix(in srgb, {colors.missing} 10%, transparent)"
+  );
+});
+
+test("parseDesignFrontmatter handles chained references without infinite recursion", () => {
+  const design = parseDesignFrontmatter(`---
+name: Sample
+description: Test.
+colors:
+  base: "#3f6b3a"
+  twice: "{colors.base}"
+  quad: "{colors.twice}"
+---
+`);
+  assert.equal(design.colors.quad, "#3f6b3a");
+});
+
+test("compareTokens resolves {colors.X} and var() references before comparing", () => {
+  const design = parseDesignFrontmatter(`---
+name: Sample
+description: Test.
+colors:
+  primary: "#3f6b3a"
+  rule: "#cbc5b0"
+  primary-border-emphasis: "color-mix(in srgb, {colors.primary} 45%, {colors.rule})"
+---
+`);
+  const css = loadCssTokens(`@theme {
+  --color-app-primary: #3f6b3a;
+  --color-app-border: #cbc5b0;
+  --color-primary-border-emphasis: color-mix(in srgb, var(--color-app-primary) 45%, var(--color-app-border));
+}
+`);
+  const drift = compareTokens(design, css);
+  assert.equal(drift.missingFromCss.length, 0);
+  assert.equal(drift.valueMismatches.length, 0);
+});
+
+test("compareTokens treats resolved-mismatch as a value mismatch", () => {
+  const design = parseDesignFrontmatter(`---
+name: Sample
+description: Test.
+colors:
+  primary: "#3f6b3a"
+  rule: "#cbc5b0"
+  primary-border-emphasis: "color-mix(in srgb, {colors.primary} 45%, {colors.rule})"
+---
+`);
+  const css = loadCssTokens(`@theme {
+  --color-app-primary: #000000;
+  --color-app-border: #cbc5b0;
+  --color-primary-border-emphasis: color-mix(in srgb, var(--color-app-primary) 45%, var(--color-app-border));
+}
+`);
+  const drift = compareTokens(design, css);
+  const mismatch = drift.valueMismatches.find((m) => m.path === "colors.primary-border-emphasis");
+  assert.ok(mismatch !== undefined, "expected resolved mismatch");
+  assert.equal(mismatch.design, "color-mix(in srgb, #3f6b3a 45%, #cbc5b0)");
+});
+
+test("compareTokens reports mismatch when only the css side uses a var() reference", () => {
+  const design = parseDesignFrontmatter(`---
+name: Sample
+description: Test.
+colors:
+  primary: "#3f6b3a"
+  primary-border-emphasis: "#3f6b3a"
+---
+`);
+  const css = loadCssTokens(`@theme {
+  --color-app-primary: #3f6b3a;
+  --color-primary-border-emphasis: var(--color-app-primary);
+}
+`);
+  const drift = compareTokens(design, css);
+  assert.equal(drift.missingFromCss.length, 0);
+  assert.equal(drift.valueMismatches.length, 0);
+});
+
+test("compareTokens leaves unresolved var() references in the reported css value", () => {
+  const design = parseDesignFrontmatter(`---
+name: Sample
+description: Test.
+colors:
+  primary: "#3f6b3a"
+  derived: "{colors.primary}"
+---
+`);
+  const css = loadCssTokens(`@theme {
+  --color-app-primary: #3f6b3a;
+  --color-derived: var(--color-undeclared);
+}
+`);
+  const drift = compareTokens(design, css);
+  const mismatch = drift.valueMismatches.find((m) => m.path === "colors.derived");
+  assert.ok(mismatch !== undefined, "expected mismatch when css var is undeclared");
+  assert.equal(mismatch.css, "var(--color-undeclared)");
+});

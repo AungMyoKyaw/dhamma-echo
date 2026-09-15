@@ -15,6 +15,14 @@ colors:
   marker: "#7a5a1e"
   error: "#8d3a2c"
   error-quiet: "#efd6cc"
+  video-canvas: "#000000"
+  on-video-canvas: "#ffffff"
+  app-backdrop-quiet: "#1f2024"
+  error-border-soft: "#b59482"
+  error-border-quiet: "#8d3a2c"
+  error-fill-quiet: "#8d3a2c"
+  primary-border-emphasis: "#8c9d7b"
+  track-row-hover: "#dedfca"
   substrate-dark: "#16180f"
   page-dark: "#1d1f15"
   panel-dark: "#252820"
@@ -141,6 +149,18 @@ components:
     backgroundColor: "color-mix(in srgb, {colors.marker} 15%, transparent)"
     textColor: "{colors.marker}"
     rounded: "{rounded.control}"
+  app-backdrop-quiet:
+    backgroundColor: "{colors.app-backdrop-quiet}"
+  error-border-soft:
+    backgroundColor: "{colors.error-border-soft}"
+  error-border-quiet:
+    backgroundColor: "{colors.error-border-quiet}"
+  error-fill-quiet:
+    backgroundColor: "{colors.error-fill-quiet}"
+  primary-border-emphasis:
+    backgroundColor: "{colors.primary-border-emphasis}"
+  track-row-hover:
+    backgroundColor: "{colors.track-row-hover}"
   dark-substrate:
     backgroundColor: "{colors.substrate-dark}"
     textColor: "{colors.ink-dark}"
@@ -162,6 +182,9 @@ components:
   dark-error:
     backgroundColor: "{colors.error-dark}"
     textColor: "{colors.error-quiet-dark}"
+  video-canvas:
+    backgroundColor: "{colors.video-canvas}"
+    textColor: "{colors.on-video-canvas}"
 ---
 
 ## Overview
@@ -199,6 +222,10 @@ The palette is a quiet study palette with one accent, one quiet marker, and one 
 **Error**
 
 - **error** (`#8d3a2c`) and **error-quiet** (`#efd6cc`) are the only failure colors — faded madder red, the traditional manuscript correction-ink red. Error copy in the player, error states on async surfaces, and the inline "Retry" pill all use them. Error never shares a surface with the marker bronze; the user needs to read the difference at a glance.
+
+**Video canvas**
+
+- **video-canvas** (`#000000`) and **on-video-canvas** (`#ffffff`) are the only colors that escape the herbarium palette. They paint the chrome that sits on top of the `<video>` element — the exit-fullscreen button, the preparing overlay, and the title text rendered over a paused frame. The video element's actual frame is always dark, so the chrome that floats above it must also be dark to maintain contrast; tracking the page theme would lose the video under the chrome. They are used only inside `VideoPlayer.svelte` and never on a page surface, a card, or any UI chrome outside the video stage.
 
 **Dark mode** mirrors the same roles onto a deep lichen-night ground (`#16180f`). The substrate lifts slightly to `#1d1f15` for the page surface and `#252820` for the panel. Ink lifts to `#e6e3d3`, ink-quiet to `#9e9d8a`, rule to `#3a3b32`. Primary lifts to `#7fa572` and primary-strong to `#a4c69b` — the brighter lichen reads as the same plant under different light. Marker lifts to `#9c7d4d` and error to `#d68b7a`. The marker is desaturated relative to its light-mode hue so it still reads as a bronze label under lamplight rather than gilding into gold — the hue is the same, the chroma is the difference. Roles do not change — only the values do.
 

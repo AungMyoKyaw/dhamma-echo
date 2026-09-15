@@ -101,7 +101,7 @@
     {#if state.categories.status === "ready"}<fieldset class="basis-full flex flex-wrap gap-2">
         <legend class="sr-only">{t(locale, "search.category.legend")}</legend>
         <button
-          class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
+          class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-primary-border-emphasis {state
             .search.categoryId === null
             ? 'bg-app-primary text-app-primary-ink'
             : 'bg-app-soft text-app-muted'}"
@@ -109,7 +109,7 @@
           aria-pressed={state.search.categoryId === null}
           onclick={() => setCategory(null)}>{t(locale, "search.category.all")}</button
         >{#each state.categories.data as item (item.id)}<button
-            class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
+            class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-primary-border-emphasis {state
               .search.categoryId === item.id
               ? 'bg-app-primary text-app-primary-ink'
               : 'bg-app-soft text-app-muted'}"

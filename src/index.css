@@ -48,7 +48,22 @@
   --color-app-marker: #7a5a1e;
   --color-error: #8d3a2c;
   --color-error-quiet: #efd6cc;
+  /* Video chrome (VideoPlayer.svelte) — see DESIGN.md "Video canvas".
+     Identical in both modes because they sit on top of the <video> element. */
+  --color-video-canvas: #000000;
+  --color-on-video-canvas: #ffffff;
+  /* Magic mixes that appear 2+ times in the codebase — see DESIGN.md
+     "colors" block for the canonical source. */
+  --color-app-backdrop-quiet: #1f2024;
+  --color-error-border-soft: #b59482;
+  --color-error-border-quiet: #8d3a2c;
+  --color-error-fill-quiet: #8d3a2c;
+  --color-primary-border-emphasis: #8c9d7b;
+  --color-track-row-hover: #dedfca;
   --shadow-player: 0 -4px 12px rgb(31 32 36 / 0.08);
+  --shadow-play-idle: 0 4px 12px color-mix(in srgb, var(--color-app-primary) 25%, transparent);
+  --shadow-play-hover: 0 6px 16px color-mix(in srgb, var(--color-app-primary) 30%, transparent);
+  --shadow-disc-resting: inset 0 0 0 1px color-mix(in srgb, var(--color-app-border) 70%, transparent);
   --radius-card: 0.75rem;
   --radius-control: 0.5rem;
 }

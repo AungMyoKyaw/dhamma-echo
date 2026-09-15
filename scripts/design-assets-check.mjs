@@ -28,7 +28,6 @@ const visualExtensions = new Set([".css", ".svelte", ".svg"]);
 // the negative space Do's/Don'ts in DESIGN.md.
 const retiredPalette = new Set([
   "#f7f3ea",
-  "#ffffff",
   "#efece4",
   "#2e2e2a",
   "#565550",

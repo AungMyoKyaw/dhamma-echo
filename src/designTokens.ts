@@ -64,7 +64,8 @@ export function parseDesignFrontmatter(markdown: string): TokenMap {
   if (match === null) {
     throw new Error("DESIGN.md frontmatter not found (expected `---` fences).");
   }
-  return filterMetadata(collapseYaml(parseYamlMap(match[1] as string)));
+  const raw = filterMetadata(collapseYaml(parseYamlMap(match[1] as string)));
+  return expandReferences(raw);
 }
 
 export function loadCssTokens(css: string): LoadedCssTokens {
@@ -88,11 +89,12 @@ export function compareTokens(design: TokenMap, css: LoadedCssTokens): DriftRepo
     const cssSource = isDarkVariant ? cssDarkColors : cssColors;
     const path = `colors.${name}`;
     const designValue = designColors[name] as string;
-    const cssValue = cssSource === undefined ? undefined : cssSource[alias];
-    if (cssValue === undefined) {
+    const rawCssValue = cssSource === undefined ? undefined : cssSource[alias];
+    if (rawCssValue === undefined) {
       missingFromCss.push(path);
       continue;
     }
+    const cssValue = expandVarReferences(rawCssValue, cssSource ?? {});
     if (!valuesEqual(designValue, cssValue)) {
       valueMismatches.push({ path, design: designValue, css: cssValue });
     }
@@ -106,6 +108,34 @@ export function compareTokens(design: TokenMap, css: LoadedCssTokens): DriftRepo
   }
 
   return { missingFromCss, missingFromDesign, valueMismatches };
+}
+
+const VAR_REFERENCE_PATTERN = /var\(--[a-z0-9-]+\)/giu;
+
+/**
+ * Resolves `var(--color-X)` references inside a CSS value against the parsed
+ * CSS color map. Mirrors `expandReferences` for the DESIGN.md side so the
+ * two can be compared as resolved strings. Cycles are impossible because CSS
+ * tokens are flat custom-property assignments.
+ */
+function expandVarReferences(value: string, colorTokens: Record<string, string>): string {
+  let current = value;
+  for (let iteration = 0; iteration < 10; iteration += 1) {
+    const next = current.replace(VAR_REFERENCE_PATTERN, (match) => {
+      const name = match.slice("var(--".length, -1);
+      const dashIndex = name.indexOf("-");
+      if (dashIndex === -1) return match;
+      const prefix = name.slice(0, dashIndex);
+      const key = name.slice(dashIndex + 1);
+      if (prefix !== "color") return match;
+      const resolved = colorTokens[key];
+      if (resolved === undefined) return match;
+      return resolved;
+    });
+    if (next === current) return next;
+    current = next;
+  }
+  return current;
 }
 
 export function formatTailwindTheme(tokens: TokenMap): string {
@@ -282,6 +312,45 @@ function flattenInto(target: { [name: string]: string }, prefix: string, value: 
     const next = prefix === "" ? name : `${prefix}.${name}`;
     flattenInto(target, next, child);
   }
+}
+
+const REFERENCE_PATTERN = /\{([a-z0-9_-]+(?:\.[a-z0-9_-]+)*)\}/giu;
+
+/**
+ * Resolves `{path.to.token}` references inside string values against the same
+ * token tree. Used by `compareTokens` so DESIGN.md values like
+ * `color-mix(in srgb, {colors.error} 35%, {colors.rule})` compare against the
+ * resolved CSS values instead of failing on the literal reference syntax.
+ * Cycles are guarded by a maximum-depth check.
+ */
+export function expandReferences(tokens: TokenMap, maxDepth = 10): TokenMap {
+  const resolve = (raw: string, depth: number): string => {
+    if (depth >= maxDepth) return raw;
+    return raw.replace(REFERENCE_PATTERN, (match, path: string) => {
+      const value = lookupByPath(tokens, path);
+      if (value === undefined) return match;
+      return resolve(value, depth + 1);
+    });
+  };
+  const result: TokenMap = {};
+  for (const [group, groupTokens] of Object.entries(tokens)) {
+    const next: { [name: string]: string } = {};
+    for (const [name, value] of Object.entries(groupTokens)) {
+      next[name] = resolve(value, 0);
+    }
+    result[group] = next;
+  }
+  return result;
+}
+
+function lookupByPath(tokens: TokenMap, path: string): string | undefined {
+  const parts = path.split(".");
+  let current: unknown = tokens;
+  for (const part of parts) {
+    if (current === null || typeof current !== "object") return undefined;
+    current = (current as Record<string, unknown>)[part];
+  }
+  return typeof current === "string" ? current : undefined;
 }
 
 const METADATA_KEYS = new Set(["name", "description", "version"]);

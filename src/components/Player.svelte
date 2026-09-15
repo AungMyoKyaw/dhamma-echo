@@ -69,11 +69,11 @@
               class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-error"
               role="alert"
               ><span class="truncate" title={playerError}>{playerError}</span><button
-                class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-normal font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
+                class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-error-border-quiet bg-transparent px-3 text-xs leading-normal font-bold text-inherit hover:bg-error-fill-quiet"
                 type="button"
                 onclick={() => void app.retryPlayback()}>{t(locale, "player.retry")}</button
               ><button
-                class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-[color-mix(in_srgb,var(--color-error)_30%,transparent)] bg-transparent px-3 text-xs leading-normal font-bold text-inherit hover:bg-[color-mix(in_srgb,var(--color-error)_10%,transparent)]"
+                class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-error-border-quiet bg-transparent px-3 text-xs leading-normal font-bold text-inherit hover:bg-error-fill-quiet"
                 type="button"
                 onclick={clearError}>{t(locale, "player.dismiss")}</button
               ></span
@@ -105,7 +105,7 @@
             title={t(locale, "player.back15")}><span><Icon name="backward15" /></span></button
           >
           <button
-            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-[0_4px_12px_color-mix(in_srgb,var(--color-app-primary)_25%,transparent)] transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-[0_6px_16px_color-mix(in_srgb,var(--color-app-primary)_30%,transparent)] disabled:cursor-wait disabled:opacity-45 max-[1040px]:size-11 [&_svg]:size-full"
+            class="inline-flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-app-primary text-app-primary-ink shadow-play-idle transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-primary-strong hover:shadow-play-hover disabled:cursor-wait disabled:opacity-45 max-[1040px]:size-11 [&_svg]:size-full"
             type="button"
             onclick={() => void app.togglePlayback()}
             aria-label={playLabel}

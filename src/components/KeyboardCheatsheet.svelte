@@ -41,7 +41,7 @@
 
 <dialog
   bind:this={dialog}
-  class="m-auto max-h-full max-w-full border-0 bg-transparent p-4 backdrop:bg-[color-mix(in_srgb,var(--color-app)_45%,transparent)]"
+  class="m-auto max-h-full max-w-full border-0 bg-transparent p-4 backdrop:bg-app-backdrop-quiet"
   onclick={backdrop}
   onclose={handleClose}
 >
