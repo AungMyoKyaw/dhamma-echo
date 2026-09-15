@@ -94,7 +94,10 @@ async function main() {
   );
   const width = screenshotHead.readUInt32BE(16);
   const height = screenshotHead.readUInt32BE(20);
-  assert.ok(width >= 1920 && height >= 1080, `Supplied Dhamma Echo screenshot must be at least 1920x1080, got ${width}x${height}`);
+  assert.ok(
+    width >= 1920 && height >= 1080,
+    `Supplied Dhamma Echo screenshot must be at least 1920x1080, got ${width}x${height}`
+  );
   for (const filename of [
     "home.png",
     "explore.png",
