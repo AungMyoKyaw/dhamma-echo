@@ -25,7 +25,7 @@ colors:
   primary-dark: "#7fa572"
   primary-strong-dark: "#a4c69b"
   on-primary-dark: "#16180f"
-  marker-dark: "#c79c5a"
+  marker-dark: "#ab8a5e"
   marker-quiet-dark: "#2a2418"
   error-dark: "#d68b7a"
   error-quiet-dark: "#2d1813"
@@ -208,7 +208,7 @@ The palette is a quiet study palette with one accent, one quiet marker, and one 
 
 - **error** (`#8d3a2c`) and **error-quiet** (`#efd6cc`) are the only failure colors — faded madder red, the traditional manuscript correction-ink red. Error copy in the player, error states on async surfaces, and the inline "Retry" pill all use them. Error never shares a surface with the marker bronze; the user needs to read the difference at a glance.
 
-**Dark mode** mirrors the same roles onto a deep lichen-night ground (`#16180f`). The substrate lifts slightly to `#1d1f15` for the page surface and `#252820` for the panel. Ink lifts to `#e6e3d3`, ink-quiet to `#9e9d8a`, rule to `#3a3b32`. Primary lifts to `#7fa572` and primary-strong to `#a4c69b` — the brighter lichen reads as the same plant under different light. Marker lifts to `#c79c5a` and error to `#d68b7a`. Roles do not change — only the values do.
+**Dark mode** mirrors the same roles onto a deep lichen-night ground (`#16180f`). The substrate lifts slightly to `#1d1f15` for the page surface and `#252820` for the panel. Ink lifts to `#e6e3d3`, ink-quiet to `#9e9d8a`, rule to `#3a3b32`. Primary lifts to `#7fa572` and primary-strong to `#a4c69b` — the brighter lichen reads as the same plant under different light. Marker lifts to `#ab8a5e` and error to `#d68b7a`. The marker is desaturated relative to its light-mode hue so it still reads as a bronze label under lamplight rather than gilding into gold — the hue is the same, the chroma is the difference. Roles do not change — only the values do.
 
 ## Typography
 
