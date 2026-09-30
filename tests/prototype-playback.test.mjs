@@ -69,6 +69,28 @@ test("idle rows have explicit 44px playback controls and separate title buttons"
   assert.match(html, /\[hidden\]\s*\{\s*display: none !important;/);
 });
 
+test("labeled controls share fixed icon frames and optical alignment", () => {
+  assert.match(html, /--icon-label-shift:\s*-1px;/);
+  assert.match(html, /\.nav-label,\s*\.collapse-label\s*\{[^}]*line-height:\s*20px;/);
+  assert.match(
+    html,
+    /\.nav-button \.icon,\s*\.collapse-button \.icon,\s*\.search-box \.icon\s*\{[^}]*width:\s*20px;[^}]*height:\s*20px;[^}]*transform:\s*translateY\(var\(--icon-label-shift\)\);/
+  );
+  for (const selector of ["play-button", "row-play", "icon-button"]) {
+    assert.match(
+      html,
+      new RegExp(`\\.${selector}\\s*\\{[^}]*padding:\\s*0;[^}]*line-height:\\s*1;`)
+    );
+  }
+});
+
+test("collapsed alignment is scoped to the sidebar instead of hiding mobile labels", () => {
+  assert.match(html, /\.sidebar\[data-collapsed="true"\] \.nav-label/);
+  assert.match(html, /\.mobile-nav \.nav-label\s*\{\s*display:\s*block;/);
+  assert.match(html, /document\.documentElement\.dataset\.sidebarCollapsed = String\(collapsed\)/);
+  assert.doesNotMatch(html, /style\.setProperty\("--sidebar-width"/);
+});
+
 test("starting a different talk synchronizes every row, title, and footer", () => {
   const app = harness();
   app.context.playTrack(1);

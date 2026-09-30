@@ -24,6 +24,13 @@ Open `http://127.0.0.1:4175/prototype/`.
 
 The established palette and typography remain unchanged. This decision replaces the small floating row triangle, not the application identity.
 
+## Alignment
+
+- Navigation, collapse, and search share 20px icon frames and 20px label line-height. Icons receive a 1px upward optical correction beside single-line text.
+- Icon-only buttons remain geometrically centered, with native button padding removed. Multi-line teacher and collection entries retain block centering instead of inheriting the single-line correction.
+- Icon frames do not shrink. Collapsed sidebar styles stay scoped to the sidebar and survive route changes without hiding mobile navigation labels.
+- Responsive widths override the collapsed state so narrowing the window never leaves a sidebar-sized blank margin.
+
 ## Regression checks
 
 ```bash
@@ -31,4 +38,4 @@ node --test tests/prototype-playback.test.mjs
 bun run verify:web
 ```
 
-The prototype tests exercise control markup, playback synchronization, pause/resume, focus-preserving updates, unsupported formats, and duration-aware seeking. Browser checks also cover title activation, save/queue isolation, search retention, and layout at 1440×900, 860×620, and 390×844 in light and dark themes.
+The prototype tests exercise control markup, alignment rules, collapsed navigation, playback synchronization, pause/resume, focus-preserving updates, unsupported formats, and duration-aware seeking. Browser checks also cover title activation, save/queue isolation, search retention, measured icon centers across all six routes, and layout at 1440×900, 860×620, and 390×844 in light and dark themes.

@@ -32,6 +32,11 @@
         --sans: Inter, "Noto Sans Myanmar", "Myanmar Text", "Pyidaungsu", system-ui, sans-serif;
         --sidebar-width: 256px;
         --player-height: 84px;
+        --icon-label-shift: -1px;
+      }
+
+      html[data-sidebar-collapsed="true"] {
+        --sidebar-width: 76px;
       }
 
       [data-theme="dark"] {
@@ -95,6 +100,7 @@
         width: 20px;
         height: 20px;
         display: block;
+        flex: 0 0 auto;
         fill: none;
         stroke: currentColor;
         stroke-width: 1.8;
@@ -174,6 +180,7 @@
         background: transparent;
         color: var(--muted);
         text-align: left;
+        line-height: 20px;
         font-weight: 620;
         transition:
           background-color 0.15s ease,
@@ -187,9 +194,41 @@
         background: var(--green);
         color: var(--on-green);
       }
-      .nav-button .icon {
-        width: 19px;
-        height: 19px;
+      .nav-label,
+      .collapse-label {
+        display: block;
+        line-height: 20px;
+      }
+      /* One-line labels need optical alignment; icon-only controls do not. */
+      .nav-button .icon,
+      .collapse-button .icon,
+      .search-box .icon {
+        width: 20px;
+        height: 20px;
+        transform: translateY(var(--icon-label-shift));
+      }
+      .sidebar[data-collapsed="true"] {
+        align-items: center;
+        padding-inline: 9px;
+      }
+      .sidebar[data-collapsed="true"] .nav {
+        width: 100%;
+      }
+      .sidebar[data-collapsed="true"] .brand,
+      .sidebar[data-collapsed="true"] .nav-button,
+      .sidebar[data-collapsed="true"] .collapse-button {
+        justify-content: center;
+        padding-inline: 0;
+      }
+      .sidebar[data-collapsed="true"] .brand-copy,
+      .sidebar[data-collapsed="true"] .nav-label,
+      .sidebar[data-collapsed="true"] .privacy,
+      .sidebar[data-collapsed="true"] .collapse-label {
+        display: none;
+      }
+      .sidebar[data-collapsed="true"] .nav-button .icon,
+      .sidebar[data-collapsed="true"] .collapse-button .icon {
+        transform: none;
       }
       .sidebar-bottom {
         margin-top: auto;
@@ -238,6 +277,7 @@
         color: var(--muted);
         text-align: left;
         font-size: 12px;
+        line-height: 20px;
         font-weight: 650;
       }
       .collapse-button:hover {
@@ -373,6 +413,8 @@
       .play-button {
         width: 54px;
         height: 54px;
+        padding: 0;
+        line-height: 1;
         flex: 0 0 auto;
         display: grid;
         place-items: center;
@@ -432,6 +474,8 @@
       .row-play {
         width: 44px;
         height: 44px;
+        padding: 0;
+        line-height: 1;
         display: grid;
         place-items: center;
         border: 1px solid var(--rule);
@@ -515,6 +559,8 @@
       .icon-button {
         width: 36px;
         height: 36px;
+        padding: 0;
+        line-height: 1;
         display: grid;
         place-items: center;
         border: 0;
@@ -566,6 +612,7 @@
       .teacher-initial {
         width: 38px;
         height: 38px;
+        flex: 0 0 auto;
         display: grid;
         place-items: center;
         border: 1px solid var(--rule);
@@ -587,8 +634,8 @@
         font-size: 12px;
       }
       .teacher-row > .icon {
-        width: 15px;
-        height: 15px;
+        width: 16px;
+        height: 16px;
         color: var(--muted);
       }
       .browse-links {
@@ -693,6 +740,7 @@
       input[type="range"] {
         width: 100%;
         height: 4px;
+        margin: 0;
         accent-color: var(--green);
         cursor: pointer;
       }
@@ -744,13 +792,13 @@
         background: var(--ground);
       }
       .search-box .icon {
-        width: 19px;
-        height: 19px;
         color: var(--muted);
       }
       .search-box input {
         width: 100%;
         min-width: 0;
+        padding: 0;
+        line-height: 20px;
         border: 0;
         outline: 0;
         background: transparent;
@@ -949,9 +997,14 @@
         }
       }
       @media (max-width: 860px) {
-        :root {
+        :root,
+        html[data-sidebar-collapsed="true"] {
           --sidebar-width: 70px;
           --player-height: 126px;
+        }
+        .sidebar .nav-button .icon,
+        .sidebar .collapse-button .icon {
+          transform: none;
         }
         .sidebar {
           align-items: center;
@@ -1017,7 +1070,8 @@
         }
       }
       @media (max-width: 560px) {
-        :root {
+        :root,
+        html[data-sidebar-collapsed="true"] {
           --sidebar-width: 0px;
         }
         .sidebar {
@@ -1056,6 +1110,12 @@
         .mobile-nav .nav-button {
           justify-content: start;
           padding-inline: 10px;
+        }
+        .mobile-nav .nav-label {
+          display: block;
+        }
+        .mobile-menu summary::-webkit-details-marker {
+          display: none;
         }
         .app-main {
           padding: 66px 18px calc(var(--player-height) + 24px);
@@ -1624,11 +1684,7 @@
         const sidebar = document.querySelector(".sidebar");
         const collapsed = sidebar.dataset.collapsed !== "true";
         sidebar.dataset.collapsed = String(collapsed);
-        document.documentElement.style.setProperty("--sidebar-width", collapsed ? "76px" : "256px");
-        document.querySelector(".brand-copy").hidden = collapsed;
-        document
-          .querySelectorAll(".nav-label, .privacy, .collapse-label")
-          .forEach((item) => (item.hidden = collapsed));
+        document.documentElement.dataset.sidebarCollapsed = String(collapsed);
         document
           .querySelector("#collapse-sidebar svg use")
           .setAttribute("href", collapsed ? "#i-chevron" : "#i-collapse");
