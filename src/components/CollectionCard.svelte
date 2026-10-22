@@ -17,7 +17,7 @@
 </script>
 
 <button
-  class="group flex min-w-0 flex-col gap-3 overflow-hidden rounded-card border border-app-border bg-app-surface p-4 text-left transition-[border-color,background-color] duration-150 hover:border-app-primary/50 hover:bg-app-soft/35 focus-visible:border-app-primary/60"
+  class="group flex min-w-0 flex-col justify-between gap-4 overflow-hidden rounded-card border border-app-border bg-app-surface p-5 text-left transition-[border-color,background-color] duration-150 hover:border-app-primary/50 hover:bg-app-soft/60 focus-visible:border-app-primary/60"
   type="button"
   onclick={() => void onselect(collection)}
 >

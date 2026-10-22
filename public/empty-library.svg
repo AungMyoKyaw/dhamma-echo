@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img" aria-labelledby="title desc">
   <title id="title">An open book with a gentle sound wave</title>
   <desc id="desc">A flat specimen-sheet book in lichen green and quiet bronze.</desc>
-  <path d="M45 166c35-24 73-24 115 0V65c-40-22-78-22-115 0v101Z" fill="#e3dcc4" stroke="#7a5a1e" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M275 166c-35-24-73-24-115 0V65c40-22 78-22 115 0v101Z" fill="#f4efde" stroke="#7a5a1e" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M160 65v101" stroke="#7a5a1e" stroke-width="4"/>
-  <path d="M85 95h43M85 117h52M85 139h35" stroke="#5a5b55" stroke-width="5" stroke-linecap="round" opacity=".62"/>
-  <path d="M198 111c10-12 20-12 30 0s20 12 30 0" fill="none" stroke="#3f6b3a" stroke-width="6" stroke-linecap="round"/>
+  <path d="M45 166c35-24 73-24 115 0V65c-40-22-78-22-115 0v101Z" fill="#ede8dd" stroke="#83683f" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M275 166c-35-24-73-24-115 0V65c40-22 78-22 115 0v101Z" fill="#fcfaf5" stroke="#83683f" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M160 65v101" stroke="#83683f" stroke-width="4"/>
+  <path d="M85 95h43M85 117h52M85 139h35" stroke="#5a645a" stroke-width="5" stroke-linecap="round" opacity=".62"/>
+  <path d="M198 111c10-12 20-12 30 0s20 12 30 0" fill="none" stroke="#28563c" stroke-width="6" stroke-linecap="round"/>
 </svg>

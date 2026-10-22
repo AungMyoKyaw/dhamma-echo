@@ -66,3 +66,7 @@ src-tauri/target/
 ehthumbs.db
 Thumbs.db
 Desktop.ini
+# Installed local agent skills (recreated with Impeccable installer)
+.agents/
+.pi/
+.codex/

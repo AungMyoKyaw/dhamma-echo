@@ -3,18 +3,18 @@
      rule, primary lichen-green, primary-strong, on-primary, marker,
      error, error-quiet. Keep this token table the only
      place these hex values live. */
-  --substrate: #ece6d4;
-  --page: #f4efde;
-  --panel: #e3dcc4;
-  --ink: #1f2024;
-  --ink-quiet: #5a5b55;
-  --rule: #cbc5b0;
-  --primary: #3f6b3a;
-  --primary-strong: #2c4d28;
-  --on-primary: #f4efde;
-  --marker: #7a5a1e;
-  --error: #8d3a2c;
-  --error-quiet: #efd6cc;
+  --substrate: #f5f2e9;
+  --page: #fcfaf5;
+  --panel: #ede8dd;
+  --ink: #202620;
+  --ink-quiet: #5a645a;
+  --rule: #d6d8ce;
+  --primary: #28563c;
+  --primary-strong: #1f4631;
+  --on-primary: #fcfaf5;
+  --marker: #83683f;
+  --error: #a63a2d;
+  --error-quiet: #f9e2de;
   /* Semantic aliases retained from the previous file so the 1100+ lines of
      selector bodies that already reference --bg/--rust/etc. need no
      rewriting. New code must use the canonical names above. */

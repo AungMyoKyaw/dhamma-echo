@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
   <title id="title">Dhamma Echo</title>
   <desc id="desc">A flat lichen-green lotus above two quiet sound waves.</desc>
-  <rect width="128" height="128" rx="24" fill="#f4efde"/>
-  <path d="M64 24c8 12 12 23 12 34 0 14-5 25-12 34-7-9-12-20-12-34 0-11 4-22 12-34Z" fill="#3f6b3a"/>
-  <path d="M28 52c16 1 29 7 36 18-3 14-12 24-26 29-7-11-11-23-10-47Z" fill="#3f6b3a" opacity=".78"/>
-  <path d="M100 52c-16 1-29 7-36 18 3 14 12 24 26 29 7-11 11-23 10-47Z" fill="#2c4d28" opacity=".82"/>
-  <path d="M18 86c13 13 28 19 46 19s33-6 46-19" fill="none" stroke="#3f6b3a" stroke-width="6" stroke-linecap="round"/>
-  <path d="M30 105c10 7 21 10 34 10s24-3 34-10" fill="none" stroke="#7a5a1e" stroke-width="4" stroke-linecap="round"/>
+  <rect width="128" height="128" rx="24" fill="#fcfaf5"/>
+  <path d="M64 24c8 12 12 23 12 34 0 14-5 25-12 34-7-9-12-20-12-34 0-11 4-22 12-34Z" fill="#28563c"/>
+  <path d="M28 52c16 1 29 7 36 18-3 14-12 24-26 29-7-11-11-23-10-47Z" fill="#28563c" opacity=".78"/>
+  <path d="M100 52c-16 1-29 7-36 18 3 14 12 24 26 29 7-11 11-23 10-47Z" fill="#1f4631" opacity=".82"/>
+  <path d="M18 86c13 13 28 19 46 19s33-6 46-19" fill="none" stroke="#28563c" stroke-width="6" stroke-linecap="round"/>
+  <path d="M30 105c10 7 21 10 34 10s24-3 34-10" fill="none" stroke="#83683f" stroke-width="4" stroke-linecap="round"/>
 </svg>

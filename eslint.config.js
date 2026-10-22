@@ -3,7 +3,18 @@ import svelte from "eslint-plugin-svelte";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist/**", ".test-build/**", "coverage/**", "src-tauri/target/**"] },
+  {
+    ignores: [
+      "dist/**",
+      ".test-build/**",
+      "coverage/**",
+      "src-tauri/target/**",
+      ".agents/**",
+      ".pi/**",
+      ".codex/**",
+      ".impeccable/**"
+    ]
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   ...svelte.configs.recommended,

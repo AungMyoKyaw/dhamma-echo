@@ -98,27 +98,38 @@
         ><option value="wmv">WMV</option></select
       ></label
     >
-    {#if state.categories.status === "ready"}<fieldset class="basis-full flex flex-wrap gap-2">
-        <legend class="sr-only">{t(locale, "search.category.legend")}</legend>
-        <button
-          class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
-            .search.categoryId === null
-            ? 'bg-app-primary text-app-primary-ink'
-            : 'bg-app-soft text-app-muted'}"
-          type="button"
-          aria-pressed={state.search.categoryId === null}
-          onclick={() => setCategory(null)}>{t(locale, "search.category.all")}</button
-        >{#each state.categories.data as item (item.id)}<button
+    {#if state.categories.status === "ready"}<details
+        class="group basis-full rounded-control border border-app-border/70 bg-app-surface/70 px-3 py-2"
+      >
+        <summary
+          class="flex min-h-8 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-app-muted [&::-webkit-details-marker]:hidden"
+          ><span>{t(locale, "search.category.browse")}</span><span
+            class="size-4 transition-transform group-open:rotate-180"
+            ><Icon name="chevron-down" /></span
+          ></summary
+        >
+        <fieldset class="mt-3 flex flex-wrap gap-2 border-t border-app-border pt-3">
+          <legend class="sr-only">{t(locale, "search.category.legend")}</legend>
+          <button
             class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
-              .search.categoryId === item.id
+              .search.categoryId === null
               ? 'bg-app-primary text-app-primary-ink'
               : 'bg-app-soft text-app-muted'}"
             type="button"
-            aria-pressed={state.search.categoryId === item.id}
-            onclick={() => setCategory(item.id)}
-            >{item.name} · {formatLocaleNumber(item.count, locale)}</button
-          >{/each}
-      </fieldset>{/if}
+            aria-pressed={state.search.categoryId === null}
+            onclick={() => setCategory(null)}>{t(locale, "search.category.all")}</button
+          >{#each state.categories.data as item (item.id)}<button
+              class="inline-flex min-h-[44px] items-center justify-center rounded-full px-3 align-middle text-xs leading-normal font-bold transition-[background-color,color,border-color] duration-150 hover:border-[color-mix(in_srgb,var(--color-app-primary)_45%,var(--color-app-border))] {state
+                .search.categoryId === item.id
+                ? 'bg-app-primary text-app-primary-ink'
+                : 'bg-app-soft text-app-muted'}"
+              type="button"
+              aria-pressed={state.search.categoryId === item.id}
+              onclick={() => setCategory(item.id)}
+              >{item.name} · {formatLocaleNumber(item.count, locale)}</button
+            >{/each}
+        </fieldset>
+      </details>{/if}
   </form>
   {#if hasFilters}<div
       class="flex flex-wrap items-center gap-2"

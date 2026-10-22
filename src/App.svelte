@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Readable } from "svelte/store";
+  import { tick } from "svelte";
   import type { DhammaApp } from "./app.js";
   import Header from "./components/Header.svelte";
   import KeyboardCheatsheet from "./components/KeyboardCheatsheet.svelte";
@@ -35,15 +36,21 @@
     globalThis.document.documentElement.lang = documentLanguage(appState.settings.locale);
   });
 
+  async function focusCatalogueSearch(): Promise<void> {
+    if (appState.route !== "explore") {
+      app.dispatch({ type: "navigate", route: "explore" });
+    }
+    await tick();
+    globalThis.document.querySelector<HTMLInputElement>('input[name="query"]')?.focus();
+  }
+
   function keydown(event: KeyboardEvent): void {
     // Application-level shortcuts run before the editable-target guard so
     // Cmd/Ctrl+, still opens Settings while a search field has focus. Cmd/Ctrl+F
     // keeps focus in (or moves it to) the active route's search field.
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "f") {
       event.preventDefault();
-      const searchInput =
-        globalThis.document.querySelector<HTMLInputElement>('input[name="query"]');
-      searchInput?.focus();
+      void focusCatalogueSearch();
       return;
     }
     if ((event.metaKey || event.ctrlKey) && event.key === ",") {
@@ -124,8 +131,8 @@
 <svelte:window onkeydown={keydown} onbeforeunload={() => app.destroy()} />
 <div
   class="h-screen min-h-screen overflow-hidden bg-app-bg text-app {appState.ui.sidebarCollapsed
-    ? '[--sidebar-offset:72px]'
-    : '[--sidebar-offset:16rem] max-[1040px]:[--sidebar-offset:14rem]'}"
+    ? '[--sidebar-offset:68px]'
+    : '[--sidebar-offset:216px] max-[1040px]:[--sidebar-offset:200px]'}"
 >
   <div class="h-full">
     <Sidebar state={appState} {app} />
@@ -134,8 +141,8 @@
       data-content-scroller
       class="ml-(--sidebar-offset) h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] pt-(--titlebar-height) {bottomPadding}"
     >
-      <Header state={appState} />
-      <main class="@container mx-auto max-w-[1520px] px-10 py-4 max-[1040px]:px-6">
+      <Header state={appState} onsearch={focusCatalogueSearch} />
+      <main class="@container mx-auto max-w-[1520px] px-9 py-4 max-[1040px]:px-6">
         {#if appState.route === "home"}<HomeView state={appState} {app} />
         {:else if appState.route === "explore"}<ExploreView state={appState} {app} />
         {:else if appState.route === "collections"}<CollectionsView state={appState} {app} />

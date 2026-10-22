@@ -96,6 +96,7 @@ const en = {
   "search.format.mp4": "MP4 video",
   "search.category.all": "All content",
   "search.category.legend": "Content categories",
+  "search.category.browse": "Browse categories",
   "search.filters.active": "Active filters",
   "search.filters.query": 'Search: "{query}"',
   "search.filters.teacher": "Teacher: {name}",
@@ -203,6 +204,8 @@ const en = {
 
   "player.unknownTeacher": "Unknown teacher",
   "player.region": "Audio player",
+  "player.focus": "Focus on listening",
+  "player.closeFocus": "Return to library",
   "player.retry": "Retry",
   "player.dismiss": "Dismiss",
   "player.connecting": "Connecting…",
@@ -402,6 +405,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "search.format.mp4": "MP4 ဗီဒီယို",
   "search.category.all": "အကြောင်းအရာအားလုံး",
   "search.category.legend": "အကြောင်းအရာ အမျိုးအစားများ",
+  "search.category.browse": "အကြောင်းအရာ အမျိုးအစားများ ကြည့်ရန်",
   "search.filters.active": "လက်ရှိ စစ်ထုတ်မှုများ",
   "search.filters.query": "ရှာဖွေချက် − “{query}”",
   "search.filters.teacher": "ဆရာတော် − {name}",
@@ -510,6 +514,8 @@ const my: Partial<Record<MessageKey, string>> = {
 
   "player.unknownTeacher": "ဆရာတော် မသိရ",
   "player.region": "အသံ player",
+  "player.focus": "နားထောင်မှုကို အာရုံစိုက်ရန်",
+  "player.closeFocus": "စာကြည့်တိုက်သို့ ပြန်သွားရန်",
   "player.retry": "ပြန်ကြိုးစားမည်",
   "player.dismiss": "ပိတ်မည်",
   "player.connecting": "ချိတ်ဆက်နေသည်…",

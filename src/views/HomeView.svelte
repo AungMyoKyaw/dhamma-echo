@@ -67,8 +67,10 @@
         onretry={() => void app.loadRecent()}
       />
     {:else if isFirstLaunch}
-      <section class="flex flex-col gap-5 rounded-card border border-app-border bg-app-soft p-6">
-        <p class="text-xs font-bold tracking-[0.04em] text-app-muted uppercase">
+      <section
+        class="flex flex-col gap-4 rounded-card border border-app-border bg-app-surface px-7 py-7 max-[1040px]:p-5"
+      >
+        <p class="text-xs font-medium text-app-muted">
           {t(locale, "home.welcome.eyebrow")}
         </p>
         <h2 class="text-xl font-semibold">{t(locale, "home.welcome.title")}</h2>
@@ -103,10 +105,10 @@
             <p class="mt-1 text-sm text-app-muted">{t(locale, "home.continue.detail")}</p>
           </div>
           <div
-            class="flex items-center gap-4 overflow-hidden rounded-card border border-app-border bg-app-soft p-5"
+            class="flex items-center gap-5 overflow-hidden rounded-card border border-app-primary/25 bg-app-surface p-6 max-[1040px]:p-4"
           >
             <button
-              class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-app-primary-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              class="flex size-14 shrink-0 items-center justify-center rounded-full bg-app-primary text-app-primary-ink transition-colors hover:bg-app-primary-strong disabled:cursor-not-allowed disabled:opacity-50"
               type="button"
               disabled={!latest.playable}
               onclick={() => void play(latest)}
@@ -121,7 +123,9 @@
             >
             <div class="min-w-0">
               <h3
-                class="line-clamp-2 break-words font-bold {isMyanmarText(latest.title)
+                class="line-clamp-2 break-words text-lg font-semibold leading-relaxed {isMyanmarText(
+                  latest.title
+                )
                   ? 'myanmar-text'
                   : ''}"
                 lang={isMyanmarText(latest.title) ? "my" : undefined}
@@ -165,7 +169,7 @@
           onclick={() => go("teachers")}>{t(locale, "home.featured.viewAll")}</button
         >
       </div>
-      <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4">
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-3">
         {#if state.teachers.status === "ready" && featured.length > 0}{#each featured as teacher (teacher.id)}<TeacherCard
               {teacher}
               {state}

@@ -18,11 +18,11 @@ SCALE = 4
 # Exact DESIGN.md roles used by the icon. Keep these as hex strings so the
 # design-assets check can reject any out-of-system color added to the source.
 COLORS = {
-    "page": "#f4efde",
-    "rule": "#cbc5b0",
-    "primary": "#3f6b3a",
-    "primary-strong": "#2c4d28",
-    "marker": "#7a5a1e",
+    "page": "#fcfaf5",
+    "rule": "#d6d8ce",
+    "primary": "#28563c",
+    "primary-strong": "#1f4631",
+    "marker": "#83683f",
 }
 
 

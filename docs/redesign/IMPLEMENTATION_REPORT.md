@@ -1,0 +1,85 @@
+# Dhamma Echo 0.6.0 — Implementation & Verification Report
+
+**Date:** 2026-10-22
+
+**Status:** Implemented; final `bun run verify` and `bun run package` passed on Dhamma Echo 0.6.0. macOS native window inspected in foreground. Unpublished and unnotarized.
+
+**Requirements:** [REDESIGN_PRD.md](REDESIGN_PRD.md) · [ACCEPTANCE.md](ACCEPTANCE.md) · [CONCEPT_DECISION.md](CONCEPT_DECISION.md)
+
+## Delivered
+
+| Phase                      | Changes applied                                                                                                                                                                                                                                                                                                  |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P0 — Direction             | Chose the approved C1 Quiet Listening Desk composition after comparing three structures against the approved listening-first priorities. Baseline UI screenshots and source reviewed.                                                                                                                            |
+| P1 — Identity & shell      | Replaced old herbarium prose in DESIGN.md with a modern Buddhist listening desk; synchronized 125 design tokens with Tailwind CSS 4; refined light/dark colors and typography; redesigned Header, compact Sidebar and Settings placement; global Explore action and Cmd/Ctrl+F; preserved native traffic lights. |
+| P2 — Catalogue & home      | Improved first-run welcome and Continue Listening visual treatment; updated teacher/collection cards; simplified category browsing through a disclosure control; retained accurate filter chips and WMA/WMV entries.                                                                                             |
+| P3 — Listening             | Added a focused listening presentation to the existing persistent audio footer without introducing a second MediaEngine; same audio state, seek/rate/queue. Existing MP4 video and queue mechanisms preserved.                                                                                                   |
+| P4 — Library/accessibility | Fixed history-only Library access; added bilingual labels for new controls; retained settings, local storage v2 compatibility, Unicode-supporting text rules, responsive window layout and reduced-motion CSS.                                                                                                   |
+| P5 — Site, safety & build  | Updated public SVG branding, static website color tokens, generated desktop app icons and six product screenshots; fixed Playwright capture selector ambiguity; bumped release to 0.6.0; patched all reported Bun dependency advisories.                                                                         |
+
+## Verified — automated
+
+| Check                                         | Evidence/status                                                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Svelte strict typecheck                       | PASS — zero errors/warnings                                                                                        |
+| ESLint, Prettier                              | PASS — installed agent tooling excluded from app lint                                                              |
+| Design schema and CSS consistency             | PASS — 125 design tokens synchronized                                                                              |
+| Design assets                                 | PASS — no rogue legacy color roles, gradients or blur                                                              |
+| Node/core TypeScript tests and coverage gate  | PASS during bun run verify:web and bun run verify                                                                  |
+| Production Vite build and smoke               | PASS                                                                                                               |
+| Static product site verification/coverage     | PASS                                                                                                               |
+| Desktop icon and Windows MSIX manifest checks | PASS                                                                                                               |
+| Bun audit                                     | PASS — 0 vulnerabilities among 206 checked packages after patch upgrade                                            |
+| Rust Clippy, Rust tests and release build     | PASS in full bun run verify                                                                                        |
+| macOS Tauri .app and .dmg build               | PASS — final 0.6.0 with corrected typography; `codesign --verify --deep --strict` and `hdiutil verify` both passed |
+| Impeccable rendered-page audit                | PASS — 0 primary findings on Home at 860×620 following font/size correction                                        |
+
+## Verified — browser UI at 860×620
+
+- Home and Explore render without horizontal document overflow (measured 0px).
+- New search button is visible in header; ⌘F on Home navigates to Explore and focuses input named `query`.
+- Category disclosure is closed initially, opens on its summary click, and retains existing filter controls.
+- Clicking a mock catalogue talk mounts the existing audio player; clicking its title opens focused listening presentation; view contains the correct track and uses the existing transport.
+- Library fixture with no favorites/downloads but history of track 1 exposes Downloads, Favorites, History; the history title appears under History.
+- Settings Dark theme sets the document to dark with no horizontal overflow at 860×620.
+- All six README/site reference screenshots regenerated at `docs/images/{home,explore,collections,teachers,library,settings}.png`.
+
+### Saved QA frames
+
+- `docs/redesign/qa-home-860.png`
+- `docs/redesign/qa-explore-860.png` (captured before progressive category disclosure; current site Explore image reflects the final disclosure)
+- `docs/redesign/qa-focus-860.png`
+- `docs/redesign/qa-dark-settings-860.png`
+
+These are deterministic Vite-preview checks, not evidence of a native screen-reader pass, real remote audio availability or Windows/Linux rendering. The separately built 0.6.0 `.app` was launched and inspected on macOS; its foreground window displayed the redesigned bilingual dark Home with one native traffic-light control set and recent/resume content. Personal listening-history screenshots captured during this validation were deliberately deleted rather than committed.
+
+## Protected architecture validation
+
+- `src-tauri/src/{db,commands,models}.rs` not modified as part of UI redesign.
+- Existing SQLite resource, Tauri CSP, HTTPS media allowlist, download storage, media engine and localStorage v2 schema untouched.
+- No account, analytics, new service endpoint, runtime component library, cloud sync or new production dependency introduced.
+- `vite` updated to compatible 8.1.6 and transitive advisories fixed with `bun audit fix`. The tracked `bun.lock` is authoritative.
+
+## Not claimed as independently validated
+
+- Live listening end-to-end on an actual reliable third-party media stream, including fallback server response.
+- Manual VoiceOver and Windows/Linux assistive-technology walkthrough.
+- Native Windows/Linux builds and Microsoft Store submission.
+- Apple notarization (the repo uses ad-hoc signing; notarization credentials are not configured).
+- Public GitHub release, store publication and Homebrew tap update.
+- Every AC-01–AC-80 manual acceptance check as an individual executed test. The matrix remains normative and must be individually dispositioned before claiming comprehensive cross-platform validation.
+
+## Release artifacts
+
+Build tree:
+
+- `src-tauri/target/release/bundle/macos/Dhamma Echo.app`
+- `src-tauri/target/release/bundle/dmg/Dhamma Echo_0.6.0_aarch64.dmg`
+
+The installation of Impeccable agent skill remains local in ignored directories `.agents/`, `.pi/` and `.codex/`. Reproduce on another clone with `npx --yes impeccable install --providers=pi,codex --scope=project`.
+
+## Final operational safeguards
+
+- Do not upload a public release/store build or update the installed production app without an explicit publish/install request.
+- Preserve personal library data, private downloads, database contents and the current user's running apps.
+- For remaining manual acceptance criteria, perform native macOS and Windows/Linux interaction/visual checks and then mark PASS, FAIL or BLOCKED with evidence. A blocked test is not a pass.

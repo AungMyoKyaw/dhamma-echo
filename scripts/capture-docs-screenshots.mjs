@@ -53,7 +53,7 @@ for (let index = 0; index < routes.length; index += 1) {
   cli(
     "-s=dhamma-screens",
     "run-code",
-    `async page => { const button = page.getByRole('button', { name: ${JSON.stringify(route)}, exact: true }); await button.click(); await page.waitForTimeout(220); }`
+    `async page => { const button = page.getByRole('button', { name: ${JSON.stringify(route)}, exact: true }).first(); await button.click(); await page.waitForTimeout(220); }`
   );
   cli("-s=dhamma-screens", "screenshot", `--filename=${target}`);
 }

@@ -37,7 +37,7 @@
   }
 </script>
 
-{#if appState.library.favorites.length === 0 && !hasDownloads}
+{#if appState.library.favorites.length === 0 && !hasDownloads && appState.library.history.length === 0}
   <AsyncState
     {locale}
     kind="empty"

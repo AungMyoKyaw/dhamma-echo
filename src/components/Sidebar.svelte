@@ -4,17 +4,17 @@
   import { dragWindow } from "../runtime.js";
   import type { AppState, Route } from "../types.js";
   import Icon from "./Icon.svelte";
+
   let { state, app }: { state: AppState; app: DhammaApp } = $props();
   let locale = $derived(state.settings.locale);
+  let collapsed = $derived(state.ui.sidebarCollapsed);
   const routes = [
     { route: "home", labelKey: "nav.home", icon: "home" },
     { route: "explore", labelKey: "nav.explore", icon: "explore" },
     { route: "collections", labelKey: "nav.collections", icon: "library" },
     { route: "teachers", labelKey: "nav.teachers", icon: "teachers" },
-    { route: "library", labelKey: "nav.library", icon: "bookmark" },
-    { route: "settings", labelKey: "nav.settings", icon: "settings" }
+    { route: "library", labelKey: "nav.library", icon: "bookmark" }
   ] as const;
-  let collapsed = $derived(state.ui.sidebarCollapsed);
   function active(route: Route): boolean {
     return (
       state.route === route ||
@@ -27,67 +27,74 @@
     if (route === "home") void app.loadRecent();
     if (route === "collections") void app.searchCollections();
   }
-  function toggle(): void {
-    app.setSidebarCollapsed(!collapsed);
-  }
 </script>
 
 <aside
-  class="fixed inset-y-0 left-0 z-20 flex {collapsed
-    ? 'w-[72px] px-3'
-    : 'w-64 px-5 max-[1040px]:w-56 max-[1040px]:px-4'} flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface pt-[var(--sidebar-padding-top)] pb-[var(--sidebar-padding-bottom)] [scrollbar-gutter:stable]"
+  class="fixed inset-y-0 left-0 z-20 flex w-[var(--sidebar-offset)] flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface px-3 pt-[var(--sidebar-padding-top)] pb-[var(--sidebar-padding-bottom)] [scrollbar-gutter:stable]"
   aria-label={t(locale, "nav.primary")}
 >
-  <div use:dragWindow class="flex items-center pt-3 {collapsed ? 'justify-center' : 'gap-3 px-2'}">
-    <img src="./logo.svg" alt="" class="size-11 rounded-control" />
-    {#if !collapsed}<div>
-        <p class="text-lg font-bold tracking-tight">{t(locale, "app.name")}</p>
-        <p class="text-xs text-app-muted">{t(locale, "app.tagline")}</p>
-      </div>{/if}
+  <div
+    use:dragWindow
+    class="flex min-h-[66px] items-center {collapsed ? 'justify-center' : 'gap-3 px-1'}"
+  >
+    <img src="./logo.svg" alt="" class="size-10 shrink-0 rounded-control" />
+    {#if !collapsed}
+      <div class="min-w-0">
+        <p class="truncate text-[15px] font-semibold tracking-tight">{t(locale, "app.name")}</p>
+        <p class="truncate text-xs text-app-muted">{t(locale, "app.tagline")}</p>
+      </div>
+    {/if}
   </div>
-  <nav class="mt-9 space-y-2 max-[1040px]:mt-8" aria-label={t(locale, "nav.primaryNavigation")}>
-    {#each routes as item (item.route)}<button
-        class="group flex h-12 min-h-12 w-full items-center {collapsed
+  <nav class="mt-5 space-y-1" aria-label={t(locale, "nav.primaryNavigation")}>
+    {#each routes as item (item.route)}
+      <button
+        type="button"
+        onclick={() => navigate(item.route)}
+        aria-current={active(item.route) ? "page" : undefined}
+        aria-label={collapsed ? t(locale, item.labelKey) : undefined}
+        title={collapsed ? t(locale, item.labelKey) : undefined}
+        class="group flex min-h-11 w-full items-center {collapsed
           ? 'justify-center'
-          : 'gap-3 px-4'} rounded-control py-0 text-left text-sm font-semibold leading-5 transition-[background-color,color,box-shadow] duration-150 {active(
+          : 'gap-3 px-3'} rounded-control text-left text-sm font-medium transition-[background-color,color] duration-150 {active(
           item.route
         )
           ? 'bg-app-primary text-app-primary-ink'
           : 'text-app-muted hover:bg-app-soft hover:text-app'}"
-        type="button"
-        onclick={() => navigate(item.route)}
-        aria-current={active(item.route) ? "page" : undefined}
-        title={collapsed ? t(locale, item.labelKey) : undefined}
-        ><span
-          class="flex size-5 shrink-0 -translate-y-px items-center justify-center [&_svg]:block [&_svg]:size-full"
-          ><Icon name={item.icon} /></span
-        >{#if !collapsed}<span>{t(locale, item.labelKey)}</span>{/if}</button
-      >{/each}
-  </nav>
-  <div class="mt-auto space-y-3 max-[1040px]:space-y-1">
-    {#if !collapsed}<div
-        class="rounded-card border border-app-border/70 bg-app-soft p-4 max-[1040px]:p-2.5"
       >
-        <div
-          class="mb-3 flex size-9 items-center justify-center rounded-full bg-app-primary/12 text-app-primary max-[1040px]:mb-2"
-        >
-          <span class="size-5"><Icon name="leaf" /></span>
-        </div>
-        <p class="text-sm font-bold">{t(locale, "privacy.title")}</p>
-        <p class="mt-1 text-xs leading-5 text-app-muted">
-          {t(locale, "privacy.body")}
-        </p>
-      </div>{/if}
+        <span class="size-[19px] shrink-0"><Icon name={item.icon} /></span>
+        {#if !collapsed}<span class="truncate">{t(locale, item.labelKey)}</span>{/if}
+      </button>
+    {/each}
+  </nav>
+  <div class="mt-auto space-y-1 border-t border-app-border pt-4">
     <button
-      class="flex h-11 w-full items-center {collapsed
+      type="button"
+      onclick={() => navigate("settings")}
+      aria-current={active("settings") ? "page" : undefined}
+      aria-label={collapsed ? t(locale, "nav.settings") : undefined}
+      title={collapsed ? t(locale, "nav.settings") : undefined}
+      class="flex min-h-11 w-full items-center {collapsed
         ? 'justify-center'
-        : 'gap-2 px-4'} rounded-control text-xs font-bold text-app-muted transition-[background-color,color] duration-150 hover:bg-app-soft hover:text-app"
-      onclick={toggle}
-      aria-label={collapsed ? t(locale, "nav.expandSidebar") : t(locale, "nav.collapseSidebar")}
-      title={collapsed ? t(locale, "nav.expandSidebar") : t(locale, "nav.collapseSidebar")}
-      ><span class="flex size-4 -translate-y-px items-center justify-center [&_svg]:size-full"
-        ><Icon name={collapsed ? "chevron-right" : "chevron-left"} /></span
-      >{#if !collapsed}<span>{t(locale, "nav.collapse")}</span>{/if}</button
+        : 'gap-3 px-3'} rounded-control text-sm font-medium transition-colors {active('settings')
+        ? 'bg-app-primary text-app-primary-ink'
+        : 'text-app-muted hover:bg-app-soft hover:text-app'}"
     >
+      <span class="size-[19px] shrink-0"><Icon name="settings" /></span>
+      {#if !collapsed}<span class="truncate">{t(locale, "nav.settings")}</span>{/if}
+    </button>
+    <button
+      type="button"
+      onclick={() => app.setSidebarCollapsed(!collapsed)}
+      aria-label={collapsed ? t(locale, "nav.expandSidebar") : t(locale, "nav.collapseSidebar")}
+      aria-expanded={!collapsed}
+      class="flex min-h-11 w-full items-center {collapsed
+        ? 'justify-center'
+        : 'gap-3 px-3'} rounded-control text-xs font-medium text-app-muted transition-colors hover:bg-app-soft hover:text-app"
+    >
+      <span class="size-[18px] shrink-0"
+        ><Icon name={collapsed ? "chevron-right" : "chevron-left"} /></span
+      >
+      {#if !collapsed}<span>{t(locale, "nav.collapse")}</span>{/if}
+    </button>
   </div>
 </aside>

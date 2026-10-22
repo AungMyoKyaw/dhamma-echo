@@ -4,3 +4,8 @@ coverage
 src-tauri/target
 src-tauri/resources/dhamma.db
 *.bundle
+
+.agents/
+.pi/
+.codex/
+.impeccable/

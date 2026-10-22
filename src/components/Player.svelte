@@ -6,19 +6,20 @@
   import { formatLocaleDuration, formatLocaleNumber } from "../utils.js";
   import Icon from "./Icon.svelte";
   import QueuePanel from "./QueuePanel.svelte";
-  let { state, app }: { state: AppState; app: DhammaApp } = $props();
+  let { state: appState, app }: { state: AppState; app: DhammaApp } = $props();
   const rates = [0.75, 1, 1.25, 1.5, 1.75, 2];
-  let track = $derived(state.player.current);
-  let playing = $derived(state.player.status === "playing");
-  let loading = $derived(state.player.status === "loading");
-  let max = $derived(state.player.duration > 0 ? state.player.duration : 1);
-  let locale = $derived(state.settings.locale);
-  let playerError = $derived(tError(locale, state.player.error));
+  let focusOpen = $state(false);
+  let track = $derived(appState.player.current);
+  let playing = $derived(appState.player.status === "playing");
+  let loading = $derived(appState.player.status === "loading");
+  let max = $derived(appState.player.duration > 0 ? appState.player.duration : 1);
+  let locale = $derived(appState.settings.locale);
+  let playerError = $derived(tError(locale, appState.player.error));
   let queueLabel = $derived(
-    state.player.queue.length === 0
+    appState.player.queue.length === 0
       ? t(locale, "player.queue.show")
       : t(locale, "player.queue.showCount", {
-          count: countLabel(locale, "talk", state.player.queue.length)
+          count: countLabel(locale, "talk", appState.player.queue.length)
         })
   );
   let playLabel = $derived(
@@ -28,6 +29,9 @@
         ? t(locale, "player.pause")
         : t(locale, "player.play")
   );
+  function closeFocusedOnEscape(event: KeyboardEvent): void {
+    if (focusOpen && event.key === "Escape") focusOpen = false;
+  }
   function numberFromControl(event: Event): number {
     return Number((event.currentTarget as HTMLInputElement | HTMLSelectElement).value);
   }
@@ -36,24 +40,60 @@
   }
 </script>
 
+<svelte:window onkeydown={closeFocusedOnEscape} />
 {#if track !== null}
-  <QueuePanel {state} {app} />
+  <QueuePanel state={appState} {app} />
   <footer
-    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 max-[1040px]:py-2 motion-safe:animate-[fade-in_180ms_ease-out]"
+    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 max-[1040px]:py-2 motion-safe:animate-[fade-in_180ms_ease-out] {focusOpen
+      ? 'top-[var(--titlebar-height)] flex flex-col justify-center gap-9 overflow-y-auto'
+      : ''}"
     aria-label={t(locale, "player.region")}
   >
-    <div
-      class="grid grid-cols-[minmax(180px,0.9fr)_minmax(340px,1.45fr)_minmax(210px,0.9fr)] items-start gap-5 max-[1180px]:grid-cols-[minmax(150px,0.75fr)_minmax(300px,1.35fr)_minmax(180px,auto)] max-[1180px]:gap-4 max-[1040px]:grid-cols-[minmax(0,1fr)_auto] max-[1040px]:gap-x-3 max-[1040px]:gap-y-1"
-    >
-      <div class="player-track min-w-0 self-center" aria-live="polite">
-        <p
-          class="line-clamp-2 break-words text-sm font-bold {state.player.error
-            ? 'max-[1040px]:hidden'
-            : 'max-[1040px]:line-clamp-1'} {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
+    {#if focusOpen}
+      <section
+        class="mx-auto w-full max-w-3xl space-y-4 px-4 text-center"
+        aria-label={t(locale, "player.focus")}
+      >
+        <p class="text-sm font-medium text-app-muted">{t(locale, "player.focus")}</p>
+        <h2
+          class="mx-auto max-w-2xl break-words text-[clamp(1.75rem,3.4vw,3.2rem)] font-semibold leading-[1.25] tracking-tight {isMyanmarText(
+            track.title
+          )
+            ? 'myanmar-text'
+            : ''}"
           lang={isMyanmarText(track.title) ? "my" : undefined}
         >
-          {truncateTrackTitle(track.title)}
+          {track.title}
+        </h2>
+        <p
+          class="text-base text-app-muted {isMyanmarText(track.teacherName) ? 'myanmar-text' : ''}"
+          lang={isMyanmarText(track.teacherName) ? "my" : undefined}
+        >
+          {track.teacherName || t(locale, "player.unknownTeacher")}
         </p>
+      </section>
+    {/if}
+    <div
+      class="grid {focusOpen
+        ? 'mx-auto w-full max-w-[1100px]'
+        : ''} grid-cols-[minmax(180px,0.9fr)_minmax(340px,1.45fr)_minmax(210px,0.9fr)] items-start gap-5 max-[1180px]:grid-cols-[minmax(150px,0.75fr)_minmax(300px,1.35fr)_minmax(180px,auto)] max-[1180px]:gap-4 max-[1040px]:grid-cols-[minmax(0,1fr)_auto] max-[1040px]:gap-x-3 max-[1040px]:gap-y-1"
+    >
+      <div class="player-track min-w-0 self-center" aria-live="polite">
+        <button
+          type="button"
+          onclick={() => (focusOpen = !focusOpen)}
+          aria-label={t(locale, focusOpen ? "player.closeFocus" : "player.focus")}
+          aria-expanded={focusOpen}
+          class="block w-full rounded text-left underline-offset-4 hover:underline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-app-primary"
+          ><p
+            class="line-clamp-2 break-words text-sm font-bold {appState.player.error
+              ? 'max-[1040px]:hidden'
+              : 'max-[1040px]:line-clamp-1'} {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
+            lang={isMyanmarText(track.title) ? "my" : undefined}
+          >
+            {truncateTrackTitle(track.title)}
+          </p></button
+        >
         <p
           class="truncate text-xs text-app-muted max-[1040px]:hidden {isMyanmarText(
             track.teacherName
@@ -65,7 +105,7 @@
           {track.teacherName || t(locale, "player.unknownTeacher")}
         </p>
         <div class="mt-1 min-h-4 max-[1040px]:mt-0">
-          {#if state.player.error}<span
+          {#if appState.player.error}<span
               class="inline-flex max-w-full items-center gap-2 text-xs font-semibold text-error"
               role="alert"
               ><span class="truncate" title={playerError}>{playerError}</span><button
@@ -129,24 +169,24 @@
         <div
           class="grid grid-cols-[3.4rem_minmax(90px,1fr)_3.4rem] items-center gap-[0.55rem] text-xs text-app-muted tabular-nums max-[1040px]:grid-cols-[3rem_minmax(120px,1fr)_3rem] max-[1040px]:gap-2 [&>span:first-child]:text-right"
         >
-          <span>{formatLocaleDuration(state.player.currentTime, locale)}</span><input
+          <span>{formatLocaleDuration(appState.player.currentTime, locale)}</span><input
             class="w-full min-w-0 accent-app-primary"
             type="range"
             min="0"
             {max}
             step="5"
-            value={Math.min(state.player.currentTime, max)}
+            value={Math.min(appState.player.currentTime, max)}
             oninput={(event) => app.seek(numberFromControl(event))}
             aria-label={t(locale, "player.position")}
             aria-keyshortcuts="Home End"
             aria-valuemin="0"
-            aria-valuemax={Math.round(state.player.duration)}
-            aria-valuenow={Math.round(state.player.currentTime)}
+            aria-valuemax={Math.round(appState.player.duration)}
+            aria-valuenow={Math.round(appState.player.currentTime)}
             aria-valuetext={t(locale, "player.position.value", {
-              current: formatLocaleDuration(state.player.currentTime, locale),
-              duration: formatLocaleDuration(state.player.duration, locale)
+              current: formatLocaleDuration(appState.player.currentTime, locale),
+              duration: formatLocaleDuration(appState.player.duration, locale)
             })}
-          /><span>{formatLocaleDuration(state.player.duration, locale)}</span>
+          /><span>{formatLocaleDuration(appState.player.duration, locale)}</span>
         </div>
       </div>
       <div
@@ -154,7 +194,7 @@
       >
         <label title={t(locale, "player.speed")}
           ><span class="sr-only">{t(locale, "player.speed")}</span><select
-            value={String(state.settings.playbackRate)}
+            value={String(appState.settings.playbackRate)}
             onchange={(event) => app.setRate(numberFromControl(event))}
             class="field-select h-11 min-w-16 rounded-control border border-app-border bg-app-bg py-0 pr-[1.95rem] pl-[0.65rem] text-xs font-bold text-app max-[1040px]:min-w-[58px] max-[1040px]:pr-[1.6rem] max-[1040px]:pl-2"
             >{#each rates as rate (rate)}<option value={String(rate)}>{rate}×</option
@@ -167,10 +207,10 @@
           onclick={() => app.dispatch({ type: "toggle-queue" })}
           aria-label={queueLabel}
           title={queueLabel}
-          aria-expanded={state.player.queueOpen}
-          ><span><Icon name="queue" /></span>{#if state.player.queue.length > 0}<span
+          aria-expanded={appState.player.queueOpen}
+          ><span><Icon name="queue" /></span>{#if appState.player.queue.length > 0}<span
               class="absolute -top-[3px] -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.58rem] font-extrabold text-app-primary-ink"
-              aria-hidden="true">{formatLocaleNumber(state.player.queue.length, locale)}</span
+              aria-hidden="true">{formatLocaleNumber(appState.player.queue.length, locale)}</span
             >{/if}</button
         >
       </div>

@@ -8,6 +8,30 @@ All notable changes to this project are documented here.
 
 - Replaced the MIT source and asset license with PolyForm Noncommercial License 1.0.0; catalogue and media rights remain separately documented.
 
+## [0.6.0] - 2026-10-22
+
+### Added
+
+- Redesigned the desktop experience as the **Quiet Listening Desk** with updated semantic tokens, editorial heading typography, forest-green controls, refined lotus identity and coordinated dark mode.
+- Added a globally accessible Explore/search entry that routes to the existing search model; Cmd/Ctrl+F focuses the catalogue search from any route.
+- Added a focused listening view using the existing audio player and controls, without a second playback engine.
+- Added a collapsible Explore category disclosure, retaining active filter chips and supported legacy media records.
+- Added the Impeccable design rationale, implementation blueprint, per-decision acceptance matrix, and rendered desktop QA screenshots.
+
+### Changed
+
+- Streamlined compact sidebar and separated Settings from primary content navigation; removed repetitive sidebar privacy copy while retaining Settings privacy information.
+- Improved Home introduction/continue styling, teacher/collection cards, responsive spacing, and English/Myanmar interface labels.
+- Recolored bundled brand SVGs, teacher avatars, product site, and desktop icons to match the renewed design identity.
+- Regenerated public Home/Explore/Collections/Teachers/Library/Settings screenshots.
+- Patched vulnerable dependency versions with Bun audit fixes, including Vite 8.1.6 and transitive packages.
+
+### Fixed
+
+- Library tabs remain accessible for listeners who have history but no favorites or downloads.
+- Screenshot capture automation handles the global Explore action without ambiguous selectors.
+- ESLint/Prettier no longer lint installed local agent-skill binaries and generated scripts.
+
 ## [0.5.10] - 2026-08-22
 
 ### Fixed
