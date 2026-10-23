@@ -10,6 +10,8 @@ every compound acceptance criterion as completely verified.
 - **Resolved defects:** global Space/arrow shortcuts no longer override keyboard
   activation of focused buttons and other interactive controls; the Focused
   Listening entry remains visible at compact widths when a media error occurs.
+  Focused Listening now covers the sidebar rather than leaving navigation visible
+  next to the active player; Playwright asserts its full-width geometry.
 - **Automated checks (macOS Apple Silicon):** `bun run verify` passed, including
   Svelte typecheck, ESLint, tests, web/site/design checks, Rust Clippy/tests and
   Rust release build. `bun run package` passed for 0.6.1.

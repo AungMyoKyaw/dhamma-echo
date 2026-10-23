@@ -65,6 +65,8 @@ const source = `async page => {
   observations.push("queue-clear-undo-focus:pass");
   await footer.locator(".player-track button").first().click();
   await page.getByRole("button",{name:"Return to library"}).first().waitFor({state:"visible",timeout:2000});
+  assert(await footer.evaluate(element=>Math.abs(element.getBoundingClientRect().left)<1),
+    "Focused Listening does not cover the distracting sidebar");
   await page.locator('footer section[aria-label="Focus on listening"] button').click();
   observations.push("focused-listening-exit:pass");
   const teacherNavigation=page.locator("aside nav button").nth(3);

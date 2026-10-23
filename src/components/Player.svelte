@@ -97,9 +97,9 @@
     onkeydown={trapFocusedTab}
     role={focusOpen ? "dialog" : undefined}
     aria-modal={focusOpen && !appState.player.queueOpen ? "true" : undefined}
-    class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 max-[1040px]:py-2 motion-safe:animate-[fade-in_180ms_ease-out] {focusOpen
-      ? 'top-[var(--titlebar-height)] flex flex-col justify-center gap-9 overflow-y-auto'
-      : ''}"
+    class="fixed right-0 bottom-0 z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 max-[1040px]:py-2 motion-safe:animate-[fade-in_180ms_ease-out] {focusOpen
+      ? 'left-0 top-[var(--titlebar-height)] flex flex-col justify-center gap-9 overflow-y-auto'
+      : 'left-(--sidebar-offset)'}"
     aria-label={t(locale, "player.region")}
   >
     {#if focusOpen}

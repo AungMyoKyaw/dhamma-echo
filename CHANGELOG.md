@@ -24,6 +24,7 @@ All notable changes to this project are documented here.
 
 - Preserve Space-key activation and arrow navigation for focused native and ARIA controls instead of hijacking them with global media shortcuts.
 - Keep the compact audio player’s Focused Listening entry visible when the remote media stream reports an error.
+- Let Focused Listening occupy the full content window above native title-bar controls, concealing the distracting sidebar during focused playback.
 
 ## [0.6.0] - 2026-10-22
 
