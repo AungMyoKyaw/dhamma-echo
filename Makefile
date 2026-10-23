@@ -1,4 +1,4 @@
-.PHONY: install dev dev-web build test test-coverage verify ci format lint typecheck clean package
+.PHONY: install dev dev-web stop build test test-coverage verify ci format lint typecheck clean package
 
 ## install: Install JS dependencies (frozen, no scripts)
 install:
@@ -11,6 +11,10 @@ dev:
 ## dev-web: Run the webview in a plain browser (no Tauri shell)
 dev-web:
 	bun run dev:web
+
+## stop: Stop the process listening on the Tauri/Vite dev port
+stop:
+	node scripts/stop-dev.mjs
 
 ## build: Build the webview bundle
 build:
