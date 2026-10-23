@@ -94,6 +94,23 @@ export function isEditableTarget(target: EventTarget | null): boolean {
   );
 }
 
+/** Do not steal keyboard activation or arrow navigation from native and ARIA controls. */
+export function isInteractiveShortcutTarget(target: EventTarget | null): boolean {
+  if (isEditableTarget(target)) return true;
+  if (target === null || typeof target !== "object") return false;
+  const element = target as { tagName?: unknown; closest?: (selector: string) => unknown };
+  const tag = typeof element.tagName === "string" ? element.tagName.toLowerCase() : "";
+  if (tag === "button" || tag === "summary") return true;
+  return (
+    typeof element.closest === "function" &&
+    Boolean(
+      element.closest(
+        'button, a[href], summary, [role="button"], [role="menuitem"], [role="slider"], [role="tab"], [role="option"], [contenteditable], [tabindex]:not([tabindex="-1"])'
+      )
+    )
+  );
+}
+
 /**
  * Reports the host platform from the webview user agent so the layout can
  * apply platform-specific chrome (e.g. the macOS traffic-light inset). The

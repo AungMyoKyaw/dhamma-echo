@@ -216,6 +216,8 @@ export interface AppState {
   favoriteTracks: AudioTrack[];
   downloadedTracks: AudioTrack[];
   downloadProgress: Record<string, DownloadProgress>;
+  /** Transient file verification; never written to the user's persisted library schema. */
+  downloadAvailability: Record<string, "available" | "missing" | "unverified">;
   settings: SettingsState;
   ui: { sidebarCollapsed: boolean };
   player: PlayerState;

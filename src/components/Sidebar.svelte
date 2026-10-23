@@ -26,10 +26,12 @@
     app.dispatch({ type: "navigate", route });
     if (route === "home") void app.loadRecent();
     if (route === "collections") void app.searchCollections();
+    if (route === "library") void app.loadDownloadedTracks();
   }
 </script>
 
 <aside
+  data-app-sidebar
   class="fixed inset-y-0 left-0 z-20 flex w-[var(--sidebar-offset)] flex-col overflow-y-auto overscroll-contain border-r border-app-border bg-app-surface px-3 pt-[var(--sidebar-padding-top)] pb-[var(--sidebar-padding-bottom)] [scrollbar-gutter:stable]"
   aria-label={t(locale, "nav.primary")}
 >

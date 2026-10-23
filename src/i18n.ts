@@ -68,6 +68,8 @@ const en = {
     "Search by title, teacher, language, or format across {talks} and {teachers}.",
   "home.welcome.explore": "Explore talks",
   "home.welcome.teachers": "Browse teachers",
+  "home.discover": "Discover talks",
+  "home.discover.action": "Explore the catalogue",
   "home.featured": "Featured teachers",
   "home.featured.detail": "Curated teachers to start listening. Tap to explore their talks.",
   "home.featured.viewAll": "View all",
@@ -127,6 +129,8 @@ const en = {
   "teachers.empty.title": "No teachers found",
   "teachers.empty.detail": "The catalogue does not currently include teacher records.",
   "teachers.loading": "Loading teachers",
+  "teachers.search.error":
+    "The teacher search could not be completed. Retry or use a different name.",
 
   "collections.loading": "Loading collections",
   "collections.empty.title.query": "No collections match “{query}”",
@@ -223,6 +227,7 @@ const en = {
   "player.queue.showCount": "Show queue with {count}",
 
   "queue.label": "Playback queue",
+  "queue.close": "Close queue",
   "queue.title": "Up next",
   "queue.clear": "Clear",
   "queue.empty": "Your queue is empty.",
@@ -257,6 +262,11 @@ const en = {
   "track.favorite.remove": "Remove from favorites",
   "track.download.add": "Download for offline listening",
   "track.download.remove": "Remove from downloads",
+  "track.download.forgetMissing": "Forget missing download",
+  "track.download.forgetUnknown": "Forget unverified saved download",
+  "track.badge.missingDownload": "Offline file missing",
+  "track.badge.unverifiedDownload": "Offline file not verified",
+  "library.downloads.unresolved": "Saved download records could not be matched to catalogue talks.",
   "track.download.progress": "Downloading",
   "track.download.progress.label": "Download in progress",
   "track.download.progress.percent": "{percent} percent downloaded",
@@ -375,6 +385,8 @@ const my: Partial<Record<MessageKey, string>> = {
     "{talks} နှင့် {teachers} ထဲကို ခေါင်းစဉ်၊ ဆရာတော်၊ ဘာသာစကား၊ ဖော်မက်အလိုက် ရှာဖွေပါ။",
   "home.welcome.explore": "တရားတော်များ ရှာဖွေမည်",
   "home.welcome.teachers": "ဆရာတော်များကို ကြည့်မည်",
+  "home.discover": "တရားတော်များ ရှာဖွေပါ",
+  "home.discover.action": "တရားတော်စာရင်းကို ကြည့်မည်",
   "home.featured": "အထူးတင်ဆက် ဆရာတော်များ",
   "home.featured.detail":
     "နားထောင်စရန် ရွေးချယ်ထားသော ဆရာတော်များ။ တရားတော်များ ရှာဖွေရန် နှိပ်ပါ။",
@@ -436,6 +448,8 @@ const my: Partial<Record<MessageKey, string>> = {
   "teachers.empty.title": "ဆရာတော် မတွေ့ပါ",
   "teachers.empty.detail": "စာရင်းဇယားတွင် ဆရာတော် မှတ်တမ်းများ ယခုမရှိသေးပါ။",
   "teachers.loading": "ဆရာတော်များ တင်နေသည်",
+  "teachers.search.error":
+    "ဆရာတော် ရှာဖွေမှု မအောင်မြင်ပါ။ ထပ်မံကြိုးစားပါ သို့မဟုတ် အခြားအမည်ဖြင့် ရှာဖွေပါ။",
 
   "collections.loading": "စုစည်းမှုများ တင်နေသည်",
   "collections.empty.title.query": "“{query}” နှင့် ကိုက်ညီသော စုစည်းမှု မရှိပါ",
@@ -533,6 +547,7 @@ const my: Partial<Record<MessageKey, string>> = {
   "player.queue.showCount": "{count} ပါသော အစဉ်စာရင်း ကြည့်မည်",
 
   "queue.label": "ဖွင့်မည့် အစဉ်စာရင်း",
+  "queue.close": "အစဉ်စာရင်း ပိတ်မည်",
   "queue.title": "နောက်တစ်ခု",
   "queue.clear": "ရှင်းလင်းမည်",
   "queue.empty": "သင်၏ အစဉ်စာရင်း ဗလာဖြစ်နေသည်။",
@@ -567,6 +582,12 @@ const my: Partial<Record<MessageKey, string>> = {
   "track.favorite.remove": "အနှစ်သက်ဆုံးများမှ ဖယ်မည်",
   "track.download.add": "အင်တာနက်မလို နားထောင်ရန် ဒေါင်းလုပ် ဆွဲမည်",
   "track.download.remove": "ဒေါင်းလုပ်များမှ ဖယ်မည်",
+  "track.download.forgetMissing": "ပျောက်နေသော ဒေါင်းလုပ် မှတ်တမ်းကို ဖယ်မည်",
+  "track.download.forgetUnknown": "မစစ်ဆေးနိုင်သော ဒေါင်းလုပ် မှတ်တမ်းကို ဖယ်မည်",
+  "track.badge.missingDownload": "အော့ဖ်လိုင်းဖိုင် မရှိတော့ပါ",
+  "track.badge.unverifiedDownload": "အော့ဖ်လိုင်းဖိုင် မစစ်ဆေးရသေးပါ",
+  "library.downloads.unresolved":
+    "သိမ်းထားသော ဒေါင်းလုပ်များကို စာရင်းရှိ တရားတော်များနှင့် မချိတ်ဆက်နိုင်ပါ။",
   "track.download.progress": "ဒေါင်းလုပ် ဆွဲနေသည်",
   "track.download.progress.label": "ဒေါင်းလုပ် ဆွဲနေသည်",
   "track.download.progress.percent": "{percent} ရာခိုင်နှုန်း ဒေါင်းလုပ် ဆွဲပြီး",

@@ -8,9 +8,10 @@ use tauri::{Manager, path::BaseDirectory};
 
 use crate::{
     commands::{
-        download_audio, get_audio_track, get_catalogue_summary, get_collection, get_teacher,
-        list_audio_categories, list_content_categories, list_featured_teachers, search_audio,
-        search_collections, search_teachers,
+        download_audio, downloaded_media_exists, get_audio_track, get_catalogue_summary,
+        get_collection, get_teacher, list_audio_categories, list_content_categories,
+        list_featured_teachers, remove_downloaded_audio, search_audio, search_collections,
+        search_teachers,
     },
     db::Database,
     error::AppError,
@@ -53,7 +54,9 @@ pub fn run() {
             get_collection,
             search_audio,
             get_audio_track,
-            download_audio
+            download_audio,
+            remove_downloaded_audio,
+            downloaded_media_exists
         ])
         .run(tauri::generate_context!())
         .expect("error while running Dhamma Echo");

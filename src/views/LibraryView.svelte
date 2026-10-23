@@ -12,9 +12,11 @@
   let favorites = $derived(favoriteTracks(appState));
   let downloads = $derived(downloadedTracks(appState));
   let hasDownloads = $derived(Object.keys(appState.library.downloads ?? {}).length > 0);
-  let favoriteOnly = $derived(
-    favorites.filter((track) => appState.library.downloads?.[String(track.id)] === undefined)
+  let availableDownloads = $derived(
+    downloads.filter((track) => appState.downloadAvailability[String(track.id)] === "available")
   );
+  // A downloaded talk remains a favorite: the tabs are independent views.
+  let favoriteOnly = $derived(favorites);
   let unresolvedFavorites = $derived(appState.library.favorites.length - favorites.length);
   let historyTracks = $derived(appState.homeRecent.tracks);
   type Tab = "downloads" | "favorites" | "history";
@@ -31,7 +33,7 @@
     { id: "history", labelKey: "library.history" }
   ] as const;
   function tabCount(tab: Tab): number {
-    if (tab === "downloads") return downloads.length;
+    if (tab === "downloads") return availableDownloads.length;
     if (tab === "favorites") return appState.library.favorites.length;
     return historyTracks.length;
   }
@@ -72,7 +74,7 @@
       <div class="space-y-3" role="tabpanel" aria-label={t(locale, "library.downloads")}>
         <h2 class="text-xl font-semibold">{t(locale, "library.downloads")}</h2>
         <p class="text-sm text-app-muted tabular-nums">
-          {countLabel(locale, "downloadedTalk", downloads.length)}
+          {countLabel(locale, "downloadedTalk", availableDownloads.length)}
         </p>
         {#if downloads.length > 0 && appState.library.favorites.length === 0}<p
             class="text-xs text-app-muted"
@@ -91,9 +93,11 @@
           {:else}
             <AsyncState
               {locale}
-              kind="loading"
-              loadingLabel={t(locale, "library.downloads.loading")}
-              shape="rows"
+              kind="empty"
+              title={t(locale, "library.downloads.empty.title")}
+              detail={t(locale, "library.downloads.unresolved")}
+              actionLabel={t(locale, "library.empty.action")}
+              onaction={() => explore("explore")}
             />
           {/if}
         {:else}

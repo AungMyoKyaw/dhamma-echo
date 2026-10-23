@@ -314,6 +314,10 @@ export function createMockInvoke(): InvokeFn {
     if (command === "remove_downloaded_audio") {
       return undefined as T;
     }
+    if (command === "downloaded_media_exists") {
+      const id = readNumber(args?.id, 0);
+      return (args?.path === `mock://downloads/${id}.mp3`) as T;
+    }
     throw new Error(`Unsupported command: ${command}`);
   };
 }

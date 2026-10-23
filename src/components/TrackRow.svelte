@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from "svelte";
   import type { DhammaApp } from "../app.js";
   import { t } from "../i18n.js";
   import type { AppState, AudioTrack } from "../types.js";
@@ -23,7 +24,11 @@
         ? t(locale, "track.pause", { title: track.title })
         : t(locale, "track.play", { title: track.title })
   );
-  let downloaded = $derived(appState.library.downloads?.[String(track.id)] !== undefined);
+  let savedDownload = $derived(appState.library.downloads?.[String(track.id)] !== undefined);
+  let offlineStatus = $derived(appState.downloadAvailability[String(track.id)] ?? "unverified");
+  let downloaded = $derived(savedDownload && offlineStatus === "available");
+  let missingDownload = $derived(savedDownload && offlineStatus === "missing");
+  let unknownDownload = $derived(savedDownload && offlineStatus === "unverified");
   let progress = $derived(appState.downloadProgress[String(track.id)] ?? null);
   let downloading = $derived(progress !== null);
   let myanmarTitle = $derived(isMyanmarText(track.title));
@@ -31,7 +36,8 @@
   let displayTitle = $derived(truncateTrackTitle(track.title));
   let resumeLabel = $derived(resume > 0 ? formatLocaleDuration(resume, locale) : "");
   let menuOpen = $state(false);
-  let menuRoot: HTMLDivElement | undefined = undefined;
+  let menuRoot = $state<HTMLDivElement>();
+  let menuTrigger = $state<HTMLButtonElement>();
   async function play(): Promise<void> {
     if (!track.playable || loading) return;
     if (current) await app.togglePlayback();
@@ -46,22 +52,49 @@
     }
   }
   async function removeDownload(): Promise<void> {
-    if (!downloaded) return;
+    if (!savedDownload) return;
     await app.removeDownload(track.id);
   }
   function toggleFavorite(): void {
-    menuOpen = false;
+    closeMenu();
     app.dispatch({ type: "toggle-favorite", id: track.id });
   }
   function enqueue(): void {
-    menuOpen = false;
+    closeMenu();
     app.dispatch({ type: "enqueue", track });
   }
   function toggleMenu(): void {
     menuOpen = !menuOpen;
+    if (menuOpen) {
+      void tick().then(() =>
+        menuRoot?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus()
+      );
+    }
   }
   function closeMenu(): void {
     menuOpen = false;
+    if (menuTrigger?.isConnected) menuTrigger.focus();
+  }
+  function menuKeydown(event: KeyboardEvent): void {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      closeMenu();
+    } else if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
+      const items = [
+        ...(menuRoot?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]:not(:disabled)') ?? [])
+      ];
+      if (items.length === 0) return;
+      event.preventDefault();
+      const current = items.indexOf(document.activeElement as HTMLButtonElement);
+      const next =
+        event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? items.length - 1
+            : (current + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+      items[next]?.focus();
+    }
   }
 </script>
 
@@ -114,6 +147,12 @@
             >{track.format.toLowerCase() === "wma"
               ? t(locale, "track.badge.wma")
               : t(locale, "track.badge.unavailable")}</span
+          >{/if}{#if missingDownload || unknownDownload}<span
+            class="inline-flex min-h-[22px] items-center justify-center rounded-full border border-app-border px-2 align-middle text-[10px] leading-normal font-bold text-app-muted"
+            >{t(
+              locale,
+              missingDownload ? "track.badge.missingDownload" : "track.badge.unverifiedDownload"
+            )}</span
           >{/if}</span
       >
       <span
@@ -137,6 +176,7 @@
       class="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-app-muted transition-[background-color,color,box-shadow,transform] duration-150 active:scale-95 hover:bg-app-soft hover:text-app disabled:cursor-not-allowed aria-expanded:bg-app-soft aria-expanded:text-app"
       type="button"
       onclick={toggleMenu}
+      bind:this={menuTrigger}
       aria-haspopup="menu"
       aria-expanded={menuOpen}
       aria-label={t(locale, "track.menu")}
@@ -170,6 +210,8 @@
     {#if menuOpen}<div
         class="absolute right-0 top-full z-10 mt-2 min-w-[200px] rounded-card border border-app-border bg-app-surface p-1"
         role="menu"
+        tabindex="-1"
+        onkeydown={menuKeydown}
         aria-label={t(locale, "track.menu")}
       >
         <button
@@ -185,7 +227,7 @@
             >{favorite ? t(locale, "track.favorite.remove") : t(locale, "track.favorite.add")}</span
           >
         </button>
-        {#if downloaded}
+        {#if savedDownload}
           <button
             class="flex min-h-11 w-full items-center gap-2 rounded-control px-3 text-sm font-semibold text-app hover:bg-app-soft"
             type="button"
@@ -196,7 +238,16 @@
             }}
           >
             <span class="size-5 text-app-primary"><Icon name="download" filled /></span>
-            <span>{t(locale, "track.download.remove")}</span>
+            <span
+              >{t(
+                locale,
+                missingDownload
+                  ? "track.download.forgetMissing"
+                  : unknownDownload
+                    ? "track.download.forgetUnknown"
+                    : "track.download.remove"
+              )}</span
+            >
           </button>
         {:else if track.playable}
           <button

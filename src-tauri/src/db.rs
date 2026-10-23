@@ -212,7 +212,9 @@ impl Database {
         query: &str,
         limit: i64,
     ) -> Result<Vec<TeacherSummary>, AppError> {
-        let limit = validate_limit(limit)?;
+        // A directory query must be able to enumerate the full bundled teacher catalogue.
+        // Featured teachers retain their smaller, separately validated limit.
+        let limit = validate_teacher_directory_limit(limit)?;
         let pattern = format!("%{}%", normalize_text(query).to_lowercase());
         self.with_connection(|connection| {
             let mut statement = connection.prepare(
@@ -495,6 +497,16 @@ fn validate_limit(limit: i64) -> Result<i64, AppError> {
     }
 }
 
+fn validate_teacher_directory_limit(limit: i64) -> Result<i64, AppError> {
+    if (1..=400).contains(&limit) {
+        Ok(limit)
+    } else {
+        Err(AppError::InvalidInput(
+            "teacher directory limit must be between 1 and 400".into(),
+        ))
+    }
+}
+
 fn validate_audio_limit(limit: i64) -> Result<i64, AppError> {
     if (1..=400).contains(&limit) {
         Ok(limit)
@@ -767,6 +779,17 @@ mod tests {
         let teachers = database.featured_teachers(10).expect("teachers");
         assert_eq!(teachers.len(), 2);
         assert_eq!(teachers[0].name, "Teacher One");
+    }
+
+    #[test]
+    fn teacher_directory_allows_full_catalogue_without_expanding_featured_limit() {
+        let database = fixture();
+        let teachers = database.search_teachers("", 400).expect("directory");
+        assert_eq!(teachers.len(), 2);
+        assert_eq!(teachers[0].name, "Teacher One");
+        assert!(database.search_teachers("", 401).is_err());
+        assert!(database.search_teachers("", 0).is_err());
+        assert!(database.featured_teachers(101).is_err());
     }
 
     #[test]

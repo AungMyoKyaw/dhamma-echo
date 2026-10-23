@@ -1,4 +1,7 @@
-use std::path::PathBuf;
+use std::{
+    io::ErrorKind,
+    path::{Path, PathBuf},
+};
 
 use futures_util::StreamExt;
 use serde::Serialize;
@@ -144,6 +147,65 @@ pub async fn download_audio(app: AppHandle, id: i64, url: String) -> Result<Stri
     Ok(path.to_string_lossy().into_owned())
 }
 
+fn validated_download_path(
+    root: &Path,
+    id: i64,
+    path: &str,
+) -> Result<PathBuf, crate::error::AppError> {
+    if id <= 0 {
+        return Err(crate::error::AppError::InvalidInput(
+            "Audio id must be positive.".into(),
+        ));
+    }
+    let expected = root.join(format!("favorite-{id}.mp3"));
+    if Path::new(path) != expected {
+        return Err(crate::error::AppError::InvalidInput(
+            "Downloaded media must belong to its expected app data path.".into(),
+        ));
+    }
+    Ok(expected)
+}
+
+#[tauri::command]
+pub async fn remove_downloaded_audio(
+    app: AppHandle,
+    id: i64,
+    path: String,
+) -> Result<(), CommandError> {
+    let root = app
+        .path()
+        .app_data_dir()
+        .map_err(|error| CommandError::from(crate::error::AppError::Download(error.to_string())))?;
+    let expected = validated_download_path(&root, id, &path).map_err(CommandError::from)?;
+    match tokio::fs::remove_file(expected).await {
+        Ok(()) => Ok(()),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(CommandError::from(crate::error::AppError::Download(
+            error.to_string(),
+        ))),
+    }
+}
+
+#[tauri::command]
+pub async fn downloaded_media_exists(
+    app: AppHandle,
+    id: i64,
+    path: String,
+) -> Result<bool, CommandError> {
+    let root = app
+        .path()
+        .app_data_dir()
+        .map_err(|error| CommandError::from(crate::error::AppError::Download(error.to_string())))?;
+    let expected = validated_download_path(&root, id, &path).map_err(CommandError::from)?;
+    match tokio::fs::metadata(expected).await {
+        Ok(metadata) => Ok(metadata.is_file() && metadata.len() > 0),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(false),
+        Err(error) => Err(CommandError::from(crate::error::AppError::Download(
+            error.to_string(),
+        ))),
+    }
+}
+
 fn validate_download_url(id: i64, url: &str) -> Result<reqwest::Url, crate::error::AppError> {
     if id <= 0 {
         return Err(crate::error::AppError::InvalidInput(
@@ -168,7 +230,24 @@ fn validate_download_url(id: i64, url: &str) -> Result<reqwest::Url, crate::erro
 
 #[cfg(test)]
 mod tests {
-    use super::validate_download_url;
+    use super::{validate_download_url, validated_download_path};
+    use std::path::Path;
+
+    #[test]
+    fn downloaded_path_is_tied_to_its_media_id_and_app_data_root() {
+        let root = Path::new("/private/example/dhamma");
+        assert!(validated_download_path(root, 7, "/private/example/dhamma/favorite-7.mp3").is_ok());
+        assert!(
+            validated_download_path(root, 0, "/private/example/dhamma/favorite-0.mp3").is_err()
+        );
+        assert!(
+            validated_download_path(root, 7, "/private/example/dhamma/favorite-8.mp3").is_err()
+        );
+        assert!(
+            validated_download_path(root, 7, "/private/example/dhamma/../secrets.txt").is_err()
+        );
+        assert!(validated_download_path(root, 7, "/Users/elsewhere/favorite-7.mp3").is_err());
+    }
 
     #[test]
     fn accepts_only_approved_https_mp3_sources() {

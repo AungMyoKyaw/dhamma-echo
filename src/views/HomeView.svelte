@@ -89,13 +89,13 @@
         </div>
       </section>
     {:else if recentCount > 0}
-      {@const latest = state.homeRecent.tracks[0]}
+      {@const latest = state.homeRecent.tracks.find((track) => track.playable)}
       {#if latest !== undefined}
         {@const rest = state.homeRecent.tracks
-          .slice(1)
-          .filter((track) => track.playable)
+          .filter((track) => track.playable && track.id !== latest.id)
           .slice(0, 4)}
-        {@const resume = state.library.resume[String(latest.id)] ?? 0}
+        {@const savedPosition = state.library.resume[String(latest.id)] ?? 0}
+        {@const resume = Number.isFinite(savedPosition) && savedPosition > 0 ? savedPosition : 0}
         {@const playing =
           state.player.current?.id === latest.id && state.player.status === "playing"}
         {@const resumeLabel = resume > 0 ? formatLocaleDuration(resume, locale) : ""}
@@ -154,6 +154,22 @@
             </div>{/if}
         </section>
       {/if}
+    {/if}
+    {#if !isFirstLaunch}
+      <section
+        class="flex flex-wrap items-center justify-between gap-4 border-y border-app-border py-5"
+      >
+        <div class="min-w-0">
+          <h2 class="text-xl font-semibold">{t(locale, "home.discover")}</h2>
+          <p class="mt-1 text-sm leading-6 text-app-muted">{catalogueSentence}</p>
+        </div>
+        <button
+          type="button"
+          onclick={() => go("explore")}
+          class="inline-flex min-h-11 items-center justify-center rounded-control border border-app-border bg-app-surface px-4 text-sm font-bold text-app-primary hover:bg-app-soft"
+          >{t(locale, "home.discover.action")}</button
+        >
+      </section>
     {/if}
     <div>
       <div class="mb-4 flex items-end justify-between">

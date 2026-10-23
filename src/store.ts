@@ -69,6 +69,11 @@ export type AppAction =
   | { type: "recent-failed"; message: string }
   | { type: "favorite-tracks-loaded"; tracks: AudioTrack[] }
   | { type: "downloaded-tracks-loaded"; tracks: AudioTrack[] }
+  | {
+      type: "download-availability";
+      id: number;
+      availability: "available" | "missing" | "unverified";
+    }
   | { type: "downloaded"; id: number; path: string }
   | { type: "download-progress"; id: number; progress: AppState["downloadProgress"][string] }
   | { type: "download-failed"; id: number }
@@ -162,6 +167,7 @@ export function createInitialState(): AppState {
     favoriteTracks: [],
     downloadedTracks: [],
     downloadProgress: {},
+    downloadAvailability: {},
     settings: createDefaultSettings(),
     ui: createDefaultUi(),
     player: {
@@ -553,12 +559,21 @@ export function reduce(state: AppState, action: AppAction): AppState {
       return { ...state, favoriteTracks: action.tracks };
     case "downloaded-tracks-loaded":
       return { ...state, downloadedTracks: action.tracks };
+    case "download-availability":
+      return {
+        ...state,
+        downloadAvailability: {
+          ...state.downloadAvailability,
+          [String(action.id)]: action.availability
+        }
+      };
     case "downloaded":
       return {
         ...state,
         downloadProgress: Object.fromEntries(
           Object.entries(state.downloadProgress).filter(([key]) => key !== String(action.id))
         ),
+        downloadAvailability: { ...state.downloadAvailability, [String(action.id)]: "available" },
         library: {
           ...state.library,
           downloads: { ...(state.library.downloads ?? {}), [String(action.id)]: action.path }
@@ -579,8 +594,10 @@ export function reduce(state: AppState, action: AppAction): AppState {
     }
     case "remove-download": {
       const downloads = { ...(state.library.downloads ?? {}) };
+      const downloadAvailability = { ...state.downloadAvailability };
       delete downloads[String(action.id)];
-      return { ...state, library: { ...state.library, downloads } };
+      delete downloadAvailability[String(action.id)];
+      return { ...state, downloadAvailability, library: { ...state.library, downloads } };
     }
     case "toggle-favorite": {
       const exists = state.library.favorites.includes(action.id);

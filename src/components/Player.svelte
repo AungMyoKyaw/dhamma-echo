@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tick } from "svelte";
   import type { DhammaApp } from "../app.js";
   import { countLabel, t, tError } from "../i18n.js";
   import type { AppState } from "../types.js";
@@ -9,6 +10,52 @@
   let { state: appState, app }: { state: AppState; app: DhammaApp } = $props();
   const rates = [0.75, 1, 1.25, 1.5, 1.75, 2];
   let focusOpen = $state(false);
+  let playerFooter = $state<HTMLElement>();
+  let focusCloseButton = $state<HTMLButtonElement>();
+  let focusToggleButton = $state<HTMLButtonElement>();
+  $effect(() => {
+    if (!focusOpen) return;
+    const background = Array.from(
+      globalThis.document.querySelectorAll<HTMLElement>(
+        "[data-content-scroller], [data-app-sidebar]"
+      )
+    );
+    const previousInert = background.map((element) => element.inert);
+    background.forEach((element) => (element.inert = true));
+    void tick().then(() => {
+      if (focusOpen) focusCloseButton?.focus();
+    });
+    return () => {
+      background.forEach((element, index) => (element.inert = previousInert[index] ?? false));
+      void tick().then(() => focusToggleButton?.focus());
+    };
+  });
+  function trapFocusedTab(event: KeyboardEvent): void {
+    if (!focusOpen || appState.player.queueOpen || event.key !== "Tab" || !playerFooter) return;
+    const controls = Array.from(
+      playerFooter.querySelectorAll<HTMLElement>(
+        "button:not([disabled]), select:not([disabled]), input:not([disabled])"
+      )
+    ).filter((element) => element.getClientRects().length > 0);
+    if (controls.length === 0) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (
+      event.shiftKey &&
+      (globalThis.document.activeElement === first ||
+        !playerFooter.contains(globalThis.document.activeElement))
+    ) {
+      event.preventDefault();
+      last?.focus();
+    } else if (
+      !event.shiftKey &&
+      (globalThis.document.activeElement === last ||
+        !playerFooter.contains(globalThis.document.activeElement))
+    ) {
+      event.preventDefault();
+      first?.focus();
+    }
+  }
   let track = $derived(appState.player.current);
   let playing = $derived(appState.player.status === "playing");
   let loading = $derived(appState.player.status === "loading");
@@ -30,7 +77,9 @@
         : t(locale, "player.play")
   );
   function closeFocusedOnEscape(event: KeyboardEvent): void {
-    if (focusOpen && event.key === "Escape") focusOpen = false;
+    if (focusOpen && !appState.player.queueOpen && event.key === "Escape") {
+      focusOpen = false;
+    }
   }
   function numberFromControl(event: Event): number {
     return Number((event.currentTarget as HTMLInputElement | HTMLSelectElement).value);
@@ -44,6 +93,10 @@
 {#if track !== null}
   <QueuePanel state={appState} {app} />
   <footer
+    bind:this={playerFooter}
+    onkeydown={trapFocusedTab}
+    role={focusOpen ? "dialog" : undefined}
+    aria-modal={focusOpen && !appState.player.queueOpen ? "true" : undefined}
     class="fixed right-0 bottom-0 left-(--sidebar-offset) z-30 min-h-[84px] border-t border-app-border bg-app-surface px-5 py-3 shadow-player max-[1040px]:min-h-[132px] max-[1040px]:px-4 max-[1040px]:py-2 motion-safe:animate-[fade-in_180ms_ease-out] {focusOpen
       ? 'top-[var(--titlebar-height)] flex flex-col justify-center gap-9 overflow-y-auto'
       : ''}"
@@ -54,7 +107,16 @@
         class="mx-auto w-full max-w-3xl space-y-4 px-4 text-center"
         aria-label={t(locale, "player.focus")}
       >
-        <p class="text-sm font-medium text-app-muted">{t(locale, "player.focus")}</p>
+        <div class="flex items-center justify-between gap-3">
+          <p class="text-sm font-medium text-app-muted">{t(locale, "player.focus")}</p>
+          <button
+            bind:this={focusCloseButton}
+            type="button"
+            onclick={() => (focusOpen = false)}
+            class="inline-flex min-h-11 items-center rounded-control border border-app-border px-4 text-sm font-bold text-app-primary hover:bg-app-soft"
+            >{t(locale, "player.closeFocus")}</button
+          >
+        </div>
         <h2
           class="mx-auto max-w-2xl break-words text-[clamp(1.75rem,3.4vw,3.2rem)] font-semibold leading-[1.25] tracking-tight {isMyanmarText(
             track.title
@@ -80,15 +142,18 @@
     >
       <div class="player-track min-w-0 self-center" aria-live="polite">
         <button
+          bind:this={focusToggleButton}
           type="button"
           onclick={() => (focusOpen = !focusOpen)}
           aria-label={t(locale, focusOpen ? "player.closeFocus" : "player.focus")}
           aria-expanded={focusOpen}
           class="block w-full rounded text-left underline-offset-4 hover:underline focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-app-primary"
           ><p
-            class="line-clamp-2 break-words text-sm font-bold {appState.player.error
-              ? 'max-[1040px]:hidden'
-              : 'max-[1040px]:line-clamp-1'} {isMyanmarText(track.title) ? 'myanmar-text' : ''}"
+            class="line-clamp-2 break-words text-sm font-bold max-[1040px]:line-clamp-1 {isMyanmarText(
+              track.title
+            )
+              ? 'myanmar-text'
+              : ''}"
             lang={isMyanmarText(track.title) ? "my" : undefined}
           >
             {truncateTrackTitle(track.title)}
@@ -175,6 +240,7 @@
             min="0"
             {max}
             step="5"
+            disabled={appState.player.duration <= 0}
             value={Math.min(appState.player.currentTime, max)}
             oninput={(event) => app.seek(numberFromControl(event))}
             aria-label={t(locale, "player.position")}
@@ -184,9 +250,16 @@
             aria-valuenow={Math.round(appState.player.currentTime)}
             aria-valuetext={t(locale, "player.position.value", {
               current: formatLocaleDuration(appState.player.currentTime, locale),
-              duration: formatLocaleDuration(appState.player.duration, locale)
+              duration:
+                appState.player.duration > 0
+                  ? formatLocaleDuration(appState.player.duration, locale)
+                  : "—"
             })}
-          /><span>{formatLocaleDuration(appState.player.duration, locale)}</span>
+          /><span
+            >{appState.player.duration > 0
+              ? formatLocaleDuration(appState.player.duration, locale)
+              : "—"}</span
+          >
         </div>
       </div>
       <div

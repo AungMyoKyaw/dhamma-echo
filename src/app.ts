@@ -27,6 +27,7 @@ interface CatalogueClient {
   getAudioTrack: CatalogueApi["getAudioTrack"];
   downloadAudio: CatalogueApi["downloadAudio"];
   removeDownloadedAudio: CatalogueApi["removeDownloadedAudio"];
+  downloadedMediaExists: CatalogueApi["downloadedMediaExists"];
   listContentCategories: CatalogueApi["listContentCategories"];
   searchCollections: CatalogueApi["searchCollections"];
   getCollection: CatalogueApi["getCollection"];
@@ -49,6 +50,7 @@ const libraryActions = new Set<AppAction["type"]>([
   "hydrate",
   "toggle-favorite",
   "downloaded",
+  "remove-download",
   "record-history",
   "save-resume"
 ]);
@@ -56,7 +58,8 @@ const settingsActions = new Set<AppAction["type"]>([
   "hydrate",
   "set-rate",
   "set-browse-limit",
-  "set-theme"
+  "set-theme",
+  "set-locale"
 ]);
 const uiActions = new Set<AppAction["type"]>(["hydrate", "set-sidebar-collapsed"]);
 
@@ -66,6 +69,14 @@ export class DhammaApp {
   private engineMediaType: "audio" | "video" | null = null;
   private engineElement: MediaLike | null = null;
   private videoElement: MediaLike | null = null;
+  // Only the latest catalogue request may replace results. Typing, filters and
+  // pagination can otherwise resolve out of order on a slow catalogue device.
+  private searchRevision = 0;
+  private collectionRevision = 0;
+  private collectionDetailRevision = 0;
+  private teacherSearchRevision = 0;
+  private teacherDetailRevision = 0;
+  private teacherTalksRevision = 0;
 
   constructor(private readonly dependencies: AppDependencies) {
     this.engine = new MediaEngine(dependencies.audio, (event) => {
@@ -164,7 +175,7 @@ export class DhammaApp {
     try {
       this.dispatch({
         type: "teachers-loaded",
-        teachers: await this.dependencies.api.listFeaturedTeachers(100)
+        teachers: await this.dependencies.api.searchTeachers("", 400)
       });
     } catch (error) {
       this.dispatch({ type: "teachers-failed", message: messageFrom(error) });
@@ -184,24 +195,26 @@ export class DhammaApp {
   }
 
   async searchCollections(): Promise<void> {
+    const revision = ++this.collectionRevision;
+    const request = { ...this.state.collectionSearch, offset: 0 };
     this.dispatch({ type: "collections-started", mode: "initial" });
     try {
-      this.dispatch({
-        type: "collections-loaded",
-        mode: "initial",
-        page: await this.dependencies.api.searchCollections({
-          ...this.state.collectionSearch,
-          offset: 0
-        })
-      });
+      const page = await this.dependencies.api.searchCollections(request);
+      if (revision === this.collectionRevision) {
+        this.dispatch({ type: "collections-loaded", mode: "initial", page });
+      }
     } catch (error) {
-      this.dispatch({ type: "collections-failed", mode: "initial", message: messageFrom(error) });
+      if (revision === this.collectionRevision) {
+        this.dispatch({ type: "collections-failed", mode: "initial", message: messageFrom(error) });
+      }
     }
   }
 
   async loadMoreCollections(): Promise<void> {
     const collections = this.state.collections;
+    const revision = this.collectionRevision;
     if (
+      collections.status !== "ready" ||
       collections.loadingMore ||
       collections.exhausted ||
       collections.page.items.length >= collections.page.total
@@ -210,81 +223,93 @@ export class DhammaApp {
     const offset = collections.page.items.length;
     const remaining = collections.page.total - offset;
     const limit = Math.min(collections.nextLoadSize, remaining);
+    const request = { ...this.state.collectionSearch, limit, offset };
     this.dispatch({ type: "collections-started", mode: "append" });
     try {
-      this.dispatch({
-        type: "collections-loaded",
-        mode: "append",
-        page: await this.dependencies.api.searchCollections({
-          ...this.state.collectionSearch,
-          limit,
-          offset
-        })
-      });
+      const page = await this.dependencies.api.searchCollections(request);
+      if (revision === this.collectionRevision) {
+        this.dispatch({ type: "collections-loaded", mode: "append", page });
+      }
     } catch (error) {
-      this.dispatch({
-        type: "collections-failed",
-        mode: "append",
-        message: messageFrom(error)
-      });
+      if (revision === this.collectionRevision) {
+        this.dispatch({ type: "collections-failed", mode: "append", message: messageFrom(error) });
+      }
     }
   }
 
   async openCollection(id: number, returnRoute: Route): Promise<void> {
+    const revision = ++this.collectionDetailRevision;
     this.dispatch({ type: "open-collection", collectionId: id, returnRoute });
     this.dispatch({ type: "collection-detail-started" });
     try {
-      this.dispatch({
-        type: "collection-detail-loaded",
-        detail: await this.dependencies.api.getCollection(id)
-      });
+      const detail = await this.dependencies.api.getCollection(id);
+      if (revision === this.collectionDetailRevision && this.state.selectedCollectionId === id) {
+        this.dispatch({ type: "collection-detail-loaded", detail });
+      }
     } catch (error) {
-      this.dispatch({ type: "collection-detail-failed", message: messageFrom(error) });
+      if (revision === this.collectionDetailRevision && this.state.selectedCollectionId === id) {
+        this.dispatch({ type: "collection-detail-failed", message: messageFrom(error) });
+      }
     }
   }
 
   async openTeacher(id: number, returnRoute: Route): Promise<void> {
+    const revision = ++this.teacherDetailRevision;
     this.dispatch({ type: "open-teacher", teacherId: id, returnRoute });
     this.dispatch({ type: "teacher-detail-started" });
     const detail = this.dependencies.api
       .getTeacher(id)
-      .then((value) => this.dispatch({ type: "teacher-detail-loaded", detail: value }))
-      .catch((error: unknown) =>
-        this.dispatch({ type: "teacher-detail-failed", message: messageFrom(error) })
-      );
+      .then((value) => {
+        if (revision === this.teacherDetailRevision && this.state.selectedTeacherId === id) {
+          this.dispatch({ type: "teacher-detail-loaded", detail: value });
+        }
+      })
+      .catch((error: unknown) => {
+        if (revision === this.teacherDetailRevision && this.state.selectedTeacherId === id) {
+          this.dispatch({ type: "teacher-detail-failed", message: messageFrom(error) });
+        }
+      });
     await Promise.all([detail, this.loadTeacherTalks()]);
   }
 
   async loadTeacherTalks(): Promise<void> {
     const id = this.state.selectedTeacherId;
     if (id === null) return;
+    const revision = ++this.teacherTalksRevision;
     this.dispatch({ type: "teacher-talks-started", mode: "initial" });
-    await this.dependencies.api
-      .searchAudio({
-        query: "",
-        language: null,
-        format: null,
-        teacherId: id,
-        categoryId: null,
-        collectionId: null,
-        limit: this.state.settings.browseLimit,
-        offset: 0
-      })
-      .then((page) => this.dispatch({ type: "teacher-talks-loaded", mode: "initial", page }))
-      .catch((error: unknown) =>
+    const request = {
+      query: "",
+      language: null,
+      format: null,
+      teacherId: id,
+      categoryId: null,
+      collectionId: null,
+      limit: this.state.settings.browseLimit,
+      offset: 0
+    };
+    try {
+      const page = await this.dependencies.api.searchAudio(request);
+      if (revision === this.teacherTalksRevision && this.state.selectedTeacherId === id) {
+        this.dispatch({ type: "teacher-talks-loaded", mode: "initial", page });
+      }
+    } catch (error) {
+      if (revision === this.teacherTalksRevision && this.state.selectedTeacherId === id) {
         this.dispatch({
           type: "teacher-talks-failed",
           mode: "initial",
           message: messageFrom(error)
-        })
-      );
+        });
+      }
+    }
   }
 
   async loadMoreTeacherTalks(): Promise<void> {
     const teacherId = this.state.selectedTeacherId;
     const teacherTalks = this.state.teacherTalks;
+    const revision = this.teacherTalksRevision;
     if (
       teacherId === null ||
+      teacherTalks.status !== "ready" ||
       teacherTalks.loadingMore ||
       teacherTalks.exhausted ||
       teacherTalks.page.items.length >= teacherTalks.page.total
@@ -295,25 +320,30 @@ export class DhammaApp {
     const remaining = teacherTalks.page.total - offset;
     const limit = Math.min(teacherTalks.nextLoadSize, remaining);
     this.dispatch({ type: "teacher-talks-started", mode: "append" });
-    await this.dependencies.api
-      .searchAudio({
-        query: "",
-        language: null,
-        format: null,
-        teacherId,
-        categoryId: null,
-        collectionId: null,
-        limit,
-        offset
-      })
-      .then((page) => this.dispatch({ type: "teacher-talks-loaded", mode: "append", page }))
-      .catch((error: unknown) =>
+    const request = {
+      query: "",
+      language: null,
+      format: null,
+      teacherId,
+      categoryId: null,
+      collectionId: null,
+      limit,
+      offset
+    };
+    try {
+      const page = await this.dependencies.api.searchAudio(request);
+      if (revision === this.teacherTalksRevision && this.state.selectedTeacherId === teacherId) {
+        this.dispatch({ type: "teacher-talks-loaded", mode: "append", page });
+      }
+    } catch (error) {
+      if (revision === this.teacherTalksRevision && this.state.selectedTeacherId === teacherId) {
         this.dispatch({
           type: "teacher-talks-failed",
           mode: "append",
           message: messageFrom(error)
-        })
-      );
+        });
+      }
+    }
   }
 
   setBrowseLimit(limit: 25 | 50 | 100): void {
@@ -362,10 +392,28 @@ export class DhammaApp {
   }
 
   async loadDownloadedTracks(): Promise<void> {
-    const tracks = await this.loadTracksById(
-      Object.keys(this.state.library.downloads ?? {}).map(Number)
+    const saved = { ...(this.state.library.downloads ?? {}) };
+    const records = Object.entries(saved).filter(
+      ([id, path]) => Number.isSafeInteger(Number(id)) && Number(id) > 0 && path.length > 0
     );
+    const tracks = await this.loadTracksById(records.map(([id]) => Number(id)));
     this.dispatch({ type: "downloaded-tracks-loaded", tracks });
+    await Promise.all(
+      records.map(async ([rawId, path]) => {
+        const id = Number(rawId);
+        let availability: "available" | "missing" | "unverified" = "unverified";
+        try {
+          availability = (await this.dependencies.api.downloadedMediaExists(id, path))
+            ? "available"
+            : "missing";
+        } catch {
+          // Unsupported/failed platform checks must not claim offline availability.
+        }
+        if (this.state.library.downloads?.[rawId] === path) {
+          this.dispatch({ type: "download-availability", id, availability });
+        }
+      })
+    );
   }
 
   private async loadTracksById(ids: number[]): Promise<AudioTrack[]> {
@@ -381,23 +429,28 @@ export class DhammaApp {
     return tracks.filter((track): track is AudioTrack => track !== null);
   }
 
-  async searchTeachers(query: string): Promise<void> {
+  async searchTeachers(query: string): Promise<"ready" | "error" | "superseded"> {
+    const revision = ++this.teacherSearchRevision;
     this.dispatch({ type: "set-teacher-query", query });
-    if (this.state.teacherQuery.length === 0) {
+    const normalizedQuery = this.state.teacherQuery;
+    if (normalizedQuery.length === 0) {
       this.dispatch({ type: "teacher-results", teachers: [] });
-      return;
+      return "ready";
     }
     try {
-      this.dispatch({
-        type: "teacher-results",
-        teachers: await this.dependencies.api.searchTeachers(this.state.teacherQuery)
-      });
+      const teachers = await this.dependencies.api.searchTeachers(normalizedQuery);
+      if (revision !== this.teacherSearchRevision) return "superseded";
+      this.dispatch({ type: "teacher-results", teachers });
+      return "ready";
     } catch {
+      if (revision !== this.teacherSearchRevision) return "superseded";
       this.dispatch({ type: "teacher-results", teachers: [] });
+      return "error";
     }
   }
 
   async search(): Promise<void> {
+    const revision = ++this.searchRevision;
     this.dispatch({ type: "search-started", mode: "initial" });
     const request: AudioSearchRequest = {
       query: this.state.search.query,
@@ -410,18 +463,20 @@ export class DhammaApp {
       offset: 0
     };
     try {
-      this.dispatch({
-        type: "search-loaded",
-        mode: "initial",
-        page: await this.dependencies.api.searchAudio(request)
-      });
+      const page = await this.dependencies.api.searchAudio(request);
+      if (revision === this.searchRevision) {
+        this.dispatch({ type: "search-loaded", mode: "initial", page });
+      }
     } catch (error) {
-      this.dispatch({ type: "search-failed", mode: "initial", message: messageFrom(error) });
+      if (revision === this.searchRevision) {
+        this.dispatch({ type: "search-failed", mode: "initial", message: messageFrom(error) });
+      }
     }
   }
 
   async loadMoreSearchResults(): Promise<void> {
     const catalogue = this.state.catalogue;
+    const revision = this.searchRevision;
     if (
       catalogue.loadingMore ||
       catalogue.exhausted ||
@@ -443,13 +498,14 @@ export class DhammaApp {
       offset
     };
     try {
-      this.dispatch({
-        type: "search-loaded",
-        mode: "append",
-        page: await this.dependencies.api.searchAudio(request)
-      });
+      const page = await this.dependencies.api.searchAudio(request);
+      if (revision === this.searchRevision) {
+        this.dispatch({ type: "search-loaded", mode: "append", page });
+      }
     } catch (error) {
-      this.dispatch({ type: "search-failed", mode: "append", message: messageFrom(error) });
+      if (revision === this.searchRevision) {
+        this.dispatch({ type: "search-failed", mode: "append", message: messageFrom(error) });
+      }
     }
   }
 
@@ -506,7 +562,11 @@ export class DhammaApp {
   async removeDownload(id: number): Promise<void> {
     const path = this.state.library.downloads?.[String(id)];
     if (path === undefined) return;
+    const availability = this.state.downloadAvailability[String(id)];
     this.dispatch({ type: "remove-download", id });
+    // A missing or unverifiable old reference can be forgotten without deleting
+    // arbitrary user files. Only verified paths are sent for filesystem deletion.
+    if (availability !== "available") return;
     try {
       await this.dependencies.api.removeDownloadedAudio(id, path);
     } catch (error) {
@@ -518,7 +578,9 @@ export class DhammaApp {
 
   private localUrlFor(id: number): string | undefined {
     const path = this.state.library.downloads?.[String(id)];
-    return path === undefined ? undefined : localFileUrl(path);
+    return path === undefined || this.state.downloadAvailability[String(id)] !== "available"
+      ? undefined
+      : localFileUrl(path);
   }
 
   async togglePlayback(): Promise<void> {

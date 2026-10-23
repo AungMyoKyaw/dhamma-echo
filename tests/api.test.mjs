@@ -147,6 +147,18 @@ test("CatalogueApi.downloadAudio forwards id and url", async () => {
   ]);
 });
 
+test("CatalogueApi checks actual local media existence through registered IPC", async () => {
+  const calls = [];
+  const api = new CatalogueApi(async (command, args) => {
+    calls.push({ command, args });
+    return command === "downloaded_media_exists";
+  });
+  assert.equal(await api.downloadedMediaExists(11, "/tmp/favorite-11.mp3"), true);
+  assert.deepEqual(calls, [
+    { command: "downloaded_media_exists", args: { id: 11, path: "/tmp/favorite-11.mp3" } }
+  ]);
+});
+
 test("CatalogueApi.removeDownloadedAudio forwards id and path", async () => {
   const calls = [];
   const api = new CatalogueApi(async (command, args) => {

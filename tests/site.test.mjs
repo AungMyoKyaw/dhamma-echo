@@ -162,8 +162,8 @@ test("progressive loading controls use explicit batches without a row chooser", 
   ]);
 
   assert.doesNotMatch(controls, /Rows|onlimit|<select/);
-  assert.match(explore, /nextLimit=\{state\.catalogue\.nextLoadSize\}/);
-  assert.match(collections, /nextLimit=\{state\.collections\.nextLoadSize\}/);
+  assert.match(explore, /nextLimit=\{(?:state|appState)\.catalogue\.nextLoadSize\}/);
+  assert.match(collections, /nextLimit=\{(?:state|appState)\.collections\.nextLoadSize\}/);
   assert.match(teacherDetail, /nextLimit=\{state\.teacherTalks\.nextLoadSize\}/);
 });
 

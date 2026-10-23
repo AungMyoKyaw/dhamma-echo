@@ -8,7 +8,7 @@
   import Sidebar from "./components/Sidebar.svelte";
   import TitleBar from "./components/TitleBar.svelte";
   import VideoPlayer from "./components/VideoPlayer.svelte";
-  import { isEditableTarget } from "./runtime.js";
+  import { isInteractiveShortcutTarget } from "./runtime.js";
   import { applyTheme, watchSystemTheme } from "./theme.js";
   import type { AppState } from "./types.js";
   import CollectionDetailView from "./views/CollectionDetailView.svelte";
@@ -58,17 +58,17 @@
       app.dispatch({ type: "navigate", route: "settings" });
       return;
     }
-    if (isEditableTarget(event.target)) return;
-    if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
-      event.preventDefault();
-      helpOpen = !helpOpen;
-      return;
-    }
     if (event.key === "Escape" && helpOpen) {
+      event.preventDefault();
       helpOpen = false;
       return;
     }
     if (helpOpen) return;
+    if (event.key === "Escape" && appState.player.queueOpen) {
+      event.preventDefault();
+      app.dispatch({ type: "toggle-queue" });
+      return;
+    }
     if (
       event.key === "Escape" &&
       globalThis.document.fullscreenElement === null &&
@@ -78,10 +78,16 @@
       app.closeVideoPlayer();
       return;
     }
+    // Shortcuts only apply to the page, never to buttons, links, menus,
+    // text controls, sliders, or their nested icons. Preserve OS modifiers.
+    if (isInteractiveShortcutTarget(event.target) || event.altKey || event.ctrlKey || event.metaKey)
+      return;
+    if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
+      event.preventDefault();
+      helpOpen = !helpOpen;
+      return;
+    }
     if (event.code === "Space") {
-      const active = globalThis.document?.activeElement as HTMLElement | null;
-      if (active?.getAttribute("aria-keyshortcuts")?.includes("Space")) return;
-      if (active?.tagName === "BUTTON" && active.getAttribute("disabled") !== null) return;
       event.preventDefault();
       void app.togglePlayback();
       return;

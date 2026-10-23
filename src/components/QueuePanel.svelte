@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onDestroy, tick } from "svelte";
   import type { DhammaApp } from "../app.js";
   import { countLabel, t } from "../i18n.js";
   import type { AppState, AudioTrack } from "../types.js";
@@ -15,6 +16,17 @@
       : "fixed right-6 z-40 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-card border border-app-border bg-app-surface max-[1040px]:right-4 player-above"
   );
   let undoSnapshot: AudioTrack[] | null = $state(null);
+  let closeButton = $state<HTMLButtonElement>();
+  $effect(() => {
+    if (!appState.player.queueOpen) return;
+    const previous = document.activeElement;
+    void tick().then(() => {
+      if (appState.player.queueOpen) closeButton?.focus();
+    });
+    return () => {
+      if (previous instanceof HTMLElement && previous.isConnected) previous.focus();
+    };
+  });
   let undoTimer: ReturnType<typeof setTimeout> | null = null;
   function clearWithUndo(): void {
     if (appState.player.queue.length === 0) return;
@@ -36,10 +48,13 @@
     if (undoTimer !== null) clearTimeout(undoTimer);
   }
   let locale = $derived(appState.settings.locale);
+  onDestroy(() => {
+    if (undoTimer !== null) clearTimeout(undoTimer);
+  });
 </script>
 
 {#if appState.player.queueOpen}
-  <aside class={panelClass} aria-label={t(locale, "queue.label")}>
+  <div class={panelClass} role="dialog" aria-modal="false" aria-label={t(locale, "queue.label")}>
     <div class="flex items-center justify-between border-b border-app-border p-4">
       <div>
         <p class="font-bold">{t(locale, "queue.title")}</p>
@@ -47,12 +62,21 @@
           {countLabel(locale, "talk", appState.player.queue.length)}
         </p>
       </div>
-      <button
-        class="inline-flex min-h-11 items-center rounded-control px-3 text-xs font-bold text-app-primary hover:bg-app-soft disabled:cursor-not-allowed disabled:opacity-45"
-        type="button"
-        disabled={appState.player.queue.length === 0}
-        onclick={clearWithUndo}>{t(locale, "queue.clear")}</button
-      >
+      <div class="flex items-center gap-1">
+        <button
+          class="inline-flex min-h-11 items-center rounded-control px-3 text-xs font-bold text-app-primary hover:bg-app-soft disabled:cursor-not-allowed disabled:opacity-45"
+          type="button"
+          disabled={appState.player.queue.length === 0}
+          onclick={clearWithUndo}>{t(locale, "queue.clear")}</button
+        ><button
+          bind:this={closeButton}
+          type="button"
+          onclick={() => app.dispatch({ type: "toggle-queue" })}
+          class="inline-flex size-11 items-center justify-center rounded-control text-app-muted hover:bg-app-soft hover:text-app"
+          aria-label={t(locale, "queue.close")}
+          ><span class="size-4"><Icon name="close" /></span></button
+        >
+      </div>
     </div>
     <div
       class="max-h-80 overflow-y-auto [scrollbar-color:var(--color-app-border)_transparent] [scrollbar-width:thin]"
@@ -118,5 +142,5 @@
         </div>
       </div>
     {/if}
-  </aside>
+  </div>
 {/if}

@@ -142,7 +142,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 [tabindex]:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-app-primary) 55%, transparent);
+  outline: 3px solid var(--color-app-primary);
   outline-offset: 3px;
 }
 

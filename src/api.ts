@@ -86,4 +86,8 @@ export class CatalogueApi {
   removeDownloadedAudio(id: number, path: string): Promise<void> {
     return this.call("remove_downloaded_audio", { id, path });
   }
+
+  downloadedMediaExists(id: number, path: string): Promise<boolean> {
+    return this.call("downloaded_media_exists", { id, path });
+  }
 }

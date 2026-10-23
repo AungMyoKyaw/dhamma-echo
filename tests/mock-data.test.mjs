@@ -144,6 +144,9 @@ test("createMockInvoke supports download_audio and remove_downloaded_audio", asy
   const invoke = createMockInvoke();
   const path = await invoke("download_audio", { id: 7, url: "https://x.mp3" });
   assert.match(path, /\/7\.mp3$/);
+  assert.equal(await invoke("downloaded_media_exists", { id: 7, path }), true);
+  assert.equal(await invoke("downloaded_media_exists", { id: 7, path: "/tmp/lost.mp3" }), false);
+  assert.equal(await invoke("downloaded_media_exists", {}), false);
   const remove = await invoke("remove_downloaded_audio", { id: 7, path });
   assert.equal(remove, undefined);
 });

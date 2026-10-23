@@ -8,7 +8,8 @@
     className = "",
     visibleLabel = false,
     clearLabel,
-    onclear
+    onclear,
+    onquerychange
   }: {
     label: string;
     placeholder: string;
@@ -17,6 +18,7 @@
     visibleLabel?: boolean;
     clearLabel: string;
     onclear: () => void | Promise<void>;
+    onquerychange?: (query: string) => void;
   } = $props();
   let input: HTMLInputElement;
   async function clear(): Promise<void> {
@@ -49,6 +51,7 @@
       name="query"
       {value}
       {placeholder}
+      oninput={(event) => onquerychange?.(event.currentTarget.value)}
       onkeydown={onKeydown}
     />
     {#if value}<button

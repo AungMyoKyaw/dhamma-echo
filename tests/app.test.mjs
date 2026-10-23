@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DhammaApp } from "../.test-build/src/app.js";
-import { tracks, teachers, videoTrack } from "./test-data.mjs";
+import { tracks, teachers, collections, videoTrack } from "./test-data.mjs";
 
 class MemoryStorage {
   values = new Map();
@@ -94,9 +94,347 @@ function createApi(overrides = {}) {
     async removeDownloadedAudio() {
       return undefined;
     },
+    async downloadedMediaExists() {
+      return true;
+    },
     ...overrides
   };
 }
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((yes, no) => {
+    resolve = yes;
+    reject = no;
+  });
+  return { promise, resolve, reject };
+}
+
+test("teacher search discards out-of-order responses and stale failures", async () => {
+  const requests = new Map();
+  const app = new DhammaApp({
+    api: createApi({
+      searchTeachers(query) {
+        if (query === "") return Promise.resolve(teachers);
+        const pending = deferred();
+        requests.set(query, pending);
+        return pending.promise;
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 100
+  });
+  await app.start();
+  const old = app.searchTeachers("old");
+  const latest = app.searchTeachers("latest");
+  requests.get("latest").resolve([teachers[1]]);
+  assert.equal(await latest, "ready");
+  requests.get("old").resolve([teachers[0]]);
+  assert.equal(await old, "superseded");
+  assert.equal(app.state.teacherQuery, "latest");
+  assert.deepEqual(app.state.teacherResults, [teachers[1]]);
+
+  const staleFailure = app.searchTeachers("obsolete");
+  const current = app.searchTeachers("current");
+  requests.get("current").resolve([teachers[2]]);
+  assert.equal(await current, "ready");
+  requests.get("obsolete").reject(new Error("old server error"));
+  assert.equal(await staleFailure, "superseded");
+  assert.deepEqual(app.state.teacherResults, [teachers[2]]);
+
+  const failure = app.searchTeachers("fail");
+  requests.get("fail").reject(new Error("catalogue offline"));
+  assert.equal(await failure, "error");
+  assert.deepEqual(app.state.teacherResults, []);
+
+  const clearing = app.searchTeachers("clearing");
+  assert.equal(await app.searchTeachers(""), "ready");
+  requests.get("clearing").resolve([teachers[0]]);
+  assert.equal(await clearing, "superseded");
+  assert.equal(app.state.teacherQuery, "");
+  assert.deepEqual(app.state.teacherResults, []);
+  app.destroy();
+});
+
+test("collection search and pagination ignore superseded requests", async () => {
+  const requests = [];
+  const app = new DhammaApp({
+    api: createApi({
+      searchCollections(request) {
+        const pending = deferred();
+        requests.push({ request, ...pending });
+        return pending.promise;
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 100
+  });
+  const makePage = (id, total = 1, offset = 0) => ({
+    items: [{ id, name: "Collection " + id, teacherId: 1, teacherName: "Teacher", audioCount: 1 }],
+    total,
+    offset,
+    limit: 24
+  });
+  await app.start();
+  await app.loadMoreCollections(); // no page is ready
+  assert.equal(requests.length, 0);
+  app.dispatch({ type: "set-collection-query", query: "old" });
+  const first = app.searchCollections();
+  app.dispatch({ type: "set-collection-query", query: "new" });
+  const second = app.searchCollections();
+  requests[1].resolve(makePage(2, 3));
+  await second;
+  requests[0].resolve(makePage(1));
+  await first;
+  assert.equal(app.state.collections.page.items[0].id, 2);
+
+  const pagination = app.loadMoreCollections();
+  assert.equal(requests[2].request.offset, 1);
+  app.dispatch({ type: "set-collection-query", query: "newer" });
+  const newer = app.searchCollections();
+  requests[3].resolve(makePage(3, 3));
+  await newer;
+  requests[2].resolve(makePage(99, 3, 1));
+  await pagination;
+  assert.deepEqual(
+    app.state.collections.page.items.map((item) => item.id),
+    [3]
+  );
+
+  const successAppend = app.loadMoreCollections();
+  requests[4].resolve(makePage(4, 3, 1));
+  await successAppend;
+  assert.deepEqual(
+    app.state.collections.page.items.map((item) => item.id),
+    [3, 4]
+  );
+
+  const failedAppend = app.loadMoreCollections();
+  requests[5].reject(new Error("page missing"));
+  await failedAppend;
+  assert.match(app.state.collections.loadMoreMessage, /page missing/);
+
+  const bad = app.searchCollections();
+  requests[6].reject(new Error("offline"));
+  await bad;
+  assert.equal(app.state.collections.status, "error");
+  const staleBad = app.searchCollections();
+  const current = app.searchCollections();
+  requests[8].resolve(makePage(8));
+  await current;
+  requests[7].reject(new Error("old error"));
+  await staleBad;
+  assert.equal(app.state.collections.page.items[0].id, 8);
+  app.destroy();
+});
+
+test("interface language persists across restart without resetting playback", async () => {
+  const storage = new MemoryStorage();
+  const create = () =>
+    new DhammaApp({
+      api: createApi(),
+      storage,
+      audio: new FakeAudio(),
+      render() {},
+      now: () => 200
+    });
+  const first = create();
+  await first.start();
+  await first.playTrack(tracks[0]);
+  assert.equal(first.state.player.current.id, tracks[0].id);
+  first.setLocale("my-MM");
+  assert.equal(first.state.player.current.id, tracks[0].id);
+  assert.equal(first.state.player.status, "playing");
+  assert.match(storage.getItem("dhamma-echo:settings"), /"locale":"my-MM"/);
+  first.destroy();
+
+  const restored = create();
+  await restored.start();
+  assert.equal(restored.state.settings.locale, "my-MM");
+  restored.setLocale("en-US");
+  assert.match(storage.getItem("dhamma-echo:settings"), /"locale":"en-US"/);
+  restored.destroy();
+});
+
+test("saved downloads are verified before offline use and stale references remain recoverable", async () => {
+  const storage = new MemoryStorage();
+  const fileChecks = [];
+  const deleted = [];
+  const audio = new FakeAudio();
+  const app = new DhammaApp({
+    api: createApi({
+      async getAudioTrack(id) {
+        return [...tracks, videoTrack].find((track) => track.id === id);
+      },
+      async downloadedMediaExists(id, path) {
+        fileChecks.push({ id, path });
+        if (id === 1) return false;
+        if (id === 2) throw new Error("file check failed");
+        return true;
+      },
+      async removeDownloadedAudio(id, path) {
+        deleted.push({ id, path });
+      }
+    }),
+    storage,
+    audio,
+    render() {},
+    now: () => 200
+  });
+  await app.start();
+  app.dispatch({ type: "downloaded", id: 1, path: "/tmp/missing.mp3" });
+  app.dispatch({ type: "downloaded", id: 2, path: "/tmp/unverified.mp3" });
+  app.dispatch({ type: "downloaded", id: 7, path: "/tmp/available.mp4" });
+  await app.loadDownloadedTracks();
+  assert.deepEqual(
+    [1, 2, 7].map((id) => app.state.downloadAvailability[String(id)]),
+    ["missing", "unverified", "available"]
+  );
+  assert.equal(fileChecks.length, 3);
+  assert.equal(app.state.library.downloads["1"], "/tmp/missing.mp3");
+  assert.equal(app.state.library.downloads["2"], "/tmp/unverified.mp3");
+  assert.equal(app.state.library.downloads["7"], "/tmp/available.mp4");
+
+  const previousWindow = globalThis.window;
+  globalThis.window = {};
+  try {
+    await app.playTrack(tracks[0]);
+    assert.equal(app.state.player.current.id, 1);
+    assert.equal(new URL(audio.src).pathname, new URL(tracks[0].url).pathname);
+    assert.match(
+      audio.src,
+      /^https:\/\/(?:www\.)?dhammadownload\.com\//,
+      "Missing local file must fall back to the approved stream"
+    );
+  } finally {
+    globalThis.window = previousWindow;
+  }
+  await app.removeDownload(1);
+  await app.removeDownload(2);
+  assert.deepEqual(deleted, []);
+  assert.equal(app.state.library.downloads["1"], undefined);
+  assert.equal(app.state.library.downloads["2"], undefined);
+  assert.deepEqual(app.state.downloadAvailability, { 7: "available" });
+  assert.doesNotMatch(storage.getItem("dhamma-echo:library"), /missing\.mp3|unverified\.mp3/);
+  await app.removeDownload(7);
+  assert.deepEqual(deleted, [{ id: 7, path: "/tmp/available.mp4" }]);
+  assert.deepEqual(app.state.downloadAvailability, {});
+  assert.equal(storage.getItem("dhamma-echo:library").includes("available.mp4"), false);
+  app.destroy();
+});
+
+test("teacher detail and talk pages cannot be overwritten by older navigations", async () => {
+  const details = new Map();
+  const requests = [];
+  const app = new DhammaApp({
+    api: createApi({
+      getTeacher(id) {
+        const request = deferred();
+        details.set(id, request);
+        return request.promise;
+      },
+      searchAudio(request) {
+        if (request.teacherId === null) {
+          return Promise.resolve({ items: tracks, total: 2, limit: 25, offset: 0 });
+        }
+        const future = deferred();
+        requests.push({ request, ...future });
+        return future.promise;
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  await app.loadMoreTeacherTalks(); // no selected teacher
+  const old = app.openTeacher(3, "teachers");
+  const latest = app.openTeacher(4, "teachers");
+  details.get(4).resolve({
+    ...teachers[2],
+    nameMyanmar: null,
+    title: null,
+    description: null,
+    collections: []
+  });
+  requests[1].resolve({ items: [tracks[1]], total: 3, limit: 50, offset: 0 });
+  await latest;
+  details.get(3).reject(new Error("old detail error"));
+  requests[0].reject(new Error("old talk error"));
+  await old;
+  assert.equal(app.state.selectedTeacherId, 4);
+  assert.equal(app.state.teacherDetail.data.id, 4);
+  assert.equal(app.state.teacherDetail.status, "ready");
+  assert.equal(app.state.teacherTalks.status, "ready");
+  assert.deepEqual(
+    app.state.teacherTalks.page.items.map((item) => item.id),
+    [2]
+  );
+
+  const oldAppend = app.loadMoreTeacherTalks();
+  assert.equal(requests[2].request.offset, 1);
+  const refreshed = app.loadTeacherTalks();
+  requests[3].resolve({ items: [tracks[0]], total: 1, limit: 50, offset: 0 });
+  await refreshed;
+  requests[2].resolve({ items: [tracks[1]], total: 3, limit: 1, offset: 1 });
+  await oldAppend;
+  assert.deepEqual(
+    app.state.teacherTalks.page.items.map((item) => item.id),
+    [1]
+  );
+  assert.equal(app.state.teacherTalks.exhausted, true);
+
+  const failed = app.loadTeacherTalks();
+  requests[4].reject(new Error("current talk error"));
+  await failed;
+  assert.equal(app.state.teacherTalks.status, "error");
+  app.destroy();
+});
+
+test("collection detail ignores stale success and error responses after selection changes", async () => {
+  const requests = new Map();
+  const app = new DhammaApp({
+    api: createApi({
+      getCollection(id) {
+        const future = deferred();
+        requests.set(id, future);
+        return future.promise;
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  const older = app.openCollection(10, "collections");
+  const latest = app.openCollection(11, "collections");
+  requests.get(11).resolve({ ...collections[1], description: null, tracks: [tracks[1]] });
+  await latest;
+  requests.get(10).resolve({ ...collections[0], description: null, tracks: [tracks[0]] });
+  await older;
+  assert.equal(app.state.collectionDetail.data.id, 11);
+  assert.equal(app.state.collectionDetail.status, "ready");
+  const failedOld = app.openCollection(10, "collections");
+  const current = app.openCollection(11, "collections");
+  requests.get(11).resolve({ ...collections[1], description: null, tracks: [] });
+  await current;
+  requests.get(10).reject(new Error("old collection unavailable"));
+  await failedOld;
+  assert.equal(app.state.collectionDetail.status, "ready");
+  assert.equal(app.state.collectionDetail.data.id, 11);
+  const failedCurrent = app.openCollection(12, "collections");
+  requests.get(12).reject(new Error("collection unavailable"));
+  await failedCurrent;
+  assert.equal(app.state.collectionDetail.status, "error");
+  app.destroy();
+});
 
 test("DhammaApp starts, loads the catalogue, and persists user state", async () => {
   const storage = new MemoryStorage();
@@ -217,7 +555,7 @@ test("DhammaApp exposes stable load failures and missing tracks", async () => {
       async getSummary() {
         throw failure;
       },
-      async listFeaturedTeachers() {
+      async searchTeachers() {
         throw failure;
       },
       async searchAudio() {
@@ -442,7 +780,7 @@ test("DhammaApp searches teachers by name", async () => {
   await app.searchTeachers("nobody");
   assert.deepEqual(app.state.teacherResults, []);
   await app.searchTeachers("");
-  assert.equal(queries.length, 2);
+  assert.deepEqual(queries, ["", "jotika", "nobody"]);
   assert.equal(app.state.teacherQuery, "");
   app.destroy();
 });
@@ -1067,6 +1405,8 @@ test("DhammaApp handles legacy download state and prefers a downloaded local fil
   assert.deepEqual(app.state.downloadedTracks, []);
 
   app.state.library.downloads = { [String(tracks[0].id)]: "/tmp/talk.mp3" };
+  await app.loadDownloadedTracks();
+  assert.equal(app.state.downloadAvailability["1"], "available");
   const previousWindow = globalThis.window;
   globalThis.window = {};
   try {
@@ -1345,5 +1685,56 @@ test("DhammaApp.removeDownload succeeds on a happy-path api call", async () => {
   app.dispatch({ type: "downloaded", id: 11, path: "/tmp/eleven.mp3" });
   await app.removeDownload(11);
   assert.equal(app.state.library.downloads?.["11"], undefined);
+  app.destroy();
+});
+
+test("DhammaApp discards stale search success and failure responses", async () => {
+  const pending = [];
+  const app = new DhammaApp({
+    api: createApi({
+      async searchAudio(request) {
+        if (request.query === "") {
+          return { items: tracks, total: tracks.length, limit: request.limit, offset: 0 };
+        }
+        return new Promise((resolve, reject) => pending.push({ request, resolve, reject }));
+      }
+    }),
+    storage: new MemoryStorage(),
+    audio: new FakeAudio(),
+    render() {},
+    now: () => 0
+  });
+  await app.start();
+  app.dispatch({ type: "set-query", query: "old" });
+  const old = app.search();
+  app.dispatch({ type: "set-query", query: "new" });
+  const newer = app.search();
+  assert.equal(app.state.catalogue.status, "loading");
+  pending[1].resolve({ items: [tracks[1]], total: 1, limit: 50, offset: 0 });
+  await newer;
+  assert.deepEqual(
+    app.state.catalogue.page.items.map((track) => track.id),
+    [tracks[1].id]
+  );
+  pending[0].reject(new Error("stale failure"));
+  await old;
+  assert.equal(app.state.catalogue.status, "ready");
+  assert.deepEqual(
+    app.state.catalogue.page.items.map((track) => track.id),
+    [tracks[1].id]
+  );
+
+  app.dispatch({ type: "set-query", query: "older" });
+  const older = app.search();
+  app.dispatch({ type: "set-query", query: "newest" });
+  const newest = app.search();
+  pending[3].resolve({ items: [tracks[0]], total: 1, limit: 50, offset: 0 });
+  await newest;
+  pending[2].resolve({ items: tracks, total: 2, limit: 50, offset: 0 });
+  await older;
+  assert.deepEqual(
+    app.state.catalogue.page.items.map((track) => track.id),
+    [tracks[0].id]
+  );
   app.destroy();
 });

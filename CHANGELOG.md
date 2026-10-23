@@ -8,6 +8,23 @@ All notable changes to this project are documented here.
 
 - Replaced the MIT source and asset license with PolyForm Noncommercial License 1.0.0; catalogue and media rights remain separately documented.
 
+## [0.6.1] - 2026-10-23
+
+### Added
+
+- Added resumable acceptance evidence for all AC-01–AC-80 requirements, with explicit verification limitations instead of declaring unchecked behaviors complete.
+- Expanded browser regression checks for search, teacher/collection navigation, queue clear/undo and focus return, offline file availability, focus mode, keyboard buttons, and MP4 video lifecycle.
+
+### Changed
+
+- Refined catalogue search, collection and teacher journeys, playback/queue interaction, missing-download handling and compact-window presentation.
+- Expanded Rust catalogue/download validation and automated application tests.
+
+### Fixed
+
+- Preserve Space-key activation and arrow navigation for focused native and ARIA controls instead of hijacking them with global media shortcuts.
+- Keep the compact audio player’s Focused Listening entry visible when the remote media stream reports an error.
+
 ## [0.6.0] - 2026-10-22
 
 ### Added
