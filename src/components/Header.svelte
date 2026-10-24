@@ -41,7 +41,7 @@
       <span class="size-[18px]"><Icon name="explore" /></span>
       <span>{t(state.settings.locale, "nav.explore")}</span>
       <kbd
-        class="rounded border border-app-border bg-app-soft px-1.5 py-0.5 font-sans text-[11px] leading-4 max-[1040px]:hidden"
+        class="rounded border border-app-border bg-app-soft px-1.5 py-0.5 font-sans text-xs leading-4 max-[1040px]:hidden"
         >{shortcut}</kbd
       >
     </button>

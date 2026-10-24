@@ -370,9 +370,9 @@ test("desktop shell keeps compact-window layout contracts", async () => {
     readFile(new URL("../src/views/ExploreView.svelte", import.meta.url), "utf8")
   ]);
 
-  assert.match(app, /\[--sidebar-offset:216px\]/);
-  assert.match(app, /max-\[1040px\]:\[--sidebar-offset:200px\]/);
-  assert.match(app, /\[--sidebar-offset:68px\]/);
+  assert.match(app, /\[--sidebar-offset:256px\]/);
+  assert.match(app, /max-\[1040px\]:\[--sidebar-offset:224px\]/);
+  assert.match(app, /\[--sidebar-offset:72px\]/);
   assert.match(app, /ml-\(--sidebar-offset\)/);
   assert.match(app, /@container/);
   assert.match(sidebar, /w-\[var\(--sidebar-offset\)\]/);

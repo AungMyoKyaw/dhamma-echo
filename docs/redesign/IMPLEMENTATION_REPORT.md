@@ -1,5 +1,18 @@
 # Dhamma Echo 0.6.1 — Implementation & Verification Report
 
+## 2026-10-24 Evergreen Editorial Q01–Q48 implementation
+
+**Approved decisions:** all Q01–Q48 recommended A options, recorded in [Q01_Q48_DELIVERY.md](Q01_Q48_DELIVERY.md). This work refines the existing 0.6.1 Quiet Listening Desk redesign rather than replacing its data or playback architecture.
+
+- **Impeccable v4.7.0:** confirmed installed under `.agents/skills/impeccable`, loaded its project context and craft/audit guidance, and ran source/live detection. Source scan reported **0 anti-patterns** after removing 9 off-ramp typography advisories; the source scan is not a complete rendered accessibility audit.
+- **UI changes:** applied the approved 256/224/72px sidebar widths; enlarged labels, status badges and queue count indicators; updated default body typography documentation to 16px; extended visible focus selectors; added a localized keyboard-first Skip to main content link and focusable destination.
+- **Tests:** `bun run verify` passed, including format checks, web/site/design checks, tests and coverage, dependency audit, Rust Clippy/tests, and Rust release build. Four Playwright suites (responsive/theme/locale, interactions, directory/focus, and offline) passed. The UI suite additionally verifies 150% root font scaling without horizontal overflow at 860×620 and keyboard skip navigation.
+- **Visual evidence:** refreshed six documentation screenshots and the 860px Home screenshot; manually inspected Home and Explore at desktop and Home at 860px. The browser preview is not a native WKWebView screenshot.
+- **Packaging:** `bun run package` completed. `codesign --verify --deep --strict` succeeded for `Dhamma Echo.app`; `hdiutil verify` validated `Dhamma Echo_0.6.1_aarch64.dmg`.
+- **Limitations:** App is ad-hoc signed but **not notarized**. Live external media reliability, actual native VoiceOver operation, cross-platform Windows/Linux behavior and user-involved hardware testing are not claimed complete. This continuation does not assert every previously IN_PROGRESS AC-01–AC-80 criterion was exhaustively verified.
+
+---
+
 ## 2026-10-23 engineering continuation
 
 The 0.6.1 working tree extends the 0.6.0 baseline with source changes to the Rust

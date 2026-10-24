@@ -282,7 +282,7 @@
           title={queueLabel}
           aria-expanded={appState.player.queueOpen}
           ><span><Icon name="queue" /></span>{#if appState.player.queue.length > 0}<span
-              class="absolute -top-[3px] -right-1 flex size-[18px] items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.58rem] font-extrabold text-app-primary-ink"
+              class="absolute -top-[3px] -right-1 flex min-w-6 h-6 px-1 items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-xs font-extrabold text-app-primary-ink"
               aria-hidden="true">{formatLocaleNumber(appState.player.queue.length, locale)}</span
             >{/if}</button
         >

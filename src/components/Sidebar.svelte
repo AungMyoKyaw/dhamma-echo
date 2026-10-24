@@ -42,7 +42,7 @@
     <img src="./logo.svg" alt="" class="size-10 shrink-0 rounded-control" />
     {#if !collapsed}
       <div class="min-w-0">
-        <p class="truncate text-[15px] font-semibold tracking-tight">{t(locale, "app.name")}</p>
+        <p class="truncate text-base font-semibold tracking-tight">{t(locale, "app.name")}</p>
         <p class="truncate text-xs text-app-muted">{t(locale, "app.tagline")}</p>
       </div>
     {/if}
@@ -57,7 +57,7 @@
         title={collapsed ? t(locale, item.labelKey) : undefined}
         class="group flex min-h-11 w-full items-center {collapsed
           ? 'justify-center'
-          : 'gap-3 px-3'} rounded-control text-left text-sm font-medium transition-[background-color,color] duration-150 {active(
+          : 'gap-3 px-3'} rounded-control text-left text-base font-medium transition-[background-color,color] duration-150 {active(
           item.route
         )
           ? 'bg-app-primary text-app-primary-ink'
@@ -77,7 +77,7 @@
       title={collapsed ? t(locale, "nav.settings") : undefined}
       class="flex min-h-11 w-full items-center {collapsed
         ? 'justify-center'
-        : 'gap-3 px-3'} rounded-control text-sm font-medium transition-colors {active('settings')
+        : 'gap-3 px-3'} rounded-control text-base font-medium transition-colors {active('settings')
         ? 'bg-app-primary text-app-primary-ink'
         : 'text-app-muted hover:bg-app-soft hover:text-app'}"
     >

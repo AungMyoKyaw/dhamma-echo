@@ -140,15 +140,15 @@
           class="break-words font-bold leading-6 {myanmarTitle ? 'myanmar-text' : ''}"
           lang={myanmarTitle ? "my" : undefined}>{displayTitle}</span
         >{#if track.mediaType === "video"}<span
-            class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-primary/15 px-2 align-middle text-[10px] leading-normal font-bold text-app-primary uppercase"
+            class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-primary/15 px-2 align-middle text-xs leading-normal font-bold text-app-primary uppercase"
             >{t(locale, "track.badge.video")}</span
           >{/if}{#if !track.playable}<span
-            class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-soft px-2 align-middle text-[10px] leading-normal font-bold text-app-muted uppercase"
+            class="inline-flex min-h-[22px] items-center justify-center rounded-full bg-app-soft px-2 align-middle text-xs leading-normal font-bold text-app-muted uppercase"
             >{track.format.toLowerCase() === "wma"
               ? t(locale, "track.badge.wma")
               : t(locale, "track.badge.unavailable")}</span
           >{/if}{#if missingDownload || unknownDownload}<span
-            class="inline-flex min-h-[22px] items-center justify-center rounded-full border border-app-border px-2 align-middle text-[10px] leading-normal font-bold text-app-muted"
+            class="inline-flex min-h-[22px] items-center justify-center rounded-full border border-app-border px-2 align-middle text-xs leading-normal font-bold text-app-muted"
             >{t(
               locale,
               missingDownload ? "track.badge.missingDownload" : "track.badge.unverifiedDownload"
@@ -162,7 +162,7 @@
         lang={myanmarTeacher ? "my" : undefined}
         ><span class="truncate">{track.teacherName || t(locale, "player.unknownTeacher")}</span
         >{#if resume > 0 && !current}<span
-            class="inline-flex shrink-0 items-center gap-1 rounded-full bg-app-soft px-2 align-middle text-[11px] leading-normal font-bold text-app-muted"
+            class="inline-flex shrink-0 items-center gap-1 rounded-full bg-app-soft px-2 align-middle text-xs leading-normal font-bold text-app-muted"
             aria-label={t(locale, "track.resumeAt", { time: resumeLabel })}
           >
             <span class="size-1.5 rounded-full bg-app-muted" aria-hidden="true"></span>

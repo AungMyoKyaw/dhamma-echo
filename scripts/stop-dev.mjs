@@ -2,13 +2,15 @@ import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { setTimeout as delay } from "node:timers/promises";
 
-const config = JSON.parse(readFileSync(new URL("../src-tauri/tauri.conf.json", import.meta.url), "utf8"));
+const config = JSON.parse(
+  readFileSync(new URL("../src-tauri/tauri.conf.json", import.meta.url), "utf8")
+);
 const devUrl = new URL(config.build.devUrl);
 const port = devUrl.port;
 
 function getListeners() {
   const result = spawnSync("lsof", ["-nP", `-tiTCP:${port}`, "-sTCP:LISTEN"], {
-    encoding: "utf8",
+    encoding: "utf8"
   });
 
   if (result.error) throw result.error;
@@ -16,11 +18,7 @@ function getListeners() {
     throw new Error(result.stderr.trim() || `lsof exited with status ${result.status}`);
   }
 
-  return result.stdout
-    .trim()
-    .split("\n")
-    .filter(Boolean)
-    .map(Number);
+  return result.stdout.trim().split("\n").filter(Boolean).map(Number);
 }
 
 const pids = getListeners();

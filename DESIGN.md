@@ -41,7 +41,7 @@ typography:
     lineHeight: 1.2
   body:
     fontFamily: "'Avenir Next', 'Noto Sans Myanmar', 'Myanmar Text', 'Pyidaungsu', system-ui, sans-serif"
-    fontSize: "0.875rem"
+    fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
   label:
@@ -206,4 +206,4 @@ Use the frontmatter radius grammar: 8px controls, 12px cards, rounded filter pil
 
 **Don't:** Invent teacher portraits, biographies, durations or recommendations; add marketing hero imagery, irrelevant cards, thick colored sidebars, new runtime dependencies, remote fonts, accounts, telemetry, gradients, glassmorphism, novelty sacred symbols, additional media services or destructive state migration; show custom macOS controls alongside native ones; restart or duplicate playback to change a theme or route.
 
-For source and acceptance traceability see docs/redesign/REDESIGN_PRD.md and docs/redesign/ACCEPTANCE.md.
+For source and acceptance traceability see docs/redesign/REDESIGN_PRD.md and docs/redesign/ACCEPTANCE.md. The approved Q01–Q48 Evergreen Editorial refinement, semantic light/dark HEX palette, 256/224/72px sidebar contract, accessible 12px badges, and keyboard skip-navigation requirement are recorded in docs/redesign/Q01_Q48_DELIVERY.md.

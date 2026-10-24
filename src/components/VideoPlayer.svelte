@@ -418,7 +418,7 @@
                 >
                   <span class="block size-[18px] [&_svg]:size-full"><Icon name="queue" /></span>
                   {#if appState.player.queue.length > 0}<span
-                      class="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-[0.55rem] font-extrabold text-app-primary-ink"
+                      class="absolute -top-1 -right-1 flex min-w-6 h-6 px-1 items-center justify-center rounded-full border-2 border-app-surface bg-app-primary text-xs font-extrabold text-app-primary-ink"
                       >{formatLocaleNumber(appState.player.queue.length, locale)}</span
                     >{/if}
                 </button>

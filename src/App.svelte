@@ -19,7 +19,7 @@
   import SettingsView from "./views/SettingsView.svelte";
   import TeacherDetailView from "./views/TeacherDetailView.svelte";
   import TeachersView from "./views/TeachersView.svelte";
-  import { documentLanguage } from "./i18n.js";
+  import { documentLanguage, t } from "./i18n.js";
 
   let { app, stateStore }: { app: DhammaApp; stateStore: Readable<AppState> } = $props();
   let appState = $derived($stateStore);
@@ -137,9 +137,14 @@
 <svelte:window onkeydown={keydown} onbeforeunload={() => app.destroy()} />
 <div
   class="h-screen min-h-screen overflow-hidden bg-app-bg text-app {appState.ui.sidebarCollapsed
-    ? '[--sidebar-offset:68px]'
-    : '[--sidebar-offset:216px] max-[1040px]:[--sidebar-offset:200px]'}"
+    ? '[--sidebar-offset:72px]'
+    : '[--sidebar-offset:256px] max-[1040px]:[--sidebar-offset:224px]'}"
 >
+  <a
+    href="#main-content"
+    class="sr-only focus:not-sr-only fixed top-[calc(var(--titlebar-height)+0.5rem)] left-[calc(var(--sidebar-offset)+1rem)] z-50 rounded-control bg-app-primary px-4 py-3 text-sm font-bold text-app-primary-ink"
+    >{t(appState.settings.locale, "a11y.skipToMain")}</a
+  >
   <div class="h-full">
     <Sidebar state={appState} {app} />
     <div
@@ -148,7 +153,11 @@
       class="ml-(--sidebar-offset) h-full overflow-y-auto overscroll-none [scrollbar-gutter:stable] pt-(--titlebar-height) {bottomPadding}"
     >
       <Header state={appState} onsearch={focusCatalogueSearch} />
-      <main class="@container mx-auto max-w-[1520px] px-9 py-4 max-[1040px]:px-6">
+      <main
+        id="main-content"
+        tabindex="-1"
+        class="@container mx-auto max-w-[1520px] px-9 py-4 max-[1040px]:px-6"
+      >
         {#if appState.route === "home"}<HomeView state={appState} {app} />
         {:else if appState.route === "explore"}<ExploreView state={appState} {app} />
         {:else if appState.route === "collections"}<CollectionsView state={appState} {app} />

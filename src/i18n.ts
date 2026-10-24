@@ -9,6 +9,7 @@ import { formatLocaleNumber } from "./utils.js";
 const en = {
   "app.name": "Dhamma Echo",
   "app.tagline": "Listen with intention",
+  "a11y.skipToMain": "Skip to main content",
 
   "nav.primary": "Primary",
   "nav.primaryNavigation": "Primary navigation",
@@ -325,6 +326,7 @@ export type MessageKey = keyof typeof en;
 const my: Partial<Record<MessageKey, string>> = {
   "app.name": "Dhamma Echo",
   "app.tagline": "ရည်ရွယ်ချက်ဖြင့် နားထောင်ပါ",
+  "a11y.skipToMain": "ပင်မအကြောင်းအရာသို့ သွားရန်",
 
   "nav.primary": "အဓိက",
   "nav.primaryNavigation": "အဓိက လမ်းညွှန်",

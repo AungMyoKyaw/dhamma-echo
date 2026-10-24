@@ -63,7 +63,7 @@
           onclick={() => setTab(tab.id)}
           >{t(locale, tab.labelKey)}
           {#if tabCount(tab.id) > 0}<span
-              class="inline-flex min-h-[20px] items-center justify-center rounded-full bg-app-primary/15 px-2 align-middle text-[11px] leading-normal font-bold text-app-primary"
+              class="inline-flex min-h-[20px] items-center justify-center rounded-full bg-app-primary/15 px-2 align-middle text-xs leading-normal font-bold text-app-primary"
               >{formatLocaleNumber(tabCount(tab.id), locale)}</span
             >{/if}
         </button>

@@ -66,7 +66,7 @@ const scenario = `async page => {
   await page.locator("aside nav button").nth(1).click();
   await page.locator("main article button").first().click();
   const footer = page.locator("footer[aria-label]");
-  await footer.locator(".player-track button").click();
+  await footer.locator(".player-track button").first().click();
   const close = footer.locator("section[aria-label] button").first();
   await close.waitFor();
   assert(await page.locator("[data-content-scroller]").evaluate(e=>e.inert===true),
@@ -76,7 +76,7 @@ const scenario = `async page => {
   await page.keyboard.press("Escape");
   assert(await page.locator("[data-content-scroller]").evaluate(e=>e.inert===false),
     "Focused listening failed to restore background interactivity");
-  await footer.locator(".player-track button").evaluate(e=>{ if(document.activeElement!==e) throw Error("Focus not restored"); });
+  await footer.locator(".player-track button").first().evaluate(e=>{ if(document.activeElement!==e) throw Error("Focus not restored"); });
   evidence.push("focus-dialog-inert-escape-return:pass");
   return JSON.stringify(evidence);
 }`;

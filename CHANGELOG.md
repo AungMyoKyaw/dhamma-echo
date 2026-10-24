@@ -4,8 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Documented the approved Q01–Q48 Evergreen Editorial implementation contract and semantic palette.
+- Added a localized keyboard skip-to-main-content control and browser checks for skip navigation and 150% text scaling.
+
 ### Changed
 
+- Matched the desktop sidebar to its approved 256/224/72px widths, enlarged tiny status/queue labels, and extended visible keyboard focus coverage.
+- Refreshed six documentation screenshots and the 860px Home capture after layout changes.
 - Replaced the MIT source and asset license with PolyForm Noncommercial License 1.0.0; catalogue and media rights remain separately documented.
 
 ## [0.6.1] - 2026-10-23

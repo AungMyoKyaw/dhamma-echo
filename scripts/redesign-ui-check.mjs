@@ -36,6 +36,27 @@ const script = `async page => {
       }
     }
   }
+  await page.setViewportSize({width:860,height:620});
+  await page.goto("http://127.0.0.1:51729/");
+  await page.evaluate(() => { document.documentElement.style.fontSize = "150%"; });
+  const scaled = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    documentWidth: document.documentElement.scrollWidth,
+    contentWidth: document.querySelector("main")?.scrollWidth ?? 0,
+    contentClient: document.querySelector("main")?.clientWidth ?? 0
+  }));
+  if (scaled.documentWidth > scaled.viewport || scaled.contentWidth > scaled.contentClient)
+    throw new Error("150% text scaling caused horizontal overflow: " + JSON.stringify(scaled));
+  cases.push({kind:"text-scale-150", ...scaled});
+
+  await page.goto("http://127.0.0.1:51729/");
+  await page.keyboard.press("Tab");
+  const skip = await page.evaluate(() => document.activeElement?.getAttribute("href"));
+  if (skip !== "#main-content") throw new Error("Skip link was not first keyboard stop: " + skip);
+  await page.keyboard.press("Enter");
+  const destination = await page.evaluate(() => document.activeElement?.id);
+  if (destination !== "main-content") throw new Error("Skip link destination was not focused: " + destination);
+  cases.push({kind:"skip-navigation", destination});
   return JSON.stringify(cases);
 }`;
 const run = execFileSync("playwright-cli", [`-s=${session}`, "run-code", script], {
