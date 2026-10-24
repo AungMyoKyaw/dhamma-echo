@@ -456,7 +456,7 @@ test("DhammaApp starts, loads the catalogue, and persists user state", async () 
   app.setRate(1.5);
   assert.match(storage.getItem("dhamma-echo:library"), /"favorites":\[1\]/);
   assert.match(storage.getItem("dhamma-echo:settings"), /"playbackRate":1.5/);
-  assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"system"/);
+  assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"light"/);
   app.destroy();
 });
 

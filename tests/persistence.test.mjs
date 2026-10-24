@@ -48,12 +48,12 @@ test("library storage validates, deduplicates, and bounds data", () => {
   assert.deepEqual(loaded.downloads, { 3: "/tmp/three.mp3" });
 });
 
-test("settings storage uses safe defaults and accepted values", () => {
+test("settings storage uses safe light defaults and accepted values", () => {
   const storage = new MemoryStorage();
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
     browseLimit: 50,
-    theme: "system",
+    theme: "light",
     locale: "en-US"
   });
   storage.setItem(
@@ -89,6 +89,18 @@ test("settings can be saved and loaded", () => {
   });
   assert.match(storage.getItem("dhamma-echo:settings"), /"theme":"dark"/);
   assert.equal(Object.hasOwn(JSON.parse(storage.getItem("dhamma-echo:settings")), "volume"), false);
+});
+
+test("explicitly saved system appearance stays selected after the light default change", () => {
+  const storage = new MemoryStorage();
+  saveSettings(storage, {
+    playbackRate: 1,
+    browseLimit: 50,
+    theme: "system",
+    locale: "en-US"
+  });
+  assert.equal(createDefaultSettings().theme, "light");
+  assert.equal(loadSettings(storage).theme, "system");
 });
 
 test("library storage rejects malformed nested values", () => {
@@ -197,7 +209,7 @@ test("settings keep valid playback values while defaulting unknown optional pref
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1,
     browseLimit: 50,
-    theme: "system",
+    theme: "light",
     locale: "en-US"
   });
 });
@@ -223,7 +235,7 @@ test("settings normalize an invalid playback rate to the safe default", () => {
   assert.deepEqual(loadSettings(storage), {
     playbackRate: 1.75,
     browseLimit: 50,
-    theme: "system",
+    theme: "light",
     locale: "en-US"
   });
 });

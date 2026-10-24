@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Default to the Light appearance on first launch and for invalid or absent theme preferences, while preserving valid saved Dark/System choices. Set the initial document and window theme color to the light palette to avoid a dark-system first-frame flash.
+
 ### Added
 
 - Documented the approved Q01–Q48 Evergreen Editorial implementation contract and semantic palette.

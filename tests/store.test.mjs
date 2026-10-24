@@ -27,9 +27,9 @@ test("browse row size is shared across catalogue surfaces", () => {
   assert.equal(state.collectionSearch.offset, 0);
 });
 
-test("theme defaults to system until the user chooses light or dark", () => {
+test("theme defaults to light while allowing dark and system choices", () => {
   let state = createInitialState();
-  assert.equal(state.settings.theme, "system");
+  assert.equal(state.settings.theme, "light");
   state = reduce(state, { type: "set-theme", theme: "light" });
   assert.equal(state.settings.theme, "light");
   state = reduce(state, { type: "set-theme", theme: "dark" });

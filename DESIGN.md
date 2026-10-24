@@ -174,6 +174,8 @@ The selected composition is **C1 — Quiet Listening Desk** from docs/redesign/C
 
 The restrained palette is warm ivory canvas, cream surfaces, forest-green controls, bronze passive markers, and deep neutral ink. Green indicates meaningful interactive actions and current selection; bronze never competes for primary action. Dark mode is independently drawn in charcoal, warm off-white and pale sage, not an inverted sepia effect. Every token in frontmatter maps to a CSS custom property in src/index.css. Use the same semantic tokens everywhere rather than component-level copied colors. Verify 4.5:1 body text, 3:1 large text and 3:1 meaningful controls before claiming WCAG AA-level contrast.
 
+First-launch appearance defaults to **Light**, regardless of the macOS system appearance. **Dark** and **System** remain available in Settings; previously saved valid preferences remain unchanged. The initial HTML uses the Light theme to avoid a dark first frame before settings hydration.
+
 ## Typography
 
 Major Latin titles use the bundled Source Serif 4, while navigation, buttons, labels, metadata and body use Avenir Next with readable platform sans-serif fallbacks. Burmese and mixed-script titles use explicit Myanmar font fallback, appropriate natural line-height, word-break protection and lang=my. Avoid squeezed Burmese text, tracked all-caps Burmese, forced single-line clipping, or invented glyph shapes. Maintain tight headline-to-summary grouping and purposeful whitespace between sections. Use proper duration and number formatting for selected locale.

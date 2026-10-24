@@ -25,7 +25,7 @@ Quiet editorial listening room; nuanced Buddhist identity; grounded, warm atmosp
 | Error text         | #A63A2D | #EF9F8F | Recoverable/unrecoverable error |
 | Error surface      | #F9E2DE | #351E1A | Error container                 |
 
-The current system theme remains the initial default; explicit Light and Dark choices are stored locally. DESIGN.md and src/index.css define canonical roles and stay checked by bun run design:check. Custom states use semantic color mixing rather than arbitrary new colors. Normal-text contrast target is >=4.5:1; essential non-text contrast >=3:1.
+**Q10 override (2026-10-24): Light is now the first-launch/default theme**; Dark and System remain selectable and valid saved preferences are honored. Existing users who chose System or Dark keep that saved choice. DESIGN.md and src/index.css define canonical roles and stay checked by bun run design:check. Custom states use semantic color mixing rather than arbitrary new colors. Normal-text contrast target is >=4.5:1; essential non-text contrast >=3:1.
 
 ## Typography and localization (Q13–Q18)
 
