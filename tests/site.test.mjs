@@ -170,7 +170,7 @@ test("progressive loading controls use explicit batches without a row chooser", 
 test("video loading state exposes the quiet centered signal", async () => {
   const [videoPlayer, i18n] = await Promise.all([
     readFile(new URL("../src/components/VideoPlayer.svelte", import.meta.url), "utf8"),
-    readFile(new URL("../src/i18n.ts", import.meta.url), "utf8")
+    readFile(new URL("../src/i18n/en.ts", import.meta.url), "utf8")
   ]);
 
   assert.match(videoPlayer, /aria-label=\{t\(locale, "video\.preparing\.label"\)\}/);

@@ -133,6 +133,6 @@ Expected: exit 0 with formatting, lint, type-check, test, build, site, audit, Cl
 - [x] **Step 5: Commit the implementation**
 
 ```bash
-git add src tests README.md docs/index.html docs/privacy/index.html docs/architecture/data-flow.md CHANGELOG.md docs/superpowers/plans/2026-08-13-volume-control-removal.md
+git add src tests README.md docs/index.html docs/privacy/index.html docs/architecture/data-flow.md CHANGELOG.md archive/docs-history/superpowers/plans/2026-08-13-volume-control-removal.md
 git commit -m "refactor: remove application volume controls"
 ```

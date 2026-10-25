@@ -280,7 +280,7 @@ git commit -m "ci: deploy product site to GitHub Pages"
 **Files:**
 
 - Create: `docs/verification/2026-08-05-github-pages-product-site.md`
-- Modify: `docs/superpowers/plans/2026-08-05-github-pages-product-site.md`
+- Modify: `archive/docs-history/superpowers/plans/2026-08-05-github-pages-product-site.md`
 - Output outside repository: `/mnt/data/dhamma-echo-product-site.bundle`
 
 **Interfaces:**
@@ -327,7 +327,7 @@ Create `docs/verification/2026-08-05-github-pages-product-site.md` with Ralph Lo
 Change completed plan checkboxes to `[x]`, then commit:
 
 ```bash
-git add docs/verification/2026-08-05-github-pages-product-site.md docs/superpowers/plans/2026-08-05-github-pages-product-site.md
+git add docs/verification/2026-08-05-github-pages-product-site.md archive/docs-history/superpowers/plans/2026-08-05-github-pages-product-site.md
 git commit -m "docs: record product site verification"
 ```
 

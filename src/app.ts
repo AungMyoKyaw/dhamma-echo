@@ -1,4 +1,3 @@
-import type { CatalogueApi } from "./api.js";
 import {
   loadLibrary,
   loadSettings,
@@ -10,58 +9,15 @@ import {
 import { MediaEngine, type MediaLike } from "./player.js";
 import { localFileUrl } from "./runtime.js";
 import { createInitialState, reduce, type AppAction } from "./store.js";
-import type {
-  AppState,
-  AudioSearchRequest,
-  AudioTrack,
-  PlayerEvent,
-  Route,
-  StorageLike
-} from "./types.js";
+import type { AudioSearchRequest, AudioTrack, PlayerEvent, Route } from "./types.js";
 
-interface CatalogueClient {
-  getSummary: CatalogueApi["getSummary"];
-  listFeaturedTeachers: CatalogueApi["listFeaturedTeachers"];
-  searchTeachers: CatalogueApi["searchTeachers"];
-  searchAudio: CatalogueApi["searchAudio"];
-  getAudioTrack: CatalogueApi["getAudioTrack"];
-  downloadAudio: CatalogueApi["downloadAudio"];
-  removeDownloadedAudio: CatalogueApi["removeDownloadedAudio"];
-  downloadedMediaExists: CatalogueApi["downloadedMediaExists"];
-  listContentCategories: CatalogueApi["listContentCategories"];
-  searchCollections: CatalogueApi["searchCollections"];
-  getCollection: CatalogueApi["getCollection"];
-  getTeacher: CatalogueApi["getTeacher"];
-}
-
-interface AppDependencies {
-  api: CatalogueClient;
-  storage: StorageLike;
-  audio: MediaLike;
-  render: (state: AppState, action: AppAction) => void;
-  now: () => number;
-}
-
-function messageFrom(error: unknown): string {
-  return error instanceof Error ? error.message : "The catalogue is unavailable.";
-}
-
-const libraryActions = new Set<AppAction["type"]>([
-  "hydrate",
-  "toggle-favorite",
-  "downloaded",
-  "remove-download",
-  "record-history",
-  "save-resume"
-]);
-const settingsActions = new Set<AppAction["type"]>([
-  "hydrate",
-  "set-rate",
-  "set-browse-limit",
-  "set-theme",
-  "set-locale"
-]);
-const uiActions = new Set<AppAction["type"]>(["hydrate", "set-sidebar-collapsed"]);
+import {
+  libraryActions,
+  messageFrom,
+  settingsActions,
+  uiActions,
+  type AppDependencies
+} from "./app/support.js";
 
 export class DhammaApp {
   state = createInitialState();

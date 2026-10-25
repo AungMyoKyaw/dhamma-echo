@@ -113,7 +113,7 @@ Expected: only the privacy-policy design, plan, test, page, stylesheet, and foot
 - [ ] **Step 2: Commit the implementation plan**
 
 ```bash
-git add docs/superpowers/plans/2026-08-09-privacy-policy.md
+git add archive/docs-history/superpowers/plans/2026-08-09-privacy-policy.md
 git commit -m "docs: plan privacy policy implementation"
 ```
 

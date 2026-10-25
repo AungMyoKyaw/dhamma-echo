@@ -21,7 +21,8 @@ const sources = {
   home: () => read("src/views/HomeView.svelte"),
   settings: () => read("src/views/SettingsView.svelte"),
   utils: () => read("src/utils.js"),
-  i18n: () => read("src/i18n.ts")
+  i18n: () => read("src/i18n/en.ts"),
+  i18nMy: () => read("src/i18n/my.ts")
 };
 
 // ─── Track A — cards ────────────────────────────────────────────────────────
@@ -79,8 +80,9 @@ test("B2 TrackRow exposes an overflow menu trigger", async () => {
 });
 
 test("B3 i18n has the new track.menu key in English and Burmese", async () => {
-  const src = await sources.i18n();
+  const [src, my] = await Promise.all([sources.i18n(), sources.i18nMy()]);
   assert.match(src, /"track\.menu":\s*"[^"]+"/, "English track.menu missing");
+  assert.match(my, /"track\.menu":\s*"[^"]+"/, "Burmese track.menu missing");
 });
 
 // ─── Track C — player padding ───────────────────────────────────────────────

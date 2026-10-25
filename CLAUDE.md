@@ -6,7 +6,7 @@ Project guidance for Claude Code working on Dhamma Echo.
 
 A quiet Tauri 2 desktop audio player for Dhamma talks. Svelte 5 + strict TypeScript webview, Rust 2024 backend with `rusqlite`, dependency-free static product website in `docs/`. Bundled read-only SQLite catalogue; no accounts, analytics, or telemetry.
 
-Read [README.md](README.md) first for the product overview. Architecture details live under [docs/architecture/](docs/architecture/).
+Read [README.md](README.md) first for the product overview. Architecture details live under [docs/architecture/](docs/architecture).
 
 ## Tooling preferences
 
@@ -38,7 +38,7 @@ Read [README.md](README.md) first for the product overview. Architecture details
 
 ## Architecture boundaries
 
-The webview can call only six purpose-built Tauri commands. Keep that surface tight.
+The webview can call only thirteen purpose-built Tauri commands. Keep that surface tight.
 
 - Rust validates every request, runs parameterized read-only SQLite queries, normalizes catalogue text, and returns typed data.
 - Playback state, favorites, queue, history, settings, and resume positions all live in the webview (browser local storage).
@@ -80,7 +80,7 @@ Before considering a change done, run the matching gate:
 
 - No accounts, analytics, ads, telemetry. Local prefs never leave the device.
 - Validate, parameterize, and read-only everything that touches the catalogue or the webview boundary.
-- Report security issues via [SECURITY.md](SECURITY.md) — don't file them in public issues.
+- Report security issues via [SECURITY.md](.github/SECURITY.md) — don't file them in public issues.
 
 ## Product website
 
@@ -90,6 +90,6 @@ Before considering a change done, run the matching gate:
 
 ## When unsure
 
-- Architecture questions → read [docs/architecture/](docs/architecture/) and the linked design specs under [docs/superpowers/specs/](docs/superpowers/specs/).
+- Architecture questions → read [docs/architecture/](docs/architecture) and the linked design specs under [archive/docs-history/superpowers/specs/](archive/docs-history/superpowers/specs).
 - Recent intent → `git log` and the active diff. Recent commits describe the current direction better than any summary.
 - Release process → [README.md § Release process](README.md) and [docs/architecture/release.md](docs/architecture/release.md).

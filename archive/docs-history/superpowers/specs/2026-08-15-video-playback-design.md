@@ -243,7 +243,7 @@ Before merge:
 - Update `docs/architecture/data-flow.md` to show the video path on the playback sequence diagram.
 - Update `docs/architecture/modules.md` to reflect the renamed `MediaEngine` and the new `play` route.
 - Update the product site landing page to mention video.
-- `docs/superpowers/specs/` gains this design spec. `docs/superpowers/plans/` gains the execution checklist.
+- `archive/docs-history/superpowers/specs/` gains this design spec. `archive/docs-history/superpowers/plans/` gains the execution checklist.
 
 ## Acceptance criteria
 

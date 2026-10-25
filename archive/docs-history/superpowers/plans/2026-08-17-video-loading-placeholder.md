@@ -79,7 +79,7 @@ Expected: all commands exit successfully.
 
 - [x] **Step 3: Review the diff**
 
-Run: `git diff -- src/components/VideoPlayer.svelte tests/site.test.mjs docs/superpowers/plans/2026-08-17-video-loading-placeholder.md`
+Run: `git diff -- src/components/VideoPlayer.svelte tests/site.test.mjs archive/docs-history/superpowers/plans/2026-08-17-video-loading-placeholder.md`
 
 Confirm the diff only adds the A1 loading treatment, its regression contract, and this implementation plan.
 

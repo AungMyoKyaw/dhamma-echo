@@ -90,7 +90,7 @@ Your personal listening state stays in the webview's local storage. The bundled 
 ```mermaid
 flowchart LR
     db[Bundled read-only SQLite catalogue] --> rust[Rust query layer]
-    rust --> commands[Ten purpose-built Tauri commands]
+    rust --> commands[Thirteen purpose-built Tauri commands]
     commands --> ui[Svelte desktop UI]
     ui <--> local[Local favorites, history, queue, settings, resume positions]
     ui -->|HTTPS media request after user playback action| source[Dhamma Download hosts]
@@ -99,12 +99,30 @@ flowchart LR
 Security boundaries that matter:
 
 - SQLite opens read-only and all queries are parameterized.
-- The webview exposes only ten purpose-built Tauri commands: nine catalogue operations and one constrained MP3 download path. There is no arbitrary SQL, shell, or general-purpose filesystem API.
+- The webview exposes only thirteen purpose-built Tauri commands: ten catalogue operations and three constrained offline-media operations. There is no arbitrary SQL, shell, or general-purpose filesystem API.
 - The CSP permits media only from `https://dhammadownload.com` and `https://www.dhammadownload.com`.
 - Personal library state is not sent to the developer.
-- Security issues should be reported through [SECURITY.md](SECURITY.md), not a public issue.
+- Security issues should be reported through [SECURITY.md](.github/SECURITY.md), not a public issue.
 
-Read the published [privacy policy](docs/privacy/).
+Read the published [privacy policy](docs/privacy).
+
+## Product scope
+
+Dhamma Echo is designed for long, quiet listening sessions at a desk or at home.
+The core journeys are resuming a recent talk, exploring and filtering the catalogue,
+browsing teachers and collections, saving or queuing talks, downloading supported media,
+and adjusting playback or appearance settings.
+
+The desktop application uses a bundled read-only SQLite catalogue, with personal
+favorites, queue, history, settings, and resume positions stored locally.
+It requires no account or cloud library and collects no analytics or telemetry.
+The supported minimum window size is 860 × 620; Myanmar text, keyboard navigation,
+focus visibility, and reduced-motion behavior remain first-class requirements.
+
+The product deliberately does **not** add social feeds, recommendations, advertisements,
+or a dashboard-heavy second navigation model. New designs must preserve the existing
+Svelte, Rust, Tauri, media and CSP architecture. The visual register is a restrained,
+editorial listening room rather than a feature-packed media portal.
 
 ## Architecture
 
@@ -116,7 +134,7 @@ Dhamma Echo is intentionally small: a Svelte application in a Tauri shell, a Rus
 - [UI shell and responsive layout](docs/architecture/ui-shell.md)
 - [Build and release flow](docs/architecture/release.md)
 - [Product website architecture](docs/architecture/product-site.md)
-- [Ralph Loop](docs/ralph-loop.md)
+- [Ralph Loop](archive/docs-history/ralph-loop.md)
 
 ### Technology
 
@@ -246,9 +264,9 @@ Confirm Bun and Cargo can reach their configured registries. This repository doe
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), follow the [Code of Conduct](CODE_OF_CONDUCT.md), and run `bun run verify` before opening a pull request.
+Read [CONTRIBUTING.md](.github/CONTRIBUTING.md), follow the [Code of Conduct](.github/CODE_OF_CONDUCT.md), and run `bun run verify` before opening a pull request.
 
-For release history, see [CHANGELOG.md](CHANGELOG.md). For security reporting, see [SECURITY.md](SECURITY.md).
+For release history, see [CHANGELOG.md](CHANGELOG.md). For security reporting, see [SECURITY.md](.github/SECURITY.md).
 
 ## License
 

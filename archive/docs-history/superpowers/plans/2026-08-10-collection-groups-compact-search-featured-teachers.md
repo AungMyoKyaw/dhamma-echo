@@ -116,7 +116,7 @@ Expected: all frontend tests PASS at 100% coverage.
 
 - [ ] **Step 1: Format and verify**
 
-Run: `bunx prettier --write src/view.ts src/index.css tests/view.test.mjs docs/superpowers/plans/2026-08-10-collection-groups-compact-search-featured-teachers.md`
+Run: `bunx prettier --write src/view.ts src/index.css tests/view.test.mjs archive/docs-history/superpowers/plans/2026-08-10-collection-groups-compact-search-featured-teachers.md`
 
 Run: `cargo fmt --manifest-path src-tauri/Cargo.toml`
 
@@ -127,7 +127,7 @@ Expected: formatting, linting, type checking, 100% frontend coverage, build, smo
 - [ ] **Step 2: Commit and inspect**
 
 ```bash
-git add src/view.ts src/index.css src-tauri/src/db.rs tests/view.test.mjs docs/superpowers/plans/2026-08-10-collection-groups-compact-search-featured-teachers.md
+git add src/view.ts src/index.css src-tauri/src/db.rs tests/view.test.mjs archive/docs-history/superpowers/plans/2026-08-10-collection-groups-compact-search-featured-teachers.md
 git commit -m "feat: group collections by featured teachers"
 git diff --check
 git status --short

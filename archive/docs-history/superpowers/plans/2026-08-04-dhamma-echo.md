@@ -25,7 +25,7 @@
 
 **Files:**
 
-- Create: `docs/superpowers/specs/2026-08-04-dhamma-echo-design.md`
+- Create: `archive/docs-history/superpowers/specs/2026-08-04-dhamma-echo-design.md`
 - Create: `docs/ralph-loop.md`
 
 **Produces:** Verified schema/counts, security constraints, app name, design tokens, acceptance gates, and loop exit conditions.

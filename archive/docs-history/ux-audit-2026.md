@@ -155,7 +155,7 @@ Audit pass: code read of `Player.svelte`, `QueuePanel.svelte`, `KeyboardCheatshe
 
 ### Teachers + detail
 
-Audit pass: code read of `TeachersView.svelte`, `TeacherDetailView.svelte`, `TeacherCard.svelte`; cross-reference with `docs/images/teachers.png` (8-card grid in 2 rows of 4 — note: screenshot shows "Browse talks →" affordance and a player-loop icon that are **not in the current source**. Screenshot appears to be a planned/future state from `docs/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`. Audit reflects current source as truth.)
+Audit pass: code read of `TeachersView.svelte`, `TeacherDetailView.svelte`, `TeacherCard.svelte`; cross-reference with `docs/images/teachers.png` (8-card grid in 2 rows of 4 — note: screenshot shows "Browse talks →" affordance and a player-loop icon that are **not in the current source**. Screenshot appears to be a planned/future state from `archive/docs-history/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`. Audit reflects current source as truth.)
 
 **Observed states** (screenshot, future-state divergence noted):
 
@@ -178,7 +178,7 @@ Audit pass: code read of `TeachersView.svelte`, `TeacherDetailView.svelte`, `Tea
 
 ### Collections + detail
 
-Audit pass: code read of `CollectionsView.svelte`, `CollectionDetailView.svelte`, `CollectionCard.svelte`; cross-reference with `docs/images/collections.png` (grouped-by-teacher view, future-state divergence: player shows loop/repeat buttons not in current code; planned layout per `docs/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`).
+Audit pass: code read of `CollectionsView.svelte`, `CollectionDetailView.svelte`, `CollectionCard.svelte`; cross-reference with `docs/images/collections.png` (grouped-by-teacher view, future-state divergence: player shows loop/repeat buttons not in current code; planned layout per `archive/docs-history/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`).
 
 **Surface**: search + teacher filter, grouped-by-teacher list (or flat when filtered), collection detail with full track list.
 
@@ -472,7 +472,7 @@ If only **one wave** could be done, **Wave 2 (Quick wins)** would touch the most
 
 ## Appendix E — Screenshot divergence note
 
-`docs/images/{home,library,explore,settings,collections,teachers}.png` were inspected. The **teachers.png** and **collections.png** screenshots show player UI (loop/shuffle icons) and "Browse talks →" affordances that **are not in the current code**. They appear to be from a planned/intended state per `docs/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`. The audit treats **the current source as truth** and notes these as either planned work or already-shipped features that need to be re-screenshotted.
+`docs/images/{home,library,explore,settings,collections,teachers}.png` were inspected. The **teachers.png** and **collections.png** screenshots show player UI (loop/shuffle icons) and "Browse talks →" affordances that **are not in the current code**. They appear to be from a planned/intended state per `archive/docs-history/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`. The audit treats **the current source as truth** and notes these as either planned work or already-shipped features that need to be re-screenshotted.
 
 Recommendation: re-capture screenshots from `bun tauri dev` after Wave 1 lands so docs stay in sync with the running app.
 

@@ -168,7 +168,7 @@ Expected: formatting, lint, type checking, 100% frontend coverage, build, smoke 
 - [ ] **Step 2: Commit intentional changes**
 
 ```bash
-git add src src-tauri/src/db.rs tests docs/superpowers/plans/2026-08-10-catalogue-load-more.md
+git add src src-tauri/src/db.rs tests archive/docs-history/superpowers/plans/2026-08-10-catalogue-load-more.md
 git commit -m "feat: add load more across catalogue pages"
 ```
 

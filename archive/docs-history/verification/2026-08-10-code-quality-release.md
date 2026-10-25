@@ -145,7 +145,7 @@ An attempted dependency/tool installation through the sandbox package registry f
 
 - Cleaned source repository on branch `agent/code-quality-release`.
 - Updated Ralph Loop: `docs/ralph-loop.md`.
-- Implementation plan: `docs/superpowers/plans/2026-08-10-code-quality-release.md`.
+- Implementation plan: `archive/docs-history/superpowers/plans/2026-08-10-code-quality-release.md`.
 - This verification report.
 - Updated CI lockfile discipline.
 - Final verified Git bundle generated outside the repository in `/mnt/data`.

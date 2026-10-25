@@ -68,8 +68,8 @@ Run `npm test`. Expected: all view and mock tests pass.
 - Modify: `src/mock-data.ts`
 - Modify: `tests/view.test.mjs`
 - Modify: `tests/mock-data.test.mjs`
-- Add: `docs/superpowers/specs/2026-08-10-featured-teacher-home-layout-design.md`
-- Add: `docs/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`
+- Add: `archive/docs-history/superpowers/specs/2026-08-10-featured-teacher-home-layout-design.md`
+- Add: `archive/docs-history/superpowers/plans/2026-08-10-featured-teacher-home-layout.md`
 
 - [x] **Step 1: Run full verification**
 

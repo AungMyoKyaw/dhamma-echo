@@ -62,7 +62,7 @@ Tracking checklist for [`2026-08-15-video-playback-design.md`](../specs/2026-08-
 - [ ] Update `docs/architecture/data-flow.md` to include the video path on the playback sequence diagram.
 - [ ] Update `docs/architecture/modules.md` to reflect the renamed `MediaEngine` and the new `play` route.
 - [ ] Update the product site landing page (`docs/index.html`) to mention video.
-- [ ] Update `docs/superpowers/specs/` and `docs/superpowers/plans/` indexes if such indexes exist.
+- [ ] Update `archive/docs-history/superpowers/specs/` and `archive/docs-history/superpowers/plans/` indexes if such indexes exist.
 
 ## 8. Verification
 

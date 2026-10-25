@@ -38,7 +38,7 @@ After the tag is pushed, inspect the GitHub release until both `Dhamma.Echo_0.5.
 
 Application repository:
 
-- Create: `docs/superpowers/specs/2026-08-17-dhamma-echo-0.5.5-release-design.md`
+- Create: `archive/docs-history/superpowers/specs/2026-08-17-dhamma-echo-0.5.5-release-design.md`
 - Modify: `CHANGELOG.md`
 - Modify: `package.json`
 - Modify: `src-tauri/tauri.conf.json`

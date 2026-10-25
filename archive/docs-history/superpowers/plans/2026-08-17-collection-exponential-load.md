@@ -155,7 +155,7 @@ Expected: PASS with both search endpoints accepting 400 and rejecting 401.
 
 - [x] **Step 1: Format changed files**
 
-Run: `bunx prettier --write src/types.ts src/store.ts src/app.ts src/components/ProgressiveControls.svelte src/views/CollectionsView.svelte tests/store.test.mjs tests/app.test.mjs docs/superpowers/specs/2026-08-17-collection-exponential-load-design.md docs/superpowers/plans/2026-08-17-collection-exponential-load.md`
+Run: `bunx prettier --write src/types.ts src/store.ts src/app.ts src/components/ProgressiveControls.svelte src/views/CollectionsView.svelte tests/store.test.mjs tests/app.test.mjs archive/docs-history/superpowers/specs/2026-08-17-collection-exponential-load-design.md archive/docs-history/superpowers/plans/2026-08-17-collection-exponential-load.md`
 
 - [x] **Step 2: Run frontend verification**
 
