@@ -4,9 +4,19 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-23
+
+### Added
+
+- Rewrote Dhamma Echo as a pure-Rust cross-platform native desktop application using [GPUI](https://gpui.rs) (`gpui 0.2.2`) for macOS, Linux, and Windows — eliminating WebView/JavaScript runtime overhead for instant launch, GPU-accelerated rendering, and low memory usage.
+- Native platform playback backends: `AVFoundation` + `CVPixelBuffer` (`gpui::surface`) on macOS, and `rodio` + `symphonia-mp3` + `ffmpeg`-backed video on Linux and Windows.
+- Redesigned app icon and brand mark in VectorCraft (`assets/dhamma-echo-icon.vectorcraft`, `assets/dhamma-echo-brand.vectorcraft`) aligned with the alpine-herbarium design system.
+- Local SQLite user state (`state.sqlite`) with strictly read-only one-time snapshot migration from legacy Tauri installs.
+
 ### Changed
 
 - Replaced the MIT source and asset license with PolyForm Noncommercial License 1.0.0; catalogue and media rights remain separately documented.
+- Updated `README.md` and `docs/images/` with live GPUI Retina screenshots and native build/release instructions.
 
 ## [0.5.10] - 2026-08-22
 
