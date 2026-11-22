@@ -79,7 +79,7 @@ a {
 
 ::selection {
   background: var(--rust);
-  color: var(--ink-strong);
+  color: var(--on-primary);
 }
 
 .shell {
@@ -668,7 +668,7 @@ p {
 .privacy-lead {
   max-width: 54ch;
   margin-bottom: 0;
-  color: var(--ink-quiet);
+  color: var(--on-primary);
   font-size: 18px;
   font-weight: 560;
 }
@@ -696,7 +696,7 @@ p {
 .architecture-facts dd {
   max-width: 60ch;
   margin: 0;
-  color: var(--ink-quiet);
+  color: var(--on-primary);
   font-size: 14px;
 }
 
