@@ -369,6 +369,55 @@ p {
   font-size: 12px;
 }
 
+.install-command-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.install-command-row-panel {
+  margin-bottom: 28px;
+  border-block: 1px solid var(--rule);
+}
+
+.install-command-row-panel pre {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+  border-block: 0;
+}
+
+.copy-button {
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+  background: var(--page);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out),
+    color 180ms var(--ease-out);
+}
+
+.copy-button:hover {
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: var(--on-primary);
+}
+
+.copy-button[data-copied="true"] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
 .hero-artifact {
   position: relative;
   z-index: 1;
@@ -388,7 +437,7 @@ p {
 .echo-rings span {
   position: absolute;
   inset: 50% auto auto 50%;
-  border: 1px solid rgb(214 109 49 / 23%);
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   animation: echo-breathe 8s var(--ease-out) infinite alternate;
@@ -811,6 +860,13 @@ p {
   color: var(--muted-strong);
   font-size: 13px;
   font-weight: 700;
+}
+
+.install-platforms {
+  margin: 18px 0 0;
+  color: var(--ink-quiet);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .site-footer {
