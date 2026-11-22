@@ -36,10 +36,8 @@ playwright-report/
 .env.local
 .env.*.local
 
-# Rust / Tauri
+# Rust
 target/
-src-tauri/gen/
-src-tauri/target/
 *.rs.bk
 
 # IDE / editor

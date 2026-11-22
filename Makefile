@@ -1,53 +1,45 @@
-.PHONY: install dev dev-web build test test-coverage verify ci format lint typecheck clean package
+.PHONY: dev build test verify format lint package package-macos package-linux clean
 
-## install: Install JS dependencies (frozen, no scripts)
-install:
-	bun install --frozen-lockfile --ignore-scripts
-
-## dev: Run the Tauri app in development
+## dev: Run Dhamma Echo in development
 dev:
-	bun run dev
+	cargo run --locked
 
-## dev-web: Run the webview in a plain browser (no Tauri shell)
-dev-web:
-	bun run dev:web
-
-## build: Build the webview bundle
+## build: Build the optimized release executable
 build:
-	bun run build
+	cargo build --release --locked
 
-## test: Run unit tests
+## test: Run Rust unit tests
 test:
-	bun run test
+	cargo test --locked
 
-## test-coverage: Run unit tests with coverage enforcement
-test-coverage:
-	bun run test:coverage
-
-## verify: Full verification gate (web, site, Rust)
-verify:
-	bun run verify
-
-## ci: CI pipeline checks (web only, matches GitHub Actions)
-ci:
-	bun run ci
-
-## format: Format web sources and Rust
+## format: Format Rust sources
 format:
-	bun run format
+	cargo fmt
 
-## lint: Lint web sources
+## lint: Run rustfmt check and clippy
 lint:
-	bun run lint
+	cargo fmt -- --check
+	cargo clippy --locked --all-targets -- -D warnings
 
-## typecheck: Type-check Svelte and TypeScript
-typecheck:
-	bun run typecheck
+## verify: Full verification gate (format, clippy, tests)
+verify: lint test
 
-## package: Build native installers
+## package: Package for the current Unix platform (macOS or Linux)
 package:
-	bun run package
+	@if [ "$$(uname -s)" = "Darwin" ]; then \
+		bash scripts/package-macos.sh; \
+	else \
+		bash scripts/package-linux.sh; \
+	fi
 
-## clean: Remove build artifacts
+## package-macos: Build ad-hoc signed macOS .app bundle and .dmg installer
+package-macos:
+	bash scripts/package-macos.sh
+
+## package-linux: Build Linux .tar.gz tarball and .deb package
+package-linux:
+	bash scripts/package-linux.sh
+
+## clean: Remove build and packaging artifacts
 clean:
-	bun run clean
+	rm -rf target dist

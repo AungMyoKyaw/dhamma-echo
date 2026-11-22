@@ -5,143 +5,82 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+
 permissions:
   contents: write
 
 jobs:
-  build:
+  package:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-latest
-            args: --target aarch64-apple-darwin
-            rust-target: aarch64-apple-darwin
-          - platform: macos-latest
-            args: --target x86_64-apple-darwin
-            rust-target: x86_64-apple-darwin
-          - platform: ubuntu-22.04
-            args: ""
-            rust-target: ""
-          - platform: windows-latest
-            args: ""
-            rust-target: ""
-    runs-on: ${{ matrix.platform }}
+          - os: macos-latest
+            name: macOS
+            artifact: dist/*.dmg
+          - os: ubuntu-22.04
+            name: Linux
+            artifact: |
+              dist/*.tar.gz
+              dist/*.deb
+          - os: windows-latest
+            name: Windows
+            artifact: dist/*.zip
+    name: Package (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
         with:
           lfs: true
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: canary
       - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.97.1
-          targets: ${{ matrix.rust-target }}
-      - name: Install Tauri Linux prerequisites
-        if: matrix.platform == 'ubuntu-22.04'
+          components: rustfmt, clippy
+      - name: Install Linux GPUI & audio prerequisites
+        if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-      - name: Install frontend dependencies
-        run: bun install --frozen-lockfile --ignore-scripts
-      - name: Verify web application
-        run: bun run verify:web
-      - name: Build and upload native bundles
-        uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          sudo apt-get install -y libasound2-dev libfontconfig1-dev libwayland-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb1-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libvulkan-dev pkg-config dpkg-dev
+      - name: Verify
+        run: |
+          cargo fmt -- --check
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo test --locked
+      - name: Package macOS
+        if: matrix.os == 'macos-latest'
+        run: bash scripts/package-macos.sh
+      - name: Package Linux
+        if: matrix.os == 'ubuntu-22.04'
+        run: bash scripts/package-linux.sh
+      - name: Package Windows
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: pwsh -File scripts/package-windows.ps1
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v7
         with:
-          tagName: v__VERSION__
-          releaseName: Dhamma Echo v__VERSION__
-          releaseBody: See the attached platform installers and CHANGELOG.md.
-          releaseDraft: false
-          prerelease: false
-          args: ${{ matrix.args }}
-  build-msix:
-    name: Package MSIX for Microsoft Store
-    needs: build
-    runs-on: windows-latest
-    timeout-minutes: 45
+          name: release-${{ matrix.name }}
+          path: ${{ matrix.artifact }}
+          if-no-files-found: error
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: package
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v5
         with:
-          lfs: true
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: canary
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.97.1
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-      - name: Install Pillow for MSIX asset generation
-        run: python -m pip install --upgrade pip && python -m pip install Pillow
-      - name: Install frontend dependencies
-        run: bun install --frozen-lockfile --ignore-scripts
-      - name: Verify web application
-        run: bun run verify:web
-      - name: Verify MSIX manifest template and Store assets
-        run: bun run icons:msix:check
-      - name: Build Tauri Windows binary (no installer)
-        run: bun run tauri -- build --no-bundle
-      - uses: microsoft/setup-WinAppCli@v0.1
-      - name: Read Tauri version
-        id: tauri-version
-        shell: pwsh
-        run: |
-          $version = (Get-Content -Raw src-tauri/tauri.conf.json | ConvertFrom-Json).version
-          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-      - name: Substitute MSIX manifest placeholders
-        env:
-          MSIX_PUBLISHER: ${{ secrets.MSIX_PUBLISHER }}
-        shell: pwsh
-        run: |
-          if (-not $env:MSIX_PUBLISHER) {
-            throw "MSIX_PUBLISHER secret is required; copy Package/Identity/Publisher exactly from Partner Center → Product management → Product identity"
-          }
-          $version = "${{ steps.tauri-version.outputs.version }}.0"
-          if ($version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
-            throw "MSIX version must be X.Y.Z.W, got $version"
-          }
-          $manifest = Get-Content -Raw src-tauri/msix/Package.appxmanifest.xml
-          $manifest = $manifest.Replace('__APP_VERSION__', $version)
-          $manifest = $manifest.Replace('__PUBLISHER__', $env:MSIX_PUBLISHER)
-          $resolvedManifest = Join-Path $env:RUNNER_TEMP "DhammaEcho.Package.appxmanifest.xml"
-          Set-Content -Path $resolvedManifest -Value $manifest -NoNewline
-          "MSIX_MANIFEST_PATH=$resolvedManifest" | Out-File -FilePath $env:GITHUB_ENV -Append
-      - name: Stage MSIX inputs
-        run: bun scripts/stage-msix.mjs
-      - name: Assert source manifest remains a template
-        shell: pwsh
-        run: |
-          git diff --exit-code -- src-tauri/msix/Package.appxmanifest.xml
-      - name: Pack MSIX (unsigned; Partner Center signs it)
-        shell: pwsh
-        run: |
-          $version = "${{ steps.tauri-version.outputs.version }}"
-          $msix = "Dhamma.Echo_${version}_x64.msix"
-          winapp pack ./msix-staging --manifest ./msix-staging/Package.appxmanifest --output $msix --quiet
-          if (-not (Test-Path $msix)) {
-            throw "winapp pack did not produce ${msix}"
-          }
-          Get-Item $msix | Format-List Name, Length, LastWriteTime
-      - name: Attach MSIX to GitHub release
-        shell: pwsh
+          path: release-assets
+          merge-multiple: true
+      - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $version = "${{ steps.tauri-version.outputs.version }}"
-          $msix = "Dhamma.Echo_${version}_x64.msix"
-          gh release upload "v${version}" $msix --repo $env:GITHUB_REPOSITORY --clobber
-      - name: Remove temporary MSIX files
-        if: always()
-        shell: pwsh
-        run: |
-          if ($env:MSIX_MANIFEST_PATH -and (Test-Path $env:MSIX_MANIFEST_PATH)) {
-            Remove-Item -Path $env:MSIX_MANIFEST_PATH -Force
-          }
-          if (Test-Path "msix-staging") {
-            Remove-Item -Path "msix-staging" -Recurse -Force
-          }
+          TAG="${GITHUB_REF#refs/tags/}"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" release-assets/* --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$TAG" release-assets/* \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "Dhamma Echo $TAG" \
+              --notes "Native GPUI desktop installers for macOS, Linux, and Windows. See CHANGELOG.md."
+          fi
