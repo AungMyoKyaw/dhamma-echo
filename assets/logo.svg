@@ -1,10 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
-  <title id="title">Dhamma Echo</title>
-  <desc id="desc">A flat lichen-green lotus above two quiet sound waves.</desc>
-  <rect width="128" height="128" rx="24" fill="#f4efde"/>
-  <path d="M64 24c8 12 12 23 12 34 0 14-5 25-12 34-7-9-12-20-12-34 0-11 4-22 12-34Z" fill="#3f6b3a"/>
-  <path d="M28 52c16 1 29 7 36 18-3 14-12 24-26 29-7-11-11-23-10-47Z" fill="#3f6b3a" opacity=".78"/>
-  <path d="M100 52c-16 1-29 7-36 18 3 14 12 24 26 29 7-11 11-23 10-47Z" fill="#2c4d28" opacity=".82"/>
-  <path d="M18 86c13 13 28 19 46 19s33-6 46-19" fill="none" stroke="#3f6b3a" stroke-width="6" stroke-linecap="round"/>
-  <path d="M30 105c10 7 21 10 34 10s24-3 34-10" fill="none" stroke="#7a5a1e" stroke-width="4" stroke-linecap="round"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="linear-gradient-1" x1="256" y1="0" x2="768" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#33572f"/>
+      <stop offset="0.45" stop-color="#233d20"/>
+      <stop offset="1" stop-color="#152313"/>
+    </linearGradient>
+    <radialGradient id="radial-gradient-1" cx="512" cy="430.58" r="354" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#64935b" stop-opacity="0.36"/>
+      <stop offset="0.52" stop-color="#3f6b3a" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#1e331b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="linear-gradient-2" x1="512" y1="16" x2="512" y2="1008" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e5d7b0"/>
+      <stop offset="0.5" stop-color="#b89352"/>
+      <stop offset="1" stop-color="#7a5a1e"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="195.76" y1="462.44" x2="476.6" y2="620.56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a8c49e"/>
+      <stop offset="0.6" stop-color="#7fa572"/>
+      <stop offset="1" stop-color="#4f7547"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-4" x1="828.24" y1="462.44" x2="547.4" y2="620.56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a8c49e"/>
+      <stop offset="0.6" stop-color="#7fa572"/>
+      <stop offset="1" stop-color="#4f7547"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-5" x1="301.96" y1="316.12" x2="488.4" y2="611.12" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ebe4ce"/>
+      <stop offset="0.6" stop-color="#dad2b7"/>
+      <stop offset="1" stop-color="#b4ab8e"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-6" x1="722.04" y1="316.12" x2="535.6" y2="611.12" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ebe4ce"/>
+      <stop offset="0.6" stop-color="#dad2b7"/>
+      <stop offset="1" stop-color="#b4ab8e"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-7" x1="512" y1="198.12" x2="512" y2="632.36" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fcf9ef"/>
+      <stop offset="0.55" stop-color="#f4efde"/>
+      <stop offset="1" stop-color="#e2dac0"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-8" x1="512" y1="351.52" x2="512" y2="594.6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d4b26f"/>
+      <stop offset="0.65" stop-color="#a88240"/>
+      <stop offset="1" stop-color="#7a5a1e"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-9" x1="198.12" y1="634.72" x2="825.88" y2="634.72" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ddd5bc"/>
+      <stop offset="0.5" stop-color="#faf6e8"/>
+      <stop offset="1" stop-color="#ddd5bc"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-10" x1="280.72" y1="710.24" x2="743.28" y2="710.24" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#a68243"/>
+      <stop offset="0.5" stop-color="#d8b46c"/>
+      <stop offset="1" stop-color="#a68243"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-11" x1="375.12" y1="778.68" x2="648.88" y2="778.68" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7a5a1e"/>
+      <stop offset="0.5" stop-color="#b89352"/>
+      <stop offset="1" stop-color="#7a5a1e"/>
+    </linearGradient>
+  </defs>
+  <title>Dhamma Echo Brand</title>
+  <g id="Layer_1" data-name="Layer 1">
+    <path id="Tile_Background" data-name="Tile Background" d="M224 0 L800 0 C923.712 0 1024 100.288 1024 224 L1024 800 C1024 923.712 923.712 1024 800 1024 L224 1024 C100.288 1024 0 923.712 0 800 L0 224 C0 100.288 100.288 0 224 0 Z" fill="url(#linear-gradient-1)"/>
+    <circle id="Ambient_Glow" data-name="Ambient Glow" cx="512" cy="430.58" r="354" fill="url(#radial-gradient-1)"/>
+    <path id="Specimen_Rim" data-name="Specimen Rim" d="M226 16 L798 16 C913.98 16 1008 110.02 1008 226 L1008 798 C1008 913.98 913.98 1008 798 1008 L226 1008 C110.02 1008 16 913.98 16 798 L16 226 C16 110.02 110.02 16 226 16 Z" fill="none" stroke="url(#linear-gradient-2)" stroke-width="3.304" stroke-miterlimit="10" opacity="0.32"/>
+    <path id="Echo_Halo_Inner" data-name="Echo Halo Inner" d="M199.78 335.78 C267.053 228.118 385.048 162.711 512 162.711 C638.952 162.711 756.947 228.118 824.22 335.78" fill="none" stroke="#8bb580" stroke-width="8.85" stroke-linecap="round" stroke-miterlimit="10" opacity="0.34"/>
+    <path id="Echo_Halo_Outer" data-name="Echo Halo Outer" d="M204.73 234.15 C285.224 150.798 396.126 103.724 512 103.724 C627.874 103.724 738.776 150.798 819.27 234.15" fill="none" stroke="#c9a562" stroke-width="6.49" stroke-linecap="round" stroke-miterlimit="10" opacity="0.24"/>
+    <path id="Lotus_Outer_Left" data-name="Lotus Outer Left" d="M476.6 620.56 C368.04 618.2 252.4 571 193.4 462.44 C271.28 445.92 386.92 486.04 476.6 620.56 Z" fill="url(#linear-gradient-3)"/>
+    <path id="Lotus_Outer_Right" data-name="Lotus Outer Right" d="M547.4 620.56 C655.96 618.2 771.6 571 830.6 462.44 C752.72 445.92 637.08 486.04 547.4 620.56 Z" fill="url(#linear-gradient-4)"/>
+    <path id="Mid_Petal_Shadow_Left" data-name="Mid Petal Shadow Left" d="M488.4 622.92 C382.2 587.52 299.6 474.24 306.68 325.56 C396.36 360.96 471.88 474.24 488.4 622.92 Z" fill="#1a2f18" opacity="0.82"/>
+    <path id="Mid_Petal_Shadow_Right" data-name="Mid Petal Shadow Right" d="M535.6 622.92 C641.8 587.52 724.4 474.24 717.32 325.56 C627.64 360.96 552.12 474.24 535.6 622.92 Z" fill="#1a2f18" opacity="0.82"/>
+    <path id="Lotus_Mid_Left" data-name="Lotus Mid Left" d="M488.4 611.12 C384.56 573.36 299.6 462.44 301.96 316.12 C394 349.16 464.8 462.44 488.4 611.12 Z" fill="url(#linear-gradient-5)"/>
+    <path id="Lotus_Mid_Right" data-name="Lotus Mid Right" d="M535.6 611.12 C639.44 573.36 724.4 462.44 722.04 316.12 C630 349.16 559.2 462.44 535.6 611.12 Z" fill="url(#linear-gradient-6)"/>
+    <path id="Center_Petal_Separation" data-name="Center Petal Separation" d="M512 193.4 C594.6 304.32 622.92 431.76 606.4 528.52 C589.88 594.6 552.12 630 512 644.16 C471.88 630 434.12 594.6 417.6 528.52 C401.08 431.76 429.4 304.32 512 193.4 Z" fill="#1a2f18" opacity="0.85"/>
+    <path id="Lotus_Center_Petal" data-name="Lotus Center Petal" d="M512 198.12 C582.8 301.96 608.76 427.04 592.24 521.44 C578.08 582.8 545.04 618.2 512 632.36 C478.96 618.2 445.92 582.8 431.76 521.44 C415.24 427.04 441.2 301.96 512 198.12 Z" fill="url(#linear-gradient-7)"/>
+    <path id="Lotus_Botanical_Spine" data-name="Lotus Botanical Spine" d="M512 351.52 C519.08 422.32 523.8 497.84 519.08 571 L512 594.6 L504.92 571 C500.2 497.84 504.92 422.32 512 351.52 Z" fill="url(#linear-gradient-8)" opacity="0.88"/>
+    <circle id="Crown_Resonance_Dot" data-name="Crown Resonance Dot" cx="512" cy="309.04" r="11.21" fill="#b89352" opacity="0.92"/>
+    <path id="Echo_Wave_1__Primary_" data-name="Echo Wave 1 (Primary)" d="M198.12 634.72 C407.373 725.973 616.627 725.973 825.88 634.72" fill="none" stroke="url(#linear-gradient-9)" stroke-width="28.32" stroke-linecap="round" stroke-miterlimit="10"/>
+    <path id="Echo_Wave_2__Bronze_" data-name="Echo Wave 2 (Bronze)" d="M280.72 710.24 C434.907 785.76 589.093 785.76 743.28 710.24" fill="none" stroke="url(#linear-gradient-10)" stroke-width="21.24" stroke-linecap="round" stroke-miterlimit="10" opacity="0.96"/>
+    <path id="Echo_Wave_3__Quiet_" data-name="Echo Wave 3 (Quiet)" d="M375.12 778.68 C466.373 835.32 557.627 835.32 648.88 778.68" fill="none" stroke="url(#linear-gradient-11)" stroke-width="15.34" stroke-linecap="round" stroke-miterlimit="10" opacity="0.84"/>
+  </g>
 </svg>
