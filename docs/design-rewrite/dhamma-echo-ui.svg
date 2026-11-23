@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2700" height="2800" viewBox="0 0 2700 2800">
+<rect width="2700" height="2800" fill="#dcded7"/>
+<rect x="40" y="40" width="1280" height="820" rx="12" fill="#faf9f4"/>
+<rect x="40" y="40" width="226" height="820" rx="12" fill="#e9ede5"/>
+<rect x="266" y="40" width="1054" height="820" rx="0" fill="#faf9f4"/>
+<text x="72" y="100" font-family="Arial" font-size="18" font-weight="700" fill="#254f3a">DHAMMA ECHO</text>
+<text x="72" y="124" font-family="Arial" font-size="12" font-weight="400" fill="#59685b">A quiet place to listen</text>
+<rect x="56" y="158" width="194" height="38" rx="8" fill="#294e3b"/>
+<text x="75" y="184" font-family="Arial" font-size="15" font-weight="600" fill="#ffffff">Home</text>
+<text x="75" y="232" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Explore</text>
+<text x="75" y="280" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Collections</text>
+<text x="75" y="328" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Teachers</text>
+<text x="75" y="376" font-family="Arial" font-size="15" font-weight="600" fill="#435448">My Library</text>
+<text x="75" y="760" font-family="Arial" font-size="15" font-weight="400" fill="#435448">Settings</text>
+<text x="75" y="803" font-family="Arial" font-size="13" font-weight="400" fill="#68786c">Collapse sidebar</text>
+<text x="310" y="102" font-family="Georgia" font-size="31" font-weight="600" fill="#202c24">Home</text>
+<rect x="975" y="68" width="290" height="40" rx="8" fill="#eff1eb"/>
+<text x="995" y="94" font-family="Arial" font-size="14" font-weight="400" fill="#56665a">Search teachings   ⌘ F</text>
+<rect x="266" y="764" width="1054" height="96" rx="0" fill="#eff2eb"/>
+<text x="300" y="799" font-family="Arial" font-size="15" font-weight="600" fill="#26392c">Dhamma Echo</text>
+<text x="300" y="823" font-family="Arial" font-size="13" font-weight="400" fill="#627366">Ready to listen</text>
+<text x="744" y="810" font-family="Arial" font-size="20" font-weight="400" fill="#294e3b">◀      ▶      ▶</text>
+<text x="1155" y="810" font-family="Arial" font-size="13" font-weight="400" fill="#44574a">1×    Queue</text>
+<text x="310" y="156" font-family="Arial" font-size="19" font-weight="400" fill="#526557">Welcome back</text>
+<rect x="310" y="185" width="910" height="170" rx="12" fill="#dfe9dc"/>
+<text x="338" y="227" font-family="Arial" font-size="14" font-weight="600" fill="#426149">Continue listening</text>
+<text x="338" y="269" font-family="Georgia" font-size="29" font-weight="600" fill="#20372a">Your next moment of stillness</text>
+<text x="338" y="300" font-family="Arial" font-size="15" font-weight="400" fill="#526557">Pick up where you left off, or find a teaching.</text>
+<rect x="338" y="316" width="146" height="32" rx="8" fill="#294e3b"/>
+<text x="356" y="338" font-family="Arial" font-size="13" font-weight="600" fill="#ffffff">Explore teachings</text>
+<text x="310" y="413" font-family="Georgia" font-size="23" font-weight="600" fill="#253129">Recently played</text>
+<text x="310" y="445" font-family="Arial" font-size="15" font-weight="400" fill="#617166">Your listening history will appear here.</text>
+<rect x="310" y="473" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="310" y="522" font-family="Georgia" font-size="23" font-weight="600" fill="#253129">Find a teaching</text>
+<rect x="310" y="550" width="290" height="122" rx="10" fill="#f1f3ed"/>
+<text x="330" y="588" font-family="Arial" font-size="17" font-weight="600" fill="#2a4432">Explore the catalogue</text>
+<text x="330" y="617" font-family="Arial" font-size="13" font-weight="400" fill="#5b6e5e">Search audio and video teachings</text>
+<rect x="620" y="550" width="290" height="122" rx="10" fill="#f1f3ed"/>
+<text x="640" y="588" font-family="Arial" font-size="17" font-weight="600" fill="#2a4432">Browse teachers</text>
+<text x="640" y="617" font-family="Arial" font-size="13" font-weight="400" fill="#5b6e5e">Find teachings by speaker</text>
+<rect x="930" y="550" width="290" height="122" rx="10" fill="#f1f3ed"/>
+<text x="950" y="588" font-family="Arial" font-size="17" font-weight="600" fill="#2a4432">Collections</text>
+<text x="950" y="617" font-family="Arial" font-size="13" font-weight="400" fill="#5b6e5e">Listen through a collection</text>
+<rect x="1380" y="40" width="1280" height="820" rx="12" fill="#faf9f4"/>
+<rect x="1380" y="40" width="226" height="820" rx="12" fill="#e9ede5"/>
+<rect x="1606" y="40" width="1054" height="820" rx="0" fill="#faf9f4"/>
+<text x="1412" y="100" font-family="Arial" font-size="18" font-weight="700" fill="#254f3a">DHAMMA ECHO</text>
+<text x="1412" y="124" font-family="Arial" font-size="12" font-weight="400" fill="#59685b">A quiet place to listen</text>
+<text x="1415" y="184" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Home</text>
+<rect x="1396" y="206" width="194" height="38" rx="8" fill="#294e3b"/>
+<text x="1415" y="232" font-family="Arial" font-size="15" font-weight="600" fill="#ffffff">Explore</text>
+<text x="1415" y="280" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Collections</text>
+<text x="1415" y="328" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Teachers</text>
+<text x="1415" y="376" font-family="Arial" font-size="15" font-weight="600" fill="#435448">My Library</text>
+<text x="1415" y="760" font-family="Arial" font-size="15" font-weight="400" fill="#435448">Settings</text>
+<text x="1415" y="803" font-family="Arial" font-size="13" font-weight="400" fill="#68786c">Collapse sidebar</text>
+<text x="1650" y="102" font-family="Georgia" font-size="31" font-weight="600" fill="#202c24">Explore</text>
+<rect x="2315" y="68" width="290" height="40" rx="8" fill="#eff1eb"/>
+<text x="2335" y="94" font-family="Arial" font-size="14" font-weight="400" fill="#56665a">Search teachings   ⌘ F</text>
+<rect x="1606" y="764" width="1054" height="96" rx="0" fill="#eff2eb"/>
+<text x="1640" y="799" font-family="Arial" font-size="15" font-weight="600" fill="#26392c">Dhamma Echo</text>
+<text x="1640" y="823" font-family="Arial" font-size="13" font-weight="400" fill="#627366">Ready to listen</text>
+<text x="2084" y="810" font-family="Arial" font-size="20" font-weight="400" fill="#294e3b">◀      ▶      ▶</text>
+<text x="2495" y="810" font-family="Arial" font-size="13" font-weight="400" fill="#44574a">1×    Queue</text>
+<text x="1650" y="151" font-family="Arial" font-size="15" font-weight="400" fill="#596b5d">Search by title or teacher</text>
+<rect x="1650" y="175" width="910" height="52" rx="8" fill="#ffffff"/>
+<text x="1670" y="208" font-family="Arial" font-size="16" font-weight="400" fill="#68796b">Search the catalogue</text>
+<rect x="1650" y="250" width="100" height="36" rx="8" fill="#294e3b"/>
+<text x="1667" y="274" font-family="Arial" font-size="14" font-weight="600" fill="#ffffff">All</text>
+<rect x="1765" y="250" width="100" height="36" rx="8" fill="#ebefe8"/>
+<text x="1782" y="274" font-family="Arial" font-size="14" font-weight="600" fill="#435a49">Audio</text>
+<rect x="1880" y="250" width="100" height="36" rx="8" fill="#ebefe8"/>
+<text x="1897" y="274" font-family="Arial" font-size="14" font-weight="600" fill="#435a49">Video</text>
+<rect x="1995" y="250" width="100" height="36" rx="8" fill="#ebefe8"/>
+<text x="2012" y="274" font-family="Arial" font-size="14" font-weight="600" fill="#435a49">Filters</text>
+<text x="1650" y="342" font-family="Georgia" font-size="23" font-weight="600" fill="#253129">Teachings</text>
+<text x="2450" y="342" font-family="Arial" font-size="14" font-weight="400" fill="#365b40">Browse all</text>
+<rect x="1650" y="418" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1670" y="382" font-family="Arial" font-size="16" font-weight="600" fill="#2a3e30">Title and teacher</text>
+<text x="1670" y="406" font-family="Arial" font-size="13" font-weight="400" fill="#647568">Browse catalogue entries</text>
+<text x="2495" y="392" font-family="Arial" font-size="13" font-weight="400" fill="#426149">View  →</text>
+<rect x="1650" y="494" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1670" y="458" font-family="Arial" font-size="16" font-weight="600" fill="#2a3e30">Audio teachings</text>
+<text x="1670" y="482" font-family="Arial" font-size="13" font-weight="400" fill="#647568">Browse catalogue entries</text>
+<text x="2495" y="468" font-family="Arial" font-size="13" font-weight="400" fill="#426149">View  →</text>
+<rect x="1650" y="570" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1670" y="534" font-family="Arial" font-size="16" font-weight="600" fill="#2a3e30">Video teachings</text>
+<text x="1670" y="558" font-family="Arial" font-size="13" font-weight="400" fill="#647568">Browse catalogue entries</text>
+<text x="2495" y="544" font-family="Arial" font-size="13" font-weight="400" fill="#426149">View  →</text>
+<rect x="1650" y="646" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1670" y="610" font-family="Arial" font-size="16" font-weight="600" fill="#2a3e30">Available collections</text>
+<text x="1670" y="634" font-family="Arial" font-size="13" font-weight="400" fill="#647568">Browse catalogue entries</text>
+<text x="2495" y="620" font-family="Arial" font-size="13" font-weight="400" fill="#426149">View  →</text>
+<rect x="40" y="920" width="1280" height="820" rx="12" fill="#faf9f4"/>
+<rect x="40" y="920" width="226" height="820" rx="12" fill="#e9ede5"/>
+<rect x="266" y="920" width="1054" height="820" rx="0" fill="#faf9f4"/>
+<text x="72" y="980" font-family="Arial" font-size="18" font-weight="700" fill="#254f3a">DHAMMA ECHO</text>
+<text x="72" y="1004" font-family="Arial" font-size="12" font-weight="400" fill="#59685b">A quiet place to listen</text>
+<text x="75" y="1064" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Home</text>
+<text x="75" y="1112" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Explore</text>
+<text x="75" y="1160" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Collections</text>
+<text x="75" y="1208" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Teachers</text>
+<rect x="56" y="1230" width="194" height="38" rx="8" fill="#294e3b"/>
+<text x="75" y="1256" font-family="Arial" font-size="15" font-weight="600" fill="#ffffff">My Library</text>
+<text x="75" y="1640" font-family="Arial" font-size="15" font-weight="400" fill="#435448">Settings</text>
+<text x="75" y="1683" font-family="Arial" font-size="13" font-weight="400" fill="#68786c">Collapse sidebar</text>
+<text x="310" y="982" font-family="Georgia" font-size="31" font-weight="600" fill="#202c24">My Library</text>
+<rect x="975" y="948" width="290" height="40" rx="8" fill="#eff1eb"/>
+<text x="995" y="974" font-family="Arial" font-size="14" font-weight="400" fill="#56665a">Search teachings   ⌘ F</text>
+<rect x="266" y="1644" width="1054" height="96" rx="0" fill="#eff2eb"/>
+<text x="300" y="1679" font-family="Arial" font-size="15" font-weight="600" fill="#26392c">Dhamma Echo</text>
+<text x="300" y="1703" font-family="Arial" font-size="13" font-weight="400" fill="#627366">Ready to listen</text>
+<text x="744" y="1690" font-family="Arial" font-size="20" font-weight="400" fill="#294e3b">◀      ▶      ▶</text>
+<text x="1155" y="1690" font-family="Arial" font-size="13" font-weight="400" fill="#44574a">1×    Queue</text>
+<text x="310" y="1032" font-family="Arial" font-size="15" font-weight="400" fill="#596b5d">Your saved listening, in one place.</text>
+<text x="310" y="1094" font-family="Arial" font-size="15" font-weight="600" fill="#294e3b">Downloads</text>
+<text x="460" y="1094" font-family="Arial" font-size="15" font-weight="600" fill="#294e3b">Favorites</text>
+<text x="610" y="1094" font-family="Arial" font-size="15" font-weight="600" fill="#294e3b">History</text>
+<rect x="310" y="1110" width="910" height="1" rx="0" fill="#d5ded3"/>
+<text x="310" y="1200" font-family="Georgia" font-size="24" font-weight="600" fill="#263b2b">Nothing saved here yet</text>
+<text x="310" y="1234" font-family="Arial" font-size="15" font-weight="400" fill="#617166">Save a teaching or start listening to see it here.</text>
+<rect x="310" y="1268" width="168" height="42" rx="8" fill="#294e3b"/>
+<text x="328" y="1295" font-family="Arial" font-size="14" font-weight="600" fill="#ffffff">Explore teachings</text>
+<rect x="1380" y="920" width="1280" height="820" rx="12" fill="#faf9f4"/>
+<rect x="1380" y="920" width="226" height="820" rx="12" fill="#e9ede5"/>
+<rect x="1606" y="920" width="1054" height="820" rx="0" fill="#faf9f4"/>
+<text x="1412" y="980" font-family="Arial" font-size="18" font-weight="700" fill="#254f3a">DHAMMA ECHO</text>
+<text x="1412" y="1004" font-family="Arial" font-size="12" font-weight="400" fill="#59685b">A quiet place to listen</text>
+<text x="1415" y="1064" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Home</text>
+<text x="1415" y="1112" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Explore</text>
+<text x="1415" y="1160" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Collections</text>
+<text x="1415" y="1208" font-family="Arial" font-size="15" font-weight="600" fill="#435448">Teachers</text>
+<text x="1415" y="1256" font-family="Arial" font-size="15" font-weight="600" fill="#435448">My Library</text>
+<text x="1415" y="1640" font-family="Arial" font-size="15" font-weight="400" fill="#435448">Settings</text>
+<text x="1415" y="1683" font-family="Arial" font-size="13" font-weight="400" fill="#68786c">Collapse sidebar</text>
+<text x="1650" y="982" font-family="Georgia" font-size="31" font-weight="600" fill="#202c24">Settings</text>
+<rect x="2315" y="948" width="290" height="40" rx="8" fill="#eff1eb"/>
+<text x="2335" y="974" font-family="Arial" font-size="14" font-weight="400" fill="#56665a">Search teachings   ⌘ F</text>
+<rect x="1606" y="1644" width="1054" height="96" rx="0" fill="#eff2eb"/>
+<text x="1640" y="1679" font-family="Arial" font-size="15" font-weight="600" fill="#26392c">Dhamma Echo</text>
+<text x="1640" y="1703" font-family="Arial" font-size="13" font-weight="400" fill="#627366">Ready to listen</text>
+<text x="2084" y="1690" font-family="Arial" font-size="20" font-weight="400" fill="#294e3b">◀      ▶      ▶</text>
+<text x="2495" y="1690" font-family="Arial" font-size="13" font-weight="400" fill="#44574a">1×    Queue</text>
+<text x="1650" y="1032" font-family="Arial" font-size="15" font-weight="400" fill="#596b5d">Personalize your listening experience.</text>
+<text x="1650" y="1085" font-family="Arial" font-size="17" font-weight="600" fill="#263b2b">Appearance</text>
+<text x="1650" y="1112" font-family="Arial" font-size="14" font-weight="400" fill="#627366">Light, dark, or match your system</text>
+<text x="2480" y="1097" font-family="Arial" font-size="14" font-weight="400" fill="#426149">Open  →</text>
+<rect x="1650" y="1135" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1650" y="1177" font-family="Arial" font-size="17" font-weight="600" fill="#263b2b">Language</text>
+<text x="1650" y="1204" font-family="Arial" font-size="14" font-weight="400" fill="#627366">English / မြန်မာ</text>
+<text x="2480" y="1189" font-family="Arial" font-size="14" font-weight="400" fill="#426149">Open  →</text>
+<rect x="1650" y="1227" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1650" y="1269" font-family="Arial" font-size="17" font-weight="600" fill="#263b2b">Playback speed</text>
+<text x="1650" y="1296" font-family="Arial" font-size="14" font-weight="400" fill="#627366">Choose your default speed</text>
+<text x="2480" y="1281" font-family="Arial" font-size="14" font-weight="400" fill="#426149">Open  →</text>
+<rect x="1650" y="1319" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1650" y="1361" font-family="Arial" font-size="17" font-weight="600" fill="#263b2b">Keyboard shortcuts</text>
+<text x="1650" y="1388" font-family="Arial" font-size="14" font-weight="400" fill="#627366">See available shortcuts</text>
+<text x="2480" y="1373" font-family="Arial" font-size="14" font-weight="400" fill="#426149">Open  →</text>
+<rect x="1650" y="1411" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="1650" y="1453" font-family="Arial" font-size="17" font-weight="600" fill="#263b2b">Privacy</text>
+<text x="1650" y="1480" font-family="Arial" font-size="14" font-weight="400" fill="#627366">Your listening data stays on this device</text>
+<text x="2480" y="1465" font-family="Arial" font-size="14" font-weight="400" fill="#426149">Open  →</text>
+<rect x="1650" y="1503" width="910" height="1" rx="0" fill="#dce2da"/>
+<text x="40" y="1840" font-family="Georgia" font-size="32" font-weight="600" fill="#253129">Dhamma Echo · interface study</text>
+<text x="40" y="1875" font-family="Arial" font-size="16" font-weight="400" fill="#526557">Desktop concepts · 1280 × 820 · illustrative empty states</text>
+</svg>

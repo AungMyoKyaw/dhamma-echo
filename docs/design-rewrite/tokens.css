@@ -1,0 +1,54 @@
+/* Semantic colors · Light */
+:root {
+  --page: #FCFAF5;
+  --rail: #F0EEE6;
+  --panel: #EDE8DD;
+  --ink: #202620;
+  --quiet: #5A645A;
+  --rule: #D6D8CE;
+  --primary: #28563C;
+  --on: #FCFAF5;
+  --selected: #E6EDE5;
+  --error: #A63A2D;
+  --errorsurface: #F9E2DE;
+  --marker: #83683F;
+  --primarystrong: #1F4631;
+  --videostage: #0D120F;
+}
+/* Semantic colors · Dark */
+[data-semantic-colors="Dark"] {
+  --page: #141C18;
+  --rail: #1E2721;
+  --panel: #27312A;
+  --ink: #EBEEE6;
+  --quiet: #B8C2B6;
+  --rule: #3B473F;
+  --primary: #98C5A8;
+  --on: #141C18;
+  --selected: #273C2F;
+  --error: #EF9F8F;
+  --errorsurface: #351E1A;
+  --marker: #BDA47D;
+  --primarystrong: #BED9C6;
+  --videostage: #0D120F;
+}
+/* Geometry and type · Default */
+:root {
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --radius-control: 8px;
+  --radius-surface: 12px;
+  --control-height: 44px;
+  --metadata-size: 12px;
+  --body-size: 14px;
+  --row-title-size: 15px;
+  --section-size: 20px;
+  --page-title-size: 30px;
+  --font-latin: "Avenir Next";
+  --font-myanmar: "Noto Sans Myanmar";
+}
