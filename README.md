@@ -30,7 +30,7 @@ Dhamma Echo is currently ad-hoc signed, so the Homebrew cask removes the quarant
 
 ### macOS, Windows, and Linux installers
 
-Download the latest macOS `.dmg`, Linux `.tar.gz` / `.deb`, or Windows `.zip` from [GitHub Releases](https://github.com/AungMyoKyaw/dhamma-echo/releases).
+Download the latest macOS `.dmg`, Linux `.tar.gz` / `.deb`, or Windows `.exe` / `.zip` from [GitHub Releases](https://github.com/AungMyoKyaw/dhamma-echo/releases).
 
 ## What Dhamma Echo is
 

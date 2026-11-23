@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-11-23
+
+### Fixed
+
+- Added a proper Windows Inno Setup installer (`Dhamma.Echo_0.6.1_windows-x64-setup.exe`) and clearly named Windows portable archive (`Dhamma.Echo_0.6.1_windows-x64.zip`) to the GitHub Release pipeline alongside macOS (`.dmg`) and Linux (`.deb`, `.tar.gz`).
+
 ## [0.6.0] - 2026-11-23
 
 ### Added
