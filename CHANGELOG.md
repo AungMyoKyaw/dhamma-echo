@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-11-24
+
+### Added
+
+- Restored Microsoft Store MSIX packaging (`Dhamma.Echo_0.6.2_x64.msix`) for Windows in `scripts/package-windows.ps1` and GitHub Release pipeline, enabling Microsoft Partner Center Store submissions alongside Inno Setup installer and portable zip.
+
 ## [0.6.1] - 2026-11-23
 
 ### Fixed

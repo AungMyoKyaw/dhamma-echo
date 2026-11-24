@@ -89,3 +89,41 @@ if ($LASTEXITCODE -ne 0) {
 }
 Remove-Item -Force $IssPath
 Write-Host "Packaged: $SetupExePath"
+
+# Packaging MSIX for Microsoft Store
+$MsixPath = Join-Path $DistDir "Dhamma.Echo_${Version}_x64.msix"
+if (Test-Path $MsixPath) { Remove-Item -Force $MsixPath }
+
+$MsixStageDir = Join-Path $DistDir "msix-stage"
+if (Test-Path $MsixStageDir) { Remove-Item -Recurse -Force $MsixStageDir }
+New-Item -ItemType Directory -Force -Path $MsixStageDir | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $MsixStageDir "resources") | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $MsixStageDir "Assets") | Out-Null
+
+Copy-Item (Join-Path $TargetDir "release\dhamma-echo-native.exe") (Join-Path $MsixStageDir "dhamma-echo-native.exe")
+Copy-Item (Join-Path $RootDir "resources\dhamma.db") (Join-Path $MsixStageDir "resources\dhamma.db")
+Copy-Item (Join-Path $RootDir "resources\msix\Assets\*") (Join-Path $MsixStageDir "Assets") -Recurse
+
+$Publisher = if ($env:MSIX_PUBLISHER) { $env:MSIX_PUBLISHER } else { "CN=F9A61C2C-016B-4569-AF3E-D8FB4CBCB150" }
+$ManifestContent = Get-Content -Raw (Join-Path $RootDir "resources\msix\Package.appxmanifest.xml")
+$ManifestContent = $ManifestContent.Replace('__APP_VERSION__', "${Version}.0")
+$ManifestContent = $ManifestContent.Replace('__PUBLISHER__', $Publisher)
+Set-Content -Path (Join-Path $MsixStageDir "AppxManifest.xml") -Value $ManifestContent -Encoding UTF8
+
+$MakeAppxCandidates = @(
+    (Get-Command "MakeAppx.exe" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source -ErrorAction SilentlyContinue),
+    (Get-ChildItem "C:\Program Files (x86)\Windows Kits\10\bin\*\x64\MakeAppx.exe" -ErrorAction SilentlyContinue | Sort-Object FullName -Descending | Select-Object -ExpandProperty FullName -First 1),
+    (Get-ChildItem "C:\Program Files\Windows Kits\10\bin\*\x64\MakeAppx.exe" -ErrorAction SilentlyContinue | Sort-Object FullName -Descending | Select-Object -ExpandProperty FullName -First 1)
+) | Where-Object { $_ -and (Test-Path $_) }
+
+$MakeAppxPath = $MakeAppxCandidates | Select-Object -First 1
+if ($MakeAppxPath) {
+    & $MakeAppxPath pack /d $MsixStageDir /p $MsixPath /o /nv
+    if ($LASTEXITCODE -ne 0) {
+        throw "MakeAppx.exe failed with exit code $LASTEXITCODE"
+    }
+    Write-Host "Packaged: $MsixPath"
+} else {
+    Write-Warning "MakeAppx.exe not found. MSIX package was not generated."
+}
+Remove-Item -Recurse -Force $MsixStageDir

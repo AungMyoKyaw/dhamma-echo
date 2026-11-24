@@ -28,6 +28,7 @@ jobs:
             artifact: |
               dist/*.zip
               dist/*.exe
+              dist/*.msix
     name: Package (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
     steps:
